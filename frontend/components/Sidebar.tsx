@@ -1,0 +1,44 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+interface SidebarProps {
+  isCollapsed: boolean;
+}
+
+export default function Sidebar({ isCollapsed }: SidebarProps) {
+  const pathname = usePathname();
+
+  const isActive = (path: string) => {
+    if (path === "/") {
+      return pathname === "/";
+    }
+    return pathname?.startsWith(path);
+  };
+
+  return (
+    <nav className={`global-sidebar ${isCollapsed ? "collapsed" : ""}`}>
+      <div className="sidebar-menu">
+        {/* Operations Section */}
+        <div className="sidebar-section">
+          {!isCollapsed && <div className="sidebar-section-title">Operations</div>}
+          <Link href="/" className={`nav-item ${isActive("/") && pathname === "/" ? "active" : ""}`} title="Dashboard">
+            <span className="nav-icon">📊</span>
+            {!isCollapsed && <span className="nav-label">Dashboard</span>}
+          </Link>
+
+          <Link href="/ldn" className={`nav-item ${isActive("/ldn") ? "active" : ""}`} title="LDN Monitoring">
+            <span className="nav-icon">🌳</span>
+            {!isCollapsed && <span className="nav-label">LDN Monitoring</span>}
+          </Link>
+          <Link href="/soil" className={`nav-item ${isActive("/soil") ? "active" : ""}`} title="Soil Samples">
+            <span className="nav-icon">🧪</span>
+            {!isCollapsed && <span className="nav-label">Soil Samples</span>}
+          </Link>
+        </div>
+      </div>
+      <div id="sidebar-export-container" className="sidebar-export-container" />
+    </nav>
+  );
+}

@@ -1,0 +1,204 @@
+{
+  "fields": [
+    "start (start) - start",
+    "end (end) - end",
+    "today (today) - today",
+    "deviceid (deviceid) - deviceid",
+    "measurement_date (date) - Date",
+    "dist (select_one) - District",
+    "ward (text) - Ward",
+    "Team (text) - Team ID",
+    "ceid (text) - Collect Earth Point ID",
+    "samloc (select_one) - Sample Location",
+    "poin (geopoint) - Record cordinates for soil sample",
+    "dep (integer) - Depth of core (cm)",
+    "moisture (select_one) - Type of soil sample analyzed",
+    "col (text) - Soil colour",
+    "tex (select_one) - Soil texture"
+  ],
+  "raw_survey": [
+    {
+      "name": "start",
+      "type": "start",
+      "$kuid": "6Kt1EZ4NM",
+      "$xpath": "start",
+      "$autoname": "start"
+    },
+    {
+      "name": "end",
+      "type": "end",
+      "$kuid": "keByao5Ut",
+      "$xpath": "end",
+      "$autoname": "end"
+    },
+    {
+      "name": "today",
+      "type": "today",
+      "$kuid": "LbQ15WCeT",
+      "$xpath": "today",
+      "$autoname": "today"
+    },
+    {
+      "name": "deviceid",
+      "type": "deviceid",
+      "$kuid": "U29gREHNg",
+      "$xpath": "deviceid",
+      "$autoname": "deviceid"
+    },
+    {
+      "name": "geninfo",
+      "type": "begin_group",
+      "$kuid": "F0k9AUXin",
+      "label": [
+        "General Info"
+      ],
+      "$xpath": "geninfo",
+      "required": false,
+      "$autoname": "geninfo",
+      "appearance": "field-list"
+    },
+    {
+      "name": "measurement_date",
+      "type": "date",
+      "$kuid": "WN5M4J8v1",
+      "label": [
+        "Date"
+      ],
+      "$xpath": "geninfo/measurement_date",
+      "required": true,
+      "$autoname": "measurement_date"
+    },
+    {
+      "name": "dist",
+      "type": "select_one",
+      "$kuid": "sthwaGL2n",
+      "label": [
+        "District"
+      ],
+      "$xpath": "geninfo/dist",
+      "required": true,
+      "$autoname": "dist",
+      "select_from_list_name": "district"
+    },
+    {
+      "name": "ward",
+      "type": "text",
+      "$kuid": "WoeAPhqvc",
+      "label": [
+        "Ward"
+      ],
+      "$xpath": "geninfo/ward",
+      "required": false,
+      "$autoname": "ward"
+    },
+    {
+      "name": "Team",
+      "type": "text",
+      "$kuid": "ExqEg3Rso",
+      "label": [
+        "Team ID"
+      ],
+      "$xpath": "geninfo/Team",
+      "required": false,
+      "$autoname": "Team"
+    },
+    {
+      "name": "ceid",
+      "type": "text",
+      "$kuid": "gSxWEtqmh",
+      "label": [
+        "Collect Earth Point ID"
+      ],
+      "$xpath": "geninfo/ceid",
+      "required": false,
+      "$autoname": "ceid"
+    },
+    {
+      "type": "end_group",
+      "$kuid": "yuuqp8PMT"
+    },
+    {
+      "name": "sampl",
+      "type": "begin_repeat",
+      "$kuid": "oTBN9qMt8",
+      "label": [
+        "Soil Sample"
+      ],
+      "$xpath": "sampl",
+      "$autoname": "sampl"
+    },
+    {
+      "name": "samloc",
+      "type": "select_one",
+      "$kuid": "R9DqTlkQo",
+      "label": [
+        "Sample Location"
+      ],
+      "$xpath": "sampl/samloc",
+      "required": true,
+      "$autoname": "samloc",
+      "select_from_list_name": "loc"
+    },
+    {
+      "name": "poin",
+      "type": "geopoint",
+      "$kuid": "osb68Gd14",
+      "label": [
+        "Record cordinates for soil sample"
+      ],
+      "$xpath": "sampl/poin",
+      "required": true,
+      "$autoname": "poin"
+    },
+    {
+      "name": "dep",
+      "type": "integer",
+      "$kuid": "ACBOGRTuC",
+      "label": [
+        "Depth of core (cm)"
+      ],
+      "$xpath": "sampl/dep",
+      "default": "30",
+      "$autoname": "dep"
+    },
+    {
+      "name": "moisture",
+      "type": "select_one",
+      "$kuid": "KBbPE7tGC",
+      "label": [
+        "Type of soil sample analyzed"
+      ],
+      "$xpath": "sampl/moisture",
+      "$autoname": "moisture",
+      "select_from_list_name": "moist"
+    },
+    {
+      "hint": [
+        "record RGB number using Munsel chart"
+      ],
+      "name": "col",
+      "type": "text",
+      "$kuid": "bqFYeA3Rm",
+      "label": [
+        "Soil colour"
+      ],
+      "$xpath": "sampl/col",
+      "$autoname": "col"
+    },
+    {
+      "name": "tex",
+      "type": "select_one",
+      "$kuid": "qyL4IVfbH",
+      "label": [
+        "Soil texture"
+      ],
+      "$xpath": "sampl/tex",
+      "$autoname": "tex",
+      "select_from_list_name": "soitex"
+    },
+    {
+      "type": "end_repeat",
+      "$kuid": "0ZpGXRA3A"
+    }
+  ]
+}

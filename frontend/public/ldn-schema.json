@@ -1,0 +1,299 @@
+{
+  "fields": [
+    "start (start) - start",
+    "end (end) - end",
+    "today (today) - today",
+    "deviceid (deviceid) - deviceid",
+    "measurement_date (date) - Date",
+    "dist (select_one) - District",
+    "ward (text) - Ward",
+    "Team (text) - Team ID",
+    "GPS (geopoint) - Take GPS cordinates",
+    "ceid (text) - Collect Earth Point ID",
+    "landcov (select_one) - Landcover class",
+    "landus (select_one) - Land use type",
+    "use_spec (text) - Specify other land use",
+    "lndmat (select_one) - Does current land cover match Collect Earth classification?",
+    "ex_mism (text) - Describe the difference",
+    "veg_cov (select_one) - Qualify vegetation cover",
+    "signs_ero (select_multiple) - Signs of Degradation",
+    "tree (select_multiple) - Causes of tree loss",
+    "sev (select_one) - Severity of degradation",
+    "oth (text) - Any other information",
+    "im (image) - Capture a respresentative photo"
+  ],
+  "raw_survey": [
+    {
+      "name": "start",
+      "type": "start",
+      "$kuid": "bEm214DrZ",
+      "$xpath": "start",
+      "$autoname": "start"
+    },
+    {
+      "name": "end",
+      "type": "end",
+      "$kuid": "BH4wbZiJw",
+      "$xpath": "end",
+      "$autoname": "end"
+    },
+    {
+      "name": "today",
+      "type": "today",
+      "$kuid": "mxDwGaOEx",
+      "$xpath": "today",
+      "$autoname": "today"
+    },
+    {
+      "name": "deviceid",
+      "type": "deviceid",
+      "$kuid": "m5iKF7lXu",
+      "$xpath": "deviceid",
+      "$autoname": "deviceid"
+    },
+    {
+      "name": "geninfo",
+      "type": "begin_group",
+      "$kuid": "A8CGpSzlq",
+      "label": [
+        "General Info"
+      ],
+      "$xpath": "geninfo",
+      "required": false,
+      "$autoname": "geninfo",
+      "appearance": "field-list"
+    },
+    {
+      "name": "measurement_date",
+      "type": "date",
+      "$kuid": "Ic6fFiDZH",
+      "label": [
+        "Date"
+      ],
+      "$xpath": "geninfo/measurement_date",
+      "required": true,
+      "$autoname": "measurement_date"
+    },
+    {
+      "name": "dist",
+      "type": "select_one",
+      "$kuid": "WVRvnAx3Q",
+      "label": [
+        "District"
+      ],
+      "$xpath": "geninfo/dist",
+      "required": true,
+      "$autoname": "dist",
+      "select_from_list_name": "district"
+    },
+    {
+      "name": "ward",
+      "type": "text",
+      "$kuid": "nTemtkwVi",
+      "label": [
+        "Ward"
+      ],
+      "$xpath": "geninfo/ward",
+      "required": false,
+      "$autoname": "ward"
+    },
+    {
+      "name": "Team",
+      "type": "text",
+      "$kuid": "K117ZZjOy",
+      "label": [
+        "Team ID"
+      ],
+      "$xpath": "geninfo/Team",
+      "required": true,
+      "$autoname": "Team"
+    },
+    {
+      "name": "GPS",
+      "type": "geopoint",
+      "$kuid": "JsljeNXkV",
+      "label": [
+        "Take GPS cordinates"
+      ],
+      "$xpath": "geninfo/GPS",
+      "required": true,
+      "$autoname": "GPS"
+    },
+    {
+      "name": "ceid",
+      "type": "text",
+      "$kuid": "CG1ZCAAqU",
+      "label": [
+        "Collect Earth Point ID"
+      ],
+      "$xpath": "geninfo/ceid",
+      "required": true,
+      "$autoname": "ceid"
+    },
+    {
+      "type": "end_group",
+      "$kuid": "Q2oXz1biE"
+    },
+    {
+      "name": "poidet",
+      "type": "begin_group",
+      "$kuid": "OyG9H8nUD",
+      "label": [
+        "Point details"
+      ],
+      "$xpath": "poidet",
+      "required": false,
+      "$autoname": "poidet"
+    },
+    {
+      "name": "landcov",
+      "type": "select_one",
+      "$kuid": "XY4OiIEiT",
+      "label": [
+        "Landcover class"
+      ],
+      "$xpath": "poidet/landcov",
+      "required": true,
+      "$autoname": "landcov",
+      "select_from_list_name": "landcover"
+    },
+    {
+      "name": "landus",
+      "type": "select_one",
+      "$kuid": "KznHE3I0U",
+      "label": [
+        "Land use type"
+      ],
+      "$xpath": "poidet/landus",
+      "required": true,
+      "$autoname": "landus",
+      "select_from_list_name": "landuse"
+    },
+    {
+      "name": "use_spec",
+      "type": "text",
+      "$kuid": "ppYbMtxw8",
+      "label": [
+        "Specify other land use"
+      ],
+      "$xpath": "poidet/use_spec",
+      "relevant": "${landus} = 'Other'",
+      "required": false,
+      "$autoname": "use_spec"
+    },
+    {
+      "name": "lndmat",
+      "type": "select_one",
+      "$kuid": "3M6abSmho",
+      "label": [
+        "Does current land cover match Collect Earth classification?"
+      ],
+      "$xpath": "poidet/lndmat",
+      "required": false,
+      "$autoname": "lndmat",
+      "select_from_list_name": "match"
+    },
+    {
+      "name": "ex_mism",
+      "type": "text",
+      "$kuid": "eVllSGnNL",
+      "label": [
+        "Describe the difference"
+      ],
+      "$xpath": "poidet/ex_mism",
+      "relevant": "${lndmat} = 'no' or ${lndmat} = 'part'",
+      "required": false,
+      "$autoname": "ex_mism"
+    },
+    {
+      "type": "end_group",
+      "$kuid": "zNQu5UR48"
+    },
+    {
+      "name": "ldi",
+      "type": "begin_group",
+      "$kuid": "umohrvFI2",
+      "label": [
+        "Land degradation indicators"
+      ],
+      "$xpath": "ldi",
+      "required": false,
+      "$autoname": "ldi"
+    },
+    {
+      "name": "veg_cov",
+      "type": "select_one",
+      "$kuid": "nollWEhkH",
+      "label": [
+        "Qualify vegetation cover"
+      ],
+      "$xpath": "ldi/veg_cov",
+      "required": false,
+      "$autoname": "veg_cov",
+      "select_from_list_name": "veg_cover"
+    },
+    {
+      "name": "signs_ero",
+      "type": "select_multiple",
+      "$kuid": "Hh1XKr0Bg",
+      "label": [
+        "Signs of Degradation"
+      ],
+      "$xpath": "ldi/signs_ero",
+      "required": false,
+      "$autoname": "signs_ero",
+      "select_from_list_name": "signs"
+    },
+    {
+      "name": "tree",
+      "type": "select_multiple",
+      "$kuid": "cDn3mWYQb",
+      "label": [
+        "Causes of tree loss"
+      ],
+      "$xpath": "ldi/tree",
+      "relevant": "selected(${signs_ero}, 'trecut')",
+      "required": false,
+      "$autoname": "tree",
+      "select_from_list_name": "tree_loss"
+    },
+    {
+      "name": "sev",
+      "type": "select_one",
+      "$kuid": "LqBvKEE1x",
+      "label": [
+        "Severity of degradation"
+      ],
+      "$xpath": "ldi/sev",
+      "required": false,
+      "$autoname": "sev",
+      "select_from_list_name": "severity"
+    },
+    {
+      "type": "end_group",
+      "$kuid": "nK8gQP9vX"
+    },
+    {
+      "name": "oth",
+      "type": "text",
+      "$kuid": "DpBUsHOcN",
+      "label": [
+        "Any other information"
+      ],
+      "$xpath": "oth",
+      "required": false,
+      "$autoname": "oth"
+    },
+    {
+      "name": "im",
+      "type": "image",
+      "$kuid": "XzLuVl3Pl",
+      "label": [
+        "Capture a respresentative photo"
+      ],
+      "$xpath": "im",
+      "required": false,
+      "$autoname": "im"
+    }
+  ]
+}
