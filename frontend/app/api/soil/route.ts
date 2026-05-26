@@ -3,8 +3,11 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 const KOBO_URL = "https://kc.kobotoolbox.org/api/v1/data";
-const AUTH = Buffer.from("vegris2020:musasa2020").toString("base64");
-const OFFLINE_MODE = true; // Toggle for offline local data fallback
+const KOBO_USER = process.env.KOBO_USERNAME || "vegris2020";
+const KOBO_PASS = process.env.KOBO_PASSWORD || "musasa2020";
+const AUTH = Buffer.from(`${KOBO_USER}:${KOBO_PASS}`).toString("base64");
+const OFFLINE_MODE = process.env.OFFLINE_MODE !== "false"; // Defaults to true (offline), set to 'false' in production env vars for live sync
+
 
 function normalise(record: any) {
   const out: any = {};
