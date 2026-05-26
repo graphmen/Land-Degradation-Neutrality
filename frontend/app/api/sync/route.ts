@@ -16,37 +16,22 @@ export async function POST(): Promise<NextResponse> {
     // The workspace root is the parent directory of frontend
     const rootDir = path.join(process.cwd(), "..");
     
-    console.log("Sync trigger received. Running download scripts in:", rootDir);
+    console.log("Sync trigger received. Running download script in:", rootDir);
     
-    exec("python download_data.py", { cwd: rootDir }, (err1, stdout1, stderr1) => {
-      // Note: download_data.py might exit with code 1 if print() encoding fails on Windows, 
-      // but it still successfully writes the kobo-data.json file before crashing.
-      // So we check if the file was written, or we can inspect stdout.
-      // Actually, we fixed the print statement in download_data.py to use ASCII, so it should exit 0 now!
-      if (err1) {
-        console.error("download_data.py failed:", err1, stderr1);
+    exec("python download_ldn.py", { cwd: rootDir }, (err, stdout, stderr) => {
+      if (err) {
+        console.error("download_ldn.py failed:", err, stderr);
         resolve(NextResponse.json({ 
-          error: `Failed to download main telemetry data: ${stderr1 || err1.message}` 
+          error: `Failed to download LDN/soil data: ${stderr || err.message}` 
         }, { status: 500 }));
         return;
       }
       
-      exec("python download_ldn.py", { cwd: rootDir }, (err2, stdout2, stderr2) => {
-        if (err2) {
-          console.error("download_ldn.py failed:", err2, stderr2);
-          resolve(NextResponse.json({ 
-            error: `Failed to download LDN/soil data: ${stderr2 || err2.message}` 
-          }, { status: 500 }));
-          return;
-        }
-        
-        console.log("Telemetry sync completed successfully.");
-        resolve(NextResponse.json({ 
-          success: true, 
-          message: "Data synced successfully from server!" 
-        }));
-      });
+      console.log("LDN & Soil telemetry sync completed successfully.");
+      resolve(NextResponse.json({ 
+        success: true, 
+        message: "Data synced successfully from server!" 
+      }));
     });
   });
 }
-
