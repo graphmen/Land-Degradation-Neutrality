@@ -101,11 +101,6 @@ export default function MapView({ geojson, activeId }: Props) {
         { position: "topright" }
       ).addTo(map);
 
-      // Colour palette
-      const habitatColors: Record<string, string> = {};
-      const palette = ["#10b981", "#3b82f6", "#fbbf24", "#f43f5e", "#a78bfa", "#14b8a6", "#ec4899", "#38bdf8"];
-      let colorIdx = 0;
-
       // Clear old marker references
       markersRef.current = {};
 
@@ -113,22 +108,43 @@ export default function MapView({ geojson, activeId }: Props) {
         const props = feature.properties || {};
         const [lng, lat] = feature.geometry.coordinates;
 
-        // Pick status value
-        let keyVal = "Unknown";
-        if (props.sev) {
-          keyVal = props.sev; // Severity
-        } else if (props._mapped_tex || props.tex) {
-          keyVal = props._mapped_tex || props.tex; // Soil texture
+        // UNCCD Hotspot vs. Bright spot classification
+        const isSoil = props._mapped_dep !== undefined || props.dep !== undefined;
+        let isHotspot = false;
+        let isBrightSpot = false;
+
+        if (isSoil) {
+          const texture = String(props._mapped_tex || props.tex || "").toLowerCase();
+          const moisture = String(props._mapped_moist || props.moisture || "").toLowerCase();
+          // Dry sandy soils are highly vulnerable to erosion/degradation
+          if (texture.includes("sand") && moisture.includes("dry")) {
+            isHotspot = true;
+          } else if (texture.includes("loam") || texture.includes("silt")) {
+            // Fertile soil textures with good retention
+            isBrightSpot = true;
+          }
+        } else {
+          const severity = String(props.sev || "").toLowerCase();
+          if (severity.includes("high") || severity.includes("severe") || severity.includes("critical")) {
+            isHotspot = true;
+          } else if (severity.includes("low") || severity.includes("minimal") || severity.includes("stable") || severity.includes("none")) {
+            isBrightSpot = true;
+          }
         }
 
-        if (!habitatColors[keyVal]) {
-          habitatColors[keyVal] = palette[colorIdx++ % palette.length];
+        let markerColor = "#3b82f6"; // Blue for baseline/neutral
+        let statusLabel = "Baseline Monitoring";
+        if (isHotspot) {
+          markerColor = "#f43f5e"; // Red
+          statusLabel = "Hotspot ⚠️";
+        } else if (isBrightSpot) {
+          markerColor = "#10b981"; // Emerald
+          statusLabel = "Bright Spot 🌟";
         }
-        const color = habitatColors[keyVal];
 
         const marker = Leaflet.circleMarker([lat, lng], {
           radius: 9,
-          fillColor: color,
+          fillColor: markerColor,
           color: "#fff",
           weight: 2,
           opacity: 0.9,
@@ -136,8 +152,9 @@ export default function MapView({ geojson, activeId }: Props) {
         });
 
         // Build Popup HTML
-        const isSoil = props._mapped_dep !== undefined || props.dep !== undefined;
         const title = isSoil ? "🧪 Soil Sample" : "🌳 LDN Assessment";
+        const badgeClass = isHotspot ? "hotspot" : isBrightSpot ? "brightspot" : "";
+        const badgeHtml = badgeClass ? `<div class="popup-badge ${badgeClass}">${statusLabel}</div>` : "";
 
         let rowsHtml = "";
         if (isSoil) {
@@ -161,7 +178,7 @@ export default function MapView({ geojson, activeId }: Props) {
           rowsHtml += `<div class="popup-row"><span class="popup-key">⚠️ Severity</span><span class="popup-val" style="color:#fb7185">${props.sev || "—"}</span></div>`;
         }
 
-        marker.bindPopup(`<div class="popup-title">${title}</div>${rowsHtml}`, { maxWidth: 280 });
+        marker.bindPopup(`<div class="popup-title">${title}</div>${badgeHtml}${rowsHtml}`, { maxWidth: 280 });
         marker.addTo(map);
 
         if (props._id) {
@@ -169,8 +186,13 @@ export default function MapView({ geojson, activeId }: Props) {
         }
       });
 
-      // Update state for legend
-      setLegendItems(Object.entries(habitatColors).map(([name, color]) => ({ name, color })));
+      // Update state for legend (UNCCD aligned labels)
+      setLegendItems([
+        { name: "Degraded Hotspot ⚠️", color: "#f43f5e" },
+        { name: "Restored Bright Spot 🌟", color: "#10b981" },
+        { name: "Baseline Monitoring 🔵", color: "#3b82f6" }
+      ]);
+
     });
 
     return () => {

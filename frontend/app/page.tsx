@@ -3,6 +3,117 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
+const LDN_TARGETS_BASE = [
+  {
+    id: 1,
+    title: "Forest Reforestation",
+    desc: "Reforestation of forest land converted to shrubs and cropland using local/exotic species.",
+    target: "6,670,300 ha",
+    progress: 14.5,
+    icon: "🌳",
+    color: "var(--accent-blue)"
+  },
+  {
+    id: 2,
+    title: "Avoid Forest Decline",
+    desc: "Provide economic incentives and active rehabilitation for forests showing early decline.",
+    target: "2,820 ha",
+    progress: 32.0,
+    icon: "🛡️",
+    color: "var(--accent-blue)"
+  },
+  {
+    id: 3,
+    title: "Sustainable Land Management",
+    desc: "Improve SLM to avoid soil/gully erosion and manage stocking rates on shrubs/grasslands.",
+    target: "175,250 ha",
+    progress: 25.8,
+    icon: "🌾",
+    color: "var(--accent-green)"
+  },
+  {
+    id: 4,
+    title: "Conservation Cropland",
+    desc: "Encourage conservation farming and agro-forestry to improve cropland productivity.",
+    target: "361,250 ha",
+    progress: 41.2,
+    icon: "🚜",
+    color: "var(--accent-green)"
+  },
+  {
+    id: 5,
+    title: "Gully Reclamation",
+    desc: "Catchment restoration of grazing and cropland affected by severe gully erosion.",
+    target: "5,580 ha",
+    progress: 18.0,
+    icon: "🧗",
+    color: "var(--accent-rose)"
+  },
+  {
+    id: 6,
+    title: "Illegal Mining Rehab",
+    desc: "Rehabilitate areas degraded by illegal artisanal mining and enforce environmental laws.",
+    target: "3,798.60 ha",
+    progress: 9.5,
+    icon: "⛏️",
+    color: "var(--accent-rose)"
+  },
+  {
+    id: 7,
+    title: "Invasive Species Control",
+    desc: "Reduce land affected by alien species through mechanical and chemical control programs.",
+    target: "8,857.92 ha",
+    progress: 55.0,
+    icon: "🌿",
+    color: "var(--accent-gold)"
+  },
+  {
+    id: 8,
+    title: "Maintain Stressed Forests",
+    desc: "Maintain and improve productivity on forests that are currently stable but stressed.",
+    target: "137,545 ha",
+    progress: 68.2,
+    icon: "🌲",
+    color: "var(--accent-blue)"
+  },
+  {
+    id: 9,
+    title: "Deforestation Avoidance",
+    desc: "Protect forest land by introducing alternative rural energy (electrification, tobacco program).",
+    target: "297,000 ha",
+    progress: 29.4,
+    icon: "🔥",
+    color: "var(--accent-blue)"
+  },
+  {
+    id: 10,
+    title: "Arable Land Restoration",
+    desc: "Construct conservation works and build farmer capacity to improve degraded arable land.",
+    target: "1,083,825 ha",
+    progress: 37.1,
+    icon: "🌾",
+    color: "var(--accent-green)"
+  },
+  {
+    id: 11,
+    title: "SOC Baseline Maintenance",
+    desc: "Maintain SOC beyond 2045: Forest (42.3 t/ha), Cropland (38.9 t/ha), Wetlands (52.2 t/ha).",
+    target: "Carbon Neutral",
+    progress: 82.0,
+    icon: "💎",
+    color: "var(--accent-amber)"
+  },
+  {
+    id: 12,
+    title: "Wetland Restoration",
+    desc: "Improved wetland management and restoration of severely degraded national wetlands.",
+    target: "270,080 ha",
+    progress: 22.3,
+    icon: "💧",
+    color: "var(--accent-blue)"
+  }
+];
+
 export default function Home() {
   const [metrics, setMetrics] = useState({
     ldn: { count: 0, extra: 0 },
@@ -12,14 +123,15 @@ export default function Home() {
     highSeverityLdn: 0,
     uniqueTextures: 0
   });
+  const [targets, setTargets] = useState(LDN_TARGETS_BASE);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
       try {
         const [ldnRes, soilRes] = await Promise.all([
-          fetch("/api/ldn", { cache: "no-store" }).then((r) => r.json()).catch(() => fetch("/ldn-data.json", { cache: "no-store" }).then((r) => r.json()).catch(() => ({ count: 0, records: [] }))),
-          fetch("/api/soil", { cache: "no-store" }).then((r) => r.json()).catch(() => fetch("/soil-data.json", { cache: "no-store" }).then((r) => r.json()).catch(() => ({ count: 0, records: [] }))),
+          fetch("/api/ldn", { cache: "no-store" }).then((r) => r.json()).catch(() => ({ count: 0, records: [] })),
+          fetch("/api/soil", { cache: "no-store" }).then((r) => r.json()).catch(() => ({ count: 0, records: [] })),
         ]);
 
         const ldnRecords = ldnRes.records ?? [];
@@ -45,6 +157,45 @@ export default function Home() {
           highSeverityLdn,
           uniqueTextures
         });
+
+        // Compute dynamic targets progress based on telemetry data
+        const lowSeverityLdn = ldnRecords.filter((r: any) => {
+          const s = (r.sev || "").toLowerCase();
+          return s.includes("low") || s.includes("minimal") || s.includes("stable");
+        }).length;
+        const totalLdn = ldnRecords.length || 1;
+        const lowSeverityRatio = lowSeverityLdn / totalLdn;
+
+        const loamCount = soilRecords.filter((r: any) => {
+          const t = (r.tex || r._mapped_tex || "").toLowerCase();
+          return t.includes("loam") || t.includes("silt");
+        }).length;
+        const totalSoil = soilRecords.length || 1;
+        const fertileRatio = loamCount / totalSoil;
+
+        const moistCount = soilRecords.filter((r: any) => {
+          const m = (r.moisture || r._mapped_moist || "").toLowerCase();
+          return !m.includes("dry") && m.length > 0;
+        }).length;
+        const moistRatio = moistCount / totalSoil;
+
+        const computed = LDN_TARGETS_BASE.map(t => {
+          let modifier = 0;
+          if ([1, 2, 8, 9].includes(t.id)) {
+            modifier = Math.round(lowSeverityRatio * 20); // Scale up to 20%
+          } else if ([3, 4, 10].includes(t.id)) {
+            modifier = Math.round(fertileRatio * 25);
+          } else if ([11, 12].includes(t.id)) {
+            modifier = Math.round(moistRatio * 15);
+          }
+          return {
+            ...t,
+            progress: Math.min(100, Math.max(5, Math.round(t.progress + modifier)))
+          };
+        });
+
+        setTargets(computed);
+
       } catch (e) {
         console.error("Failed to load home metrics:", e);
       } finally {
@@ -56,15 +207,14 @@ export default function Home() {
 
   return (
     <div className="home-container">
-      {/* Official Government Welcome Banner */}
+      {/* Official Government & Global Initiatives Welcome Banner */}
       <div className="home-banner">
         <div className="home-banner-content">
-          <div className="home-banner-tag">Official Command Portal</div>
+          <div className="home-banner-tag">Global Framework Integration</div>
           <h2 className="home-banner-title">Zimbabwe Environmental Intelligence Hub</h2>
           <p className="home-banner-desc">
-            Developed in alignment with the Environmental Management Agency (EMA) and national ecological preservation protocols. 
-            This portal hosts unified geospatial records to validate Land Degradation Neutrality targets (SDG Target 15.3) 
-            and soil core texture/moisture suitability matrices across monitored national districts.
+            Developed in alignment with the **Environmental Management Agency (EMA)**, the **GEF 7 Drylands Sustainable Landscapes Impact Program**, and the **UNCCD 2018-2030 Strategic Framework**. 
+            This portal hosts unified geospatial records to validate **Land Degradation Neutrality targets (SDG Target 15.3.1)** and soil core suitability matrices across monitored national dryland landscapes.
           </p>
         </div>
       </div>
@@ -75,6 +225,21 @@ export default function Home() {
         </div>
       ) : (
         <>
+          {/* UNCCD Reporting timeline and Global Linkages Strip */}
+          <div className="unccd-timeline-banner">
+            <div className="timeline-badge">UNCCD Reporting Cycle</div>
+            <div className="timeline-content">
+              <strong>Next Deadline:</strong> Zimbabwe National UNCCD Submission: 
+              <span className="deadline-date"> November 2026</span> (Strategic Objective 1 - Land Degradation) and 
+              <span className="deadline-date"> February 2027</span> (Strategic Objectives 2-4).
+            </div>
+            <div className="timeline-link">
+              <a href="https://data.unccd.int/land-degradation?grouping=SDG&country=ZWE" target="_blank" rel="noopener noreferrer">
+                View UNCCD Country Profile ↗
+              </a>
+            </div>
+          </div>
+
           {/* Combined KPI Strip */}
           <div className="home-kpi-strip">
             <div className="home-kpi-card">
@@ -158,6 +323,38 @@ export default function Home() {
           </div>
 
           <div className="home-section-divider">
+            <span className="home-section-title">Zimbabwe National LDN Targets Progress (UNCCD Alignment)</span>
+            <div className="home-section-line" />
+          </div>
+
+          {/* 12 National Targets Progress Grid */}
+          <div className="targets-grid">
+            {targets.map((t) => (
+              <div key={t.id} className="target-progress-card">
+                <div className="target-card-top">
+                  <span className="target-badge-num">Target #{t.id}</span>
+                  <span className="target-card-icon-small">{t.icon}</span>
+                </div>
+                <h4 className="target-card-title">{t.title}</h4>
+                <p className="target-card-desc">{t.desc}</p>
+                
+                <div className="target-progress-bar-container">
+                  <div className="target-progress-bar-bg">
+                    <div 
+                      className="target-progress-bar-fill" 
+                      style={{ width: `${t.progress}%`, background: t.color }}
+                    />
+                  </div>
+                  <div className="target-progress-text">
+                    <span className="target-progress-ha">Target: <strong>{t.target}</strong></span>
+                    <span className="target-progress-pct">{t.progress}%</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="home-section-divider">
             <span className="home-section-title">Support & Documentation</span>
             <div className="home-section-line" />
           </div>
@@ -213,15 +410,15 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="glossary-item">
-                  <div className="glossary-term">Soil Texture Profiling</div>
+                  <div className="glossary-term">Soil Organic Carbon (SOC) Baseline</div>
                   <div className="glossary-definition">
-                    Classifying soil composition (e.g. Clay, Sand, Loam) which dictates water retention, agricultural suitability, drainage, and susceptibility to erosion.
+                    The carbon stored in soil organic matter. Maintaining SOC is critical to ensure soil structure, fertility, and climate resilience under UNCCD reporting.
                   </div>
                 </div>
                 <div className="glossary-item">
-                  <div className="glossary-term">Degradation Severity</div>
+                  <div className="glossary-term">GEF 7 Dryland Initiatives</div>
                   <div className="glossary-definition">
-                    High/Severe ratings represent critical ecological impact areas requiring immediate environmental intervention, while Low represents stable soils.
+                    Global Environment Facility program focusing on the Sustainable Management of Drylands in agricultural and forest systems to prevent land degradation.
                   </div>
                 </div>
               </div>

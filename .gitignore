@@ -47,3 +47,5 @@ frontend-out.log
 
 # Large Datasets and scientific PDFs
 *.pdf
+*.pptx
+

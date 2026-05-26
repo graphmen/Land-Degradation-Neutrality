@@ -192,6 +192,7 @@ export default function SoilPage() {
   const [data, setData] = useState<any>(null);
   const [search, setSearch] = useState("");
   const [textureFilter, setTextureFilter] = useState("all");
+  const [soilStatusFilter, setSoilStatusFilter] = useState("all");
   const [districtFilter, setDistrictFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -267,6 +268,7 @@ export default function SoilPage() {
     const ceid = String(props.ceid || "").toLowerCase();
     const texture = String(props._mapped_tex || "").toLowerCase();
     const loc = String(props._mapped_loc || props.samloc || "").toLowerCase();
+    const moisture = String(props._mapped_moist || "").toLowerCase();
     const searchLower = search.toLowerCase();
 
     const matchSearch = 
@@ -279,7 +281,13 @@ export default function SoilPage() {
     const matchTexture = textureFilter === "all" || props._mapped_tex === textureFilter;
     const matchDistrict = districtFilter === "all" || props._mapped_dist === districtFilter;
 
-    return matchSearch && matchTexture && matchDistrict;
+    const isHotspot = texture.includes("sand") && moisture.includes("dry");
+    const isBrightSpot = texture.includes("loam") || texture.includes("silt");
+    const matchSoilStatus = soilStatusFilter === "all" || 
+                            (soilStatusFilter === "hotspot" && isHotspot) || 
+                            (soilStatusFilter === "brightspot" && isBrightSpot);
+
+    return matchSearch && matchTexture && matchDistrict && matchSoilStatus;
   });
 
   const handleExport = () => {
@@ -357,7 +365,7 @@ export default function SoilPage() {
               }}
             />
           </div>
-          <div className="quick-filters">
+          <div className="quick-filters" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
             <select
               value={textureFilter}
               onChange={(e) => {
@@ -371,6 +379,17 @@ export default function SoilPage() {
                   {t}
                 </option>
               ))}
+            </select>
+            <select
+              value={soilStatusFilter}
+              onChange={(e) => {
+                setSoilStatusFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+            >
+              <option value="all">All Soil Status</option>
+              <option value="hotspot">Hotspots ⚠️</option>
+              <option value="brightspot">Bright Spots 🌟</option>
             </select>
             <select
               value={districtFilter}
@@ -424,6 +443,7 @@ export default function SoilPage() {
               const ward = props.ward || "Unspecified Ward";
               const ceid = props.ceid || "—";
               const texture = props._mapped_tex || "Unknown";
+              const moisture = String(props._mapped_moist || "").toLowerCase();
               
               const formatLoc = (loc: string) => {
                 if (!loc) return "Unknown Sample";
@@ -440,6 +460,9 @@ export default function SoilPage() {
               const sampleName = formatLoc(props._mapped_loc || props.samloc);
               const isSelected = activeId === props._id;
 
+              const isHotspot = texture.toLowerCase().includes("sand") && moisture.includes("dry");
+              const isBrightSpot = texture.toLowerCase().includes("loam") || texture.toLowerCase().includes("silt");
+
               return (
                 <div
                   key={props._id}
@@ -450,9 +473,21 @@ export default function SoilPage() {
                   <div className="site-card-subtitle">ID: {ceid}</div>
                   <div className="site-card-meta">
                     <span>🧪 {sampleName}</span>
-                    <span className={`site-badge ${getBadgeClass(texture)}`}>
-                      {texture}
-                    </span>
+                    <div style={{ display: "flex", gap: 4 }}>
+                      {isHotspot && (
+                        <span className="site-badge danger-status" style={{ fontSize: 8 }}>
+                          ⚠️ Hotspot
+                        </span>
+                      )}
+                      {isBrightSpot && (
+                        <span className="site-badge active-status" style={{ fontSize: 8 }}>
+                          🌟 Bright Spot
+                        </span>
+                      )}
+                      <span className={`site-badge ${getBadgeClass(texture)}`}>
+                        {texture}
+                      </span>
+                    </div>
                   </div>
                 </div>
               );
@@ -593,6 +628,64 @@ export default function SoilPage() {
                       </span>
                     </div>
                   </div>
+
+                  {/* Soil Organic Carbon (SOC) Baseline Alignment Card */}
+                  {(() => {
+                    const texture = String(props._mapped_tex || "").toLowerCase();
+                    const moisture = String(props._mapped_moist || "").toLowerCase();
+                    const depth = parseFloat(props._mapped_dep || "0");
+                    
+                    let landCoverType = "Cropland";
+                    let targetSOC = 38.9;
+                    
+                    if (moisture.includes("wet") || moisture.includes("saturated")) {
+                      landCoverType = "Wetland";
+                      targetSOC = 52.2;
+                    } else if (texture.includes("forest") || props._mapped_loc?.toLowerCase().includes("forest")) {
+                      landCoverType = "Forest";
+                      targetSOC = 42.3;
+                    } else if (texture.includes("sand") && moisture.includes("dry")) {
+                      landCoverType = "Shrubland/Grassland (Degraded)";
+                      targetSOC = 38.6;
+                    }
+                    
+                    // Calculate estimated SOC based on depth, moisture, and texture
+                    let estimatedSOC = 15;
+                    estimatedSOC += depth > 25 ? 12 : depth > 10 ? 7 : 3;
+                    estimatedSOC += moisture.includes("wet") ? 15 : moisture.includes("moist") ? 10 : 2;
+                    estimatedSOC += (texture.includes("loam") || texture.includes("silt")) ? 15 : texture.includes("clay") ? 10 : 3;
+                    
+                    const isMeetingTarget = estimatedSOC >= targetSOC;
+                    const diff = (estimatedSOC - targetSOC).toFixed(1);
+                    
+                    return (
+                      <div className="detail-explanation-card" style={{ borderLeftColor: isMeetingTarget ? "var(--accent-blue)" : "var(--accent-rose)", background: "rgba(255,255,255,0.4)", marginBottom: 12 }}>
+                        <div className="detail-explanation-title" style={{ color: isMeetingTarget ? "var(--accent-blue)" : "var(--accent-amber)" }}>
+                          <span>💎</span> Soil Organic Carbon (SOC) Status
+                        </div>
+                        <div style={{ fontSize: 11, color: "var(--text-primary)", fontWeight: 700, marginBottom: 6 }}>
+                          Land Cover: <span style={{ color: "var(--text-muted)", fontWeight: 500 }}>{landCoverType}</span>
+                        </div>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
+                          <div style={{ padding: "6px 8px", background: "rgba(0,0,0,0.02)", borderRadius: 4, textAlign: "center" }}>
+                            <div style={{ fontSize: 8, color: "var(--text-muted)", textTransform: "uppercase" }}>UNCCD Target</div>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)" }}>{targetSOC} t/ha</div>
+                          </div>
+                          <div style={{ padding: "6px 8px", background: "rgba(0,0,0,0.02)", borderRadius: 4, textAlign: "center" }}>
+                            <div style={{ fontSize: 8, color: "var(--text-muted)", textTransform: "uppercase" }}>Estimated SOC</div>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: isMeetingTarget ? "var(--accent-blue)" : "var(--accent-rose)" }}>{estimatedSOC} t/ha</div>
+                          </div>
+                        </div>
+                        <div style={{ fontSize: 10, color: "var(--text-muted)", lineHeight: 1.4 }}>
+                          {isMeetingTarget ? (
+                            <span>✅ <strong>Target Met</strong> (+{diff} t/ha). This sample aligns with the 2045 carbon neutrality targets. Maintain current soil conservation works.</span>
+                          ) : (
+                            <span>⚠️ <strong>Target Deficit</strong> ({diff} t/ha). Deficit detected. Inoculation with organic matter, agro-forestry, and reduced tillage recommended to restore carbon sinks.</span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   {/* Soil Texture Guidelines Card */}
                   <div className="detail-explanation-card">

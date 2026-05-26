@@ -92,6 +92,7 @@ export default function LdnPage() {
   const [data, setData] = useState<any>(null);
   const [search, setSearch] = useState("");
   const [severityFilter, setSeverityFilter] = useState("all");
+  const [unccdFilter, setUnccdFilter] = useState("all");
   const [landuseFilter, setLanduseFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -130,6 +131,17 @@ export default function LdnPage() {
 
   const { kpis, geojson, charts, landUses } = data;
 
+  const getUnccdStatus = (props: any) => {
+    const severity = String(props.sev || "").toLowerCase();
+    if (severity.includes("high") || severity.includes("severe") || severity.includes("critical")) {
+      return { label: "Hotspot", icon: "⚠️", className: "danger-status" };
+    }
+    if (severity.includes("low") || severity.includes("minimal") || severity.includes("stable") || severity.includes("none")) {
+      return { label: "Bright Spot", icon: "🌟", className: "active-status" };
+    }
+    return null;
+  };
+
   const filteredFeatures = geojson.features.filter((f: any) => {
     const props = f.properties;
     const district = String(props.dist || "").toLowerCase();
@@ -148,7 +160,13 @@ export default function LdnPage() {
     const matchSeverity = severityFilter === "all" || severity.includes(severityFilter);
     const matchLanduse = landuseFilter === "all" || props.landus === landuseFilter;
 
-    return matchSearch && matchSeverity && matchLanduse;
+    const isHotspot = severity.includes("high") || severity.includes("severe") || severity.includes("critical");
+    const isBrightSpot = severity.includes("low") || severity.includes("minimal") || severity.includes("stable") || severity.includes("none");
+    const matchUnccd = unccdFilter === "all" || 
+                       (unccdFilter === "hotspot" && isHotspot) || 
+                       (unccdFilter === "brightspot" && isBrightSpot);
+
+    return matchSearch && matchSeverity && matchLanduse && matchUnccd;
   });
 
   const handleExport = () => {
@@ -227,7 +245,7 @@ export default function LdnPage() {
               }}
             />
           </div>
-          <div className="quick-filters">
+          <div className="quick-filters" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
             <select
               value={severityFilter}
               onChange={(e) => {
@@ -239,6 +257,17 @@ export default function LdnPage() {
               <option value="high">High Severity</option>
               <option value="mod">Moderate</option>
               <option value="low">Low Severity</option>
+            </select>
+            <select
+              value={unccdFilter}
+              onChange={(e) => {
+                setUnccdFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+            >
+              <option value="all">All UNCCD Status</option>
+              <option value="hotspot">Hotspots ⚠️</option>
+              <option value="brightspot">Bright Spots 🌟</option>
             </select>
             <select
               value={landuseFilter}
@@ -270,6 +299,7 @@ export default function LdnPage() {
               const severity = props.sev || "Not Rated";
               const ceid = props.ceid || "—";
               const isSelected = activeId === props._id;
+              const status = getUnccdStatus(props);
 
               return (
                 <div
@@ -281,9 +311,16 @@ export default function LdnPage() {
                   <div className="site-card-subtitle">ID: {ceid}</div>
                   <div className="site-card-meta">
                     <span>🌿 {props.landus || "Unknown"}</span>
-                    <span className={`site-badge ${getBadgeClass(severity)}`}>
-                      {severity}
-                    </span>
+                    <div style={{ display: "flex", gap: 4 }}>
+                      {status && (
+                        <span className={`site-badge ${status.className}`} style={{ fontSize: 8 }}>
+                          {status.icon} {status.label}
+                        </span>
+                      )}
+                      <span className={`site-badge ${getBadgeClass(severity)}`}>
+                        {severity}
+                      </span>
+                    </div>
                   </div>
                 </div>
               );
@@ -447,16 +484,27 @@ export default function LdnPage() {
                     </div>
                   </div>
 
-                  {/* LDN Context Guide Card */}
-                  <div className="detail-explanation-card" style={{ borderLeftColor: "var(--accent-blue)" }}>
-                    <div className="detail-explanation-title" style={{ color: "var(--accent-blue)" }}>
-                      <span>🌍</span> SDG Indicator 15.3.1 Context
-                    </div>
-                    <div style={{ color: "var(--text-muted)", fontSize: 10, lineHeight: 1.4 }}>
-                      Severity measures the rate of soil degradation and vegetation health.
-                      <strong> Severe</strong> locations require immediate afforestation, soil conservation, and gully reclamation efforts.
-                    </div>
-                  </div>
+                  {/* UNCCD Strategic Objectives Alignment Card */}
+                  {(() => {
+                    const isHotspot = String(severity).toLowerCase().includes("high") || String(severity).toLowerCase().includes("severe");
+                    return (
+                      <div className="detail-explanation-card" style={{ borderLeftColor: isHotspot ? "var(--accent-rose)" : "var(--accent-green)", background: "rgba(255,255,255,0.4)" }}>
+                        <div className="detail-explanation-title" style={{ color: isHotspot ? "var(--accent-rose)" : "var(--accent-green)" }}>
+                          <span>🌍</span> UNCCD Strategic Objective Alignment
+                        </div>
+                        <div style={{ color: "var(--text-primary)", fontSize: 10, fontWeight: 600, marginBottom: 4 }}>
+                          {isHotspot ? "⚠️ SO-1: Combat Land Degradation (Critical Target)" : "🌟 SO-1: Avoid & Reduce Land Degradation"}
+                        </div>
+                        <div style={{ color: "var(--text-muted)", fontSize: 10, lineHeight: 1.4 }}>
+                          {isHotspot ? (
+                            <span>This node is flagged as a <strong>degraded hotspot</strong> under SDG 15.3.1. Immediate intervention is required to avoid further decline and restore land cover via mechanical reclamation, reforestation, or soil conservation.</span>
+                          ) : (
+                            <span>This node is classified as a <strong>bright spot</strong> or stable zone. Target for baseline protection. Ensure conservation farming practices are maintained to support ongoing recovery.</span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               );
             })()

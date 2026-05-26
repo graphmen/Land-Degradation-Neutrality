@@ -1569,5 +1569,197 @@ html, body {
   padding: 0;
 }
 
+/* UNCCD Timeline Banner styling */
+.unccd-timeline-banner {
+  background: linear-gradient(135deg, #0f341d 0%, #03180b 100%);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: #e2f8eb;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+}
+
+.timeline-badge {
+  background: var(--accent-gold);
+  color: #0b2214;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.timeline-content {
+  font-size: 13px;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.timeline-content strong {
+  color: #ffffff;
+}
+
+.deadline-date {
+  color: var(--accent-gold);
+  font-weight: 700;
+}
+
+.timeline-link a {
+  color: #a2c49e;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.timeline-link a:hover {
+  color: #ffffff;
+}
+
+/* Targets Progress Grid & Cards */
+.targets-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 0 24px 24px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+  .targets-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .targets-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.target-progress-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.target-progress-card:hover {
+  border-color: var(--border-color-active);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(6, 75, 34, 0.05);
+}
+
+.target-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.target-badge-num {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+.target-card-icon-small {
+  font-size: 18px;
+}
+
+.target-card-title {
+  font-family: var(--font-title);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.target-card-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  flex: 1;
+}
+
+.target-progress-bar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.target-progress-bar-bg {
+  height: 6px;
+  background: rgba(6, 75, 34, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.target-progress-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.target-progress-text {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.target-progress-ha {
+  font-size: 9px;
+}
+
+.target-progress-pct {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Custom badges for map popups */
+.popup-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.popup-badge.hotspot {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fee2e2;
+}
+
+.popup-badge.brightspot {
+  background: #eafbf1;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+
 
 
