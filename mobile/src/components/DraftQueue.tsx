@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { RefreshCw, Trash, Edit2, CheckCircle, Wifi, Server } from "lucide-react";
+import { RefreshCw, Trash, Edit2, CheckCircle, Wifi } from "lucide-react";
 import { 
   getLdnDrafts, 
   getSoilDrafts, 
@@ -167,35 +167,17 @@ export default function DraftQueue({ onSuccess, onError, onEditDraft }: DraftQue
     loadDrafts();
   };
 
-  // Get script identifier for user peace of mind
-  const getScriptDisplay = () => {
-    if (serverUrl.includes("script.google.com")) {
-      const parts = serverUrl.split("/s/");
-      if (parts.length > 1) {
-        return `Google Sheets (${parts[1].substring(0, 12)}.../exec)`;
-      }
-      return "Google Sheets Web App";
-    }
-    return serverUrl;
-  };
-
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
       
       {/* Sync Control Card */}
       <div className="mobile-card">
         <h3>🗃️ Submissions Queue</h3>
-        <p className="card-desc">Manage local survey records captured offline. Synchronize with the central Google Sheets database once connected.</p>
+        <p className="card-desc">Manage local survey records captured offline. Synchronize once connected to the central telemetry hub.</p>
         
         {/* Network indicator */}
         <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", color: "var(--text-accent)", marginBottom: "16px", background: "rgba(163, 230, 53, 0.05)", padding: "8px 12px", borderRadius: "var(--radius-sm)", border: "1px solid rgba(163, 230, 53, 0.2)" }}>
-          <Wifi size={14} /> <span>Status: Device Online • Telemetry Server Connected</span>
-        </div>
-
-        {/* Display Current Target Info */}
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", color: "var(--text-muted)", marginBottom: "16px" }}>
-          <Server size={12} />
-          <span>Active Target: <strong>{getScriptDisplay()}</strong></span>
+          <Wifi size={14} /> <span>Status: Device Online • Telemetry Hub Reachable</span>
         </div>
 
         <button 
