@@ -1760,6 +1760,25 @@ html, body {
   border: 1px solid #bbf7d0;
 }
 
+/* Database Explorer table styles */
+.hover-row:hover {
+  background-color: var(--bg-card-hover) !important;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+
 
 
 

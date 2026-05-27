@@ -36,6 +36,10 @@ export default function Sidebar({ isCollapsed }: SidebarProps) {
             <span className="nav-icon">🧪</span>
             {!isCollapsed && <span className="nav-label">Soil Samples</span>}
           </Link>
+          <Link href="/database" className={`nav-item ${isActive("/database") ? "active" : ""}`} title="Database Explorer">
+            <span className="nav-icon">🗄️</span>
+            {!isCollapsed && <span className="nav-label">Database Explorer</span>}
+          </Link>
         </div>
       </div>
       <div id="sidebar-export-container" className="sidebar-export-container" />
