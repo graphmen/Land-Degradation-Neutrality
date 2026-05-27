@@ -213,8 +213,8 @@ export default function Home() {
           <div className="home-banner-tag">Global Framework Integration</div>
           <h2 className="home-banner-title">Zimbabwe Environmental Intelligence Hub</h2>
           <p className="home-banner-desc">
-            Developed in alignment with the **Environmental Management Agency (EMA)**, the **GEF 7 Drylands Sustainable Landscapes Impact Program**, and the **UNCCD 2018-2030 Strategic Framework**. 
-            This portal hosts unified geospatial records to validate **Land Degradation Neutrality targets (SDG Target 15.3.1)** and soil core suitability matrices across monitored national dryland landscapes.
+            Developed in alignment with the <strong>Environmental Management Agency (EMA)</strong>, the <strong>GEF 7 Drylands Sustainable Landscapes Impact Program</strong>, and the <strong>UNCCD 2018-2030 Strategic Framework</strong>. 
+            This portal hosts unified geospatial records to validate <strong>Land Degradation Neutrality targets (SDG Target 15.3.1)</strong> and soil core suitability matrices across monitored national dryland landscapes.
           </p>
         </div>
       </div>
