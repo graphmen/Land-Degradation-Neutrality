@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">EMA Zimbabwe LDN</string>
+    <string name="title_activity_main">EMA Zimbabwe LDN</string>
+    <string name="package_name">gov.zw.ema.ldn</string>
+    <string name="custom_url_scheme">gov.zw.ema.ldn</string>
+</resources>

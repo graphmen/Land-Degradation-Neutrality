@@ -58,13 +58,53 @@ async def fetch_records(asset_id: str) -> Dict:
     url = f"{KOBO_API_URL}/assets/{asset_id}/data/?format=json&limit=5000"
 
     async with httpx.AsyncClient(timeout=60) as client:
-        while url:
-            resp = await client.get(url, auth=(USERNAME, PASSWORD))
-            resp.raise_for_status()
-            payload = resp.json()
-            batch = payload.get("results", [])
-            records.extend([normalize_fields(r) for r in batch])
-            url = payload.get("next")
+        # 1. Fetch from KoboToolbox
+        try:
+            while url:
+                resp = await client.get(url, auth=(USERNAME, PASSWORD))
+                resp.raise_for_status()
+                payload = resp.json()
+                batch = payload.get("results", [])
+                records.extend([normalize_fields(r) for r in batch])
+                url = payload.get("next")
+        except Exception as e:
+            print(f"Error fetching Kobo records: {e}")
+
+        # 2. Fetch and merge from Google Sheet if URL is configured
+        gs_url = os.getenv("GOOGLE_SHEET_SCRIPT_URL")
+        if gs_url:
+            try:
+                print(f"Fetching Google Sheets data in backend from: {gs_url}")
+                resp = await client.get(gs_url, follow_redirects=True, timeout=30)
+                if resp.status_code == 200:
+                    sheet_data = resp.json()
+                    sheet_records = []
+                    
+                    # Distinguish by Kobo Asset ID
+                    ldn_asset = os.getenv("KOBO_LDN_ASSET_ID", "apM5C5mTP34m2m3DSwdd4E")
+                    soil_asset = os.getenv("KOBO_SOIL_ASSET_ID", "ahkCvpctsofMKN4GzCH3BT")
+                    
+                    if asset_id == ldn_asset:
+                        sheet_records = sheet_data.get("ldn", [])
+                    elif asset_id == soil_asset:
+                        sheet_records = sheet_data.get("soil", [])
+                    
+                    # Merge uniquely
+                    seen_ids = set()
+                    for r in records:
+                        rid = r.get("_id") or r.get("id")
+                        if rid:
+                            seen_ids.add(str(rid))
+                            
+                    for sr in sheet_records:
+                        srid = sr.get("id") or sr.get("_id")
+                        if not srid:
+                            srid = f"sheet_{asset_id[:4]}_{int(time.time()*1000)}"
+                        if str(srid) not in seen_ids:
+                            seen_ids.add(str(srid))
+                            records.append(normalize_fields(sr))
+            except Exception as e:
+                print(f"Warning: Could not fetch Google Sheet data in backend: {e}")
 
     result = {"count": len(records), "records": records}
     _caches[asset_id] = {

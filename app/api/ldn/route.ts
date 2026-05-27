@@ -92,6 +92,30 @@ export async function GET(req: Request) {
     const rawRecords = Array.isArray(json) ? json : (json.results || []);
     const records = rawRecords.map(normalise);
 
+    // Fetch and merge Google Sheets data
+    const gsUrl = process.env.GOOGLE_SHEET_SCRIPT_URL;
+    if (gsUrl) {
+      try {
+        console.log(`Connecting to Google Sheets script at: ${gsUrl}`);
+        const gsRes = await fetch(gsUrl, { cache: "no-store" });
+        if (gsRes.ok) {
+          const gsJson = await gsRes.json();
+          const sheetRecords = (gsJson.ldn || []).map(normalise);
+          
+          const seenIds = new Set(records.map((r: any) => String(r._id || r.id)));
+          for (const sr of sheetRecords) {
+            const srid = String(sr.id || sr._id || `sheet_ldn_${Date.now()}_${Math.random()}`);
+            if (!seenIds.has(srid)) {
+              records.push(sr);
+              seenIds.add(srid);
+            }
+          }
+        }
+      } catch (err: any) {
+        console.warn(`Could not fetch Google Sheets data in Next.js route: ${err.message}`);
+      }
+    }
+
     return NextResponse.json({
       count: records.length,
       records: records,
