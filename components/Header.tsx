@@ -40,12 +40,8 @@ export default function Header({ isCollapsed, setIsCollapsed }: HeaderProps) {
     <header className="global-header">
       {/* Brand Zone (aligns with sidebar) */}
       <div className={`header-brand-zone ${isCollapsed ? "collapsed" : ""}`}>
-        <div className="header-logo-badge">
-          <svg viewBox="0 0 40 40" className="header-emblem-svg" width="28" height="28">
-            <polygon points="20,2 37,11 37,29 20,38 3,29 3,11" fill="none" stroke="#a2c49e" strokeWidth="2.5" strokeLinejoin="round" />
-            <path d="M20,6 C26,13 26,27 20,34 C14,27 14,13 20,6 Z" fill="#064b22" opacity="0.4" />
-            <text x="20" y="24" textAnchor="middle" fontSize="9" fontWeight="800" fill="#ffffff" letterSpacing="0.5">EMA</text>
-          </svg>
+        <div className="header-logo-badge" style={{ background: "none" }}>
+          <img src="/ema-logo.png" alt="EMA Logo" width="36" height="36" style={{ borderRadius: "var(--radius-md)", objectFit: "contain" }} />
         </div>
         {!isCollapsed && (
           <div className="header-brand-text">
