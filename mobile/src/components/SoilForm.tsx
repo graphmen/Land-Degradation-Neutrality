@@ -12,10 +12,18 @@ interface SoilFormProps {
   onClearEdit?: () => void;
 }
 
-const DISTRICTS = [
-  "Beitbridge", "Bulilima", "Chipinge", "Chiredzi", "Gwanda", 
-  "Lupane", "Mangwe", "Masvingo", "Matobo", "Mutare", "Mwenezi", "Tsholotsho"
-];
+const PROVINCE_DISTRICTS: Record<string, string[]> = {
+  "Bulawayo": ["Bulawayo"],
+  "Harare": ["Harare", "Chitungwiza", "Epworth"],
+  "Manicaland": ["Buhera", "Chimanimani", "Chipinge", "Makoni", "Mutare", "Mutasa", "Nyanga"],
+  "Mashonaland Central": ["Bindura", "Mbire", "Guruve", "Mazowe", "Mount Darwin", "Rushinga", "Shamva", "Muzarabani"],
+  "Mashonaland East": ["Chikomba", "Goromonzi", "Hwedza", "Marondera", "Mudzi", "Murehwa", "Mutoko", "Seke", "Uzumba-Maramba-Pfungwe"],
+  "Mashonaland West": ["Chegutu", "Hurungwe", "Kariba", "Makonde", "Mhondoro-Ngezi", "Sanyati", "Zvimba"],
+  "Masvingo": ["Bikita", "Chiredzi", "Chivi", "Gutu", "Masvingo", "Mwenezi", "Zaka"],
+  "Matabeleland North": ["Binga", "Bubi", "Hwange", "Lupane", "Nkayi", "Tsholotsho", "Umguza"],
+  "Matabeleland South": ["Beitbridge", "Bulilima", "Mangwe", "Gwanda", "Insiza", "Matobo", "Umzingwane"],
+  "Midlands": ["Chirumhanzu", "Gokwe North", "Gokwe South", "Gweru", "Kwekwe", "Mberengwa", "Shurugwi", "Zvishavane"]
+};
 
 const LOCATIONS = [
   { val: "cent", label: "Center Location" },
@@ -38,6 +46,7 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
   const [loadingGps, setLoadingGps] = useState(false);
 
   // Form Fields State
+  const [province, setProvince] = useState("");
   const [dist, setDist] = useState("");
   const [ward, setWard] = useState("");
   const [team, setTeam] = useState("");
@@ -51,6 +60,11 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
     if (editingDraftId) {
       getSoilDraft(editingDraftId).then((draft) => {
         if (draft) {
+          const foundProvince = Object.keys(PROVINCE_DISTRICTS).find(prov => 
+            PROVINCE_DISTRICTS[prov].includes(draft.dist)
+          ) || "";
+          
+          setProvince(foundProvince);
           setDist(draft.dist || "");
           setWard(draft.ward || "");
           setTeam(draft.Team || "");
@@ -161,8 +175,8 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
 
   // Save Soil Draft Submission
   const handleSave = async () => {
-    if (!dist || !team || !ceid) {
-      onError("Please fill in all general info fields (District, Team ID, and CE Point ID).");
+    if (!province || !dist || !team || !ceid) {
+      onError("Please fill in all general info fields (Province, District, Team ID, and CE Point ID).");
       setStep(1);
       return;
     }
@@ -210,10 +224,26 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
           <p className="card-desc">Identify the regional boundary and surveyor team details.</p>
           
           <div className="form-group">
+            <label className="form-label">Province *</label>
+            <select className="form-input form-select" value={province} onChange={(e) => {
+              setProvince(e.target.value);
+              setDist("");
+            }}>
+              <option value="">-- Select Province --</option>
+              {Object.keys(PROVINCE_DISTRICTS).map(p => <option key={p} value={p}>{p}</option>)}
+            </select>
+          </div>
+
+          <div className="form-group">
             <label className="form-label">District *</label>
-            <select className="form-input form-select" value={dist} onChange={(e) => setDist(e.target.value)}>
-              <option value="">-- Select District --</option>
-              {DISTRICTS.map(d => <option key={d} value={d}>{d}</option>)}
+            <select 
+              className="form-input form-select" 
+              value={dist} 
+              onChange={(e) => setDist(e.target.value)}
+              disabled={!province}
+            >
+              <option value="">{province ? "-- Select District --" : "-- Select Province First --"}</option>
+              {province && PROVINCE_DISTRICTS[province].map(d => <option key={d} value={d}>{d}</option>)}
             </select>
           </div>
 
@@ -336,7 +366,7 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
             className="btn-primary" 
             style={{ flex: 2 }} 
             onClick={() => setStep(s => s + 1)}
-            disabled={!dist || !team || !ceid}
+            disabled={!province || !dist || !team || !ceid}
           >
             Next <ChevronRight size={16} />
           </button>

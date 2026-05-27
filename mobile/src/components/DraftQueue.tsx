@@ -67,7 +67,7 @@ export default function DraftQueue({ onSuccess, onError, onEditDraft }: DraftQue
     }
 
     setSyncing(true);
-    onSuccess(`Sync initialized. Uploading ${totalDrafts} field records to Google Sheets...`);
+    onSuccess(`Sync initialized. Uploading ${totalDrafts} field records to server...`);
 
     const isGoogleScript = serverUrl.includes("script.google.com");
     let ldnSuccess = 0;
@@ -162,7 +162,7 @@ export default function DraftQueue({ onSuccess, onError, onEditDraft }: DraftQue
     if (failedCount > 0) {
       onError(`Sync finished: ${ldnSuccess} LDN and ${soilSuccess} Soil surveys uploaded. ${failedCount} records failed. Please verify internet connection.`);
     } else {
-      onSuccess(`Sync Completed: ${ldnSuccess} LDN reports and ${soilSuccess} Soil surveys uploaded to Google Sheets!`);
+      onSuccess(`Sync Completed: ${ldnSuccess} LDN reports and ${soilSuccess} Soil surveys uploaded to server!`);
     }
     loadDrafts();
   };
@@ -200,7 +200,7 @@ export default function DraftQueue({ onSuccess, onError, onEditDraft }: DraftQue
         <div className="mobile-card" style={{ textAlign: "center", padding: "30px" }}>
           <CheckCircle size={32} style={{ color: "var(--text-accent)", marginBottom: "8px" }} />
           <div style={{ fontSize: "14px", fontWeight: 700 }}>Queue Empty</div>
-          <p style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>All environmental reports have been uploaded to the Google Sheet. Ready for next fieldwork.</p>
+          <p style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>All environmental reports have been uploaded to the server. Ready for next fieldwork.</p>
         </div>
       ) : (
         <div className="queue-list">

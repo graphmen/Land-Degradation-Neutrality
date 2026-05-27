@@ -13,10 +13,18 @@ interface LdnFormProps {
   onClearEdit?: () => void;
 }
 
-const DISTRICTS = [
-  "Beitbridge", "Bulilima", "Chipinge", "Chiredzi", "Gwanda", 
-  "Lupane", "Mangwe", "Masvingo", "Matobo", "Mutare", "Mwenezi", "Tsholotsho"
-];
+const PROVINCE_DISTRICTS: Record<string, string[]> = {
+  "Bulawayo": ["Bulawayo"],
+  "Harare": ["Harare", "Chitungwiza", "Epworth"],
+  "Manicaland": ["Buhera", "Chimanimani", "Chipinge", "Makoni", "Mutare", "Mutasa", "Nyanga"],
+  "Mashonaland Central": ["Bindura", "Mbire", "Guruve", "Mazowe", "Mount Darwin", "Rushinga", "Shamva", "Muzarabani"],
+  "Mashonaland East": ["Chikomba", "Goromonzi", "Hwedza", "Marondera", "Mudzi", "Murehwa", "Mutoko", "Seke", "Uzumba-Maramba-Pfungwe"],
+  "Mashonaland West": ["Chegutu", "Hurungwe", "Kariba", "Makonde", "Mhondoro-Ngezi", "Sanyati", "Zvimba"],
+  "Masvingo": ["Bikita", "Chiredzi", "Chivi", "Gutu", "Masvingo", "Mwenezi", "Zaka"],
+  "Matabeleland North": ["Binga", "Bubi", "Hwange", "Lupane", "Nkayi", "Tsholotsho", "Umguza"],
+  "Matabeleland South": ["Beitbridge", "Bulilima", "Mangwe", "Gwanda", "Insiza", "Matobo", "Umzingwane"],
+  "Midlands": ["Chirumhanzu", "Gokwe North", "Gokwe South", "Gweru", "Kwekwe", "Mberengwa", "Shurugwi", "Zvishavane"]
+};
 
 const LANDCOVERS = [
   "Forest Land", "Cropland", "Grassland", "Wetland", "Settlements", "Other Land"
@@ -59,6 +67,7 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
   const [loadingGps, setLoadingGps] = useState(false);
 
   // Form Fields State
+  const [province, setProvince] = useState("");
   const [dist, setDist] = useState("");
   const [ward, setWard] = useState("");
   const [team, setTeam] = useState("");
@@ -81,6 +90,11 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
     if (editingDraftId) {
       getLdnDraft(editingDraftId).then((draft) => {
         if (draft) {
+          const foundProvince = Object.keys(PROVINCE_DISTRICTS).find(prov => 
+            PROVINCE_DISTRICTS[prov].includes(draft.dist)
+          ) || "";
+          
+          setProvince(foundProvince);
           setDist(draft.dist || "");
           setWard(draft.ward || "");
           setTeam(draft.Team || "");
@@ -219,7 +233,7 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
   // Validate current step
   const canGoNext = () => {
     if (step === 1) {
-      return dist !== "" && team !== "" && ceid !== "" && gps !== "";
+      return province !== "" && dist !== "" && team !== "" && ceid !== "" && gps !== "";
     }
     if (step === 2) {
       return landcov !== "" && landus !== "";
@@ -229,8 +243,8 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
 
   // Save Draft Submission
   const handleSave = async () => {
-    if (!dist || !team || !ceid || !gps) {
-      onError("Please fill in all general info fields (District, Team ID, CE Point ID, and GPS) before saving.");
+    if (!province || !dist || !team || !ceid || !gps) {
+      onError("Please fill in all general info fields (Province, District, Team ID, CE Point ID, and GPS) before saving.");
       setStep(1);
       return;
     }
@@ -295,10 +309,26 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
           <p className="card-desc">Identify the Collect Earth point boundary and coordinate baselines.</p>
           
           <div className="form-group">
+            <label className="form-label">Province *</label>
+            <select className="form-input form-select" value={province} onChange={(e) => {
+              setProvince(e.target.value);
+              setDist("");
+            }}>
+              <option value="">-- Select Province --</option>
+              {Object.keys(PROVINCE_DISTRICTS).map(p => <option key={p} value={p}>{p}</option>)}
+            </select>
+          </div>
+
+          <div className="form-group">
             <label className="form-label">District *</label>
-            <select className="form-input form-select" value={dist} onChange={(e) => setDist(e.target.value)}>
-              <option value="">-- Select District --</option>
-              {DISTRICTS.map(d => <option key={d} value={d}>{d}</option>)}
+            <select 
+              className="form-input form-select" 
+              value={dist} 
+              onChange={(e) => setDist(e.target.value)}
+              disabled={!province}
+            >
+              <option value="">{province ? "-- Select District --" : "-- Select Province First --"}</option>
+              {province && PROVINCE_DISTRICTS[province].map(d => <option key={d} value={d}>{d}</option>)}
             </select>
           </div>
 
