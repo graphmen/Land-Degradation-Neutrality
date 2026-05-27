@@ -14,7 +14,7 @@ export async function POST(): Promise<NextResponse> {
 
   return new Promise<NextResponse>((resolve) => {
     // The workspace root is the parent directory of frontend
-    const rootDir = path.join(process.cwd(), "..");
+    const rootDir = process.cwd();
     
     console.log("Sync trigger received. Running download script in:", rootDir);
     

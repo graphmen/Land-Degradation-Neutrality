@@ -21,7 +21,7 @@ auth = base64.b64encode(f"{USERNAME}:{PASSWORD}".encode()).decode()
 headers = {"Authorization": f"Basic {auth}", "Accept": "application/json"}
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-public_dir = os.path.join(script_dir, "frontend", "public")
+public_dir = os.path.join(script_dir, "public")
 os.makedirs(public_dir, exist_ok=True)
 
 def download_form_data(name, asset_id):

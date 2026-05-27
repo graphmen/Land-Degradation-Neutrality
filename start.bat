@@ -16,7 +16,7 @@ start "OAU-Backend" cmd /k "call .venv\Scripts\activate && uvicorn main:app --re
 
 :: ---- Frontend ----
 echo [2/2] Starting Next.js frontend on http://localhost:3001
-cd /d "%~dp0frontend"
+cd /d "%~dp0"
 if not exist "node_modules" (
     echo Installing frontend dependencies...
     npm install
