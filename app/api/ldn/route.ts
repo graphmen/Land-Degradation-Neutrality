@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import ldnData from "@/public/ldn-data.json";
 
 export const dynamic = "force-dynamic";
 
@@ -22,11 +23,7 @@ function normalise(record: any) {
 }
 
 function loadLocalFallback() {
-  const fs = require("fs");
-  const path = require("path");
-  const filePath = path.join(process.cwd(), "public", "ldn-data.json");
-  const fileData = fs.readFileSync(filePath, "utf-8");
-  const json = JSON.parse(fileData);
+  const json = ldnData as any;
   const records = (json.records || []).map(normalise);
   return {
     count: records.length,
