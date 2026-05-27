@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MapPin, Save, ChevronLeft, ChevronRight, RefreshCw, Plus, Trash } from "lucide-react";
 import { Geolocation } from "@capacitor/geolocation";
-import { saveSoilDraft } from "../lib/db";
+import { saveSoilDraft, getSoilDraft } from "../lib/db";
 import type { SoilDraft, SoilCoreDraft } from "../lib/db";
 
 interface SoilFormProps {
   onSuccess: (message: string) => void;
   onError: (message: string) => void;
   onNavigateToQueue: () => void;
+  editingDraftId?: string | null;
+  onClearEdit?: () => void;
 }
 
 const DISTRICTS = [
@@ -31,7 +33,7 @@ const TEXTURES = [
   "Clay", "Loam", "Sand", "Silt"
 ];
 
-export default function SoilForm({ onSuccess, onError, onNavigateToQueue }: SoilFormProps) {
+export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editingDraftId, onClearEdit }: SoilFormProps) {
   const [step, setStep] = useState(1);
   const [loadingGps, setLoadingGps] = useState(false);
 
@@ -43,6 +45,24 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue }: Soil
   
   // Repeatable core samples state
   const [cores, setCores] = useState<SoilCoreDraft[]>([]);
+
+  // Load draft data if editing
+  useEffect(() => {
+    if (editingDraftId) {
+      getSoilDraft(editingDraftId).then((draft) => {
+        if (draft) {
+          setDist(draft.dist || "");
+          setWard(draft.ward || "");
+          setTeam(draft.Team || "");
+          setCeid(draft.ceid || "");
+          setCores(draft.cores || []);
+          
+          // Go directly to step 1 when editing
+          setStep(1);
+        }
+      });
+    }
+  }, [editingDraftId]);
 
   // Core item being edited state (Draft modal/fields)
   const [samloc, setSamloc] = useState("");
@@ -153,7 +173,7 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue }: Soil
     }
 
     const draft: SoilDraft = {
-      id: `soil_${Date.now()}`,
+      id: editingDraftId || `soil_${Date.now()}`,
       measurement_date: new Date().toISOString().split("T")[0],
       dist,
       ward,
@@ -166,7 +186,8 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue }: Soil
 
     try {
       await saveSoilDraft(draft);
-      onSuccess(`Soil core survey with ${cores.length} samples saved locally!`);
+      onSuccess(`Soil core survey with ${cores.length} samples ${editingDraftId ? "updated" : "saved"} locally!`);
+      onClearEdit?.();
       onNavigateToQueue();
     } catch (e: any) {
       onError(`Failed to save draft: ${e.message}`);
@@ -321,7 +342,7 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue }: Soil
           </button>
         ) : (
           <button className="btn-primary" style={{ flex: 2, background: "linear-gradient(135deg, #10b981 0%, #047857 100%)" }} onClick={handleSave}>
-            <Save size={16} /> Save Soil Core Survey
+            <Save size={16} /> {editingDraftId ? "Update Soil Core Survey" : "Save Soil Core Survey"}
           </button>
         )}
       </div>

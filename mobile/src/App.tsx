@@ -16,6 +16,10 @@ export default function App() {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [queueCount, setQueueCount] = useState(0);
 
+  // States for active draft editing
+  const [editingDraftId, setEditingDraftId] = useState<string | null>(null);
+  const [editingDraftType, setEditingDraftType] = useState<"ldn" | "soil" | null>(null);
+
   // Load and update the draft queue count
   const updateQueueCount = async () => {
     try {
@@ -45,6 +49,17 @@ export default function App() {
 
   const removeToast = (id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  const handleEditDraft = (id: string, type: "ldn" | "soil") => {
+    setEditingDraftId(id);
+    setEditingDraftType(type);
+    setActiveTab(type);
+  };
+
+  const handleClearEdit = () => {
+    setEditingDraftId(null);
+    setEditingDraftType(null);
   };
 
   return (
@@ -84,7 +99,6 @@ export default function App() {
       <header className="mobile-header">
         <div className="mobile-logo-group">
           <img src="/ema-logo.png" className="mobile-logo-img" alt="EMA Zimbabwe Logo" onError={(e) => {
-            // fallback if the image is missing
             (e.target as HTMLImageElement).src = "https://share.google/sYtPrUEqRwxhCM5lX";
           }} />
           <div>
@@ -104,6 +118,8 @@ export default function App() {
           <LdnForm
             onSuccess={(msg) => addToast(msg, "success")}
             onError={(msg) => addToast(msg, "error")}
+            editingDraftId={editingDraftType === "ldn" ? editingDraftId : null}
+            onClearEdit={handleClearEdit}
             onNavigateToQueue={() => {
               setActiveTab("queue");
               updateQueueCount();
@@ -114,6 +130,8 @@ export default function App() {
           <SoilForm
             onSuccess={(msg) => addToast(msg, "success")}
             onError={(msg) => addToast(msg, "error")}
+            editingDraftId={editingDraftType === "soil" ? editingDraftId : null}
+            onClearEdit={handleClearEdit}
             onNavigateToQueue={() => {
               setActiveTab("queue");
               updateQueueCount();
@@ -127,6 +145,7 @@ export default function App() {
               updateQueueCount();
             }}
             onError={(msg) => addToast(msg, "error")}
+            onEditDraft={handleEditDraft}
           />
         )}
       </main>
@@ -135,7 +154,10 @@ export default function App() {
       <nav className="mobile-nav-bar">
         <button
           className={`mobile-nav-item ${activeTab === "ldn" ? "active" : ""}`}
-          onClick={() => setActiveTab("ldn")}
+          onClick={() => {
+            setActiveTab("ldn");
+            handleClearEdit();
+          }}
         >
           <Trees size={20} className="mobile-nav-icon" />
           <span>LDN Form</span>
@@ -143,7 +165,10 @@ export default function App() {
 
         <button
           className={`mobile-nav-item ${activeTab === "soil" ? "active" : ""}`}
-          onClick={() => setActiveTab("soil")}
+          onClick={() => {
+            setActiveTab("soil");
+            handleClearEdit();
+          }}
         >
           <FlaskConical size={20} className="mobile-nav-icon" />
           <span>Soil Core</span>

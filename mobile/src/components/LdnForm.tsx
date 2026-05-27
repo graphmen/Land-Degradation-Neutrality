@@ -1,14 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Camera as CameraIcon, MapPin, Save, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { Geolocation } from "@capacitor/geolocation";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
-import { saveLdnDraft } from "../lib/db";
+import { saveLdnDraft, getLdnDraft } from "../lib/db";
 import type { LdnDraft } from "../lib/db";
 
 interface LdnFormProps {
   onSuccess: (message: string) => void;
   onError: (message: string) => void;
   onNavigateToQueue: () => void;
+  editingDraftId?: string | null;
+  onClearEdit?: () => void;
 }
 
 const DISTRICTS = [
@@ -52,7 +54,7 @@ const SEVERITIES = [
   "High", "Moderate", "Low", "None"
 ];
 
-export default function LdnForm({ onSuccess, onError, onNavigateToQueue }: LdnFormProps) {
+export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editingDraftId, onClearEdit }: LdnFormProps) {
   const [step, setStep] = useState(1);
   const [loadingGps, setLoadingGps] = useState(false);
 
@@ -73,6 +75,35 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue }: LdnFo
   const [sev, setSev] = useState("");
   const [oth, setOth] = useState("");
   const [im, setIm] = useState<string>(""); // Base64 string for photo
+
+  // Load draft data if editing
+  useEffect(() => {
+    if (editingDraftId) {
+      getLdnDraft(editingDraftId).then((draft) => {
+        if (draft) {
+          setDist(draft.dist || "");
+          setWard(draft.ward || "");
+          setTeam(draft.Team || "");
+          setGps(draft.GPS || "");
+          setCeid(draft.ceid || "");
+          setLandcov(draft.landcov || "");
+          setLandus(draft.landus || "");
+          setUseSpec(draft.use_spec || "");
+          setLndmat(draft.lndmat || "");
+          setExMism(draft.ex_mism || "");
+          setVegCov(draft.veg_cov || "");
+          setSignsEro(draft.signs_ero || []);
+          setTree(draft.tree || []);
+          setSev(draft.sev || "");
+          setOth(draft.oth || "");
+          setIm(draft.im || "");
+          
+          // Go directly to step 1 when editing
+          setStep(1);
+        }
+      });
+    }
+  }, [editingDraftId]);
 
   // GPS Sensor Handler with Browser Fallback
   const captureGps = async () => {
@@ -205,7 +236,7 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue }: LdnFo
     }
 
     const draft: LdnDraft = {
-      id: `ldn_${Date.now()}`,
+      id: editingDraftId || `ldn_${Date.now()}`,
       measurement_date: new Date().toISOString().split("T")[0],
       dist,
       ward,
@@ -229,7 +260,8 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue }: LdnFo
 
     try {
       await saveLdnDraft(draft);
-      onSuccess(`LDN Draft for Point ID ${ceid} saved locally!`);
+      onSuccess(`LDN Draft for Point ID ${ceid} ${editingDraftId ? "updated" : "saved"} locally!`);
+      onClearEdit?.();
       onNavigateToQueue();
     } catch (e: any) {
       onError(`Failed to save draft: ${e.message}`);
@@ -458,7 +490,7 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue }: LdnFo
           </button>
         ) : (
           <button className="btn-primary" style={{ flex: 2, background: "linear-gradient(135deg, #10b981 0%, #047857 100%)" }} onClick={handleSave}>
-            <Save size={16} /> Save Survey Draft
+            <Save size={16} /> {editingDraftId ? "Update Survey Draft" : "Save Survey Draft"}
           </button>
         )}
       </div>

@@ -139,3 +139,27 @@ export async function deleteSoilDraft(id: string): Promise<void> {
     request.onerror = () => reject(request.error);
   });
 }
+
+export async function getLdnDraft(id: string): Promise<LdnDraft | null> {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction("ldn_drafts", "readonly");
+    const store = transaction.objectStore("ldn_drafts");
+    const request = store.get(id);
+
+    request.onsuccess = () => resolve(request.result || null);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+export async function getSoilDraft(id: string): Promise<SoilDraft | null> {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction("soil_drafts", "readonly");
+    const store = transaction.objectStore("soil_drafts");
+    const request = store.get(id);
+
+    request.onsuccess = () => resolve(request.result || null);
+    request.onerror = () => reject(request.error);
+  });
+}

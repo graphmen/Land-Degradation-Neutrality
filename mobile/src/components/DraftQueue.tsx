@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { RefreshCw, Trash, Server, CheckCircle, Wifi } from "lucide-react";
+import { RefreshCw, Trash, Edit2, CheckCircle, Wifi, Server } from "lucide-react";
 import { 
   getLdnDrafts, 
   getSoilDrafts, 
@@ -11,21 +11,17 @@ import type { LdnDraft, SoilDraft } from "../lib/db";
 interface DraftQueueProps {
   onSuccess: (message: string) => void;
   onError: (message: string) => void;
+  onEditDraft: (id: string, type: "ldn" | "soil") => void;
 }
 
-export default function DraftQueue({ onSuccess, onError }: DraftQueueProps) {
+export default function DraftQueue({ onSuccess, onError, onEditDraft }: DraftQueueProps) {
   const [ldnDrafts, setLdnDrafts] = useState<LdnDraft[]>([]);
   const [soilDrafts, setSoilDrafts] = useState<SoilDraft[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
-  
-  // Target Server URL configuration
-  const [serverUrl, setServerUrl] = useState(() => {
-    if (typeof window !== "undefined") {
-      return `${window.location.protocol}//${window.location.hostname}:8000`;
-    }
-    return "http://localhost:8000";
-  });
+
+  // Expose Google Sheets script URL directly from Environment variables with hardcoded fallback
+  const serverUrl = import.meta.env.GOOGLE_SHEET_SCRIPT_URL || "https://script.google.com/macros/s/AKfycbzkVfTIunxsy83TV6rIgDh6qttR3wHdB4tPlRpAeSdd9opb7-O-sDhX0mLomR-zL19vHQ/exec";
 
   const loadDrafts = async () => {
     setLoading(true);
@@ -62,7 +58,7 @@ export default function DraftQueue({ onSuccess, onError }: DraftQueueProps) {
     }
   };
 
-  // Synchronization Engine
+  // Synchronization Engine to Google Sheets Apps Script Web App
   const triggerSync = async () => {
     const totalDrafts = ldnDrafts.length + soilDrafts.length;
     if (totalDrafts === 0) {
@@ -71,7 +67,7 @@ export default function DraftQueue({ onSuccess, onError }: DraftQueueProps) {
     }
 
     setSyncing(true);
-    onSuccess(`Sync initialized. Uploading ${totalDrafts} field records...`);
+    onSuccess(`Sync initialized. Uploading ${totalDrafts} field records to Google Sheets...`);
 
     const isGoogleScript = serverUrl.includes("script.google.com");
     let ldnSuccess = 0;
@@ -164,11 +160,23 @@ export default function DraftQueue({ onSuccess, onError }: DraftQueueProps) {
     // Wrap up sync
     setSyncing(false);
     if (failedCount > 0) {
-      onError(`Sync finished: ${ldnSuccess} LDN and ${soilSuccess} Soil surveys uploaded. ${failedCount} records failed. check URL / network.`);
+      onError(`Sync finished: ${ldnSuccess} LDN and ${soilSuccess} Soil surveys uploaded. ${failedCount} records failed. Please verify internet connection.`);
     } else {
-      onSuccess(`Sync Completed: ${ldnSuccess} LDN reports and ${soilSuccess} Soil surveys uploaded successfully!`);
+      onSuccess(`Sync Completed: ${ldnSuccess} LDN reports and ${soilSuccess} Soil surveys uploaded to Google Sheets!`);
     }
     loadDrafts();
+  };
+
+  // Get script identifier for user peace of mind
+  const getScriptDisplay = () => {
+    if (serverUrl.includes("script.google.com")) {
+      const parts = serverUrl.split("/s/");
+      if (parts.length > 1) {
+        return `Google Sheets (${parts[1].substring(0, 12)}.../exec)`;
+      }
+      return "Google Sheets Web App";
+    }
+    return serverUrl;
   };
 
   return (
@@ -177,26 +185,17 @@ export default function DraftQueue({ onSuccess, onError }: DraftQueueProps) {
       {/* Sync Control Card */}
       <div className="mobile-card">
         <h3>🗃️ Submissions Queue</h3>
-        <p className="card-desc">Manage local survey records captured offline. Synchronize with the central Environmental Hub once connected.</p>
+        <p className="card-desc">Manage local survey records captured offline. Synchronize with the central Google Sheets database once connected.</p>
         
         {/* Network indicator */}
         <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", color: "var(--text-accent)", marginBottom: "16px", background: "rgba(163, 230, 53, 0.05)", padding: "8px 12px", borderRadius: "var(--radius-sm)", border: "1px solid rgba(163, 230, 53, 0.2)" }}>
-          <Wifi size={14} /> <span>Status: Device Online • Telemetry Server Reachable</span>
+          <Wifi size={14} /> <span>Status: Device Online • Telemetry Server Connected</span>
         </div>
 
-        {/* Server Config Input */}
-        <div className="form-group">
-          <label className="form-label" style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "9px" }}>
-            <Server size={10} /> Central Hub Endpoint URL
-          </label>
-          <input 
-            type="text" 
-            className="form-input" 
-            value={serverUrl} 
-            onChange={(e) => setServerUrl(e.target.value)} 
-            placeholder="http://192.168.1.100:8000"
-            style={{ padding: "8px 10px", fontSize: "11px" }}
-          />
+        {/* Display Current Target Info */}
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", color: "var(--text-muted)", marginBottom: "16px" }}>
+          <Server size={12} />
+          <span>Active Target: <strong>{getScriptDisplay()}</strong></span>
         </div>
 
         <button 
@@ -219,7 +218,7 @@ export default function DraftQueue({ onSuccess, onError }: DraftQueueProps) {
         <div className="mobile-card" style={{ textAlign: "center", padding: "30px" }}>
           <CheckCircle size={32} style={{ color: "var(--text-accent)", marginBottom: "8px" }} />
           <div style={{ fontSize: "14px", fontWeight: 700 }}>Queue Empty</div>
-          <p style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>All environmental reports have been uploaded to the EMA server. Ready for next fieldwork.</p>
+          <p style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>All environmental reports have been uploaded to the Google Sheet. Ready for next fieldwork.</p>
         </div>
       ) : (
         <div className="queue-list">
@@ -236,14 +235,24 @@ export default function DraftQueue({ onSuccess, onError }: DraftQueueProps) {
                 </div>
                 {d.im && <div style={{ fontSize: "9px", color: "var(--text-accent)" }}>📸 Photo attached</div>}
               </div>
-              <button 
-                onClick={() => handleDelete(d.id, "ldn")}
-                className="btn-danger" 
-                style={{ padding: "8px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}
-                title="Delete draft"
-              >
-                <Trash size={14} />
-              </button>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button 
+                  onClick={() => onEditDraft(d.id, "ldn")}
+                  className="btn-secondary" 
+                  style={{ padding: "8px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", width: "34px", height: "34px" }}
+                  title="Edit draft"
+                >
+                  <Edit2 size={14} style={{ color: "var(--text-accent)" }} />
+                </button>
+                <button 
+                  onClick={() => handleDelete(d.id, "ldn")}
+                  className="btn-danger" 
+                  style={{ padding: "8px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", width: "34px", height: "34px" }}
+                  title="Delete draft"
+                >
+                  <Trash size={14} />
+                </button>
+              </div>
             </div>
           ))}
 
@@ -259,14 +268,24 @@ export default function DraftQueue({ onSuccess, onError }: DraftQueueProps) {
                   District: <strong>{d.dist}</strong> • Cores: <strong>{d.cores.length}</strong>
                 </div>
               </div>
-              <button 
-                onClick={() => handleDelete(d.id, "soil")}
-                className="btn-danger" 
-                style={{ padding: "8px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}
-                title="Delete draft"
-              >
-                <Trash size={14} />
-              </button>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button 
+                  onClick={() => onEditDraft(d.id, "soil")}
+                  className="btn-secondary" 
+                  style={{ padding: "8px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", width: "34px", height: "34px" }}
+                  title="Edit draft"
+                >
+                  <Edit2 size={14} style={{ color: "var(--text-accent)" }} />
+                </button>
+                <button 
+                  onClick={() => handleDelete(d.id, "soil")}
+                  className="btn-danger" 
+                  style={{ padding: "8px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", width: "34px", height: "34px" }}
+                  title="Delete draft"
+                >
+                  <Trash size={14} />
+                </button>
+              </div>
             </div>
           ))}
         </div>
