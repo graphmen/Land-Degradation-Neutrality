@@ -1,0 +1,22 @@
+{
+  "name": "Zimbabwe Land Degradation Neutrality Monitor",
+  "short_name": "Zim LDN",
+  "description": "High-fidelity environmental intelligence platform for Land Degradation Neutrality and Soil Analysis",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f0f3f1",
+  "theme_color": "#004d26",
+  "icons": [
+    {
+      "src": "/ema-logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/ema-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

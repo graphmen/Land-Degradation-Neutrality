@@ -40,6 +40,11 @@ export default function Sidebar({ isCollapsed }: SidebarProps) {
             <span className="nav-icon">🗄️</span>
             {!isCollapsed && <span className="nav-label">Database Explorer</span>}
           </Link>
+
+          <Link href="/download" className={`nav-item ${isActive("/download") ? "active" : ""}`} title="Downloads & Info">
+            <span className="nav-icon">📲</span>
+            {!isCollapsed && <span className="nav-label">Downloads & Info</span>}
+          </Link>
         </div>
       </div>
       <div id="sidebar-export-container" className="sidebar-export-container" />

@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>LDN Field Validator</title>
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="./css/leaflet.css" />
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="./css/all.min.css" />
+  <!-- Google Fonts Outfit & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="./css/index.css" />
+  
+  <!-- Manifest for PWA -->
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#064e3b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+
+  <!-- Top Glassmorphic Navigation Bar -->
+  <header class="app-header">
+    <div class="header-logo">
+      <i class="fa-solid fa-compass-drafting logo-icon"></i>
+      <div class="logo-text">
+        <h1>LDN VALIDATOR</h1>
+        <span>Manuel Ndebele GIS TOOLS</span>
+      </div>
+    </div>
+    <div class="offline-badge" id="networkStatus">
+      <i class="fa-solid fa-wifi"></i> <span>ONLINE</span>
+    </div>
+  </header>
+
+  <!-- Main View Container (Tab Content) -->
+  <main class="app-content">
+
+    <!-- TAB 1: Map Explorer -->
+    <section id="tab-map" class="tab-pane active">
+      <div id="map"></div>
+      
+      <!-- ── Top Map HUD Row (all at same vertical level, no overlap) ── -->
+
+      <!-- LEFT: Leaflet zoom +/- is here automatically (top-left) -->
+
+      <!-- CENTER: Map Tools pill -->
+      <button class="map-top-pill glass-panel" id="btnMapToolsToggle" title="Map &amp; GPS Tools">
+        <i class="fa-solid fa-screwdriver-wrench text-emerald"></i>
+        <div class="top-pill-text">
+          <span class="top-pill-label">MAP TOOLS</span>
+          <span class="top-pill-value">Tap to Open</span>
+        </div>
+      </button>
+
+      <!-- RIGHT: GPS Accuracy pill (compact icon + value) -->
+      <div class="map-top-pill map-top-pill--gps glass-panel" id="gpsIndicator">
+        <i class="fa-solid fa-location-crosshairs text-emerald animate-pulse"></i>
+        <div class="top-pill-text">
+          <span class="top-pill-label">GPS</span>
+          <span class="top-pill-value" id="gpsAccuracy">Acquiring...</span>
+        </div>
+      </div>
+
+      <!-- Map Tools Collapsible Panel (drawer) -->
+      <div class="map-tools-drawer hidden" id="mapToolsDrawer">
+        <div class="drawer-header">
+          <i class="fa-solid fa-screwdriver-wrench text-emerald"></i>
+          <span>GPS & Navigation Tools</span>
+          <button class="close-drawer-btn" id="btnCloseDrawer"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="drawer-content">
+          <div class="tool-switch-row">
+            <span class="tool-switch-label"><i class="fa-solid fa-compass text-sky"></i> GPS HUD</span>
+            <label class="switch">
+              <input type="checkbox" id="switchGpsHud">
+              <span class="slider round"></span>
+            </label>
+          </div>
+          <div class="tool-switch-row">
+            <span class="tool-switch-label"><i class="fa-solid fa-diamond text-emerald"></i> Waypoints</span>
+            <label class="switch">
+              <input type="checkbox" id="switchWaypoints">
+              <span class="slider round"></span>
+            </label>
+          </div>
+          <div class="tool-switch-row">
+            <span class="tool-switch-label"><i class="fa-solid fa-ruler text-yellow-500"></i> Measure (Ruler)</span>
+            <label class="switch">
+              <input type="checkbox" id="switchRuler">
+              <span class="slider round"></span>
+            </label>
+          </div>
+          <div class="tool-switch-row">
+            <span class="tool-switch-label"><i class="fa-solid fa-bullseye text-pink-500"></i> Go-To Coord</span>
+            <button class="action-btn mini-btn" id="switchGoto" style="margin-left:auto; width:auto; padding: 4px 8px; font-size:10px;">Open</button>
+          </div>
+          <div class="tool-switch-row">
+            <span class="tool-switch-label"><i class="fa-solid fa-car text-emerald"></i> Car Locator</span>
+            <label class="switch">
+              <input type="checkbox" id="switchCarLocator">
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <!-- Car Locator Controls (inside drawer content) -->
+          <div class="nested-tool-panel hidden" id="carLocatorSubPanel" style="margin-top:10px; padding:10px; border-radius:6px; background: rgba(6,78,59,0.2);">
+            <div style="font-size:11px; font-weight:600; color:var(--text-primary); margin-bottom:8px;"><i class="fa-solid fa-car"></i> Car Location Settings</div>
+            <button class="action-btn" id="recordCarBtn" style="padding:8px; font-size:11px; height:auto; width: 100%;">
+              <i class="fa-solid fa-circle-dot"></i> Park Car Here
+            </button>
+            <div class="car-active-actions hidden" id="carActiveActions" style="margin-top:6px; display:flex; gap:6px;">
+              <button class="action-btn" id="navCarBtn" style="flex:1; padding:8px; font-size:11px; height:auto; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);">
+                <i class="fa-solid fa-location-arrow"></i> Navigate
+              </button>
+              <button class="action-btn danger-btn" id="clearCarBtn" style="padding:8px; font-size:11px; height:auto; background:#ef4444; width: auto;">
+                <i class="fa-solid fa-trash-can"></i> Clear
+              </button>
+            </div>
+          </div>
+
+          <!-- ── MAP LAYERS SECTION ─────────────────────────── -->
+          <div class="drawer-section-divider">MAP LAYERS</div>
+
+          <div class="tool-switch-row">
+            <span class="tool-switch-label"><i class="fa-solid fa-layer-group" style="color:#a78bfa;"></i> Offline Basemap</span>
+            <button class="action-btn mini-btn" id="drawerToggleBasemapBtn" onclick="OfflineManager.toggleOfflineBasemap(); this.classList.toggle('active-layer-btn');" style="width:auto; padding:5px 10px; font-size:10px;">Toggle</button>
+          </div>
+
+          <div class="tool-switch-row">
+            <span class="tool-switch-label"><i class="fa-solid fa-road" style="color:#f97316;"></i> Roads Layer</span>
+            <label class="switch">
+              <input type="checkbox" id="switchRoadsLayer">
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <!-- ── MAP LEGEND SECTION (collapsible, starts collapsed) ─────── -->
+          <div class="drawer-section-divider drawer-legend-toggle" id="legendToggleBtn" style="cursor:pointer; display:flex; align-items:center; justify-content:space-between;">
+            <span>MAP LEGEND</span>
+            <i class="fa-solid fa-chevron-down legend-chevron-inner" id="legendChevronInner" style="font-size:9px; transition: transform 0.3s; transform: rotate(-90deg);"></i>
+          </div>
+
+          <div class="drawer-legend collapsed" id="drawerLegendBody">
+            <div class="legend-section-title" style="margin-top:0;">Your Location</div>
+            <div class="map-legend-item">
+              <span class="legend-icon-dot" style="background:#ef4444; border:2px solid #fff; box-shadow:0 0 6px rgba(239,68,68,0.8);"></span>
+              <span>You (GPS Position)</span>
+            </div>
+            <div class="map-legend-item">
+              <span class="legend-icon-dot" style="background:#2563eb; border:2px solid #fff; box-shadow:0 0 6px rgba(37,99,235,0.8);"></span>
+              <span>Parked Car</span>
+            </div>
+            <div class="map-legend-item">
+              <span class="legend-icon-dot" style="background:#10b981; border:2px solid #fff; box-shadow:0 0 6px rgba(16,185,129,0.7);"></span>
+              <span>Waypoint</span>
+            </div>
+
+            <div class="legend-section-title">Validation Targets</div>
+            <div class="map-legend-item">
+              <span class="legend-icon-dot" style="background:#c0ff00; border:2px solid #fff;"></span>
+              <span>Target Centroid (Pending)</span>
+            </div>
+            <div class="map-legend-item">
+              <span class="legend-icon-dot" style="background:#10b981; border:2px solid #fff;"></span>
+              <span>Target Centroid (Validated)</span>
+            </div>
+            <div class="map-legend-item">
+              <span class="legend-line" style="border-color:#ef4444; border-style:solid;"></span>
+              <span>Polygon Boundary</span>
+            </div>
+            <div class="map-legend-item">
+              <span class="legend-line" style="border-color:#38bdf8; border-style:dashed;"></span>
+              <span>Navigation Path Line</span>
+            </div>
+            <div class="map-legend-item">
+              <span class="legend-line" style="border-color:#10b981; border-style:dashed;"></span>
+              <span>Ward Boundary (Zimbabwe)</span>
+            </div>
+
+            <div class="legend-section-title">Roads &amp; Tracks</div>
+            <div class="map-legend-item">
+              <span class="legend-line" style="border-color:#f97316; border-style:solid;"></span>
+              <span>Primary Road</span>
+            </div>
+            <div class="map-legend-item">
+              <span class="legend-line" style="border-color:#c0ff00; border-style:solid;"></span>
+              <span>Secondary Road</span>
+            </div>
+            <div class="map-legend-item">
+              <span class="legend-line" style="border-color:#a3a3a3; border-style:solid;"></span>
+              <span>Tertiary / Unclassified</span>
+            </div>
+            <div class="map-legend-item">
+              <span class="legend-line" style="border-color:#a16207; border-style:dashed;"></span>
+              <span>Dirt Track</span>
+            </div>
+            <div class="map-legend-item">
+              <span class="legend-line" style="border-color:#84cc16; border-style:dashed;"></span>
+              <span>Footpath / Bridleway</span>
+            </div>
+            <div class="map-legend-item">
+              <span class="legend-line" style="border-color:#c0ff00; border-style:dashed;"></span>
+              <span>Measure Path (Ruler)</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- GPS HUD Panel (centered, glassmorphic) -->
+      <div class="gps-hud-panel glass-panel hidden" id="gpsHudPanel">
+        <div class="hud-header">
+          <i class="fa-solid fa-compass text-sky"></i>
+          <span>GPS Telemetry Dashboard</span>
+          <button class="panel-close-btn" id="btnCloseGpsHud" title="Close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="hud-body">
+          <div class="hud-coords-section">
+            <div class="hud-coord-item">
+              <span class="hud-label">DECIMAL DEGREES</span>
+              <span class="hud-value" id="hudCoordsDD">Acquiring GPS...</span>
+            </div>
+            <div class="hud-coord-item">
+              <span class="hud-label">DEGREE MINUTES SECONDS (DMS)</span>
+              <span class="hud-value" id="hudCoordsDMS">--</span>
+            </div>
+          </div>
+          <div class="hud-metrics-grid">
+            <div class="hud-metric-box">
+              <i class="fa-solid fa-gauge-high"></i>
+              <span class="hud-metric-label">SPEED</span>
+              <span class="hud-metric-val" id="hudSpeed">0.0 km/h</span>
+            </div>
+            <div class="hud-metric-box">
+              <i class="fa-solid fa-mountain"></i>
+              <span class="hud-metric-label">ALTITUDE</span>
+              <span class="hud-metric-val" id="hudAltitude">--</span>
+            </div>
+            <div class="hud-metric-box">
+              <i class="fa-solid fa-circle-dot"></i>
+              <span class="hud-metric-label">ACCURACY</span>
+              <span class="hud-metric-val" id="hudAccuracy">--</span>
+            </div>
+            <div class="hud-metric-box">
+              <i class="fa-solid fa-arrow-up-long"></i>
+              <span class="hud-metric-label">HEADING</span>
+              <span class="hud-metric-val" id="hudHeading">--</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Waypoints Manager Panel (floating, glassmorphic) -->
+      <div class="waypoints-panel glass-panel hidden" id="waypointsPanel">
+        <div class="wp-header">
+          <i class="fa-solid fa-diamond text-emerald"></i>
+          <span>Custom Waypoints</span>
+          <button class="panel-close-btn" id="btnCloseWaypoints" title="Close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="wp-body">
+          <button class="action-btn" id="btnAddWaypointCurrent" style="font-size:11px; height:auto; padding: 8px; margin-bottom:10px; width: 100%;">
+            <i class="fa-solid fa-map-pin"></i> Save Current GPS Spot
+          </button>
+          <div class="waypoints-list" id="waypointsListContainer">
+            <!-- populated dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Ruler Measurement Indicator (floating, glassmorphic) -->
+      <div class="ruler-distance-panel glass-panel hidden" id="rulerPanel">
+        <div class="ruler-header">
+          <i class="fa-solid fa-ruler text-yellow-500"></i>
+          <span style="font-size:11px; font-weight:600; color:var(--text-primary); flex:1;">Measure Distance</span>
+          <button class="panel-close-btn" id="btnCloseRuler" title="Close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="ruler-body">
+          <i class="fa-solid fa-ruler text-yellow-500 animate-pulse" style="font-size:20px;"></i>
+          <div class="ruler-details">
+            <span class="ruler-title">TOTAL DISTANCE</span>
+            <span class="ruler-value" id="rulerDistValue">0 m</span>
+            <span class="ruler-sub" id="rulerNodesCount">0 nodes</span>
+          </div>
+          <button class="action-btn danger-btn mini-btn" id="btnClearRuler" style="padding:5px 8px; height:auto; width:auto; border-radius:4px; margin-left:10px;"><i class="fa-solid fa-rotate-left"></i> Clear</button>
+        </div>
+      </div>
+
+      <!-- GPS Accuracy pill moved to unified map-top-bar above -->
+      
+      <!-- Mini compass showing current target bearing on map screen -->
+      <div class="mini-navigation-widget glass-panel hidden" id="miniNavWidget">
+        <div class="mini-compass-arrow" id="miniCompassArrow"></div>
+        <div class="mini-nav-text">
+          <span class="dist" id="miniNavDist">-- m</span>
+          <span class="lbl" id="miniNavLabel">To Centroid</span>
+        </div>
+      </div>
+
+      <!-- Map Legend moved into Map Tools Drawer -->
+    </section>
+
+    <!-- TAB 2: Target List -->
+    <section id="tab-targets" class="tab-pane">
+      <div class="tab-header-bar">
+        <h2>Validation Targets</h2>
+        <span class="target-count-badge" id="targetCount">0 Points</span>
+      </div>
+      
+      <!-- Target Search & Filtering -->
+      <div class="search-filter-container glass-panel">
+        <div class="search-input-wrapper">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" id="targetSearch" placeholder="Search by ID or Operator..." />
+        </div>
+        <div class="filter-row">
+          <select id="filterLandUse" class="styled-select">
+            <option value="">All Land Uses</option>
+            <option value="Cropland">Cropland</option>
+            <option value="Forest">Forest</option>
+            <option value="Grassland">Grassland</option>
+            <option value="Shrubland">Shrubland</option>
+          </select>
+          <select id="filterStatus" class="styled-select">
+            <option value="">All Statuses</option>
+            <option value="unvisited">Unvisited Only</option>
+            <option value="visited">Visited Only</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Scrollable List -->
+      <div class="targets-scroll-list" id="targetsList">
+        <div class="loading-spinner-wrapper">
+          <div class="spinner"></div>
+          <p>Loading validation datasets...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: Offline Manager -->
+    <section id="tab-offline" class="tab-pane">
+      <div class="tab-header-bar">
+        <h2>Offline Basemaps</h2>
+      </div>
+      
+      <div class="offline-control-card glass-panel">
+        <div class="card-icon-header">
+          <i class="fa-solid fa-cloud-arrow-down main-icon"></i>
+          <div>
+            <h3>Pre-download Map Tiles</h3>
+            <p>Save high-resolution maps locally to your device before departing for field validation areas without network coverage.</p>
+          </div>
+        </div>
+        
+        <div class="offline-settings">
+          <div class="setting-item">
+            <label for="basemapSelect">Basemap Source</label>
+            <select id="basemapSelect" class="styled-select">
+              <option value="googleHybrid" selected>Google Hybrid (Satellite + Roads)</option>
+              <option value="satellite">Esri World Imagery (Satellite - Highly Recommended)</option>
+              <option value="osm">OpenStreetMap (Topographic/Standard)</option>
+            </select>
+          </div>
+          
+          <div class="setting-item">
+            <label for="downloadRadius">Buffer Radius around Centroids</label>
+            <select id="downloadRadius" class="styled-select">
+              <option value="100">100 meters (Ultra compact, fast)</option>
+              <option value="250" selected>250 meters (Standard, recommended)</option>
+              <option value="500">500 meters (Wide area coverage)</option>
+            </select>
+          </div>
+          
+          <div class="download-stats">
+            <div class="stat">
+              <span class="label">Targets Included</span>
+              <span class="value" id="dlTargetCount">80</span>
+            </div>
+            <div class="stat">
+              <span class="label">Est. Tile Count</span>
+              <span class="value" id="dlTileCount">~2,400</span>
+            </div>
+            <div class="stat">
+              <span class="label">Est. Size</span>
+              <span class="value" id="dlSize">~45 MB</span>
+            </div>
+          </div>
+
+          <button class="action-btn download-btn" id="startDownloadBtn">
+            <i class="fa-solid fa-download"></i> Download Offline Cache
+          </button>
+        </div>
+      </div>
+
+      <!-- Download Progress Overlay -->
+      <div class="download-progress-card glass-panel hidden" id="downloadProgressContainer">
+        <div class="progress-header">
+          <span class="status-txt" id="downloadProgressStatus">Preparing download queue...</span>
+          <span class="pct" id="downloadProgressPct">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="downloadProgressBar" style="width: 0%"></div>
+        </div>
+        <div class="progress-sub-details">
+          <span id="downloadTilesProgress">Tile 0 / 0</span>
+          <span id="downloadSpeed">0 tiles/s</span>
+        </div>
+        <button class="action-btn cancel-btn" id="cancelDownloadBtn">Cancel Download</button>
+      </div>
+
+      <!-- Offline Status Display -->
+      <div class="storage-info-card glass-panel">
+        <h3>Local Cache Storage</h3>
+        <div class="storage-row">
+          <span>Cached Map Tiles:</span>
+          <strong id="cachedTilesCount">0 tiles</strong>
+        </div>
+        <div class="storage-row">
+          <span>Estimated Space Used:</span>
+          <strong id="cachedSpaceUsed">0.00 MB</strong>
+        </div>
+        <button class="action-btn danger-btn" id="clearCacheBtn">
+          <i class="fa-solid fa-trash-can"></i> Wipe Offline Cache
+        </button>
+      </div>
+
+      <!-- Roads & Tracks Downloader Card -->
+      <div class="offline-control-card glass-panel" style="border-color: rgba(161, 98, 7, 0.5);">
+        <div class="card-icon-header">
+          <i class="fa-solid fa-road main-icon" style="color: #a16207;"></i>
+          <div>
+            <h3>Download Roads & Tracks</h3>
+            <p>Download all roads, dirt tracks, footpaths, and bridleways around your validation terrain from OpenStreetMap for offline navigation.</p>
+          </div>
+        </div>
+
+        <!-- Roads Layer Status -->
+        <div class="download-stats" style="margin-bottom: 12px;">
+          <div class="stat">
+            <span class="label">Road Segments</span>
+            <span class="value" id="roadsLayerStatus">Not downloaded</span>
+          </div>
+          <div class="stat">
+            <span class="label">Buffer Zone</span>
+            <span class="value">~5 km radius</span>
+          </div>
+        </div>
+
+        <!-- Road Legend -->
+        <div class="road-legend">
+          <div class="legend-row"><span class="legend-dot" style="background:#f97316;"></span> Primary Roads</div>
+          <div class="legend-row"><span class="legend-dot" style="background:#c0ff00;"></span> Secondary Roads</div>
+          <div class="legend-row"><span class="legend-dot" style="background:#a16207; border: 1px dashed #a16207;"></span> Dirt Tracks</div>
+          <div class="legend-row"><span class="legend-dot" style="background:#84cc16;"></span> Paths & Footways</div>
+        </div>
+
+        <!-- Status Text -->
+        <p class="roads-status-txt" id="roadsDownloadStatus">Tap download to fetch all navigable ways from OpenStreetMap.</p>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="action-btn download-btn" id="downloadRoadsBtn" style="flex: 1; background: linear-gradient(135deg, #a16207, #78350f);">
+            <i class="fa-solid fa-road"></i> Download Roads & Tracks
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: Sync & Settings -->
+    <section id="tab-settings" class="tab-pane">
+      <div class="tab-header-bar">
+        <h2>Field Validation Data</h2>
+      </div>
+
+      <!-- Field Statistics -->
+      <div class="stats-grid">
+        <div class="stat-box glass-panel">
+          <i class="fa-solid fa-circle-check text-emerald"></i>
+          <span class="num" id="statVisitedPoints">0</span>
+          <span class="label">Points Validated</span>
+        </div>
+        <div class="stat-box glass-panel">
+          <i class="fa-solid fa-vector-square text-emerald"></i>
+          <span class="num" id="statVisitedCorners">0 / 0</span>
+          <span class="label">Corners Visited</span>
+        </div>
+      </div>
+
+      <!-- Dataset & Exercise Management -->
+      <div class="sync-card glass-panel" style="margin-bottom: 16px; border-color: rgba(16, 185, 129, 0.3);">
+        <h3 style="margin-bottom: 12px;"><i class="fa-solid fa-folder-tree text-emerald"></i> Manage Target Datasets</h3>
+        
+        <!-- Exercise Selection Row -->
+        <div class="exercise-manager-row" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
+          <label style="font-size: 10px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Active Exercise / Location</label>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <select id="exerciseSelect" class="styled-select" style="margin: 0; flex: 1;">
+              <option value="default">Default Built-in (LDN)</option>
+            </select>
+            <button class="action-btn" id="btnNewExercise" title="Create New Exercise" style="width: auto; padding: 10px 12px; height: 38px; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--emerald-pure); color: var(--emerald-light); box-shadow: none;">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+            <button class="action-btn danger-btn" id="btnDeleteExercise" title="Delete Active Exercise" style="width: auto; padding: 10px 12px; height: 38px; box-shadow: none;">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Management Actions -->
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <button class="action-btn" id="btnShowAddPointModal" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border: 1px solid rgba(16, 185, 129, 0.3); box-shadow: none;">
+            <i class="fa-solid fa-location-dot text-emerald"></i> Add Point Manually
+          </button>
+          <div style="display: flex; gap: 8px;">
+            <button class="action-btn" id="btnTriggerImportGeoJson" style="flex: 1; font-size: 11px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border: 1px solid rgba(16, 185, 129, 0.3); box-shadow: none;">
+              <i class="fa-solid fa-file-import text-sky"></i> Import GeoJSON
+            </button>
+            <button class="action-btn" id="btnTriggerImportKml" style="flex: 1; font-size: 11px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border: 1px solid rgba(16, 185, 129, 0.3); box-shadow: none;">
+              <i class="fa-solid fa-file-import text-yellow-500"></i> Import KML
+            </button>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="action-btn danger-btn" id="btnClearAllTargets" style="flex: 1; font-size: 11px; padding: 8px; height: auto;">
+              <i class="fa-solid fa-eraser"></i> Clear Targets
+            </button>
+            <button class="action-btn secondary-btn" id="btnResetToDefaults" style="flex: 1; font-size: 11px; padding: 8px; height: auto; border-color: rgba(255, 255, 255, 0.1);">
+              <i class="fa-solid fa-rotate-left"></i> Reset Defaults
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <input type="file" id="importGeoJsonInput" accept="*/*" style="display: none;">
+      <input type="file" id="importKmlInput" accept="*/*" style="display: none;">
+
+      <!-- Field Validation Logs -->
+      <div class="sync-card glass-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3><i class="fa-solid fa-clock-rotate-left text-emerald"></i> Field Validation Logs</h3>
+        </div>
+        <div class="data-logs-container" id="localDataLogs" style="margin-bottom: 0;">
+          <p class="empty-log-msg">No validations logged yet. Go to Map and start validating!</p>
+        </div>
+      </div>
+
+      <div class="app-info-card glass-panel">
+        <h3>LDN Validation Handbook</h3>
+        <div class="handbook-step">
+          <div class="step-num">1</div>
+          <p><strong>Centroid Verification</strong>: Navigate to the polygon center. Tap center marker to verify soil, slope, and land cover type.</p>
+        </div>
+        <div class="handbook-step">
+          <div class="step-num">2</div>
+          <p><strong>Corner Beacons</strong>: Walk clockwise to navigate NW, NE, SE, SW polygon corners to capture extent accuracy.</p>
+        </div>
+        <div class="handbook-step">
+          <div class="step-num">3</div>
+          <p><strong>Offline Maps</strong>: Pre-download basemaps to ensure visual alignment checks when cellular networks drop.</p>
+        </div>
+        
+        <!-- Developer Information -->
+        <div class="developer-info-card" style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed rgba(255, 255, 255, 0.1);">
+          <h4 style="font-size: 13px; font-weight: 600; color: var(--emerald-light); margin-bottom: 6px;"><i class="fa-solid fa-laptop-code"></i> Developer Information</h4>
+          <p style="font-size: 11px; color: var(--text-secondary); line-height: 1.5;">This application was developed by Manuel Ndebele for temporary user for LDN validation.</p>
+          <p style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">Contact: <a href="mailto:manuza3993@gmail.com" style="color: var(--emerald-light); text-decoration: none; font-weight: 600;">manuza3993@gmail.com</a></p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Slider Overlay Panel for Target Selection Details -->
+  <div class="slide-panel" id="targetSlidePanel">
+    <div class="panel-header">
+      <div class="drag-handle"></div>
+      <button class="close-panel-btn" id="closePanelBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="panel-content" id="panelContent">
+      <!-- Dynamic target details loaded here -->
+    </div>
+  </div>
+
+  <!-- Active Geolocation Navigation Dashboard (Full Screen Overlay) -->
+  <div class="navigation-overlay hidden" id="navigationOverlay">
+    <div class="nav-overlay-header">
+      <button class="nav-back-btn" id="exitNavBtn">
+        <i class="fa-solid fa-arrow-left"></i> End Navigation
+      </button>
+      <div class="nav-title">
+        <span class="badge" id="navTargetBadge">CENTROID NAVIGATION</span>
+        <h2 id="navTargetId">Point #11650_16620</h2>
+      </div>
+    </div>
+
+    <div class="nav-guidance-container">
+      
+      <!-- Distance Gauge -->
+      <div class="distance-gauge-box">
+        <span class="value" id="navDistance">--</span>
+        <span class="unit" id="navDistanceUnit">meters</span>
+        <span class="bearing-reading" id="navBearingText">Bearing: --° (N)</span>
+      </div>
+
+      <!-- Large Floating Compass -->
+      <div class="compass-viewport">
+        <div class="compass-ring" id="compassRing">
+          <div class="compass-card">
+            <span class="direction cardinal-n">N</span>
+            <span class="direction cardinal-e">E</span>
+            <span class="direction cardinal-s">S</span>
+            <span class="direction cardinal-w">W</span>
+            
+            <div class="degree-tick deg-30"></div>
+            <div class="degree-tick deg-60"></div>
+            <div class="degree-tick deg-120"></div>
+            <div class="degree-tick deg-150"></div>
+            <div class="degree-tick deg-210"></div>
+            <div class="degree-tick deg-240"></div>
+            <div class="degree-tick deg-300"></div>
+            <div class="degree-tick deg-330"></div>
+          </div>
+        </div>
+        <!-- Guidance arrow remains fixed on the compass ring pointing towards the target relative to North -->
+        <div class="navigation-pointer" id="navigationPointer">
+          <i class="fa-solid fa-circle-arrow-up pointer-icon"></i>
+        </div>
+        <!-- Inner status circle showing accuracy or target type -->
+        <div class="inner-compass-circle">
+          <i class="fa-solid fa-crosshairs text-emerald font-2xl" id="navStatusIcon"></i>
+          <span class="status-inner-txt" id="navStatusText">WALK</span>
+        </div>
+      </div>
+
+      <!-- Centroid Reached Success Banner -->
+      <div class="centroid-success-panel hidden" id="centroidSuccessPanel">
+        <div class="success-banner">
+          <i class="fa-solid fa-trophy success-icon animate-bounce"></i>
+          <h3>CENTROID REACHED!</h3>
+          <p>You have successfully navigated to the polygon's exact center beacon.</p>
+        </div>
+      </div>
+
+      <!-- Dynamic Corner Selector Widget (Always visible when target is active, unlocks corners when centroid is close or reached) -->
+      <div class="corners-grid-panel" id="cornersGridPanel">
+        <div class="panel-section-title">
+          <h4>POLYGON CORNER BEACONS</h4>
+          <span class="lbl" id="cornerStatusLabel">Unlock centroid first</span>
+        </div>
+        <div class="corners-button-row">
+          <button class="corner-nav-btn locked" data-corner="0" id="btnCornerNW">
+            <span class="tag">NW</span>
+            <span class="check"><i class="fa-solid fa-circle-check"></i></span>
+          </button>
+          <button class="corner-nav-btn locked" data-corner="1" id="btnCornerNE">
+            <span class="tag">NE</span>
+            <span class="check"><i class="fa-solid fa-circle-check"></i></span>
+          </button>
+          <button class="corner-nav-btn locked" data-corner="2" id="btnCornerSE">
+            <span class="tag">SE</span>
+            <span class="check"><i class="fa-solid fa-circle-check"></i></span>
+          </button>
+          <button class="corner-nav-btn locked" data-corner="3" id="btnCornerSW">
+            <span class="tag">SW</span>
+            <span class="check"><i class="fa-solid fa-circle-check"></i></span>
+          </button>
+        </div>
+        <button class="action-btn secondary-btn" id="btnUnlockCornersManual">
+          <i class="fa-solid fa-key"></i> Manually Unlock Corners
+        </button>
+      </div>
+
+      <!-- Selected Corner Details -->
+      <div class="corner-details-box hidden" id="cornerDetailsBox">
+        <div class="details-row">
+          <span class="label">Targeting:</span>
+          <strong id="activeCornerName">NW Corner Beacon</strong>
+        </div>
+        <div class="details-row">
+          <span>Coordinates:</span>
+          <span class="coords monospace font-xs" id="activeCornerCoords">--.------, --.------</span>
+        </div>
+        <div class="corner-actions">
+          <button class="action-btn verify-corner-btn" id="btnVerifyCorner">
+            <i class="fa-solid fa-circle-check"></i> Mark Corner as Verified
+          </button>
+        </div>
+      </div>
+
+      <!-- Device Orientation Compass Alert / Guide -->
+      <div class="compass-guide-toast">
+        <i class="fa-solid fa-mobile-screen"></i> Hold phone flat in front of you for accurate compass navigation.
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TAB 5: Soil Lab -->
+  <section id="tab-soil" class="tab-pane">
+    <div class="tab-header-bar">
+      <h2><i class="fa-solid fa-microscope" style="color:var(--emerald-light)"></i> Soil Colour Lab</h2>
+      <span class="target-count-badge" style="background:#451a03;border-color:#92400e;color:#fef3c7">MUNSELL ANALYSER</span>
+    </div>
+
+    <!-- Lighting tip -->
+    <div class="soil-tip glass-panel">
+      <i class="fa-solid fa-sun" style="color:#c0ff00"></i>
+      <span>Best accuracy: natural daylight, no direct sun. Place soil sample flat on a neutral surface. Centre the targeting box over the sample.</span>
+    </div>
+
+    <!-- Camera view -->
+    <div class="soil-camera-wrapper">
+      <video id="soilCameraFeed" autoplay playsinline muted></video>
+      <!-- Targeting reticle -->
+      <div class="soil-reticle">
+        <div class="reticle-corner tl"></div>
+        <div class="reticle-corner tr"></div>
+        <div class="reticle-corner bl"></div>
+        <div class="reticle-corner br"></div>
+      </div>
+      <!-- Camera status overlay -->
+      <div class="soil-camera-status" id="soilCameraStatus">
+        <i class="fa-solid fa-camera"></i> Starting camera...
+      </div>
+    </div>
+    <!-- Hidden canvas for pixel sampling -->
+    <canvas id="soilScanCanvas" style="display:none"></canvas>
+
+    <!-- Camera Controls -->
+    <div class="soil-controls">
+      <button class="action-btn" id="soilScanBtn" disabled>
+        <i class="fa-solid fa-camera"></i> Scan Colour
+      </button>
+      <button class="action-btn secondary-btn" id="soilUploadBtn">
+        <i class="fa-solid fa-image"></i> Upload Photo
+      </button>
+      <input type="file" id="soilFileInput" accept="image/*" capture="environment" style="display:none">
+    </div>
+
+    <!-- Detected sample colour -->
+    <div class="soil-sample-row glass-panel">
+      <div class="soil-sample-swatch" id="soilSampleSwatch"></div>
+      <div class="soil-sample-info">
+        <span class="label">Detected Sample Colour</span>
+        <span id="soilSampleRGB" class="monospace font-xs">Scanning...</span>
+        <span id="soilConfLabel" class="font-xs"></span>
+      </div>
+    </div>
+
+    <!-- Results Panel -->
+    <div class="soil-results-panel glass-panel hidden" id="soilResultsPanel">
+      <div class="soil-result-header">
+        <div class="best-swatch" id="soilBestSwatch"></div>
+        <div class="best-info">
+          <div class="munsell-code" id="soilMunsellCode">--</div>
+          <div class="color-name" id="soilColorName">--</div>
+        </div>
+      </div>
+
+      <!-- Colour-blind description -->
+      <div class="blind-desc">
+        <i class="fa-solid fa-universal-access" style="color:var(--emerald-light)"></i>
+        <span id="soilBlindDesc">--</span>
+      </div>
+
+      <!-- Soil properties -->
+      <div class="soil-props-grid">
+        <div class="soil-prop">
+          <span class="label">Soil Type</span>
+          <strong id="soilTypeText">--</strong>
+        </div>
+        <div class="soil-prop">
+          <span class="label">Organic Matter</span>
+          <strong id="soilOMText">--</strong>
+        </div>
+        <div class="soil-prop">
+          <span class="label">Drainage Class</span>
+          <strong id="soilDrainText">--</strong>
+        </div>
+      </div>
+
+      <!-- Alternate matches -->
+      <div class="soil-alt-title">Other possible matches:</div>
+      <div id="soilAlternates" class="soil-alternates"></div>
+
+      <button class="action-btn" id="soilSaveBtn" disabled style="margin-top:12px;width:100%">
+        <i class="fa-solid fa-floppy-disk"></i> Save to Current Target
+      </button>
+    </div>
+  </section>
+
+  <!-- Go-To Coordinates Modal -->
+  <div class="custom-modal-backdrop hidden" id="gotoModal">
+    <div class="custom-modal glass-panel">
+      <div class="modal-header">
+        <i class="fa-solid fa-bullseye text-pink"></i>
+        <span>Navigate to Coordinates</span>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:11px; color:var(--text-secondary); margin-bottom:12px;">
+          Enter the exact Latitude and Longitude coordinates to navigate to.
+        </p>
+        <div class="input-group">
+          <label>Latitude (DD.dddddd)</label>
+          <input type="number" id="gotoInputLat" step="0.000001" placeholder="e.g. -20.123456" min="-90" max="90" style="width:100%; box-sizing:border-box; border-radius:4px; padding:8px; background: rgba(15,23,42,0.6); border: 1px solid rgba(16,185,129,0.3); color:#fff; font-family:inherit; font-size:12px;">
+          <div id="gotoInputLatDMS" class="dms-preview" style="font-size: 10px; color: var(--emerald-light); font-family: var(--font-mono); margin-top: 4px; min-height: 14px;"></div>
+        </div>
+        <div class="input-group" style="margin-top:10px;">
+          <label>Longitude (DD.dddddd)</label>
+          <input type="number" id="gotoInputLng" step="0.000001" placeholder="e.g. 31.123456" min="-180" max="180" style="width:100%; box-sizing:border-box; border-radius:4px; padding:8px; background: rgba(15,23,42,0.6); border: 1px solid rgba(16,185,129,0.3); color:#fff; font-family:inherit; font-size:12px;">
+          <div id="gotoInputLngDMS" class="dms-preview" style="font-size: 10px; color: var(--emerald-light); font-family: var(--font-mono); margin-top: 4px; min-height: 14px;"></div>
+        </div>
+      </div>
+      <div class="modal-footer" style="margin-top:15px; display:flex; gap:8px;">
+        <button class="action-btn" id="btnConfirmGoto" style="flex:1;">Navigate</button>
+        <button class="action-btn danger-btn" id="btnCancelGoto" style="width:70px; background:#475569;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Save Waypoint Modal -->
+  <div class="custom-modal-backdrop hidden" id="waypointModal">
+    <div class="custom-modal glass-panel">
+      <div class="modal-header">
+        <i class="fa-solid fa-map-pin text-emerald"></i>
+        <span>Save Custom Waypoint</span>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+          <label>Waypoint Name</label>
+          <input type="text" id="wpInputName" placeholder="e.g. River Crossing" style="width:100%; box-sizing:border-box; border-radius:4px; padding:8px; background: rgba(15,23,42,0.6); border: 1px solid rgba(16,185,129,0.3); color:#fff; font-family:inherit; font-size:12px;">
+        </div>
+        <div class="input-group" style="margin-top:10px;">
+          <label>Latitude</label>
+          <input type="number" id="wpInputLat" step="0.000001" readonly style="width:100%; box-sizing:border-box; border-radius:4px; padding:8px; background: rgba(0,0,0,0.25); border: 1px solid rgba(16,185,129,0.2); color:#ccc; font-family:inherit; font-size:12px; opacity:0.8;">
+        </div>
+        <div class="input-group" style="margin-top:10px;">
+          <label>Longitude</label>
+          <input type="number" id="wpInputLng" step="0.000001" readonly style="width:100%; box-sizing:border-box; border-radius:4px; padding:8px; background: rgba(0,0,0,0.25); border: 1px solid rgba(16,185,129,0.2); color:#ccc; font-family:inherit; font-size:12px; opacity:0.8;">
+        </div>
+        <div class="input-group" style="margin-top:10px;">
+          <label>Notes / Description</label>
+          <textarea id="wpInputNotes" placeholder="e.g. Dense brush, pass via east slope" rows="2" style="width:100%; box-sizing:border-box; border-radius:4px; padding:8px; background: rgba(15,23,42,0.6); border: 1px solid rgba(16,185,129,0.3); color:#fff; font-family:inherit; font-size:12px; resize: none;"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer" style="margin-top:15px; display:flex; gap:8px;">
+        <button class="action-btn" id="btnSaveWaypoint" style="flex:1;">Save Waypoint</button>
+        <button class="action-btn danger-btn" id="btnCancelWaypoint" style="width:70px; background:#475569;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Custom Point Modal -->
+  <div class="custom-modal-backdrop hidden" id="addPointModal">
+    <div class="custom-modal glass-panel">
+      <div class="modal-header">
+        <i class="fa-solid fa-location-dot text-emerald"></i>
+        <span>Add Custom Target Point</span>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:11px; color:var(--text-secondary); margin-bottom:12px;">
+          Enter coordinates and target details. A square polygon boundary will be auto-generated centered on this point.
+        </p>
+        <div class="input-group">
+          <label>Point ID / Name</label>
+          <input type="text" id="addPointInputId" placeholder="e.g. 11650_16620 (or blank to auto-gen)" style="width:100%; box-sizing:border-box; border-radius:4px; padding:8px; background: rgba(15,23,42,0.6); border: 1px solid rgba(16,185,129,0.3); color:#fff; font-family:inherit; font-size:12px;">
+        </div>
+        <div class="input-group" style="margin-top:10px;">
+          <label>Latitude (DD.dddddd)</label>
+          <input type="number" id="addPointInputLat" step="0.000001" placeholder="e.g. -19.9469" style="width:100%; box-sizing:border-box; border-radius:4px; padding:8px; background: rgba(15,23,42,0.6); border: 1px solid rgba(16,185,129,0.3); color:#fff; font-family:inherit; font-size:12px;">
+          <div id="addPointInputLatDMS" class="dms-preview" style="font-size: 10px; color: var(--emerald-light); font-family: var(--font-mono); margin-top: 4px; min-height: 14px;"></div>
+        </div>
+        <div class="input-group" style="margin-top:10px;">
+          <label>Longitude (DD.dddddd)</label>
+          <input type="number" id="addPointInputLng" step="0.000001" placeholder="e.g. 32.2336" style="width:100%; box-sizing:border-box; border-radius:4px; padding:8px; background: rgba(15,23,42,0.6); border: 1px solid rgba(16,185,129,0.3); color:#fff; font-family:inherit; font-size:12px;">
+          <div id="addPointInputLngDMS" class="dms-preview" style="font-size: 10px; color: var(--emerald-light); font-family: var(--font-mono); margin-top: 4px; min-height: 14px;"></div>
+        </div>
+        <div class="input-group" style="margin-top:10px;">
+          <label>Assigned Operator</label>
+          <input type="text" id="addPointInputOperator" placeholder="e.g. Manuel Ndebele" style="width:100%; box-sizing:border-box; border-radius:4px; padding:8px; background: rgba(15,23,42,0.6); border: 1px solid rgba(16,185,129,0.3); color:#fff; font-family:inherit; font-size:12px;">
+        </div>
+        <div class="input-group" style="margin-top:10px;">
+          <label>Land Use Class</label>
+          <select id="addPointInputLandUse" style="width:100%; box-sizing:border-box; border-radius:4px; padding:8px; background: rgba(15,23,42,0.6); border: 1px solid rgba(16,185,129,0.3); color:#fff; font-family:inherit; font-size:12px;">
+            <option value="Cropland">Cropland</option>
+            <option value="Forest" selected>Forest</option>
+            <option value="Grassland">Grassland</option>
+            <option value="Shrubland">Shrubland</option>
+          </select>
+        </div>
+        <div class="input-group" style="margin-top:10px;">
+          <label>Transition Class</label>
+          <select id="addPointInputTransition" style="width:100%; box-sizing:border-box; border-radius:4px; padding:8px; background: rgba(15,23,42,0.6); border: 1px solid rgba(16,185,129,0.3); color:#fff; font-family:inherit; font-size:12px;">
+            <option value="Stable" selected>Stable</option>
+            <option value="Degrading">Degrading</option>
+            <option value="Improving">Improving</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer" style="margin-top:15px; display:flex; gap:8px;">
+        <button class="action-btn" id="btnConfirmAddPoint" style="flex:1;">Add Point</button>
+        <button class="action-btn danger-btn" id="btnCancelAddPoint" style="width:70px; background:#475569;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation Bar (App Tabs Selector) -->
+  <nav class="app-nav-bar">
+    <button class="nav-tab-btn active" data-tab="tab-map">
+      <i class="fa-solid fa-map-location-dot"></i>
+      <span>Map</span>
+    </button>
+    <button class="nav-tab-btn" data-tab="tab-targets">
+      <i class="fa-solid fa-list-check"></i>
+      <span>Targets</span>
+    </button>
+    <button class="nav-tab-btn" data-tab="tab-offline">
+      <i class="fa-solid fa-download"></i>
+      <span>Offline</span>
+    </button>
+    <button class="nav-tab-btn" data-tab="tab-soil">
+      <i class="fa-solid fa-microscope"></i>
+      <span>Soil Lab</span>
+    </button>
+    <button class="nav-tab-btn" data-tab="tab-settings">
+      <i class="fa-solid fa-database"></i>
+      <span>Data</span>
+    </button>
+  </nav>
+
+  <!-- Leaflet Library -->
+  <script src="./js/leaflet.js"></script>
+  <!-- PWA Registration & App Scripts -->
+  <script src="./js/munsell-db.js"></script>
+  <script src="./js/soil-analyzer.js"></script>
+  <script src="./js/offline-manager.js"></script>
+  <script src="./js/navigation.js"></script>
+  <script src="./js/navigator-tools.js"></script>
+  <script src="./js/app.js"></script>
+  <script>
+    // Register PWA Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker Registered Successfully!', reg.scope))
+          .catch(err => console.error('Service Worker Registration Failed:', err));
+      });
+    }
+    // Init soil analyser
+    document.addEventListener('DOMContentLoaded', () => SoilAnalyzer.init());
+  </script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Trees, FlaskConical, Database, X, AlertCircle, CheckCircle } from "lucide-react";
+import { Trees, FlaskConical, Database, X, AlertCircle, CheckCircle, Compass } from "lucide-react";
 import LdnForm from "./components/LdnForm";
 import SoilForm from "./components/SoilForm";
 import DraftQueue from "./components/DraftQueue";
@@ -12,6 +12,7 @@ interface Toast {
 }
 
 export default function App() {
+  const [currentScreen, setCurrentScreen] = useState<"welcome" | "collect" | "navigate">("welcome");
   const [activeTab, setActiveTab] = useState<"ldn" | "soil" | "queue">("ldn");
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [queueCount, setQueueCount] = useState(0);
@@ -62,38 +63,141 @@ export default function App() {
     setEditingDraftType(null);
   };
 
-  return (
-    <div className="mobile-app-shell">
-      {/* App Toasts Overlay */}
-      <div className="toast-container">
-        {toasts.map((t) => (
-          <div
-            key={t.id}
-            className="toast-item"
-            style={{
-              borderColor: t.type === "error" ? "rgba(244, 63, 94, 0.4)" : "rgba(76, 175, 80, 0.4)",
-              background: t.type === "error" ? "rgba(20, 5, 8, 0.95)" : "rgba(5, 20, 11, 0.95)"
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              {t.type === "error" ? (
-                <AlertCircle size={18} style={{ color: "var(--accent-rose)" }} />
-              ) : (
-                <CheckCircle size={18} style={{ color: "var(--text-accent)" }} />
-              )}
-              <div className="toast-content">
-                <div className="toast-title" style={{ color: t.type === "error" ? "var(--accent-rose)" : "var(--text-accent)" }}>
-                  {t.type === "error" ? "System Error" : "Success"}
-                </div>
-                <div className="toast-message">{t.message}</div>
+  // Render toast overlay
+  const renderToasts = () => (
+    <div className="toast-container">
+      {toasts.map((t) => (
+        <div
+          key={t.id}
+          className="toast-item"
+          style={{
+            borderColor: t.type === "error" ? "rgba(244, 63, 94, 0.4)" : "rgba(76, 175, 80, 0.4)",
+            background: t.type === "error" ? "rgba(20, 5, 8, 0.95)" : "rgba(5, 20, 11, 0.95)"
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            {t.type === "error" ? (
+              <AlertCircle size={18} style={{ color: "var(--accent-rose)" }} />
+            ) : (
+              <CheckCircle size={18} style={{ color: "var(--text-accent)" }} />
+            )}
+            <div className="toast-content">
+              <div className="toast-title" style={{ color: t.type === "error" ? "var(--accent-rose)" : "var(--text-accent)" }}>
+                {t.type === "error" ? "System Error" : "Success"}
+              </div>
+              <div className="toast-message">{t.message}</div>
+            </div>
+          </div>
+          <button className="toast-close" onClick={() => removeToast(t.id)}>
+            <X size={16} />
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+
+  if (currentScreen === "welcome") {
+    return (
+      <div className="welcome-screen">
+        {renderToasts()}
+
+        <div className="welcome-container">
+          <div className="welcome-header-logo">
+            <img src="/ema-logo.png" className="welcome-logo-img" alt="EMA Zimbabwe Logo" onError={(e) => {
+              (e.target as HTMLImageElement).src = "https://share.google/sYtPrUEqRwxhCM5lX";
+            }} />
+            <h1 className="welcome-title">EMA ZIMBABWE</h1>
+            <p className="welcome-subtitle">LDN FIELD VALIDATION SYSTEM</p>
+          </div>
+
+          <div className="welcome-description">
+            Choose a system below to perform field operations. All collected data is stored locally and will auto-sync when network is available.
+          </div>
+
+          <div className="welcome-options">
+            <div className="welcome-card-option" onClick={() => setCurrentScreen("collect")}>
+              <div className="option-glow"></div>
+              <div className="option-icon-wrapper green-border">
+                <Database className="option-icon green-text" size={32} />
+              </div>
+              <div className="option-content">
+                <h3 className="option-title">EMA LDN Data Collector</h3>
+                <p className="option-desc">Fill LDN telemetry reports, perform soil core checks, and manage offline data submission queues.</p>
               </div>
             </div>
-            <button className="toast-close" onClick={() => removeToast(t.id)}>
-              <X size={16} />
-            </button>
+
+            <div className="welcome-card-option" onClick={() => setCurrentScreen("navigate")}>
+              <div className="option-glow blue-glow"></div>
+              <div className="option-icon-wrapper blue-border">
+                <Compass className="option-icon blue-text" size={32} />
+              </div>
+              <div className="option-content">
+                <h3 className="option-title">LDN Validator</h3>
+                <p className="option-desc">Navigate validation polygons, view GPS telemetry, download offline maps, and use Munsell analyzer.</p>
+              </div>
+            </div>
           </div>
-        ))}
+
+          <div className="welcome-footer">
+            <div className="welcome-status">
+              <span className="status-dot animate-pulse"></span>
+              <span>All Systems Operational & Offline-Ready</span>
+            </div>
+            <p className="welcome-credit">Developed for Environmental Management Agency (EMA) Zimbabwe</p>
+          </div>
+        </div>
       </div>
+    );
+  }
+
+  if (currentScreen === "navigate") {
+    return (
+      <div style={{ width: "100vw", height: "100vh", position: "relative", overflow: "hidden", background: "#04140b" }}>
+        <iframe
+          src="/validator/index.html"
+          style={{
+            width: "100%",
+            height: "100%",
+            border: "none",
+            background: "#04140b"
+          }}
+          title="LDN Validator"
+        />
+        {/* Floating Back to Menu Button */}
+        <button
+          onClick={() => setCurrentScreen("welcome")}
+          style={{
+            position: "fixed",
+            bottom: "80px",
+            right: "16px",
+            zIndex: 9999,
+            background: "rgba(4, 20, 11, 0.95)",
+            border: "2px solid #4caf50",
+            borderRadius: "50px",
+            color: "#ffffff",
+            padding: "10px 18px",
+            fontSize: "12px",
+            fontWeight: 700,
+            cursor: "pointer",
+            boxShadow: "0 6px 20px rgba(0,0,0,0.6), 0 0 10px rgba(76,175,80,0.3)",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            backdropFilter: "blur(8px)",
+            transition: "transform 0.2s"
+          }}
+          onMouseDown={(e) => { e.currentTarget.style.transform = "scale(0.95)"; }}
+          onMouseUp={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
+        >
+          <span style={{ fontSize: "14px" }}>←</span> Main Menu
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mobile-app-shell">
+      {renderToasts()}
 
       {/* Global Header */}
       <header className="mobile-header">
@@ -106,9 +210,29 @@ export default function App() {
             <span className="mobile-header-subtitle">LDN Telemetry Hub</span>
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10b981", boxShadow: "0 0 8px #10b981" }} />
-          <span style={{ fontSize: "9px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>Offline Ready</span>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <button 
+            onClick={() => setCurrentScreen("welcome")}
+            style={{
+              background: "rgba(76, 175, 80, 0.15)",
+              border: "1px solid var(--border-color)",
+              borderRadius: "var(--radius-sm)",
+              color: "var(--text-accent)",
+              padding: "6px 12px",
+              fontSize: "11px",
+              fontWeight: 700,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "4px"
+            }}
+          >
+            ← Menu
+          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10b981", boxShadow: "0 0 8px #10b981" }} />
+            <span style={{ fontSize: "9px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>Offline Ready</span>
+          </div>
         </div>
       </header>
 

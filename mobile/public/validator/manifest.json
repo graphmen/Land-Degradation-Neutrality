@@ -1,0 +1,18 @@
+{
+  "name": "LDN Field Validator",
+  "short_name": "Manuel GIS",
+  "description": "Manuel Ndebele GIS Tools - Land Degradation Neutrality validation and navigation app.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#064e3b",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><circle cx='256' cy='256' r='240' fill='%230f172a' stroke='%23ef4444' stroke-width='16'/><circle cx='256' cy='256' r='210' fill='%23064e3b'/><polygon points='256,120 330,130 380,180 395,240 370,300 310,380 256,390 200,360 140,310 130,260 180,180' fill='%2310b981' fill-opacity='0.2' stroke='%23eab308' stroke-width='8' stroke-linejoin='round'/><path d='M256 320 L256 180 M256 260 L290 230 M256 220 L210 180 M256 200 L280 160' stroke='%23eab308' stroke-width='12' stroke-linecap='round'/><circle cx='256' cy='160' r='35' fill='%2310b981'/><circle cx='295' cy='220' r='25' fill='%2334d399'/><circle cx='205' cy='175' r='30' fill='%2310b981'/><circle cx='256' cy='256' r='140' fill='none' stroke='%23ef4444' stroke-width='8' stroke-dasharray='15, 10'/><path d='M256 80 L256 432 M80 256 L432 256' stroke='%23ef4444' stroke-width='6' stroke-dasharray='10, 15'/><text x='256' y='65' text-anchor='middle' fill='%23ef4444' font-family='sans-serif' font-size='28' font-weight='bold'>N</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

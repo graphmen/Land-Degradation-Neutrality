@@ -33,76 +33,96 @@ function loadLocalFallback() {
 }
 
 export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const action = searchParams.get("action");
+  
+  if (action === "modifications") {
+    const mod = await loadSoilModifications();
+    return NextResponse.json(mod);
+  }
+
+  let records: any[] = [];
+  let source = "fallback";
+  
+  const mod = await loadSoilModifications();
+
   if (OFFLINE_MODE) {
     try {
-      return NextResponse.json(loadLocalFallback());
+      const fallback = loadLocalFallback();
+      records = fallback.records;
+      source = "fallback";
     } catch (fsErr: any) {
       return NextResponse.json({ count: 0, records: [], error: `Local fallback failed: ${fsErr.message}` }, { status: 500 });
     }
+  } else {
+    // ONLINE MODE: Attempt to fetch from FastAPI backend first
+    try {
+      console.log(`Connecting to backend at: ${BACKEND_URL}/api/soil`);
+      const backendRes = await fetch(`${BACKEND_URL}/api/soil`, { cache: "no-store" });
+      if (backendRes.ok) {
+        const json = await backendRes.json();
+        records = json.records || [];
+        source = "backend";
+      } else {
+        console.warn(`Backend returned status ${backendRes.status}. Falling back to direct Kobo API fetch...`);
+        throw new Error();
+      }
+    } catch (backendErr: any) {
+      // Direct Kobo API Fetch Fallback (standalone Vercel support)
+      try {
+        const formsRes = await fetch(KOBO_URL, {
+          headers: { Authorization: `Basic ${AUTH}` },
+          cache: "no-store",
+        });
+        
+        if (!formsRes.ok) {
+          throw new Error(`KoboToolbox Error fetching forms: ${formsRes.status}`);
+        }
+        
+        const forms = await formsRes.json();
+        
+        // Find ALL forms with "soil"
+        const matchingForms = forms.filter((f: any) => 
+          (f.title && f.title.toLowerCase().includes("soil")) ||
+          (f.id_string && f.id_string.toLowerCase().includes("soil"))
+        );
+
+        if (matchingForms.length === 0) {
+          throw new Error("Could not find any form with 'soil'.");
+        }
+
+        // Sort by whichever one has "soil samples form" exact match first
+        matchingForms.sort((a: any, b: any) => {
+          const aExact = a.title.toLowerCase() === "soil samples form" ? 1 : 0;
+          const bExact = b.title.toLowerCase() === "soil samples form" ? 1 : 0;
+          return bExact - aExact;
+        });
+
+        const targetForm = matchingForms[0];
+        const dataRes = await fetch(targetForm.url, {
+          headers: { Authorization: `Basic ${AUTH}` },
+          cache: "no-store",
+        });
+
+        if (!dataRes.ok) {
+          throw new Error(`KoboToolbox Error fetching data: ${dataRes.status}`);
+        }
+
+        const json = await dataRes.json();
+        const rawRecords = Array.isArray(json) ? json : (json.results || []);
+        records = rawRecords.map(normalise);
+        source = "kobotoolbox";
+      } catch (e) {
+        // If everything else fails, fall back to local cache
+        const fallback = loadLocalFallback();
+        records = fallback.records;
+        source = "fallback";
+      }
+    }
   }
 
-  // ONLINE MODE: Attempt to fetch from FastAPI backend first
-  try {
-    console.log(`Connecting to backend at: ${BACKEND_URL}/api/soil`);
-    const backendRes = await fetch(`${BACKEND_URL}/api/soil`, { cache: "no-store" });
-    if (backendRes.ok) {
-      const json = await backendRes.json();
-      return NextResponse.json({
-        count: json.count,
-        records: (json.records || []).map(normalise),
-        source: "backend"
-      });
-    }
-    console.warn(`Backend returned status ${backendRes.status}. Falling back to direct Kobo API fetch...`);
-  } catch (backendErr: any) {
-    console.warn(`Could not connect to backend: ${backendErr.message}. Falling back to direct Kobo API fetch...`);
-  }
-
-  // Direct Kobo API Fetch Fallback (standalone Vercel support)
-  try {
-    const formsRes = await fetch(KOBO_URL, {
-      headers: { Authorization: `Basic ${AUTH}` },
-      cache: "no-store",
-    });
-    
-    if (!formsRes.ok) {
-      throw new Error(`KoboToolbox Error fetching forms: ${formsRes.status}`);
-    }
-    
-    const forms = await formsRes.json();
-    
-    // Find ALL forms with "soil"
-    const matchingForms = forms.filter((f: any) => 
-      (f.title && f.title.toLowerCase().includes("soil")) ||
-      (f.id_string && f.id_string.toLowerCase().includes("soil"))
-    );
-
-    if (matchingForms.length === 0) {
-      throw new Error("Could not find any form with 'soil'.");
-    }
-
-    // Sort by whichever one has "soil samples form" exact match first
-    matchingForms.sort((a: any, b: any) => {
-      const aExact = a.title.toLowerCase() === "soil samples form" ? 1 : 0;
-      const bExact = b.title.toLowerCase() === "soil samples form" ? 1 : 0;
-      return bExact - aExact;
-    });
-
-    const targetForm = matchingForms[0];
-    const dataRes = await fetch(targetForm.url, {
-      headers: { Authorization: `Basic ${AUTH}` },
-      cache: "no-store",
-    });
-
-    if (!dataRes.ok) {
-      throw new Error(`KoboToolbox Error fetching data: ${dataRes.status}`);
-    }
-
-    const json = await dataRes.json();
-    const rawRecords = Array.isArray(json) ? json : (json.results || []);
-    const records = rawRecords.map(normalise);
-
-    // Fetch and merge Google Sheets data
+  // Fetch and merge Google Sheets data
+  if (!OFFLINE_MODE) {
     const gsUrl = process.env.GOOGLE_SHEET_SCRIPT_URL;
     if (gsUrl) {
       try {
@@ -114,7 +134,7 @@ export async function GET(req: Request) {
           
           const seenIds = new Set(records.map((r: any) => String(r._id || r.id)));
           for (const sr of sheetRecords) {
-            const srid = String(sr.id || sr._id || `sheet_soil_${Date.now()}_${Math.random()}`);
+            const srid = String(sr.id || sr._id || `sheet_soil_${Date.now()}`);
             if (!seenIds.has(srid)) {
               records.push(sr);
               seenIds.add(srid);
@@ -125,18 +145,346 @@ export async function GET(req: Request) {
         console.warn(`Could not fetch Google Sheets data in Next.js route: ${err.message}`);
       }
     }
+  }
 
-    return NextResponse.json({
-      count: records.length,
-      records: records,
-      source: "kobotoolbox"
-    });
-  } catch (e: any) {
-    // If everything else fails, fall back to local cache
-    try {
-      return NextResponse.json(loadLocalFallback());
-    } catch (fsErr: any) {
-      return NextResponse.json({ count: 0, records: [], error: `${e.message} (Fallback failed: ${fsErr.message})` }, { status: 500 });
+  // APPLY LOCAL OVERRIDES (Reconciliation for Soil)
+  const deletionsSet = new Set(mod.deletions.map((id: any) => String(id)));
+  const editsMap = mod.edits || {};
+  const parentEditsMap = mod.parentEdits || {};
+  
+  let reconciledRecords = [...records];
+  const seenIds = new Set(reconciledRecords.map(r => String(r._id)));
+  
+  for (const add of mod.additions || []) {
+    if (!seenIds.has(String(add._id))) {
+      reconciledRecords.push(add);
+      seenIds.add(String(add._id));
     }
+  }
+  
+  // Filter out parent deletions
+  reconciledRecords = reconciledRecords.filter(r => !deletionsSet.has(String(r._id)));
+  
+  // Apply parent-level edits and sub-sample overrides
+  reconciledRecords = reconciledRecords.map(r => {
+    const pid = String(r._id);
+    let updatedRecord = { ...r };
+    
+    // Apply parent-level edits
+    if (parentEditsMap[pid]) {
+      updatedRecord = { ...updatedRecord, ...parentEditsMap[pid], _localStatus: "modified" };
+    }
+    
+    // Apply sub-sample overrides (edits & deletions)
+    if (Array.isArray(updatedRecord.sampl)) {
+      let isAnyChildEdited = false;
+      
+      updatedRecord.sampl = updatedRecord.sampl
+        .map((s: any, idx: number) => {
+          const flatId = `${pid}_${idx}`;
+          if (editsMap[flatId]) {
+            isAnyChildEdited = true;
+            const subEdits = editsMap[flatId];
+            const updatedSample = { ...s };
+            if ("tex" in subEdits) updatedSample["sampl/tex"] = subEdits.tex;
+            if ("moisture" in subEdits) updatedSample["sampl/moisture"] = subEdits.moisture;
+            if ("dep" in subEdits) updatedSample["sampl/dep"] = subEdits.dep;
+            if ("samloc" in subEdits) updatedSample["sampl/samloc"] = subEdits.samloc;
+            if ("poin" in subEdits) updatedSample["sampl/poin"] = subEdits.poin;
+            updatedSample._localStatus = "modified";
+            return updatedSample;
+          }
+          return s;
+        })
+        .filter((s: any, idx: number) => {
+          const flatId = `${pid}_${idx}`;
+          return !deletionsSet.has(flatId);
+        });
+        
+      if (isAnyChildEdited && !updatedRecord._localStatus) {
+        updatedRecord._localStatus = "modified";
+      }
+    }
+    
+    // Mark as local if it was added locally
+    const addedIndex = (mod.additions || []).findIndex((add: any) => String(add._id) === pid);
+    if (addedIndex !== -1) {
+      updatedRecord._localStatus = "local";
+      if (Array.isArray(updatedRecord.sampl)) {
+        updatedRecord.sampl = updatedRecord.sampl.map((s: any) => ({ ...s, _localStatus: "local" }));
+      }
+    }
+    
+    return updatedRecord;
+  });
+  
+  // Remove parent records with no samples left
+  reconciledRecords = reconciledRecords.filter(r => !Array.isArray(r.sampl) || r.sampl.length > 0);
+
+  return NextResponse.json({
+    count: reconciledRecords.length,
+    records: reconciledRecords,
+    source: source,
+    modificationsCount: {
+      additions: mod.additions.length,
+      deletions: mod.deletions.length,
+      edits: Object.keys(mod.edits).length + Object.keys(mod.parentEdits).length
+    }
+  });
+}
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const mod = await loadSoilModifications();
+    
+    const newParentId = body._id || Math.floor(Math.random() * 900000000) + 100000000;
+    
+    const newRecord = {
+      _id: newParentId,
+      "formhub/uuid": "db3dc5dc018a41e0acba6a9e0874eb68",
+      start: new Date().toISOString(),
+      end: new Date().toISOString(),
+      today: new Date().toISOString().split("T")[0],
+      deviceid: "collect:custom_agent",
+      "geninfo/measurement_date": body["geninfo/measurement_date"] || new Date().toISOString().split("T")[0],
+      "geninfo/dist": body["geninfo/dist"] || body.dist || "Unspecified",
+      "geninfo/ward": body["geninfo/ward"] || body.ward || "1",
+      "geninfo/Team": body["geninfo/Team"] || body.agent || "Admin",
+      "geninfo/ceid": body["geninfo/ceid"] || body.ceid || "custom_point",
+      _submission_time: new Date().toISOString(),
+      sampl: [
+        {
+          "sampl/samloc": body["sampl/samloc"] || body.samloc || "cent",
+          "sampl/dep": body["sampl/dep"] || body.dep || "30",
+          "sampl/moisture": body["sampl/moisture"] || body.moisture || "No",
+          "sampl/tex": body["sampl/tex"] || body.tex || "sand",
+          "sampl/poin": body["sampl/poin"] || body.poin || `${body.lat || -19.9} ${body.lng || 32.2} 0 0`
+        }
+      ]
+    };
+    
+    mod.additions.push(newRecord);
+    await saveSoilModifications(mod);
+    await syncLocalSoilDataFile(mod);
+    
+    return NextResponse.json({ success: true, record: newRecord });
+  } catch (e: any) {
+    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  }
+}
+
+export async function PUT(req: Request) {
+  try {
+    const body = await req.json();
+    const flatId = String(body._id);
+    if (!flatId) {
+      return NextResponse.json({ success: false, error: "Record _id is required for edits" }, { status: 400 });
+    }
+    
+    const mod = await loadSoilModifications();
+    
+    if (flatId.includes("_")) {
+      const [pid, idxStr] = flatId.split("_");
+      const idx = parseInt(idxStr);
+      
+      const parentFields: any = {};
+      if (body["geninfo/dist"] || body.dist) parentFields["geninfo/dist"] = body["geninfo/dist"] || body.dist;
+      if (body["geninfo/ward"] || body.ward) parentFields["geninfo/ward"] = body["geninfo/ward"] || body.ward;
+      if (body["geninfo/Team"] || body.agent) parentFields["geninfo/Team"] = body["geninfo/Team"] || body.agent;
+      if (body["geninfo/ceid"] || body.ceid) parentFields["geninfo/ceid"] = body["geninfo/ceid"] || body.ceid;
+      
+      const childFields: any = {};
+      if (body["sampl/tex"] || body.tex) childFields.tex = body["sampl/tex"] || body.tex;
+      if (body["sampl/moisture"] || body.moisture) childFields.moisture = body["sampl/moisture"] || body.moisture;
+      if (body["sampl/dep"] || body.dep) childFields.dep = body["sampl/dep"] || body.dep;
+      if (body["sampl/samloc"] || body.samloc) childFields.samloc = body["sampl/samloc"] || body.samloc;
+      if (body["sampl/poin"] || body.poin) childFields.poin = body["sampl/poin"] || body.poin;
+      
+      const addedIdx = mod.additions.findIndex((r: any) => String(r._id) === pid);
+      if (addedIdx !== -1) {
+        const record = mod.additions[addedIdx];
+        mod.additions[addedIdx] = { ...record, ...parentFields };
+        if (Array.isArray(record.sampl) && record.sampl[idx]) {
+          const s = record.sampl[idx];
+          const updatedSample = { ...s };
+          if (childFields.tex) updatedSample["sampl/tex"] = childFields.tex;
+          if (childFields.moisture) updatedSample["sampl/moisture"] = childFields.moisture;
+          if (childFields.dep) updatedSample["sampl/dep"] = childFields.dep;
+          if (childFields.samloc) updatedSample["sampl/samloc"] = childFields.samloc;
+          if (childFields.poin) updatedSample["sampl/poin"] = childFields.poin;
+          mod.additions[addedIdx].sampl[idx] = updatedSample;
+        }
+      } else {
+        if (Object.keys(parentFields).length > 0) {
+          mod.parentEdits[pid] = { ...(mod.parentEdits[pid] || {}), ...parentFields };
+        }
+        if (Object.keys(childFields).length > 0) {
+          mod.edits[flatId] = { ...(mod.edits[flatId] || {}), ...childFields };
+        }
+      }
+    } else {
+      const pid = flatId;
+      const addedIdx = mod.additions.findIndex((r: any) => String(r._id) === pid);
+      if (addedIdx !== -1) {
+        mod.additions[addedIdx] = { ...mod.additions[addedIdx], ...body };
+      } else {
+        mod.parentEdits[pid] = { ...(mod.parentEdits[pid] || {}), ...body };
+      }
+    }
+    
+    await saveSoilModifications(mod);
+    await syncLocalSoilDataFile(mod);
+    
+    return NextResponse.json({ success: true });
+  } catch (e: any) {
+    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+    const action = searchParams.get("action");
+    
+    if (action === "revert") {
+      const targetId = searchParams.get("id");
+      if (!targetId) return NextResponse.json({ success: false, error: "id parameter is required to revert" }, { status: 400 });
+      
+      const mod = await loadSoilModifications();
+      mod.deletions = mod.deletions.filter((d: any) => String(d) !== targetId);
+      mod.additions = mod.additions.filter((r: any) => String(r._id) !== targetId);
+      if (mod.edits[targetId]) delete mod.edits[targetId];
+      if (mod.parentEdits[targetId]) delete mod.parentEdits[targetId];
+      
+      await saveSoilModifications(mod);
+      await syncLocalSoilDataFile(mod);
+      return NextResponse.json({ success: true });
+    }
+    
+    if (action === "revertAll") {
+      const mod = { additions: [], deletions: [], edits: {}, parentEdits: {} };
+      await saveSoilModifications(mod);
+      await syncLocalSoilDataFile(mod);
+      return NextResponse.json({ success: true });
+    }
+    
+    if (!id) {
+      return NextResponse.json({ success: false, error: "Record id parameter is required" }, { status: 400 });
+    }
+    
+    const mod = await loadSoilModifications();
+    const ids = id.split(",");
+    
+    for (const singleId of ids) {
+      if (!mod.deletions.includes(singleId)) {
+        mod.deletions.push(singleId);
+      }
+      
+      if (singleId.includes("_")) {
+        const [pid, idxStr] = singleId.split("_");
+        const idx = parseInt(idxStr);
+        const addedIdx = mod.additions.findIndex((r: any) => String(r._id) === pid);
+        if (addedIdx !== -1) {
+          const record = mod.additions[addedIdx];
+          if (Array.isArray(record.sampl)) {
+            record.sampl.splice(idx, 1);
+            if (record.sampl.length === 0) {
+              mod.additions = mod.additions.filter((r: any) => String(r._id) !== pid);
+            }
+          }
+        }
+      } else {
+        mod.additions = mod.additions.filter((r: any) => String(r._id) !== singleId);
+        if (mod.parentEdits[singleId]) delete mod.parentEdits[singleId];
+      }
+      
+      if (mod.edits[singleId]) delete mod.edits[singleId];
+    }
+    
+    await saveSoilModifications(mod);
+    await syncLocalSoilDataFile(mod);
+    
+    return NextResponse.json({ success: true });
+  } catch (e: any) {
+    return NextResponse.json({ success: false, error: e.message }, { status: 500 });
+  }
+}
+
+// Helpers for modifications filesystem storage
+import fs from "fs/promises";
+import path from "path";
+
+const soilModPath = path.join(process.cwd(), "public", "soil-modifications.json");
+const soilDataPath = path.join(process.cwd(), "public", "soil-data.json");
+
+async function loadSoilModifications() {
+  try {
+    const data = await fs.readFile(soilModPath, "utf-8");
+    return JSON.parse(data);
+  } catch {
+    return { additions: [], deletions: [], edits: {}, parentEdits: {} };
+  }
+}
+
+async function saveSoilModifications(mod: any) {
+  await fs.writeFile(soilModPath, JSON.stringify(mod, null, 2), "utf-8");
+}
+
+async function syncLocalSoilDataFile(mod: any) {
+  try {
+    const rawData = await fs.readFile(soilDataPath, "utf-8");
+    const json = JSON.parse(rawData);
+    const records = json.records || [];
+    
+    let reconciled = [...records];
+    const seenIds = new Set(reconciled.map(r => String(r._id)));
+    for (const add of mod.additions || []) {
+      if (!seenIds.has(String(add._id))) {
+        reconciled.push(add);
+        seenIds.add(String(add._id));
+      }
+    }
+    
+    reconciled = reconciled.filter(r => !mod.deletions.includes(String(r._id)));
+    
+    reconciled = reconciled.map(r => {
+      const pid = String(r._id);
+      let updated = { ...r };
+      if (mod.parentEdits[pid]) {
+        updated = { ...updated, ...mod.parentEdits[pid] };
+      }
+      if (Array.isArray(updated.sampl)) {
+        updated.sampl = updated.sampl
+          .map((s: any, idx: number) => {
+            const flatId = `${pid}_${idx}`;
+            if (mod.edits[flatId]) {
+              const subEdits = mod.edits[flatId];
+              const updatedSample = { ...s };
+              if ("tex" in subEdits) updatedSample["sampl/tex"] = subEdits.tex;
+              if ("moisture" in subEdits) updatedSample["sampl/moisture"] = subEdits.moisture;
+              if ("dep" in subEdits) updatedSample["sampl/dep"] = subEdits.dep;
+              if ("samloc" in subEdits) updatedSample["sampl/samloc"] = subEdits.samloc;
+              if ("poin" in subEdits) updatedSample["sampl/poin"] = subEdits.poin;
+              return updatedSample;
+            }
+            return s;
+          })
+          .filter((s: any, idx: number) => {
+            const flatId = `${pid}_${idx}`;
+            return !mod.deletions.includes(flatId);
+          });
+      }
+      return updated;
+    });
+    
+    reconciled = reconciled.filter(r => !Array.isArray(r.sampl) || r.sampl.length > 0);
+    
+    json.records = reconciled;
+    json.count = reconciled.length;
+    await fs.writeFile(soilDataPath, JSON.stringify(json, null, 2), "utf-8");
+  } catch (err) {
+    console.error("Failed to sync soil-data.json:", err);
   }
 }

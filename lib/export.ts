@@ -102,3 +102,40 @@ export function convertToCSV(records: any[]) {
 
   return [headerLine, ...rowLines].join("\n");
 }
+
+export function convertToGeoJSON(records: any[]) {
+  const features = records.map(r => {
+    let lat = 0;
+    let lng = 0;
+    
+    // Extract coordinates from LDN GPS or Soil poin
+    if (r["geninfo/GPS"] || r.GPS) {
+      const gpsStr = r["geninfo/GPS"] || r.GPS || "";
+      const parts = gpsStr.split(" ");
+      lat = parseFloat(parts[0]) || 0;
+      lng = parseFloat(parts[1]) || 0;
+    } else if (r["sampl/poin"] || r.poin) {
+      const poinStr = r["sampl/poin"] || r.poin || "";
+      const parts = poinStr.split(" ");
+      lat = parseFloat(parts[0]) || 0;
+      lng = parseFloat(parts[1]) || 0;
+    } else if (Array.isArray(r._geolocation) && r._geolocation.length >= 2) {
+      lat = parseFloat(r._geolocation[0]) || 0;
+      lng = parseFloat(r._geolocation[1]) || 0;
+    }
+
+    return {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [lng, lat]
+      },
+      properties: { ...r }
+    };
+  });
+
+  return {
+    type: "FeatureCollection",
+    features
+  };
+}
