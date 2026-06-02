@@ -21,7 +21,7 @@ export default function DownloadPage() {
           <div className="home-banner-tag">System Releases & Deployment</div>
           <h2 className="home-banner-title">Mobile App Downloads & System Ecosystem</h2>
           <p className="home-banner-desc">
-            Access the latest compiled Android application packages (APK) for field officers. Review how the **Web Portal** and the **Offline Mobile Collector** sync to track Land Degradation Neutrality targets.
+            Access the latest compiled Android application packages (APK) for field officers. Review how the <strong>Web Portal</strong> and the <strong>Offline Mobile Collector</strong> sync to track Land Degradation Neutrality targets.
           </p>
         </div>
       </div>
@@ -49,7 +49,7 @@ export default function DownloadPage() {
             </div>
             
             <p className="home-card-desc" style={{ fontSize: "12px", lineHeight: "1.5" }}>
-              The unified field client combines **both applications**—the Leaflet-based **LDN Validator** and the **EMA LDN Data Collector**—into a single deployment. Includes offline-cached boundary datasets (Wards shapefile) for GPS-assisted field tracking.
+              The unified field client combines <strong>both applications</strong>—the Leaflet-based <strong>LDN Validator</strong> and the <strong>EMA LDN Data Collector</strong>—into a single deployment. Includes offline-cached boundary datasets (Wards shapefile) for GPS-assisted field tracking.
             </p>
 
             <div className="detail-item-list" style={{ gap: "6px" }}>
@@ -101,7 +101,7 @@ export default function DownloadPage() {
             </div>
             
             <p className="home-card-desc" style={{ fontSize: "12px", lineHeight: "1.5" }}>
-              A lightweight release featuring **only the data collection form interface** (soil sampling coordinates, moisture tags, Munsell texture inputs). Recommended for survey operations that do not require offline reference map files.
+              A lightweight release featuring <strong>only the data collection form interface</strong> (soil sampling coordinates, moisture tags, Munsell texture inputs). Recommended for survey operations that do not require offline reference map files.
             </p>
 
             <div className="detail-item-list" style={{ gap: "6px" }}>
@@ -157,7 +157,7 @@ export default function DownloadPage() {
                 <div className="home-guide-content">
                   <div className="home-guide-title">🖥️ Web Admin Intelligence Portal</div>
                   <div className="home-guide-desc">
-                    Serves as the centralised data command hub for administrators and decision makers. Includes **on-demand telemetry syncs**, interactive GIS map visualization (categorized by UNCCD hotspot classifications), progress indicators for Zimbabwe's 12 national LDN targets, and a raw database query explorer. Allows exporting records as CSV, GeoJSON, or KML files.
+                    Serves as the centralised data command hub for administrators and decision makers. Includes <strong>on-demand telemetry syncs</strong>, interactive GIS map visualization (categorized by UNCCD hotspot classifications), progress indicators for Zimbabwe's 12 national LDN targets, and a raw database query explorer. Allows exporting records as CSV, GeoJSON, or KML files.
                   </div>
                 </div>
               </div>
@@ -179,7 +179,7 @@ export default function DownloadPage() {
                 <div className="home-guide-content">
                   <div className="home-guide-title">🔄 Seamless Sync Bridge</div>
                   <div className="home-guide-desc">
-                    Connects offline field devices with the central database. As soon as field workers enter a zone with active Wi-Fi or cellular networks, they can trigger a bulk upload from their mobile queue. Admin users can then compile these reports instantly on the web portal by clicking the **Sync data from Server** action in the header.
+                    Connects offline field devices with the central database. As soon as field workers enter a zone with active Wi-Fi or cellular networks, they can trigger a bulk upload from their mobile queue. Admin users can then compile these reports instantly on the web portal by clicking the <strong>Sync data from Server</strong> action in the header.
                   </div>
                 </div>
               </div>
