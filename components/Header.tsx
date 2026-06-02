@@ -23,8 +23,31 @@ export default function Header({ isCollapsed, setIsCollapsed }: HeaderProps) {
       const res = await fetch("/api/sync", { method: "POST" });
       if (!res.ok) {
         const data = await res.json();
+        
+        // Handle Vercel serverless environment warning gracefully by running direct sync from client
+        if (res.status === 400 || (data.error && (data.error.includes("serverless") || data.error.includes("Python")))) {
+          addToast("info", "Live Direct Sync", "Offline sync script not supported on serverless. Performing direct live API sync...");
+          
+          // Call API routes with bypassCache=true to trigger direct refresh
+          const [ldnRes, soilRes] = await Promise.all([
+            fetch("/api/ldn?bypassCache=true"),
+            fetch("/api/soil?bypassCache=true")
+          ]);
+          
+          if (!ldnRes.ok || !soilRes.ok) {
+            throw new Error("Direct live API sync failed.");
+          }
+          
+          addToast("success", "Sync Successful", "Live Kobo and Google Sheets telemetry caches refreshed.");
+          setTimeout(() => {
+            window.location.reload();
+          }, 2500);
+          return;
+        }
+        
         throw new Error(data.error || "Failed to sync data");
       }
+      
       addToast("success", "Sync Successful", "Telemetry caches updated. Re-indexing geospatial records...");
       setTimeout(() => {
         window.location.reload();
