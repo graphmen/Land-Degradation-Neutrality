@@ -2175,6 +2175,11 @@ html, body {
     display: block !important;
   }
 
+  .database-search-container {
+    flex: none !important;
+    width: 100% !important;
+  }
+
   .database-kpi-bar {
     gap: 10px;
     padding: 8px;

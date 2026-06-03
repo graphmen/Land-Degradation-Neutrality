@@ -865,7 +865,7 @@ export default function DatabaseExplorer() {
             boxShadow: "var(--shadow-sm)", flexShrink: 0
           }}>
             {/* Search Input */}
-            <div style={{ position: "relative", flex: "1 1 200px", minWidth: "160px" }}>
+            <div className="database-search-container" style={{ position: "relative", flex: "1 1 200px", minWidth: "160px" }}>
               <Search size={12} style={{ position: "absolute", left: "8px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
               <input
                 type="text"
