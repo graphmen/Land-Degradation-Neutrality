@@ -1083,6 +1083,44 @@ html, body {
   transform: translateY(0);
 }
 
+/* Download Button Styles */
+.download-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  color: #003319;
+  background-color: var(--accent-gold);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.download-action-btn:hover {
+  background-color: #e0b800;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.download-action-btn:active {
+  transform: translateY(0);
+}
+
+.download-action-btn.green-btn {
+  background-color: var(--accent-green);
+  color: #ffffff;
+}
+
+.download-action-btn.green-btn:hover {
+  background-color: #004d26;
+  color: #ffffff;
+}
+
 .sync-btn:disabled {
   background-color: #5a6e62;
   color: rgba(255, 255, 255, 0.5);

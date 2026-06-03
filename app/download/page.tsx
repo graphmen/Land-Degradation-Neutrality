@@ -74,7 +74,7 @@ export default function DownloadPage() {
             </div>
 
             <button 
-              className="sync-btn"
+              className="download-action-btn"
               onClick={() => handleDownload("EMA_Zimbabwe_LDN_Combined.apk")}
               style={{ 
                 width: "100%", 
@@ -120,16 +120,14 @@ export default function DownloadPage() {
             </div>
 
             <button 
-              className="sync-btn"
+              className="download-action-btn green-btn"
               onClick={() => handleDownload("EMA_Zimbabwe_LDN_Mobile.apk")}
               style={{ 
                 width: "100%", 
                 justifyContent: "center", 
                 padding: "10px", 
                 margin: 0,
-                fontSize: "12px",
-                backgroundColor: "var(--accent-green)",
-                color: "#ffffff"
+                fontSize: "12px"
               }}
             >
               📥 Download Standalone Collector APK
