@@ -826,7 +826,7 @@ export default function DatabaseExplorer() {
       ) : (
         <>
           {/* Dynamic KPI Ribbon (Ultra-compact metrics bar) */}
-          <div style={{
+          <div className="database-kpi-bar" style={{
             display: "flex", gap: "14px", padding: "6px 12px", background: "rgba(0, 102, 51, 0.02)",
             border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)", alignItems: "center", flexWrap: "wrap", flexShrink: 0
           }}>
@@ -859,7 +859,7 @@ export default function DatabaseExplorer() {
           </div>
 
           {/* Filtering and Query Control Center (Compact Single Row) */}
-          <div style={{
+          <div className="database-filter-bar" style={{
             padding: "6px 10px", display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center",
             background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)",
             boxShadow: "var(--shadow-sm)", flexShrink: 0
@@ -1019,7 +1019,7 @@ export default function DatabaseExplorer() {
             </div>
 
             {/* Quick Export Downloads */}
-            <div style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
+            <div className="database-export-actions" style={{ marginLeft: "auto", display: "flex", gap: "4px" }}>
               <button
                 onClick={() => handleDownload("csv", false)}
                 style={{
@@ -1069,12 +1069,12 @@ export default function DatabaseExplorer() {
           </div>
 
           {/* Table Container - Expands to occupy all remaining vertical space */}
-          <div style={{
+          <div className="database-table-wrapper" style={{
             display: "flex", flexDirection: "column", flex: 1, overflow: "hidden",
             background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)"
           }}>
-            <div style={{ overflow: "auto", flex: 1, width: "100%" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "11px" }}>
+            <div className="database-table-scroll" style={{ overflow: "auto", flex: 1, width: "100%" }}>
+              <table className="database-table-grid" style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "11px" }}>
                 
                 {/* Table Header (Sticky) */}
                 <thead style={{ position: "sticky", top: 0, zIndex: 10, background: "#f8fafc", boxShadow: "0 1px 0 rgba(0,0,0,0.05)" }}>

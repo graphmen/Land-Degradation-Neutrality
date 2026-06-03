@@ -30,6 +30,12 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
       {/* Body Area */}
       <div className="app-body">
         <Sidebar isCollapsed={isCollapsed} />
+        
+        {/* Mobile Sidebar overlay backdrop */}
+        {!isCollapsed && (
+          <div className="sidebar-backdrop" onClick={() => setIsCollapsed(true)} />
+        )}
+
         <main className="app-content">
           {children}
         </main>

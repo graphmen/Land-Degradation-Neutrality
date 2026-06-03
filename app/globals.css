@@ -1979,6 +1979,284 @@ html, body {
   flex-shrink: 0;
 }
 
+/* ==========================================================================
+   MOBILE & TABLET RESPONSIVENESS AND PWA TUNING
+   ========================================================================== */
+
+/* Default desktop styles for mobile brand container */
+.header-mobile-brand {
+  display: none;
+}
+
+@media (max-width: 992px) {
+  /* Layout adjustments */
+  .app-body {
+    height: calc(100vh - 65px - 28px);
+  }
+
+  /* Three-panel (GIS Portal) responsive overrides */
+  .buims-list-panel {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    z-index: 95;
+    height: 100%;
+    width: 320px !important;
+    box-shadow: var(--shadow-lg);
+    background: #ffffff;
+  }
+  
+  .buims-detail-panel {
+    position: absolute !important;
+    top: 0;
+    right: 0;
+    z-index: 95;
+    height: 100%;
+    width: 320px !important;
+    box-shadow: var(--shadow-lg);
+    background: #ffffff;
+  }
+
+  .panel-toggle-btn.left-toggle {
+    left: 308px !important;
+  }
+  .panel-toggle-btn.left-toggle.collapsed {
+    left: 12px !important;
+  }
+  
+  .panel-toggle-btn.right-toggle {
+    right: 288px !important;
+  }
+  .panel-toggle-btn.right-toggle.collapsed {
+    right: 12px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Global app layout adjustments */
+  .app-body {
+    height: calc(100vh - 65px - 28px);
+    position: relative;
+  }
+
+  /* Sidebar Backdrop overlay styling */
+  .sidebar-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 90;
+    backdrop-filter: blur(2px);
+    transition: opacity 0.3s ease;
+  }
+
+  /* Mobile Drawer Sidebar Navigation */
+  .global-sidebar {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    height: 100%;
+    z-index: 100;
+    width: 240px !important;
+    transform: translateX(0);
+    box-shadow: var(--shadow-lg);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  .global-sidebar.collapsed {
+    transform: translateX(-100%);
+    width: 240px !important; /* Keep original width for drawer sliding */
+  }
+
+  /* Header mobile adjustments */
+  .header-brand-zone {
+    display: none !important;
+  }
+
+  .header-mobile-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 12px;
+  }
+
+  .mobile-brand-name {
+    color: #ffffff;
+    font-family: var(--font-title);
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .system-title-text {
+    font-size: 11.5px;
+    letter-spacing: 0.1px;
+  }
+
+  .system-subtitle-text {
+    display: none !important;
+  }
+
+  .user-text-info {
+    display: none !important;
+  }
+
+  .header-right {
+    gap: 10px;
+  }
+
+  /* Sync data button transforms into icon button on mobile */
+  .sync-btn {
+    padding: 8px !important;
+    margin-right: 4px !important;
+    border-radius: 50% !important;
+    width: 34px !important;
+    height: 34px !important;
+    justify-content: center !important;
+  }
+
+  .sync-btn-text {
+    display: none !important;
+  }
+
+  /* Home / Welcome Screen */
+  .home-container {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .home-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+    gap: 12px;
+  }
+
+  .home-banner-badge {
+    width: 60px;
+    height: 60px;
+    font-size: 30px;
+  }
+
+  .home-kpi-strip {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .home-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+
+  /* Three-panel (GIS Portal) mobile overrides */
+  .buims-list-panel {
+    width: 85% !important;
+  }
+  .buims-detail-panel {
+    width: 85% !important;
+  }
+
+  .panel-toggle-btn.left-toggle {
+    left: calc(85% - 12px) !important;
+  }
+  .panel-toggle-btn.right-toggle {
+    right: calc(85% - 12px) !important;
+  }
+
+  /* Database Explorer Page */
+  .database-kpi-bar {
+    gap: 10px;
+    padding: 8px;
+  }
+
+  .database-filter-bar {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .database-filter-bar > * {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  .database-export-actions {
+    margin-left: 0 !important;
+    margin-top: 4px;
+    width: 100%;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .database-export-actions button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Table Grid responsiveness */
+  .database-table-grid th,
+  .database-table-grid td {
+    white-space: nowrap !important;
+    padding: 8px 10px !important;
+  }
+  
+  .database-table-wrapper {
+    border-radius: var(--radius-sm);
+  }
+
+  /* History modifications drawer on mobile */
+  div[style*="width: 400px"] {
+    width: 100% !important;
+  }
+
+  /* Modal forms */
+  div[style*="width: 500px"], 
+  div[style*="width: 600px"],
+  div[style*="width: 650px"],
+  div[style*="width: 800px"] {
+    width: 95% !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+  }
+  
+  /* Footer responsive hide items to prevent line wrapping */
+  .global-footer {
+    justify-content: center;
+    font-size: 9px;
+  }
+  
+  .global-footer span:last-child {
+    display: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Smaller screens */
+  .system-title-text {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .home-kpi-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .header-mobile-brand {
+    margin-right: 6px;
+  }
+  
+  .mobile-brand-name {
+    display: none !important;
+  }
+}
+
 
 
 

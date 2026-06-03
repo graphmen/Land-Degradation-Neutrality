@@ -108,6 +108,11 @@ export default function Header({ isCollapsed, setIsCollapsed }: HeaderProps) {
             </svg>
           </button>
           
+          <div className="header-mobile-brand">
+            <img src="/ema-logo.png" alt="EMA Logo" width="24" height="24" style={{ objectFit: "contain" }} />
+            <span className="mobile-brand-name">Zim LDN</span>
+          </div>
+
           <div className="header-system-title">
             <h1 className="system-title-text">Land Degradation Neutrality Monitoring System</h1>
             <p className="system-subtitle-text">Environmental Management Agency (EMA)</p>
@@ -123,7 +128,7 @@ export default function Header({ isCollapsed, setIsCollapsed }: HeaderProps) {
             title="Sync latest records from Server"
           >
             <span className={isSyncing ? "sync-icon-spin" : ""}>🔄</span>
-            {isSyncing ? "Syncing..." : "Sync data from Server"}
+            <span className="sync-btn-text">{isSyncing ? "Syncing..." : "Sync data from Server"}</span>
           </button>
 
           {/* Notification icon */}
