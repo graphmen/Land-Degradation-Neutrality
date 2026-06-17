@@ -1344,8 +1344,6 @@ export default function DrylandsPage() {
           )}
         </div>
 
-        {/* Render export panel dynamically into sidebar portal */}
-        {mounted && createPortal(exportPanel, document.getElementById("sidebar-export-container")!)}
       </div>
       </div>
       ) : (
