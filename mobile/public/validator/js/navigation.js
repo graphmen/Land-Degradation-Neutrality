@@ -223,3 +223,259 @@ const NavigationEngine = {
     }
   }
 };
+
+// ==========================================================================
+// MinHeap - Priority Queue for fast A* pathfinding
+// ==========================================================================
+class MinHeap {
+  constructor() { this.data = []; }
+  push(item) {
+    this.data.push(item);
+    this.up(this.data.length - 1);
+  }
+  pop() {
+    if (this.data.length === 0) return null;
+    const top = this.data[0];
+    const bottom = this.data.pop();
+    if (this.data.length > 0) {
+      this.data[0] = bottom;
+      this.down(0);
+    }
+    return top;
+  }
+  up(i) {
+    while (i > 0) {
+      const p = (i - 1) >> 1;
+      if (this.data[p].f <= this.data[i].f) break;
+      const tmp = this.data[p]; this.data[p] = this.data[i]; this.data[i] = tmp;
+      i = p;
+    }
+  }
+  down(i) {
+    const len = this.data.length;
+    while ((i << 1) + 1 < len) {
+      let left = (i << 1) + 1;
+      let right = left + 1;
+      let best = (right < len && this.data[right].f < this.data[left].f) ? right : left;
+      if (this.data[i].f <= this.data[best].f) break;
+      const tmp = this.data[i]; this.data[i] = this.data[best]; this.data[best] = tmp;
+      i = best;
+    }
+  }
+}
+
+// ==========================================================================
+// RoadRouter - Offline Road Graph Builder & A* Route Finder
+// ==========================================================================
+const RoadRouter = {
+  graph: {}, // Map of key -> array of { to: key, dist: meters }
+  coordsMap: {}, // Map of key -> [lng, lat]
+  grid: {}, // Spatial grid index: Map of "gridX,gridY" -> Array of keys
+  cellSize: 0.05, // Grid size in degrees (~5.5km)
+  isReady: false,
+
+  buildGraph(geojson) {
+    console.log("Building routing graph from preloaded roads...");
+    const start = Date.now();
+    this.graph = {};
+    this.coordsMap = {};
+    this.grid = {};
+
+    if (!geojson || !geojson.features) {
+      console.warn("No features found in roads geojson");
+      return;
+    }
+
+    geojson.features.forEach(feature => {
+      const coords = feature.geometry.coordinates;
+      if (!coords || coords.length < 2) return;
+
+      for (let i = 0; i < coords.length - 1; i++) {
+        const c1 = coords[i];
+        const c2 = coords[i+1];
+
+        // Format to 5 decimals (~1.1 meter accuracy, avoids floating point duplicates)
+        const key1 = `${c1[0].toFixed(5)},${c1[1].toFixed(5)}`;
+        const key2 = `${c2[0].toFixed(5)},${c2[1].toFixed(5)}`;
+
+        // Calculate Haversine distance
+        const dist = NavigationEngine.calculateDistance(c1[1], c1[0], c2[1], c2[0]);
+
+        if (!this.graph[key1]) this.graph[key1] = [];
+        if (!this.graph[key2]) this.graph[key2] = [];
+
+        this.graph[key1].push({ to: key2, dist: dist });
+        this.graph[key2].push({ to: key1, dist: dist });
+
+        this.coordsMap[key1] = c1;
+        this.coordsMap[key2] = c2;
+      }
+    });
+
+    // Populate grid index from coordsMap
+    for (const key in this.coordsMap) {
+      const c = this.coordsMap[key];
+      const lng = c[0];
+      const lat = c[1];
+      const gridX = Math.floor(lng / this.cellSize);
+      const gridY = Math.floor(lat / this.cellSize);
+      const gridKey = `${gridX},${gridY}`;
+      if (!this.grid[gridKey]) {
+        this.grid[gridKey] = [];
+      }
+      this.grid[gridKey].push(key);
+    }
+
+    this.isReady = true;
+    console.log(`Graph successfully built in ${Date.now() - start}ms. Total nodes: ${Object.keys(this.graph).length}`);
+  },
+
+  // Helper to find the closest road node to a coordinates point (snaps within maxDistance meters)
+  findClosestNode(lat, lng, maxDistanceMeters = 8000) {
+    if (lat === undefined || lat === null || isNaN(lat) || lng === undefined || lng === null || isNaN(lng)) {
+      return null;
+    }
+
+    let closestKey = null;
+    let minDist = Infinity;
+
+    // Fallback to exhaustive search if grid is empty or not built
+    if (!this.grid || Object.keys(this.grid).length === 0) {
+      for (const key in this.coordsMap) {
+        const c = this.coordsMap[key];
+        const dist = NavigationEngine.calculateDistance(lat, lng, c[1], c[0]);
+        if (dist < minDist) {
+          minDist = dist;
+          closestKey = key;
+        }
+      }
+    } else {
+      const latRad = lat * Math.PI / 180;
+      const metersPerDegreeLat = 111320;
+      const metersPerDegreeLng = 111320 * Math.max(0.1, Math.cos(latRad));
+
+      const cellRadiusLat = Math.min(10, Math.max(1, Math.ceil(maxDistanceMeters / (metersPerDegreeLat * this.cellSize))));
+      const cellRadiusLng = Math.min(10, Math.max(1, Math.ceil(maxDistanceMeters / (metersPerDegreeLng * this.cellSize))));
+
+      const qX = Math.floor(lng / this.cellSize);
+      const qY = Math.floor(lat / this.cellSize);
+
+      for (let x = qX - cellRadiusLng; x <= qX + cellRadiusLng; x++) {
+        for (let y = qY - cellRadiusLat; y <= qY + cellRadiusLat; y++) {
+          const gridKey = `${x},${y}`;
+          const keysInCell = this.grid[gridKey];
+          if (!keysInCell) continue;
+
+          for (let i = 0; i < keysInCell.length; i++) {
+            const key = keysInCell[i];
+            const c = this.coordsMap[key];
+            const dist = NavigationEngine.calculateDistance(lat, lng, c[1], c[0]);
+            if (dist < minDist) {
+              minDist = dist;
+              closestKey = key;
+            }
+          }
+        }
+      }
+    }
+
+    if (minDist <= maxDistanceMeters) {
+      return { key: closestKey, dist: minDist, coords: this.coordsMap[closestKey] };
+    }
+    return null;
+  },
+
+  // High-performance A* routing algorithm
+  findRoute(startLat, startLng, endLat, endLng) {
+    if (!this.isReady || Object.keys(this.graph).length === 0) return null;
+
+    // Find closest nodes in road graph to user and target
+    const startNode = this.findClosestNode(startLat, startLng);
+    const endNode = this.findClosestNode(endLat, endLng);
+
+    // If either point is too far from any road, we fail the route and fall back to straight line
+    if (!startNode || !endNode) {
+      return null;
+    }
+
+    const startKey = startNode.key;
+    const endKey = endNode.key;
+
+    // A* algorithm using MinHeap
+    const gScore = {}; // Cost from start along best path
+    const fScore = {}; // Estimated total cost (g + h)
+    const cameFrom = {};
+    const visited = new Set();
+    const openSet = new MinHeap();
+
+    gScore[startKey] = 0;
+    fScore[startKey] = NavigationEngine.calculateDistance(
+      startNode.coords[1], startNode.coords[0],
+      endNode.coords[1], endNode.coords[0]
+    );
+
+    openSet.push({ key: startKey, f: fScore[startKey] });
+
+    let pathFound = false;
+
+    while (openSet.data.length > 0) {
+      const current = openSet.pop();
+      const currKey = current.key;
+
+      if (currKey === endKey) {
+        pathFound = true;
+        break;
+      }
+
+      if (visited.has(currKey)) continue;
+      visited.add(currKey);
+
+      const neighbors = this.graph[currKey] || [];
+      const currCoords = this.coordsMap[currKey];
+
+      for (let i = 0; i < neighbors.length; i++) {
+        const neighbor = neighbors[i];
+        const neighborKey = neighbor.to;
+
+        if (visited.has(neighborKey)) continue;
+
+        const tentativeGScore = gScore[currKey] + neighbor.dist;
+
+        if (gScore[neighborKey] === undefined || tentativeGScore < gScore[neighborKey]) {
+          cameFrom[neighborKey] = currKey;
+          gScore[neighborKey] = tentativeGScore;
+          
+          // Heuristic: Straight-line distance to end node
+          const nCoords = this.coordsMap[neighborKey];
+          const h = NavigationEngine.calculateDistance(
+            nCoords[1], nCoords[0],
+            endNode.coords[1], endNode.coords[0]
+          );
+
+          fScore[neighborKey] = tentativeGScore + h;
+          openSet.push({ key: neighborKey, f: fScore[neighborKey] });
+        }
+      }
+    }
+
+    if (!pathFound) {
+      return null;
+    }
+
+    // Reconstruct road coordinates path
+    const pathLatLngs = [];
+    let currentKey = endKey;
+    while (currentKey !== undefined) {
+      const c = this.coordsMap[currentKey];
+      pathLatLngs.unshift(L.latLng(c[1], c[0]));
+      currentKey = cameFrom[currentKey];
+    }
+
+    return {
+      path: pathLatLngs,
+      startNodeCoords: [startNode.coords[1], startNode.coords[0]],
+      endNodeCoords: [endNode.coords[1], endNode.coords[0]],
+      roadDistance: gScore[endKey]
+    };
+  }
+};

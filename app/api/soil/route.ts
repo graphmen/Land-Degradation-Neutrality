@@ -218,22 +218,26 @@ export async function GET(req: Request) {
       console.log(`Serving Soil records from cache (age: ${Math.round((now - soilCache.timestamp) / 1000)}s)`);
     } else if (!bypassCache) {
       try {
-        const fallback = await loadLocalFallback();
-        records = fallback.records;
-        source = "fallback_cache";
-        
-        // Populate cache for subsequent hits
+        console.log("Cache expired. Fetching fresh Soil records from sources...");
+        const fetched = await fetchSoilRawRecords();
+        records = fetched.records;
+        source = fetched.source;
         soilCache = {
           records,
           source,
           timestamp: now
         };
-        console.log(`Loaded ${records.length} Soil records from local fallback data file (instant load)`);
+        // Update local file with newly fetched raw records
+        const newJson = {
+          count: records.length,
+          records: records
+        };
+        await fs.writeFile(soilDataPath, JSON.stringify(newJson, null, 2), "utf-8");
       } catch (err: any) {
-        console.warn(`Local cache load failed: ${err.message}. Fetching raw records...`);
-        const fetched = await fetchSoilRawRecords();
-        records = fetched.records;
-        source = fetched.source;
+        console.warn(`Live Soil fetch failed: ${err.message}. Falling back to local data file.`);
+        const fallback = await loadLocalFallback();
+        records = fallback.records;
+        source = "fallback_cache";
         soilCache = {
           records,
           source,

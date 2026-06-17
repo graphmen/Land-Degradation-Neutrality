@@ -55,6 +55,16 @@ function extractSoilSamples(rawRecords: any[]) {
   return samples;
 }
 
+function getDrylandDistrict(r: any) {
+  if (r.dist || r.district || r.District) return r.dist || r.district || r.District;
+  const ward = String(r.ward_name || "").toLowerCase();
+  const village = String(r.village_location || "").toLowerCase();
+  if (ward.includes("18") || village.includes("musikavanhu")) return "Chipinge";
+  if (ward.includes("11") || village.includes("gutu")) return "Gutu";
+  if (ward.includes("4") || village.includes("chivi")) return "Chivi";
+  return "Chivi"; // default fallback
+}
+
 const DISTRICT_LIST = [
   "Chimanimani",
   "Bikita",
@@ -95,17 +105,19 @@ const SOIL_TEXTURE_LIST = [
 ];
 
 export default function DatabaseExplorer() {
-  const [activeTab, setActiveTab] = useState<"ldn" | "soil">("ldn");
+  const [activeTab, setActiveTab] = useState<"ldn" | "soil" | "drylands">("ldn");
   
   // Data states
   const [ldnRecords, setLdnRecords] = useState<any[]>([]);
   const [soilRecords, setSoilRecords] = useState<any[]>([]);
+  const [drylandsRecords, setDrylandsRecords] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
   // Modification trackers
   const [ldnMods, setLdnMods] = useState<any>({ additions: [], deletions: [], edits: {} });
   const [soilMods, setSoilMods] = useState<any>({ additions: [], deletions: [], edits: {}, parentEdits: {} });
+  const [drylandsMods, setDrylandsMods] = useState<any>({ additions: [], deletions: [], edits: {} });
   
   // Selection states
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
@@ -114,8 +126,8 @@ export default function DatabaseExplorer() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [districtFilter, setDistrictFilter] = useState("all");
-  const [categoryFilter, setCategoryFilter] = useState("all"); // LULC for LDN, Texture for Soil
-  const [severityOrMoistureFilter, setSeverityOrMoistureFilter] = useState("all"); // Severity for LDN, Moisture for Soil
+  const [categoryFilter, setCategoryFilter] = useState("all"); // LULC for LDN, Texture for Soil, Veg Condition for Drylands
+  const [severityOrMoistureFilter, setSeverityOrMoistureFilter] = useState("all"); // Severity for LDN, Moisture for Soil, Priority for Drylands
   
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -139,6 +151,10 @@ export default function DatabaseExplorer() {
     tex: true,
     moisture: true,
     dep: true,
+    village: true,
+    priority: true,
+    vegetation: true,
+    soil_type: true,
     status: true,
     actions: true
   });
@@ -160,22 +176,69 @@ export default function DatabaseExplorer() {
     setLoading(true);
     setError(null);
     try {
-      const [ldnRes, soilRes, ldnModifications, soilModifications] = await Promise.all([
+      const [ldnRes, soilRes, drylandsRes, ldnModifications, soilModifications, drylandsModifications] = await Promise.all([
         fetch("/api/ldn?limit=5000", { cache: "no-store" }).then(r => r.json()).catch(() => ({ records: [] })),
         fetch("/api/soil?limit=5000", { cache: "no-store" }).then(r => r.json()).catch(() => ({ records: [] })),
+        fetch("/api/drylands?limit=5000", { cache: "no-store" }).then(r => r.json()).catch(() => ({ records: [] })),
         fetch("/api/ldn?action=modifications", { cache: "no-store" }).then(r => r.json()).catch(() => ({ additions: [], deletions: [], edits: {} })),
-        fetch("/api/soil?action=modifications", { cache: "no-store" }).then(r => r.json()).catch(() => ({ additions: [], deletions: [], edits: {}, parentEdits: {} }))
+        fetch("/api/soil?action=modifications", { cache: "no-store" }).then(r => r.json()).catch(() => ({ additions: [], deletions: [], edits: {}, parentEdits: {} })),
+        fetch("/api/drylands?action=modifications", { cache: "no-store" }).then(r => r.json()).catch(() => ({ additions: [], deletions: [], edits: {} }))
       ]);
 
       const normalisedLdn = (ldnRes.records ?? []).map(normalise);
       const normalisedSoil = extractSoilSamples((soilRes.records ?? []).map(normalise));
+      const normalisedDrylands = (drylandsRes.records ?? []).map(normalise);
       
       setLdnRecords(normalisedLdn);
       setSoilRecords(normalisedSoil);
+      setDrylandsRecords(normalisedDrylands);
       setLdnMods(ldnModifications);
       setSoilMods(soilModifications);
+      setDrylandsMods(drylandsModifications);
     } catch (e: any) {
       setError(e.message || "Failed to load telemetry datasets from server.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSyncDatabase = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // 1. POST to /api/sync to trigger the python download_ldn.py script on the server
+      const syncRes = await fetch("/api/sync", {
+        method: "POST",
+        cache: "no-store"
+      });
+      
+      if (!syncRes.ok) {
+        const errJson = await syncRes.json().catch(() => ({}));
+        throw new Error(errJson.error || "Failed to trigger live sync on the server.");
+      }
+
+      // 2. Fetch fresh records from endpoints with bypassCache=true
+      const [ldnRes, soilRes, drylandsRes, ldnModifications, soilModifications, drylandsModifications] = await Promise.all([
+        fetch("/api/ldn?limit=5000&bypassCache=true", { cache: "no-store" }).then(r => r.json()).catch(() => ({ records: [] })),
+        fetch("/api/soil?limit=5000&bypassCache=true", { cache: "no-store" }).then(r => r.json()).catch(() => ({ records: [] })),
+        fetch("/api/drylands?limit=5000", { cache: "no-store" }).then(r => r.json()).catch(() => ({ records: [] })),
+        fetch("/api/ldn?action=modifications", { cache: "no-store" }).then(r => r.json()).catch(() => ({ additions: [], deletions: [], edits: {} })),
+        fetch("/api/soil?action=modifications", { cache: "no-store" }).then(r => r.json()).catch(() => ({ additions: [], deletions: [], edits: {}, parentEdits: {} })),
+        fetch("/api/drylands?action=modifications", { cache: "no-store" }).then(r => r.json()).catch(() => ({ additions: [], deletions: [], edits: {} }))
+      ]);
+
+      const normalisedLdn = (ldnRes.records ?? []).map(normalise);
+      const normalisedSoil = extractSoilSamples((soilRes.records ?? []).map(normalise));
+      const normalisedDrylands = (drylandsRes.records ?? []).map(normalise);
+      
+      setLdnRecords(normalisedLdn);
+      setSoilRecords(normalisedSoil);
+      setDrylandsRecords(normalisedDrylands);
+      setLdnMods(ldnModifications);
+      setSoilMods(soilModifications);
+      setDrylandsMods(drylandsModifications);
+    } catch (e: any) {
+      setError(e.message || "Failed to sync database telemetry.");
     } finally {
       setLoading(false);
     }
@@ -199,28 +262,33 @@ export default function DatabaseExplorer() {
   }, [activeTab]);
 
   // Determine active modification tracker
-  const activeMods = activeTab === "ldn" ? ldnMods : soilMods;
-  const activeRecords = activeTab === "ldn" ? ldnRecords : soilRecords;
+  const activeMods = activeTab === "ldn" ? ldnMods : (activeTab === "soil" ? soilMods : drylandsMods);
+  const activeRecords = activeTab === "ldn" ? ldnRecords : (activeTab === "soil" ? soilRecords : drylandsRecords);
 
   // Dynamic filter dropdown options
   const filterOptions = useMemo(() => {
-    const records = activeTab === "ldn" ? ldnRecords : soilRecords;
+    const records = activeTab === "ldn" ? ldnRecords : (activeTab === "soil" ? soilRecords : drylandsRecords);
     const districts = new Set<string>();
     const categories = new Set<string>();
     const extraOptions = new Set<string>();
 
     records.forEach(r => {
-      const dist = r.dist || r["geninfo/dist"] || r.district || r.District || r._mapped_dist;
+      const dist = r.dist || r["geninfo/dist"] || r.district || r.District || r._mapped_dist || getDrylandDistrict(r);
       if (dist) districts.add(dist);
 
       if (activeTab === "ldn") {
         if (r.landus) categories.add(r.landus);
         if (r.sev) extraOptions.add(r.sev);
-      } else {
+      } else if (activeTab === "soil") {
         const tex = r.tex || r["sampl/tex"] || r.texture || r._mapped_tex;
         if (tex) categories.add(tex);
         const moist = r.moisture || r["sampl/moisture"] || r._mapped_moist;
         if (moist) extraOptions.add(moist);
+      } else {
+        const soil = r.dominant_soil_type || r.dominant_soil_type_other;
+        if (soil) categories.add(soil);
+        const veg = r.vegetation_condition;
+        if (veg) extraOptions.add(veg);
       }
     });
 
@@ -229,18 +297,18 @@ export default function DatabaseExplorer() {
       categories: Array.from(categories).sort(),
       extraOptions: Array.from(extraOptions).sort()
     };
-  }, [activeTab, ldnRecords, soilRecords]);
+  }, [activeTab, ldnRecords, soilRecords, drylandsRecords]);
 
   // Filter & Sort logic
   const processedRecords = useMemo(() => {
-    const rawList = activeTab === "ldn" ? ldnRecords : soilRecords;
+    const rawList = activeTab === "ldn" ? ldnRecords : (activeTab === "soil" ? soilRecords : drylandsRecords);
     
     const filtered = rawList.filter(r => {
-      const dist = String(r.dist || r["geninfo/dist"] || r.district || r.District || r._mapped_dist || "").toLowerCase();
-      const ward = String(r.ward || "").toLowerCase();
-      const ceid = String(r.ceid || r.samplid || r["sampl/samplid"] || "").toLowerCase();
-      const agent = String(r.agent || "").toLowerCase();
-      const localname = String(r.localname || r.samloc || r["sampl/samloc"] || "").toLowerCase();
+      const dist = String(r.dist || r["geninfo/dist"] || r.district || r.District || r._mapped_dist || getDrylandDistrict(r) || "").toLowerCase();
+      const ward = String(r.ward || r.ward_name || "").toLowerCase();
+      const ceid = String(r.ceid || r.samplid || r["sampl/samplid"] || r._id || "").toLowerCase();
+      const agent = String(r.agent || r.enumerator_name || "").toLowerCase();
+      const localname = String(r.localname || r.samloc || r["sampl/samloc"] || r.village_location || "").toLowerCase();
       
       const searchStr = searchQuery.toLowerCase();
       const matchesSearch = 
@@ -251,12 +319,12 @@ export default function DatabaseExplorer() {
         localname.includes(searchStr);
 
       const matchDistrict = districtFilter === "all" || 
-        (r.dist || r["geninfo/dist"] || r.district || r.District || r._mapped_dist) === districtFilter;
+        (r.dist || r["geninfo/dist"] || r.district || r.District || r._mapped_dist || getDrylandDistrict(r)) === districtFilter;
 
-      const rCat = activeTab === "ldn" ? r.landus : (r.tex || r["sampl/tex"] || r.texture || r._mapped_tex);
+      const rCat = activeTab === "ldn" ? r.landus : (activeTab === "soil" ? (r.tex || r["sampl/tex"] || r.texture || r._mapped_tex) : (r.dominant_soil_type || r.dominant_soil_type_other));
       const matchCategory = categoryFilter === "all" || rCat === categoryFilter;
 
-      const rExtra = activeTab === "ldn" ? r.sev : (r.moisture || r["sampl/moisture"] || r._mapped_moist);
+      const rExtra = activeTab === "ldn" ? r.sev : (activeTab === "soil" ? (r.moisture || r["sampl/moisture"] || r._mapped_moist) : r.vegetation_condition);
       const matchExtra = severityOrMoistureFilter === "all" || rExtra === severityOrMoistureFilter;
 
       let matchesStatus = true;
@@ -268,11 +336,19 @@ export default function DatabaseExplorer() {
           
           if (statusFilter === "hotspot" && !isHotspot) matchesStatus = false;
           if (statusFilter === "brightspot" && !isBrightSpot) matchesStatus = false;
-        } else {
+        } else if (activeTab === "soil") {
           const tex = String(r.tex || r["sampl/tex"] || r.texture || r._mapped_tex || "").toLowerCase();
           const moist = String(r.moisture || r["sampl/moisture"] || r._mapped_moist || "").toLowerCase();
           const isHotspot = tex.includes("sand") && moist.includes("dry");
           const isBrightSpot = tex.includes("loam") || tex.includes("silt");
+          
+          if (statusFilter === "hotspot" && !isHotspot) matchesStatus = false;
+          if (statusFilter === "brightspot" && !isBrightSpot) matchesStatus = false;
+        } else {
+          const priority = String(r.priority_level || "").toLowerCase();
+          const veg = String(r.vegetation_condition || "").toLowerCase();
+          const isHotspot = priority.includes("high") || priority.includes("critical") || veg.includes("severe");
+          const isBrightSpot = veg.includes("intact") || priority.includes("low");
           
           if (statusFilter === "hotspot" && !isHotspot) matchesStatus = false;
           if (statusFilter === "brightspot" && !isBrightSpot) matchesStatus = false;
@@ -286,10 +362,24 @@ export default function DatabaseExplorer() {
       let aVal = a[sortField];
       let bVal = b[sortField];
 
+      if (sortField === "_submission_time") {
+        aVal = a._submission_time || a.date_of_observation || "";
+        bVal = b._submission_time || b.date_of_observation || "";
+      } else if (sortField === "ceid") {
+        aVal = a.ceid || a.samplid || a["sampl/samplid"] || String(a._id) || "";
+        bVal = b.ceid || b.samplid || b["sampl/samplid"] || String(b._id) || "";
+      } else if (sortField === "dist") {
+        aVal = a.dist || a["geninfo/dist"] || a.district || a.District || a._mapped_dist || getDrylandDistrict(a) || "";
+        bVal = b.dist || b["geninfo/dist"] || b.district || b.District || b._mapped_dist || getDrylandDistrict(b) || "";
+      } else if (sortField === "priority_level") {
+        aVal = a.priority_level || "";
+        bVal = b.priority_level || "";
+      }
+
       if (aVal === undefined || aVal === null) return sortDirection === "asc" ? 1 : -1;
       if (bVal === undefined || bVal === null) return sortDirection === "asc" ? -1 : 1;
 
-      if (sortField === "depth" || sortField === "dep" || sortField === "sampl/dep" || sortField === "ward") {
+      if (sortField === "depth" || sortField === "dep" || sortField === "sampl/dep" || sortField === "ward" || sortField === "estimated_vegetation_cover") {
         aVal = parseFloat(aVal) || 0;
         bVal = parseFloat(bVal) || 0;
       } else {
@@ -301,28 +391,28 @@ export default function DatabaseExplorer() {
       if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
-  }, [activeTab, ldnRecords, soilRecords, searchQuery, statusFilter, districtFilter, categoryFilter, severityOrMoistureFilter, sortField, sortDirection]);
+  }, [activeTab, ldnRecords, soilRecords, drylandsRecords, searchQuery, statusFilter, districtFilter, categoryFilter, severityOrMoistureFilter, sortField, sortDirection]);
 
   // Tab KPI calculations
   const tabKPIs = useMemo(() => {
-    const records = activeTab === "ldn" ? ldnRecords : soilRecords;
+    const records = activeTab === "ldn" ? ldnRecords : (activeTab === "soil" ? soilRecords : drylandsRecords);
     const total = records.length;
     
     let hotspots = 0;
     let brightspots = 0;
-    let totalDepthOrDist = 0;
-    let countDepth = 0;
+    let totalDepthOrCover = 0;
+    let countDepthOrCover = 0;
     const uniqueDistricts = new Set();
 
     records.forEach(r => {
-      const dist = r.dist || r["geninfo/dist"] || r.district || r.District || r._mapped_dist;
+      const dist = r.dist || r["geninfo/dist"] || r.district || r.District || r._mapped_dist || getDrylandDistrict(r);
       if (dist) uniqueDistricts.add(dist);
 
       if (activeTab === "ldn") {
         const sev = String(r.sev || "").toLowerCase();
         if (sev.includes("high") || sev.includes("severe") || sev.includes("critical")) hotspots++;
         if (sev.includes("low") || sev.includes("minimal") || sev.includes("stable") || sev.includes("none")) brightspots++;
-      } else {
+      } else if (activeTab === "soil") {
         const tex = String(r.tex || r["sampl/tex"] || r.texture || r._mapped_tex || "").toLowerCase();
         const moist = String(r.moisture || r["sampl/moisture"] || r._mapped_moist || "").toLowerCase();
         if (tex.includes("sand") && moist.includes("dry")) hotspots++;
@@ -330,8 +420,19 @@ export default function DatabaseExplorer() {
         
         const dep = r.dep || r["sampl/dep"] || r.depth || r.Depth;
         if (dep && !isNaN(parseFloat(dep))) {
-          totalDepthOrDist += parseFloat(dep);
-          countDepth++;
+          totalDepthOrCover += parseFloat(dep);
+          countDepthOrCover++;
+        }
+      } else {
+        const priority = String(r.priority_level || "").toLowerCase();
+        const veg = String(r.vegetation_condition || "").toLowerCase();
+        if (priority.includes("high") || priority.includes("critical") || veg.includes("severe")) hotspots++;
+        if (veg.includes("intact") || priority.includes("low")) brightspots++;
+        
+        const cover = r.estimated_vegetation_cover;
+        if (cover !== undefined && cover !== null && !isNaN(parseFloat(cover))) {
+          totalDepthOrCover += parseFloat(cover);
+          countDepthOrCover++;
         }
       }
     });
@@ -341,9 +442,9 @@ export default function DatabaseExplorer() {
       hotspots,
       brightspots,
       uniqueDistricts: uniqueDistricts.size,
-      avgDepth: countDepth > 0 ? (totalDepthOrDist / countDepth).toFixed(1) : "0"
+      avgDepthOrCover: countDepthOrCover > 0 ? (totalDepthOrCover / countDepthOrCover).toFixed(1) : "0"
     };
-  }, [activeTab, ldnRecords, soilRecords]);
+  }, [activeTab, ldnRecords, soilRecords, drylandsRecords]);
 
   // Current paginated slice
   const paginatedRecords = useMemo(() => {
@@ -490,7 +591,7 @@ export default function DatabaseExplorer() {
         lat: "-19.73",
         lng: "32.41"
       });
-    } else {
+    } else if (activeTab === "soil") {
       setFormData({
         ceid: "",
         dist: DISTRICT_LIST[0],
@@ -502,6 +603,24 @@ export default function DatabaseExplorer() {
         dep: "30",
         lat: "-19.73",
         lng: "32.41"
+      });
+    } else {
+      setFormData({
+        ceid: "",
+        enumerator_name: "Admin",
+        date_of_observation: new Date().toISOString().split("T")[0],
+        ward_name: "Ward 1",
+        village_location: "",
+        lat: "-20.00",
+        lng: "30.00",
+        dominant_soil_type: "Jecha (Sandy)",
+        vegetation_condition: "Intact",
+        estimated_vegetation_cover: "50",
+        soil_erosion_present: "No",
+        erosion_severity: "None",
+        priority_level: "Low",
+        recommended_interventions: "",
+        dist: DISTRICT_LIST[0]
       });
     }
     setIsAddModalOpen(true);
@@ -524,7 +643,7 @@ export default function DatabaseExplorer() {
         lat: parts[0] || "-19.73",
         lng: parts[1] || "32.41"
       });
-    } else {
+    } else if (activeTab === "soil") {
       const poinStr = r["sampl/poin"] || r.poin || "";
       const parts = poinStr.split(" ");
       setFormData({
@@ -539,6 +658,28 @@ export default function DatabaseExplorer() {
         lat: parts[0] || "-19.73",
         lng: parts[1] || "32.41"
       });
+    } else {
+      const gpsStr = r.coordinates || "";
+      const parts = gpsStr.split(" ");
+      setFormData({
+        ceid: r._id || r.ceid || "",
+        enumerator_name: r.enumerator_name || r.agent || "Admin",
+        date_of_observation: r.date_of_observation || new Date().toISOString().split("T")[0],
+        ward_name: r.ward_name || "Ward 1",
+        village_location: r.village_location || "",
+        lat: parts[0] || "-20.00",
+        lng: parts[1] || "30.00",
+        dominant_soil_type: r.dominant_soil_type || "Jecha (Sandy)",
+        vegetation_condition: r.vegetation_condition || "Intact",
+        estimated_vegetation_cover: String(r.estimated_vegetation_cover ?? "50"),
+        soil_erosion_present: r.soil_erosion_present || "No",
+        erosion_severity: r.erosion_severity || "None",
+        priority_level: r.priority_level || "Low",
+        recommended_interventions: Array.isArray(r.recommended_interventions)
+          ? r.recommended_interventions.join(", ")
+          : (r.recommended_interventions || ""),
+        dist: r.dist || r.district || getDrylandDistrict(r)
+      });
     }
     setIsEditModalOpen(true);
   };
@@ -549,7 +690,7 @@ export default function DatabaseExplorer() {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.ceid) {
+    if (activeTab !== "drylands" && !formData.ceid) {
       setFormError("Identifier is required.");
       return;
     }
@@ -567,7 +708,7 @@ export default function DatabaseExplorer() {
         payload["poidet/landus"] = formData.landus;
         payload["ldi/sev"] = formData.sev;
         payload["geninfo/GPS"] = `${formData.lat} ${formData.lng} 0 0`;
-      } else {
+      } else if (activeTab === "soil") {
         payload["geninfo/ceid"] = formData.ceid;
         payload["geninfo/dist"] = formData.dist;
         payload["geninfo/ward"] = formData.ward;
@@ -578,6 +719,28 @@ export default function DatabaseExplorer() {
         payload["sampl/dep"] = formData.dep;
         payload["sampl/poin"] = `${formData.lat} ${formData.lng} 0 0`;
         payload.poin = payload["sampl/poin"];
+      } else {
+        payload.enumerator_name = formData.enumerator_name || formData.agent || "Admin";
+        payload.date_of_observation = formData.date_of_observation || new Date().toISOString().split("T")[0];
+        payload.ward_name = formData.ward_name || "Ward 1";
+        payload.village_location = formData.village_location || "";
+        payload.coordinates = `${formData.lat} ${formData.lng}`;
+        payload.dominant_soil_type = formData.dominant_soil_type || "Jecha (Sandy)";
+        payload.vegetation_condition = formData.vegetation_condition || "Intact";
+        payload.estimated_vegetation_cover = Number(formData.estimated_vegetation_cover) || 50;
+        payload.soil_erosion_present = formData.soil_erosion_present || "No";
+        payload.erosion_severity = formData.erosion_severity || "None";
+        payload.priority_level = formData.priority_level || "Low";
+        if (typeof formData.recommended_interventions === "string") {
+          payload.recommended_interventions = formData.recommended_interventions
+            .split(/[,;]+/)
+            .map((s: string) => s.trim())
+            .filter(Boolean);
+        } else {
+          payload.recommended_interventions = formData.recommended_interventions || [];
+        }
+        payload.dist = formData.dist || DISTRICT_LIST[0];
+        payload.district = payload.dist;
       }
 
       if (isEditModalOpen && editingRecord) {
@@ -657,7 +820,7 @@ export default function DatabaseExplorer() {
         return <span className="site-badge active-status" style={{ padding: "1px 6px", fontSize: "10px" }}>🌟 Bright Spot</span>;
       }
       return <span className="site-badge warning-status" style={{ padding: "1px 6px", fontSize: "10px" }}>Baseline</span>;
-    } else {
+    } else if (activeTab === "soil") {
       const tex = String(r.tex || r["sampl/tex"] || r.texture || r._mapped_tex || "").toLowerCase();
       const moist = String(r.moisture || r["sampl/moisture"] || r._mapped_moist || "").toLowerCase();
       
@@ -668,6 +831,16 @@ export default function DatabaseExplorer() {
         return <span className="site-badge active-status" style={{ padding: "1px 6px", fontSize: "10px" }}>🌟 Fertile</span>;
       }
       return <span className="site-badge warning-status" style={{ padding: "1px 6px", fontSize: "10px" }}>Mixed</span>;
+    } else {
+      const priority = String(r.priority_level || "").toLowerCase();
+      const veg = String(r.vegetation_condition || "").toLowerCase();
+      if (priority.includes("high") || priority.includes("critical") || veg.includes("severe")) {
+        return <span className="site-badge danger-status" style={{ padding: "1px 6px", fontSize: "10px" }}>⚠️ Hotspot</span>;
+      }
+      if (veg.includes("intact") || priority.includes("low")) {
+        return <span className="site-badge active-status" style={{ padding: "1px 6px", fontSize: "10px" }}>🌟 Bright Spot</span>;
+      }
+      return <span className="site-badge warning-status" style={{ padding: "1px 6px", fontSize: "10px" }}>Stable</span>;
     }
   };
 
@@ -682,7 +855,7 @@ export default function DatabaseExplorer() {
         return <span className="site-badge warning-status" style={{fontSize: "9px", padding: "1px 4px"}}>{sev}</span>;
       }
       return <span className="site-badge active-status" style={{fontSize: "9px", padding: "1px 4px"}}>{sev}</span>;
-    } else {
+    } else if (activeTab === "soil") {
       const moist = r.moisture || r["sampl/moisture"] || r._mapped_moist || "Unknown";
       const m = moist.toLowerCase();
       if (m.includes("dry")) {
@@ -692,6 +865,16 @@ export default function DatabaseExplorer() {
         return <span className="site-badge active-status" style={{fontSize: "9px", padding: "1px 4px"}}>{moist}</span>;
       }
       return <span className="site-badge" style={{fontSize: "9px", padding: "1px 4px", background: "#e2e8f0", color: "#475569"}}>{moist}</span>;
+    } else {
+      const priority = r.priority_level || "Low";
+      const p = priority.toLowerCase();
+      if (p.includes("high") || p.includes("critical")) {
+        return <span className="site-badge danger-status" style={{fontSize: "9px", padding: "1px 4px"}}>{priority}</span>;
+      }
+      if (p.includes("medium")) {
+        return <span className="site-badge warning-status" style={{fontSize: "9px", padding: "1px 4px"}}>{priority}</span>;
+      }
+      return <span className="site-badge active-status" style={{fontSize: "9px", padding: "1px 4px"}}>{priority}</span>;
     }
   };
 
@@ -760,7 +943,7 @@ export default function DatabaseExplorer() {
           </button>
 
           <button 
-            onClick={loadData}
+            onClick={handleSyncDatabase}
             disabled={loading}
             className="sidebar-export-btn"
             style={{ padding: "6px 12px", fontSize: "11px", gap: "4px", display: "flex", alignItems: "center", background: "#ffffff", border: "1px solid var(--border-color)", color: "var(--text-green)", cursor: "pointer", borderRadius: "var(--radius-md)" }}
@@ -810,12 +993,31 @@ export default function DatabaseExplorer() {
         >
           🧪 Soil Core Samples
         </button>
+        <button
+          onClick={() => setActiveTab("drylands")}
+          style={{
+            background: "none",
+            border: "none",
+            borderBottom: activeTab === "drylands" ? "3px solid var(--accent-gold)" : "3px solid transparent",
+            color: activeTab === "drylands" ? "var(--accent-gold)" : "var(--text-muted)",
+            fontWeight: activeTab === "drylands" ? 700 : 500,
+            fontSize: "13px",
+            padding: "4px 8px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            transition: "all 0.2s"
+          }}
+        >
+          🏜️ Drylands Observations
+        </button>
       </div>
 
       {/* Loading Overlay */}
       {loading ? (
         <div style={{ display: "flex", flexDirection: "column", flex: 1, alignItems: "center", justifyContent: "center", minHeight: "300px", gap: "10px" }}>
-          <div className="spinner" style={{ borderTopColor: activeTab === "ldn" ? "var(--accent-green)" : "var(--accent-amber)" }} />
+          <div className="spinner" style={{ borderTopColor: activeTab === "ldn" ? "var(--accent-green)" : (activeTab === "soil" ? "var(--accent-amber)" : "var(--accent-gold)") }} />
           <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>Reading database cache...</span>
         </div>
       ) : error ? (
@@ -833,28 +1035,28 @@ export default function DatabaseExplorer() {
             <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.5px" }}>Metrics:</span>
             
             <div style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "11px" }}>
-              <span style={{ fontWeight: 700, color: activeTab === 'ldn' ? 'var(--text-green)' : 'var(--accent-amber)' }}>{tabKPIs.total}</span>
+              <span style={{ fontWeight: 700, color: activeTab === 'ldn' ? 'var(--text-green)' : (activeTab === 'soil' ? 'var(--accent-amber)' : 'var(--accent-gold)') }}>{tabKPIs.total}</span>
               <span style={{ color: "var(--text-muted)" }}>Total Records</span>
             </div>
             <div style={{ width: "1px", height: "10px", background: "var(--border-color)" }} />
             
             <div style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "11px" }}>
               <span style={{ fontWeight: 700, color: "var(--accent-rose)" }}>{tabKPIs.hotspots}</span>
-              <span style={{ color: "var(--text-muted)" }}>{activeTab === 'ldn' ? 'Degraded Hotspots' : 'Vulnerable Cores'}</span>
+              <span style={{ color: "var(--text-muted)" }}>{activeTab === 'ldn' ? 'Degraded Hotspots' : (activeTab === 'soil' ? 'Vulnerable Cores' : 'Degraded Hotspots')}</span>
             </div>
             <div style={{ width: "1px", height: "10px", background: "var(--border-color)" }} />
             
             <div style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "11px" }}>
               <span style={{ fontWeight: 700, color: "#10b981" }}>{tabKPIs.brightspots}</span>
-              <span style={{ color: "var(--text-muted)" }}>{activeTab === 'ldn' ? 'Restored Bright Spots' : 'Fertile Cores'}</span>
+              <span style={{ color: "var(--text-muted)" }}>{activeTab === 'ldn' ? 'Restored Bright Spots' : (activeTab === 'soil' ? 'Fertile Cores' : 'Intact Vegetation')}</span>
             </div>
             <div style={{ width: "1px", height: "10px", background: "var(--border-color)" }} />
             
             <div style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "11px" }}>
               <span style={{ fontWeight: 700, color: "#3b82f6" }}>
-                {activeTab === 'ldn' ? tabKPIs.uniqueDistricts : `${tabKPIs.avgDepth} cm`}
+                {activeTab === 'ldn' ? tabKPIs.uniqueDistricts : (activeTab === 'soil' ? `${tabKPIs.avgDepthOrCover} cm` : `${tabKPIs.avgDepthOrCover}%`)}
               </span>
-              <span style={{ color: "var(--text-muted)" }}>{activeTab === 'ldn' ? 'Districts Monitored' : 'Avg Depth'}</span>
+              <span style={{ color: "var(--text-muted)" }}>{activeTab === 'ldn' ? 'Districts Monitored' : (activeTab === 'soil' ? 'Avg Depth' : 'Avg Cover')}</span>
             </div>
           </div>
 
@@ -909,7 +1111,7 @@ export default function DatabaseExplorer() {
               onChange={(e) => { setCategoryFilter(e.target.value); setCurrentPage(1); }}
               style={{ padding: "4px 6px", fontSize: "11px", border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)", outline: "none", background: "#ffffff" }}
             >
-              <option value="all">{activeTab === 'ldn' ? 'All Land Covers' : 'All Textures'}</option>
+              <option value="all">{activeTab === 'ldn' ? 'All Land Covers' : (activeTab === 'soil' ? 'All Textures' : 'All Soil Types')}</option>
               {filterOptions.categories.map(c => (
                 <option key={c} value={c}>{c}</option>
               ))}
@@ -921,7 +1123,7 @@ export default function DatabaseExplorer() {
               onChange={(e) => { setSeverityOrMoistureFilter(e.target.value); setCurrentPage(1); }}
               style={{ padding: "4px 6px", fontSize: "11px", border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)", outline: "none", background: "#ffffff" }}
             >
-              <option value="all">{activeTab === 'ldn' ? 'All Severities' : 'All Moisture Levels'}</option>
+              <option value="all">{activeTab === 'ldn' ? 'All Severities' : (activeTab === 'soil' ? 'All Moisture Levels' : 'All Vegetation Conditions')}</option>
               {filterOptions.extraOptions.map(o => (
                 <option key={o} value={o}>{o}</option>
               ))}
@@ -934,8 +1136,8 @@ export default function DatabaseExplorer() {
               style={{ padding: "4px 6px", fontSize: "11px", border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)", outline: "none", background: "#ffffff" }}
             >
               <option value="all">All Status Classes</option>
-              <option value="hotspot">{activeTab === 'ldn' ? 'Degraded Hotspots ⚠️' : 'Vulnerable Cores ⚠️'}</option>
-              <option value="brightspot">{activeTab === 'ldn' ? 'Restored Bright Spots 🌟' : 'Fertile Cores 🌟'}</option>
+              <option value="hotspot">{activeTab === 'ldn' ? 'Degraded Hotspots ⚠️' : (activeTab === 'soil' ? 'Vulnerable Cores ⚠️' : 'Degraded Hotspots ⚠️')}</option>
+              <option value="brightspot">{activeTab === 'ldn' ? 'Restored Bright Spots 🌟' : (activeTab === 'soil' ? 'Fertile Cores 🌟' : 'Intact Vegetation 🌟')}</option>
             </select>
 
             <button
@@ -991,8 +1193,9 @@ export default function DatabaseExplorer() {
                     Toggle Columns
                   </div>
                   {Object.keys(visibleColumns).map(col => {
-                    if (activeTab === "ldn" && ["tex", "moisture", "dep"].includes(col)) return null;
-                    if (activeTab === "soil" && ["landus", "sev"].includes(col)) return null;
+                    if (activeTab === "ldn" && ["tex", "moisture", "dep", "village", "priority", "vegetation", "soil_type"].includes(col)) return null;
+                    if (activeTab === "soil" && ["landus", "sev", "village", "priority", "vegetation", "soil_type"].includes(col)) return null;
+                    if (activeTab === "drylands" && ["landus", "sev", "tex", "moisture", "dep"].includes(col)) return null;
                     
                     const label = col === "idx" ? "Index Row"
                       : col === "submission_time" ? "Submission Date" 
@@ -1000,6 +1203,10 @@ export default function DatabaseExplorer() {
                       : col === "sev" ? "Severity"
                       : col === "tex" ? "Texture"
                       : col === "dep" ? "Depth"
+                      : col === "village" ? "Village Location"
+                      : col === "priority" ? "Priority Level"
+                      : col === "vegetation" ? "Vegetation Condition"
+                      : col === "soil_type" ? "Dominant Soil Type"
                       : col.charAt(0).toUpperCase() + col.slice(1);
                       
                     return (
@@ -1024,8 +1231,8 @@ export default function DatabaseExplorer() {
                 onClick={() => handleDownload("csv", false)}
                 style={{
                   padding: "4px 8px", fontSize: "11px", fontWeight: 600,
-                  background: activeTab === 'ldn' ? 'var(--accent-green)' : 'var(--accent-amber)',
-                  color: "#ffffff", border: "none", borderRadius: "var(--radius-sm)", cursor: "pointer",
+                  background: activeTab === 'ldn' ? 'var(--accent-green)' : (activeTab === 'soil' ? 'var(--accent-amber)' : 'var(--accent-gold)'),
+                  color: activeTab === 'drylands' ? 'var(--text-primary)' : '#ffffff', border: "none", borderRadius: "var(--radius-sm)", cursor: "pointer",
                   display: "flex", alignItems: "center", gap: "4px"
                 }}
               >
@@ -1135,7 +1342,7 @@ export default function DatabaseExplorer() {
                           </th>
                         )}
                       </>
-                    ) : (
+                    ) : activeTab === "soil" ? (
                       <>
                         {visibleColumns.tex && <th style={{ padding: "6px 8px", color: "var(--text-muted)", fontWeight: 700 }}>Texture</th>}
                         {visibleColumns.moisture && <th style={{ padding: "6px 8px", color: "var(--text-muted)", fontWeight: 700 }}>Moisture</th>}
@@ -1146,6 +1353,22 @@ export default function DatabaseExplorer() {
                           >
                             <div style={{ display: "flex", alignItems: "center", gap: "3px" }}>
                               Depth (cm) <ArrowUpDown size={11} />
+                            </div>
+                          </th>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {visibleColumns.village && <th style={{ padding: "6px 8px", color: "var(--text-muted)", fontWeight: 700 }}>Village Location</th>}
+                        {visibleColumns.soil_type && <th style={{ padding: "6px 8px", color: "var(--text-muted)", fontWeight: 700 }}>Soil Type</th>}
+                        {visibleColumns.vegetation && <th style={{ padding: "6px 8px", color: "var(--text-muted)", fontWeight: 700 }}>Veg Condition</th>}
+                        {visibleColumns.priority && (
+                          <th 
+                            onClick={() => handleSort("priority_level")}
+                            style={{ padding: "6px 8px", color: "var(--text-muted)", fontWeight: 700, cursor: "pointer" }}
+                          >
+                            <div style={{ display: "flex", alignItems: "center", gap: "3px" }}>
+                              Priority Level <ArrowUpDown size={11} />
                             </div>
                           </th>
                         )}
@@ -1161,7 +1384,7 @@ export default function DatabaseExplorer() {
                 <tbody>
                   {paginatedRecords.length === 0 ? (
                     <tr>
-                      <td colSpan={ activeTab === "ldn" ? 11 : 12 } style={{ padding: "20px", textAlign: "center", color: "var(--text-muted)" }}>
+                      <td colSpan={ activeTab === "ldn" ? 11 : (activeTab === "soil" ? 12 : 13) } style={{ padding: "20px", textAlign: "center", color: "var(--text-muted)" }}>
                         No records match the active query. Try modifying your search or dropdown filters.
                       </td>
                     </tr>
@@ -1169,11 +1392,13 @@ export default function DatabaseExplorer() {
                     paginatedRecords.map((r, index) => {
                       const rid = String(r._id);
                       const rowIdx = (currentPage - 1) * itemsPerPage + index + 1;
-                      const dateStr = r._submission_time ? new Date(r._submission_time).toLocaleDateString() : "—";
-                      const dist = r.dist || r["geninfo/dist"] || r.district || r.District || r._mapped_dist || "—";
-                      const ward = r.ward || "—";
-                      const agent = r.agent || "—";
-                      const ceid = r.ceid || r.samplid || r["sampl/samplid"] || "—";
+                      const dateStr = r._submission_time || r.date_of_observation
+                        ? new Date(r._submission_time || r.date_of_observation).toLocaleDateString()
+                        : "—";
+                      const dist = r.dist || r["geninfo/dist"] || r.district || r.District || r._mapped_dist || getDrylandDistrict(r) || "—";
+                      const ward = r.ward || r.ward_name || "—";
+                      const agent = r.agent || r.enumerator_name || "—";
+                      const ceid = r.ceid || r.samplid || r["sampl/samplid"] || r._id || "—";
 
                       return (
                         <tr 
@@ -1219,7 +1444,7 @@ export default function DatabaseExplorer() {
                           )}
                           {visibleColumns.submission_time && <td style={{ padding: "6px 8px" }}>{dateStr}</td>}
                           {visibleColumns.district && <td style={{ padding: "6px 8px", fontWeight: 600 }}>{dist}</td>}
-                          {visibleColumns.ward && <td style={{ padding: "6px 8px" }}>Ward {ward}</td>}
+                          {visibleColumns.ward && <td style={{ padding: "6px 8px" }}>{ward.startsWith("Ward") ? ward : `Ward ${ward}`}</td>}
                           {visibleColumns.agent && <td style={{ padding: "6px 8px" }}>{agent}</td>}
 
                           {activeTab === "ldn" ? (
@@ -1227,11 +1452,18 @@ export default function DatabaseExplorer() {
                               {visibleColumns.landus && <td style={{ padding: "6px 8px" }}>{r.landus || "—"}</td>}
                               {visibleColumns.sev && <td style={{ padding: "6px 8px" }}>{getSeverityOrMoistureBadge(r)}</td>}
                             </>
-                          ) : (
+                          ) : activeTab === "soil" ? (
                             <>
                               {visibleColumns.tex && <td style={{ padding: "6px 8px", fontWeight: 600 }}>{r.tex || r["sampl/tex"] || r.texture || r._mapped_tex || "—"}</td>}
                               {visibleColumns.moisture && <td style={{ padding: "6px 8px" }}>{getSeverityOrMoistureBadge(r)}</td>}
                               {visibleColumns.dep && <td style={{ padding: "6px 8px", fontWeight: 700, color: "var(--accent-amber)" }}>{r.dep || r["sampl/dep"] || r.depth || r.Depth || "—"}</td>}
+                            </>
+                          ) : (
+                            <>
+                              {visibleColumns.village && <td style={{ padding: "6px 8px", fontWeight: 600 }}>{r.village_location || "—"}</td>}
+                              {visibleColumns.soil_type && <td style={{ padding: "6px 8px" }}>{r.dominant_soil_type || r.dominant_soil_type_other || "—"}</td>}
+                              {visibleColumns.vegetation && <td style={{ padding: "6px 8px" }}>{r.vegetation_condition || "—"}</td>}
+                              {visibleColumns.priority && <td style={{ padding: "6px 8px" }}>{getSeverityOrMoistureBadge(r)}</td>}
                             </>
                           )}
 
@@ -1454,7 +1686,7 @@ export default function DatabaseExplorer() {
                   <History size={16} style={{ color: "var(--accent-green)" }} /> Change History Log
                 </h3>
                 <span style={{ fontSize: "10px", color: "var(--text-muted)" }}>
-                  Review local overrides for {activeTab === "ldn" ? "Land Cover" : "Soil Core"}
+                  Review local overrides for {activeTab === "ldn" ? "Land Cover" : (activeTab === "soil" ? "Soil Core" : "Drylands Observations")}
                 </span>
               </div>
               <button
@@ -1671,7 +1903,7 @@ export default function DatabaseExplorer() {
                   {isEditModalOpen ? "✏️ Edit Record Override" : "➕ Add Custom Override Record"}
                 </h3>
                 <span style={{ fontSize: "10px", color: "var(--text-muted)" }}>
-                  Targeting dataset: {activeTab === "ldn" ? "Land Cover" : "Soil Core"}
+                  Targeting dataset: {activeTab === "ldn" ? "Land Cover" : (activeTab === "soil" ? "Soil Core" : "Drylands Observations")}
                 </span>
               </div>
               <button
@@ -1772,7 +2004,7 @@ export default function DatabaseExplorer() {
                   </div>
 
                   {/* LDN Specific Inputs */}
-                  {activeTab === "ldn" ? (
+                  {activeTab === "ldn" && (
                     <>
                       {/* LULC landus */}
                       <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
@@ -1802,7 +2034,10 @@ export default function DatabaseExplorer() {
                         </select>
                       </div>
                     </>
-                  ) : (
+                  )}
+
+                  {/* Soil Specific Inputs */}
+                  {activeTab === "soil" && (
                     <>
                       {/* Soil Texture */}
                       <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
@@ -1861,6 +2096,110 @@ export default function DatabaseExplorer() {
                     </>
                   )}
 
+                  {/* Drylands Specific Inputs */}
+                  {activeTab === "drylands" && (
+                    <>
+                      {/* Dominant Soil Type */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                        <label style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-muted)" }}>Dominant Soil Type</label>
+                        <select
+                          value={formData.dominant_soil_type || "Jecha (Sandy)"}
+                          onChange={(e) => handleFormChange("dominant_soil_type", e.target.value)}
+                          style={{ padding: "6px", fontSize: "11px", border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)", outline: "none", background: "#ffffff" }}
+                        >
+                          <option value="Jecha (Sandy)">Jecha (Sandy)</option>
+                          <option value="Red sandy clay">Red sandy clay</option>
+                          <option value="Very sandy infertile soil">Very sandy infertile soil</option>
+                          <option value="Clay">Clay</option>
+                          <option value="Loamy sand">Loamy sand</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+
+                      {/* Vegetation Condition */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                        <label style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-muted)" }}>Vegetation Condition</label>
+                        <select
+                          value={formData.vegetation_condition || "Intact"}
+                          onChange={(e) => handleFormChange("vegetation_condition", e.target.value)}
+                          style={{ padding: "6px", fontSize: "11px", border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)", outline: "none", background: "#ffffff" }}
+                        >
+                          <option value="Intact">Intact</option>
+                          <option value="Moderately Degraded">Moderately Degraded</option>
+                          <option value="Severely Degraded">Severely Degraded</option>
+                        </select>
+                      </div>
+
+                      {/* Estimated Veg Cover % */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                        <label style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-muted)" }}>Estimated Veg Cover (%)</label>
+                        <input
+                          type="number"
+                          min="0"
+                          max="100"
+                          placeholder="e.g. 50"
+                          value={formData.estimated_vegetation_cover || "50"}
+                          onChange={(e) => handleFormChange("estimated_vegetation_cover", e.target.value)}
+                          style={{ padding: "6px", fontSize: "11px", border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)", outline: "none" }}
+                        />
+                      </div>
+
+                      {/* Soil Erosion Present */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                        <label style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-muted)" }}>Soil Erosion Present?</label>
+                        <select
+                          value={formData.soil_erosion_present || "No"}
+                          onChange={(e) => handleFormChange("soil_erosion_present", e.target.value)}
+                          style={{ padding: "6px", fontSize: "11px", border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)", outline: "none", background: "#ffffff" }}
+                        >
+                          <option value="Yes">Yes</option>
+                          <option value="No">No</option>
+                        </select>
+                      </div>
+
+                      {/* Erosion Severity */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                        <label style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-muted)" }}>Erosion Severity</label>
+                        <select
+                          value={formData.erosion_severity || "None"}
+                          onChange={(e) => handleFormChange("erosion_severity", e.target.value)}
+                          style={{ padding: "6px", fontSize: "11px", border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)", outline: "none", background: "#ffffff" }}
+                        >
+                          <option value="None">None</option>
+                          <option value="Low">Low</option>
+                          <option value="Moderate">Moderate</option>
+                          <option value="Severe">Severe</option>
+                        </select>
+                      </div>
+
+                      {/* Priority Level */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                        <label style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-muted)" }}>Priority Level</label>
+                        <select
+                          value={formData.priority_level || "Low"}
+                          onChange={(e) => handleFormChange("priority_level", e.target.value)}
+                          style={{ padding: "6px", fontSize: "11px", border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)", outline: "none", background: "#ffffff" }}
+                        >
+                          <option value="Low">Low</option>
+                          <option value="Medium">Medium</option>
+                          <option value="High (Immediate Action Required)">High (Immediate Action Required)</option>
+                        </select>
+                      </div>
+
+                      {/* Recommended Interventions */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: "3px", gridColumn: "span 2" }}>
+                        <label style={{ fontSize: "10px", fontWeight: 700, color: "var(--text-muted)" }}>Recommended Interventions (comma-separated)</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Vetiver planting, Contour ridges, Stone pitching"
+                          value={formData.recommended_interventions || ""}
+                          onChange={(e) => handleFormChange("recommended_interventions", e.target.value)}
+                          style={{ padding: "6px", fontSize: "11px", border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)", outline: "none" }}
+                        />
+                      </div>
+                    </>
+                  )}
+
                 </div>
 
               </div>
@@ -1887,8 +2226,8 @@ export default function DatabaseExplorer() {
                   disabled={isSubmitting}
                   style={{
                     padding: "6px 12px", fontSize: "11px", fontWeight: 600,
-                    background: activeTab === "ldn" ? "var(--accent-green)" : "var(--accent-amber)", 
-                    border: "none", borderRadius: "var(--radius-md)", cursor: "pointer", color: "#ffffff",
+                    background: activeTab === "ldn" ? "var(--accent-green)" : (activeTab === "soil" ? "var(--accent-amber)" : "var(--accent-gold)"), 
+                    border: "none", borderRadius: "var(--radius-md)", cursor: "pointer", color: activeTab === "drylands" ? "var(--text-primary)" : "#ffffff",
                     display: "flex", alignItems: "center", gap: "4px"
                   }}
                 >
@@ -1959,21 +2298,28 @@ export default function DatabaseExplorer() {
                   <MapPin size={12} style={{ color: "var(--text-muted)" }} />
                   <div>
                     <div style={{ fontSize: "8px", color: "var(--text-muted)" }}>District & Ward</div>
-                    <strong>{inspectRecord.dist || inspectRecord._mapped_dist || "Unspecified"} (Ward {inspectRecord.ward || "—"})</strong>
+                    <strong>
+                      {inspectRecord.dist || inspectRecord._mapped_dist || getDrylandDistrict(inspectRecord) || "Unspecified"} 
+                      (Ward {inspectRecord.ward || inspectRecord.ward_name || "—"})
+                    </strong>
                   </div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px" }}>
                   <Calendar size={12} style={{ color: "var(--text-muted)" }} />
                   <div>
-                    <div style={{ fontSize: "8px", color: "var(--text-muted)" }}>Submission Time</div>
-                    <strong>{inspectRecord._submission_time ? new Date(inspectRecord._submission_time).toLocaleString() : "—"}</strong>
+                    <div style={{ fontSize: "8px", color: "var(--text-muted)" }}>Observation / Submission Time</div>
+                    <strong>
+                      {inspectRecord._submission_time || inspectRecord.date_of_observation 
+                        ? new Date(inspectRecord._submission_time || inspectRecord.date_of_observation).toLocaleString() 
+                        : "—"}
+                    </strong>
                   </div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px" }}>
                   <User size={12} style={{ color: "var(--text-muted)" }} />
                   <div>
                     <div style={{ fontSize: "8px", color: "var(--text-muted)" }}>Surveyor Agent</div>
-                    <strong>{inspectRecord.agent || "—"}</strong>
+                    <strong>{inspectRecord.agent || inspectRecord.enumerator_name || "—"}</strong>
                   </div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px" }}>

@@ -76,21 +76,20 @@ if (typeof L !== 'undefined' && L.TileLayer) {
 
     TileDB.get(cacheKey).then(blob => {
       if (blob && blob.size > 0) {
-        const url = URL.createObjectURL(blob);
-        tile._objectUrl = url;
-        tile.src = url;
+        const reader = new FileReader();
+        reader.onloadend = function() {
+          tile.src = reader.result;
+        };
+        reader.onerror = function() {
+          tile.src = tileUrl;
+        };
+        reader.readAsDataURL(blob);
       } else {
         tile.src = tileUrl;
       }
     }).catch(() => { tile.src = tileUrl; });
 
     return tile;
-  };
-
-  const _origClean = L.TileLayer.prototype._cleanTile;
-  L.TileLayer.prototype._cleanTile = function(tile) {
-    if (tile._objectUrl) { URL.revokeObjectURL(tile._objectUrl); tile._objectUrl = null; }
-    if (_origClean) _origClean.call(this, tile);
   };
 }
 
@@ -275,11 +274,51 @@ const OfflineManager = {
   },
 
   // Fetch one tile and save to IndexedDB
-  // Tries 3 methods in order: CORS fetch → no-cors XHR blob → Image→Canvas
+  // Tries 4 methods in order: Capacitor native HTTP → CORS fetch → no-cors fetch → Image→Canvas
   fetchAndStoreTile(url, key) {
     return new Promise(async (resolve) => {
+      // 1. Try Capacitor Native HTTP if running inside Capacitor
+      const capHttp = typeof window !== 'undefined' && window.Capacitor && (
+        (window.Capacitor.Plugins && window.Capacitor.Plugins.CapacitorHttp) || 
+        window.Capacitor.Http
+      );
+      if (capHttp) {
+        try {
+          const options = {
+            url: url,
+            method: 'GET',
+            responseType: 'base64',
+            headers: { 'User-Agent': 'LDN-Validator-Offline-Downloader' }
+          };
+          const response = await capHttp.request(options);
+          if (response && response.status === 200 && response.data) {
+            const base64Str = response.data;
+            const binaryStr = atob(base64Str);
+            const len = binaryStr.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+              bytes[i] = binaryStr.charCodeAt(i);
+            }
+            
+            // Get content type
+            let contentType = 'image/jpeg';
+            if (response.headers) {
+              const ct = response.headers['content-type'] || response.headers['Content-Type'];
+              if (ct) contentType = ct.split(';')[0];
+            }
+            
+            const blob = new Blob([bytes], { type: contentType });
+            if (blob && blob.size > 500) {
+              await TileDB.put(key, blob);
+              return resolve(true);
+            }
+          }
+        } catch (capErr) {
+          console.warn('Capacitor native HTTP download failed, falling back:', capErr);
+        }
+      }
 
-      // METHOD 1: Standard CORS fetch (works perfectly for OSM)
+      // METHOD 2: Standard CORS fetch (works perfectly for OSM)
       try {
         const resp = await fetch(url, { mode: 'cors', cache: 'no-store' });
         if (resp.ok) {
@@ -291,11 +330,10 @@ const OfflineManager = {
         }
       } catch (_) { /* fall through */ }
 
-      // METHOD 2: no-cors fetch — on Android WebView the response body
+      // METHOD 3: no-cors fetch — on Android WebView the response body
       // IS readable even if status=0 (opaque). Try to get the blob directly.
       try {
         const resp = await fetch(url, { mode: 'no-cors', cache: 'no-store' });
-        // response.type === 'opaque' on success with no-cors
         if (resp.type === 'opaque' || resp.ok) {
           const blob = await resp.blob();
           if (blob && blob.size > 500) {
@@ -305,11 +343,9 @@ const OfflineManager = {
         }
       } catch (_) { /* fall through */ }
 
-      // METHOD 3: Image → Canvas → Blob
-      // Do NOT set crossOrigin — without it, images load from any server
-      // In Capacitor's Android WebView, canvas is NOT tainted (relaxed security)
+      // METHOD 4: Image → Canvas → Blob
       const img = new Image();
-      // Deliberately NO crossOrigin attribute set
+      img.crossOrigin = 'anonymous';
 
       const timeout = setTimeout(() => {
         img.onload = img.onerror = null;
@@ -332,14 +368,68 @@ const OfflineManager = {
             }
           }, 'image/jpeg', 0.85);
         } catch (canvasErr) {
-          // Canvas tainted in strict environments — resolve false
-          console.warn('Canvas taint on tile', key, canvasErr.message);
-          resolve(false);
+          console.warn('Tainted canvas fallback for key', key);
+          const imgFallback = new Image();
+          const fallbackTimeout = setTimeout(() => {
+            imgFallback.onload = imgFallback.onerror = null;
+            resolve(false);
+          }, 8000);
+          
+          imgFallback.onload = () => {
+            clearTimeout(fallbackTimeout);
+            try {
+              const canvasFb = document.createElement('canvas');
+              canvasFb.width = imgFallback.naturalWidth || 256;
+              canvasFb.height = imgFallback.naturalHeight || 256;
+              canvasFb.getContext('2d').drawImage(imgFallback, 0, 0);
+              canvasFb.toBlob(async (blob) => {
+                if (blob && blob.size > 500) {
+                  await TileDB.put(key, blob);
+                  resolve(true);
+                } else {
+                  resolve(false);
+                }
+              }, 'image/jpeg', 0.85);
+            } catch (innerErr) {
+              resolve(false);
+            }
+          };
+          imgFallback.onerror = () => { clearTimeout(fallbackTimeout); resolve(false); };
+          imgFallback.src = url;
         }
       };
 
-      img.onerror = () => { clearTimeout(timeout); resolve(false); };
-      // Cache-bust to avoid 304 responses that may have empty bodies
+      img.onerror = () => {
+        clearTimeout(timeout);
+        const imgNoCors = new Image();
+        const noCorsTimeout = setTimeout(() => {
+          imgNoCors.onload = imgNoCors.onerror = null;
+          resolve(false);
+        }, 10000);
+        
+        imgNoCors.onload = () => {
+          clearTimeout(noCorsTimeout);
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = imgNoCors.naturalWidth || 256;
+            canvas.height = imgNoCors.naturalHeight || 256;
+            canvas.getContext('2d').drawImage(imgNoCors, 0, 0);
+            canvas.toBlob(async (blob) => {
+              if (blob && blob.size > 500) {
+                await TileDB.put(key, blob);
+                resolve(true);
+              } else {
+                resolve(false);
+              }
+            }, 'image/jpeg', 0.85);
+          } catch (e) {
+            resolve(false);
+          }
+        };
+        imgNoCors.onerror = () => { clearTimeout(noCorsTimeout); resolve(false); };
+        imgNoCors.src = url;
+      };
+
       img.src = url + (url.includes('?') ? '&' : '?') + '_cb=' + Date.now();
     });
   },
@@ -470,6 +560,12 @@ const OfflineManager = {
         console.warn('localStorage full, roads not persisted:', e);
       }
 
+      // Cache in memory & build graph
+      this.roadsGeoJSON = geojson;
+      if (typeof RoadRouter !== 'undefined') {
+        RoadRouter.buildGraph(geojson);
+      }
+
       // Render on the map
       this.renderRoadsLayer(geojson);
 
@@ -527,7 +623,7 @@ const OfflineManager = {
   },
 
   // Render OSM roads layer on the Leaflet map
-  renderRoadsLayer(geojson) {
+  renderRoadsLayer(geojson, forceAddToMap = false) {
     const map = App.state.map;
     if (!map) return;
 
@@ -557,6 +653,7 @@ const OfflineManager = {
       unknown: '#64748b'
     };
 
+    console.log("Instantiating Leaflet layer for roads...");
     App.state.roadsLayer = L.geoJSON(geojson, {
       style: (feature) => {
         const highway = feature.properties.highway || 'unknown';
@@ -583,42 +680,121 @@ const OfflineManager = {
           `);
         }
       }
-    }).addTo(map);
+    });
+
+    // Only add to map if switch is checked or if forced AND map zoom >= 12
+    const roadsSwitch = document.getElementById('switchRoadsLayer');
+    if (forceAddToMap || (roadsSwitch && roadsSwitch.checked)) {
+      if (map.getZoom() >= 12) {
+        App.state.roadsLayer.addTo(map);
+      }
+    }
 
     console.log(`Roads layer rendered with ${geojson.features.length} segments.`);
   },
 
-  // Load cached roads from localStorage and render (called on app startup)
-  loadCachedRoads() {
+  roadsGeoJSON: null,
+  // Load cached roads from localStorage or fallback to preloaded roads and build graph (called on app startup)
+  async loadCachedRoads(forceAddToMap = false) {
     const raw = localStorage.getItem('ldn-roads-geojson');
-    if (!raw) return;
-    try {
-      const geojson = JSON.parse(raw);
-      if (geojson && geojson.features && geojson.features.length > 0) {
-        this.renderRoadsLayer(geojson);
-        const statusEl = document.getElementById('roadsLayerStatus');
-        if (statusEl) statusEl.innerText = `${geojson.features.length.toLocaleString()} segments (cached)`;
-        console.log(`Loaded ${geojson.features.length} cached road segments from localStorage.`);
+    if (raw) {
+      try {
+        const geojson = JSON.parse(raw);
+        if (geojson && geojson.features && geojson.features.length > 0) {
+          this.roadsGeoJSON = geojson;
+
+          // Build graph immediately (fast)
+          if (typeof RoadRouter !== 'undefined') {
+            RoadRouter.buildGraph(geojson);
+          }
+
+          const roadsSwitch = document.getElementById('switchRoadsLayer');
+          if (forceAddToMap || (roadsSwitch && roadsSwitch.checked)) {
+            this.renderRoadsLayer(geojson, forceAddToMap);
+          }
+
+          const statusEl = document.getElementById('roadsLayerStatus');
+          if (statusEl) statusEl.innerText = `${geojson.features.length.toLocaleString()} segments (cached)`;
+          console.log(`Loaded and indexed ${geojson.features.length} cached road segments.`);
+          return true;
+        }
+      } catch(e) {
+        console.warn('Failed to parse cached roads GeoJSON from localStorage:', e);
       }
-    } catch(e) {
-      console.warn('Failed to parse cached roads GeoJSON:', e);
     }
+
+    // Fallback to preloaded roads
+    try {
+      const response = await fetch('./preloaded_roads.geojson');
+      if (response.ok) {
+        const geojson = await response.json();
+        if (geojson && geojson.features && geojson.features.length > 0) {
+          this.roadsGeoJSON = geojson;
+
+          // Build graph immediately (fast)
+          if (typeof RoadRouter !== 'undefined') {
+            RoadRouter.buildGraph(geojson);
+          }
+
+          const roadsSwitch = document.getElementById('switchRoadsLayer');
+          if (forceAddToMap || (roadsSwitch && roadsSwitch.checked)) {
+            this.renderRoadsLayer(geojson, forceAddToMap);
+          }
+
+          const statusEl = document.getElementById('roadsLayerStatus');
+          if (statusEl) statusEl.innerText = `${geojson.features.length.toLocaleString()} segments (preloaded)`;
+          console.log(`Loaded and indexed ${geojson.features.length} preloaded road segments.`);
+          return true;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to load preloaded roads GeoJSON:', e);
+    }
+    return false;
   },
 
   // Toggle roads layer visibility
-  toggleRoadsVisibility() {
+  async toggleRoadsVisibility() {
     const map = App.state.map;
+    if (!map) return;
+
     if (!App.state.roadsLayer) {
-      // Try loading from cache
-      this.loadCachedRoads();
+      const btn = document.getElementById('toggleRoadsBtn');
+      if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
+      
+      let success = false;
+      if (this.roadsGeoJSON) {
+        this.renderRoadsLayer(this.roadsGeoJSON, true);
+        success = true;
+      } else {
+        success = await this.loadCachedRoads(true);
+      }
+
+      if (btn) {
+        if (success) {
+          btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i> Hide Roads Layer';
+          const switchEl = document.getElementById('switchRoadsLayer');
+          if (switchEl) switchEl.checked = true;
+        } else {
+          btn.innerHTML = '<i class="fa-solid fa-eye"></i> Show Roads Layer';
+          alert('ℹ️ No roads downloaded or preloaded yet.\n\nGo to Offline tab → Download Roads & Tracks first.');
+        }
+      }
       return;
     }
+
     if (map.hasLayer(App.state.roadsLayer)) {
       map.removeLayer(App.state.roadsLayer);
       document.getElementById('toggleRoadsBtn').innerHTML = '<i class="fa-solid fa-eye"></i> Show Roads Layer';
+      const switchEl = document.getElementById('switchRoadsLayer');
+      if (switchEl) switchEl.checked = false;
     } else {
-      App.state.roadsLayer.addTo(map);
+      if (map.getZoom() >= 12) {
+        App.state.roadsLayer.addTo(map);
+      }
       document.getElementById('toggleRoadsBtn').innerHTML = '<i class="fa-solid fa-eye-slash"></i> Hide Roads Layer';
+      const switchEl = document.getElementById('switchRoadsLayer');
+      if (switchEl) switchEl.checked = true;
     }
   },
 

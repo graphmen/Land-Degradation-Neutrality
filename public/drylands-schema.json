@@ -1,0 +1,541 @@
+{
+  "title": "ILUP for Drylands Project",
+  "url": "https://ee.kobotoolbox.org/x/aLVomK4L",
+  "total_questions": 58,
+  "questions": [
+    {
+      "index": 1,
+      "label": "1. Date of Observation",
+      "name": "date_of_observation",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 2,
+      "label": "2. Enumerator Name",
+      "name": "enumerator_name",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 3,
+      "label": "3. Ward Name:",
+      "name": "ward_name",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 4,
+      "label": "4. Village/Location Name:",
+      "name": "village_location",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 5,
+      "label": "5. Coordinates",
+      "name": "coordinates",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 6,
+      "label": "6. Area Type",
+      "name": "area_type",
+      "type": "checkbox",
+      "options": [
+        "Arable",
+        "Grazing",
+        "Forest/Woodland",
+        "Wetland",
+        "Settlement",
+        "Irrigation Scheme",
+        "Dam/Water Body"
+      ]
+    },
+    {
+      "index": 7,
+      "label": "6b. Other",
+      "name": "area_type_other",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 8,
+      "label": "7. Dominant Soil Type",
+      "name": "dominant_soil_type",
+      "type": "radio",
+      "options": [
+        "Jecha (Sandy)",
+        "Red sandy clay",
+        "Clay",
+        "Very sandy infertile soil",
+        "Dark fertile alluvial",
+        "Heavy clay",
+        "Churu (Hard-setting soil)",
+        "Shallow rocky soil"
+      ]
+    },
+    {
+      "index": 9,
+      "label": "7b. Other",
+      "name": "dominant_soil_type_other",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 10,
+      "label": "8a. Distance to nearest river (m)",
+      "name": "distance_to_river",
+      "type": "number",
+      "options": []
+    },
+    {
+      "index": 11,
+      "label": "8b. Distance to nearest wetland (m)",
+      "name": "distance_to_wetland",
+      "type": "number",
+      "options": []
+    },
+    {
+      "index": 12,
+      "label": "8c. Distance to nearest road (m)",
+      "name": "distance_to_road",
+      "type": "number",
+      "options": []
+    },
+    {
+      "index": 13,
+      "label": "9 Vegetation Condition",
+      "name": "vegetation_condition",
+      "type": "radio",
+      "options": [
+        "Intact",
+        "Moderately Degraded",
+        "Severely Degraded",
+        "Deforested"
+      ]
+    },
+    {
+      "index": 14,
+      "label": "9b. Description",
+      "name": "vegetation_description",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 15,
+      "label": "9c. Estimated Vegetation Cover (%)",
+      "name": "estimated_vegetation_cover",
+      "type": "number",
+      "options": []
+    },
+    {
+      "index": 16,
+      "label": "9d. Invasive Species Present?",
+      "name": "invasive_species_present",
+      "type": "radio",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    {
+      "index": 17,
+      "label": "9e. Specify Species",
+      "name": "invasive_species_name",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 18,
+      "label": "10. Current Land Cover Types",
+      "name": "current_land_cover_types",
+      "type": "checkbox",
+      "options": [
+        "Woodland",
+        "Cropland",
+        "Grassland",
+        "Bare Land",
+        "Settlement",
+        "Wetland Vegetation"
+      ]
+    },
+    {
+      "index": 19,
+      "label": "10b. Other",
+      "name": "current_land_cover_other",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 20,
+      "label": "11a. Is Soil Erosion Present?",
+      "name": "soil_erosion_present",
+      "type": "radio",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    {
+      "index": 21,
+      "label": "11b. Type of Erosion",
+      "name": "type_of_erosion",
+      "type": "checkbox",
+      "options": [
+        "Sheet",
+        "Rill",
+        "Gully",
+        "Wind"
+      ]
+    },
+    {
+      "index": 22,
+      "label": "11c. Severity",
+      "name": "erosion_severity",
+      "type": "radio",
+      "options": [
+        "Low",
+        "Moderate",
+        "Severe"
+      ]
+    },
+    {
+      "index": 23,
+      "label": "11c. Describe Gully Dimensions",
+      "name": "gully_dimensions",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 24,
+      "label": "11d. Is Erosion Expanding?",
+      "name": "erosion_expanding",
+      "type": "radio",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    {
+      "index": 25,
+      "label": "11e. Assets/properties threatened",
+      "name": "assets_threatened",
+      "type": "checkbox",
+      "options": [
+        "Road",
+        "Homestead",
+        "Cropland",
+        "Grazing Land",
+        "Wetland",
+        "Dam/Water Body"
+      ]
+    },
+    {
+      "index": 26,
+      "label": "11f. Other",
+      "name": "assets_threatened_other",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 27,
+      "label": "12. Water Sources Present",
+      "name": "water_sources_present",
+      "type": "checkbox",
+      "options": [
+        "River",
+        "Stream",
+        "Wetland",
+        "Borehole",
+        "Dam",
+        "Seasonal water point"
+      ]
+    },
+    {
+      "index": 28,
+      "label": "12b. Other",
+      "name": "water_sources_other",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 29,
+      "label": "13. Water Quality (Visual Assessment)",
+      "name": "water_quality_visual",
+      "type": "checkbox",
+      "options": [
+        "Clear",
+        "Slightly Turbid",
+        "Turbid",
+        "Highly Silted"
+      ]
+    },
+    {
+      "index": 30,
+      "label": "13b. Evidence of Siltation?",
+      "name": "evidence_of_siltation",
+      "type": "radio",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    {
+      "index": 31,
+      "label": "13c. Wetland Cultivation Observed?",
+      "name": "wetland_cultivation_observed",
+      "type": "radio",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    {
+      "index": 32,
+      "label": "13d. Notes",
+      "name": "water_notes",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 33,
+      "label": "14. Climate Change Indicators Observed",
+      "name": "climate_change_indicators",
+      "type": "checkbox",
+      "options": [
+        "Drying wetlands",
+        "Reduced stream flow",
+        "Failed crops",
+        "Heat stress",
+        "Prolonged dry spells",
+        "Flood damage"
+      ]
+    },
+    {
+      "index": 34,
+      "label": "14b. Other",
+      "name": "climate_change_other",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 35,
+      "label": "15a. Is the Site Flood-Prone?",
+      "name": "site_flood_prone",
+      "type": "radio",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    {
+      "index": 36,
+      "label": "15a. i. Notes",
+      "name": "flood_notes",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 37,
+      "label": "16. Evidence of Recent Fire?",
+      "name": "evidence_of_recent_fire",
+      "type": "radio",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    {
+      "index": 38,
+      "label": "16a. Notes",
+      "name": "fire_notes",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 39,
+      "label": "16b. Signs of Drought Stress?",
+      "name": "signs_of_drought_stress",
+      "type": "radio",
+      "options": [
+        "Yes",
+        "No"
+      ]
+    },
+    {
+      "index": 40,
+      "label": "16.b.i. Add any notes that helps to better understand the situation",
+      "name": "drought_notes",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 41,
+      "label": "17a. Dominant Livelihood Activities",
+      "name": "dominant_livelihoods",
+      "type": "checkbox",
+      "options": [
+        "Rain-fed farming",
+        "Livestock rearing",
+        "Irrigated gardening",
+        "Brick moulding",
+        "Charcoal production",
+        "Petty trade",
+        "Fishing"
+      ]
+    },
+    {
+      "index": 42,
+      "label": "17a.i. Add description or notes to explain any necessary detail",
+      "name": "livelihood_notes",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 43,
+      "label": "17b. Grazing Pressure",
+      "name": "grazing_pressure",
+      "type": "checkbox",
+      "options": [
+        "Low",
+        "Medium",
+        "High"
+      ]
+    },
+    {
+      "index": 44,
+      "label": "17b.i. Notes",
+      "name": "grazing_notes",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 45,
+      "label": "18. Observed Land Use Conflicts",
+      "name": "observed_land_use_conflicts",
+      "type": "checkbox",
+      "options": [
+        "Crop vs livestock",
+        "Settlement vs conservation",
+        "Wetland encroachment",
+        "Boundary disputes",
+        "None"
+      ]
+    },
+    {
+      "index": 46,
+      "label": "18. b. Notes",
+      "name": "conflict_notes",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 47,
+      "label": "19. Is Current Land Use Ecologically Compatible?",
+      "name": "land_use_compatible",
+      "type": "radio",
+      "options": [
+        "Yes",
+        "No",
+        "Partially"
+      ]
+    },
+    {
+      "index": 48,
+      "label": "19b. Explain",
+      "name": "compatibility_explanation",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 49,
+      "label": "20. Priority Level",
+      "name": "priority_level",
+      "type": "radio",
+      "options": [
+        "High (Immediate Action Required)",
+        "Medium",
+        "Low"
+      ]
+    },
+    {
+      "index": 50,
+      "label": "20b. Explain",
+      "name": "priority_explanation",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 51,
+      "label": "21. Recommended Interventions",
+      "name": "recommended_interventions",
+      "type": "checkbox",
+      "options": [
+        "Vetiver planting",
+        "Contour ridges",
+        "Stone pitching",
+        "Gabions",
+        "Reforestation",
+        "Buffer demarcation",
+        "Controlled grazing",
+        "Alternative livelihoods",
+        "Road drainage improvement"
+      ]
+    },
+    {
+      "index": 52,
+      "label": "21b. Explain or add detailed notes",
+      "name": "intervention_notes",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 53,
+      "label": "21c. Estimated Cost Category",
+      "name": "cost_category",
+      "type": "radio",
+      "options": [
+        "Low",
+        "Medium",
+        "High"
+      ]
+    },
+    {
+      "index": 54,
+      "label": "21c.i. Explain",
+      "name": "cost_explanation",
+      "type": "text",
+      "options": []
+    },
+    {
+      "index": 55,
+      "label": "Photo 1",
+      "name": "photo_1",
+      "type": "file",
+      "options": []
+    },
+    {
+      "index": 56,
+      "label": "Photo 2",
+      "name": "photo_2",
+      "type": "file",
+      "options": []
+    },
+    {
+      "index": 57,
+      "label": "Photo 3",
+      "name": "photo_3",
+      "type": "file",
+      "options": []
+    },
+    {
+      "index": 58,
+      "label": "22. Add any notes necessary to this",
+      "name": "additional_notes",
+      "type": "text",
+      "options": []
+    }
+  ]
+}

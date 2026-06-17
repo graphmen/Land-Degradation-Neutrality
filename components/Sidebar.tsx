@@ -36,6 +36,14 @@ export default function Sidebar({ isCollapsed }: SidebarProps) {
             <span className="nav-icon">🧪</span>
             {!isCollapsed && <span className="nav-label">Soil Samples</span>}
           </Link>
+          <Link href="/interventions" className={`nav-item ${isActive("/interventions") ? "active" : ""}`} title="Interventions Hub">
+            <span className="nav-icon">🛠️</span>
+            {!isCollapsed && <span className="nav-label">Interventions Hub</span>}
+          </Link>
+          <Link href="/drylands" className={`nav-item ${isActive("/drylands") ? "active" : ""}`} title="Drylands Hub">
+            <span className="nav-icon">🏜️</span>
+            {!isCollapsed && <span className="nav-label">Drylands Hub</span>}
+          </Link>
           <Link href="/database" className={`nav-item ${isActive("/database") ? "active" : ""}`} title="Database Explorer">
             <span className="nav-icon">🗄️</span>
             {!isCollapsed && <span className="nav-label">Database Explorer</span>}

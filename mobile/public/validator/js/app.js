@@ -24,7 +24,9 @@ const App = {
     userMarker: null,
     userAccuracyCircle: null,
     carLocation: null, // { lat, lng, timestamp }
-    carMarker: null
+    carMarker: null,
+    currentRoute: null, // Cached route object
+    routeTargetCoords: null // [targetLat, targetLng]
   },
 
   // Initialize Application
@@ -111,23 +113,58 @@ const App = {
   async loadDatasets() {
     try {
       this.initExerciseStorage();
-      const activeEx = this.state.exercises[this.state.activeExercise];
-      if (!activeEx.pointsData || !activeEx.polygonsData) {
-        if (this.state.activeExercise === 'default') {
-          const polygonsRes = await fetch('./field_validation_polygons.geojson');
-          activeEx.polygonsData = await polygonsRes.json();
-          const pointsRes = await fetch('./field_validation_points.geojson');
-          activeEx.pointsData = await pointsRes.json();
-          this.saveExerciseState();
-        } else {
-          activeEx.pointsData = { type: "FeatureCollection", features: [] };
-          activeEx.polygonsData = { type: "FeatureCollection", features: [] };
-          this.saveExerciseState();
+      
+      if (this.state.activeExercise === 'default') {
+        const pointsRes = await fetch('./preloaded_points.geojson');
+        const pointsData = await pointsRes.json();
+        
+        // Merge with any custom added or deleted points from localStorage
+        const activeEx = this.state.exercises['default'] || { verifiedData: {}, customPoints: [], deletedPointIds: [] };
+        let features = pointsData.features;
+        
+        if (activeEx.customPoints) {
+          features = [...features, ...activeEx.customPoints];
         }
+        if (activeEx.deletedPointIds) {
+          features = features.filter(f => !activeEx.deletedPointIds.includes(f.properties.id));
+        }
+        
+        this.state.pointsData = {
+          type: "FeatureCollection",
+          features: features
+        };
+        
+        // Generate polygons dynamically
+        const dDeg = 0.0003;
+        this.state.polygonsData = {
+          type: "FeatureCollection",
+          features: features.map(f => {
+            const lng = f.geometry.coordinates[0];
+            const lat = f.geometry.coordinates[1];
+            return {
+              type: "Feature",
+              properties: { ...f.properties },
+              geometry: {
+                type: "Polygon",
+                coordinates: [[
+                  [lng - dDeg, lat + dDeg],
+                  [lng + dDeg, lat + dDeg],
+                  [lng + dDeg, lat - dDeg],
+                  [lng - dDeg, lat - dDeg],
+                  [lng - dDeg, lat + dDeg]
+                ]]
+              }
+            };
+          })
+        };
+        
+        this.state.verifiedData = activeEx.verifiedData || {};
+      } else {
+        const activeEx = this.state.exercises[this.state.activeExercise];
+        this.state.pointsData = activeEx.pointsData || { type: "FeatureCollection", features: [] };
+        this.state.polygonsData = activeEx.polygonsData || { type: "FeatureCollection", features: [] };
+        this.state.verifiedData = activeEx.verifiedData || {};
       }
-      this.state.pointsData = activeEx.pointsData;
-      this.state.polygonsData = activeEx.polygonsData;
-      this.state.verifiedData = activeEx.verifiedData || {};
 
       // Sync backward-compatible validation progress key
       localStorage.setItem('ldn-validated-data', JSON.stringify(this.state.verifiedData));
@@ -147,9 +184,6 @@ const App = {
 
       // Setup offline downloader stats
       this.updateOfflineStats();
-
-      // Auto-load any previously downloaded roads from localStorage
-      OfflineManager.loadCachedRoads();
 
       // Load Ward Boundaries in background (non-blocking)
       this.loadWardBoundaries().catch(err => console.error('Failed to load wards:', err));
@@ -257,6 +291,32 @@ const App = {
     // Feature Groups
     this.state.polygonsGroup = L.featureGroup().addTo(this.state.map);
     this.state.markersGroup = L.featureGroup().addTo(this.state.map);
+
+    // Toggle point ID tooltips pane based on map zoom
+    this.state.map.on('zoomend', () => {
+      const zoom = this.state.map.getZoom();
+      const pane = document.querySelector('.leaflet-tooltip-pane');
+      if (pane) {
+        pane.style.display = zoom >= 13 ? 'block' : 'none';
+      }
+
+      // Automatically hide/show roads based on zoom level to prevent lag/clutter
+      if (App.state.roadsLayer) {
+        const roadsSwitch = document.getElementById('switchRoadsLayer');
+        const showRoads = (roadsSwitch && roadsSwitch.checked);
+        if (showRoads) {
+          if (zoom >= 12) {
+            if (!this.state.map.hasLayer(App.state.roadsLayer)) {
+              App.state.roadsLayer.addTo(this.state.map);
+            }
+          } else {
+            if (this.state.map.hasLayer(App.state.roadsLayer)) {
+              this.state.map.removeLayer(App.state.roadsLayer);
+            }
+          }
+        }
+      }
+    });
   },
 
   // ── Custom Glassmorphic Layer Switcher ───────────────────────────────────
@@ -352,6 +412,16 @@ const App = {
     });
   },
 
+  getCategoryColor(category) {
+    switch (category) {
+      case '1km Buffer': return '#0ea5e9';
+      case '20km Radius': return '#f59e0b';
+      case 'National Validation': return '#8b5cf6';
+      case 'Previous LDN Data': return '#f43f5e';
+      default: return '#c0ff00';
+    }
+  },
+
   // Render GeoJSON elements on Map
   renderMapLayers() {
     if (!this.state.polygonsData || !this.state.pointsData) return;
@@ -364,12 +434,14 @@ const App = {
       style: (feature) => {
         const targetId = feature.properties.id;
         const isVisited = this.isTargetVerified(targetId);
+        const cat = feature.properties.category;
+        const color = this.getCategoryColor(cat);
         return {
-          color: '#ef4444', // Red solid outline
-          fillColor: isVisited ? '#10b981' : '#ef4444',
-          weight: 3, // Thicker solid line
+          color: isVisited ? '#10b981' : color, // Emerald outline if visited, category color if pending
+          fillColor: color,
+          weight: 3,
           fillOpacity: isVisited ? 0.25 : 0.08,
-          dashArray: '' // Red solid lines
+          dashArray: ''
         };
       },
       onEachFeature: (feature, layer) => {
@@ -384,19 +456,31 @@ const App = {
       pointToLayer: (feature, latlng) => {
         const targetId = feature.properties.id;
         const isVisited = this.isTargetVerified(targetId);
+        const cat = feature.properties.category;
+        const color = this.getCategoryColor(cat);
 
-        // Circular premium pulse markers for target centroids
+        // Circular premium pulse markers for target centroids styled by category
         return L.circleMarker(latlng, {
           radius: 8,
-          fillColor: isVisited ? '#10b981' : '#c0ff00',
-          color: '#ffffff',
-          weight: 2,
+          fillColor: color,
+          color: isVisited ? '#10b981' : '#ffffff',
+          weight: isVisited ? 4 : 2,
           opacity: 1,
           fillOpacity: 0.9,
           className: isVisited ? 'leaflet-target-pulse-visited' : 'leaflet-target-pulse'
         });
       },
       onEachFeature: (feature, layer) => {
+        const targetId = feature.properties.id;
+        
+        // Bind permanent tooltip showing the point ID
+        layer.bindTooltip(targetId, {
+          permanent: true,
+          direction: 'top',
+          className: 'point-id-tooltip',
+          offset: [0, -8]
+        });
+
         layer.on('click', (e) => {
           L.DomEvent.stopPropagation(e);
           this.selectTargetById(feature.properties.id);
@@ -407,6 +491,13 @@ const App = {
     // Fit map bounds to polygons
     if (this.state.polygonsGroup.getLayers().length > 0) {
       this.state.map.fitBounds(this.state.polygonsGroup.getBounds());
+    }
+
+    // Apply initial tooltip visibility check based on current zoom
+    const zoom = this.state.map.getZoom();
+    const pane = document.querySelector('.leaflet-tooltip-pane');
+    if (pane) {
+      pane.style.display = zoom >= 13 ? 'block' : 'none';
     }
   },
 
@@ -456,17 +547,28 @@ const App = {
     this.initExerciseStorage();
 
     // Sync active exercise with current state values
-    this.state.exercises[this.state.activeExercise] = {
-      pointsData: this.state.pointsData,
-      polygonsData: this.state.polygonsData,
-      verifiedData: this.state.verifiedData || {}
-    };
+    if (this.state.activeExercise === 'default') {
+      const activeEx = this.state.exercises['default'] || {};
+      this.state.exercises['default'] = {
+        pointsData: null,
+        polygonsData: null,
+        verifiedData: this.state.verifiedData || {},
+        customPoints: activeEx.customPoints || [],
+        deletedPointIds: activeEx.deletedPointIds || []
+      };
+    } else {
+      this.state.exercises[this.state.activeExercise] = {
+        pointsData: this.state.pointsData,
+        polygonsData: this.state.polygonsData,
+        verifiedData: this.state.verifiedData || {}
+      };
+    }
 
     localStorage.setItem('ldn-exercises', JSON.stringify(this.state.exercises));
   },
 
   // Switch to a different exercise
-  switchExercise(name) {
+  async switchExercise(name) {
     if (!this.state.exercises || !this.state.exercises[name]) return;
 
     // 1. Save current exercise state first
@@ -477,6 +579,16 @@ const App = {
     localStorage.setItem('ldn-active-exercise', name);
 
     // 3. Load active exercise details
+    if (name === 'default') {
+      try {
+        await this.loadDatasets();
+        alert(`Switched to exercise: ${name}`);
+      } catch (err) {
+        console.error('Failed to load default exercise:', err);
+      }
+      return;
+    }
+
     const activeEx = this.state.exercises[name];
     this.state.pointsData = activeEx.pointsData || { type: "FeatureCollection", features: [] };
     this.state.polygonsData = activeEx.polygonsData || { type: "FeatureCollection", features: [] };
@@ -688,6 +800,12 @@ const App = {
     this.state.pointsData.features.push(pointFeature);
     this.state.polygonsData.features.push(polygonFeature);
 
+    if (this.state.activeExercise === 'default') {
+      const activeEx = this.state.exercises['default'] || {};
+      if (!activeEx.customPoints) activeEx.customPoints = [];
+      activeEx.customPoints.push(pointFeature);
+    }
+
     // Save exercise state
     this.saveExerciseState();
 
@@ -717,6 +835,17 @@ const App = {
     if (this.state.verifiedData && this.state.verifiedData[targetId]) {
       delete this.state.verifiedData[targetId];
       localStorage.setItem('ldn-validated-data', JSON.stringify(this.state.verifiedData));
+    }
+
+    if (this.state.activeExercise === 'default') {
+      const activeEx = this.state.exercises['default'] || {};
+      if (!activeEx.deletedPointIds) activeEx.deletedPointIds = [];
+      if (!activeEx.deletedPointIds.includes(targetId)) {
+        activeEx.deletedPointIds.push(targetId);
+      }
+      if (activeEx.customPoints) {
+        activeEx.customPoints = activeEx.customPoints.filter(f => f.properties.id !== targetId);
+      }
     }
 
     // Save state
@@ -1147,13 +1276,49 @@ const App = {
     }
 
     try {
-      const polygonsRes = await fetch('./field_validation_polygons.geojson');
-      this.state.polygonsData = await polygonsRes.json();
-      
-      const pointsRes = await fetch('./field_validation_points.geojson');
-      this.state.pointsData = await pointsRes.json();
-      
       this.state.verifiedData = {};
+      
+      if (this.state.activeExercise === 'default') {
+        const pointsRes = await fetch('./preloaded_points.geojson');
+        const pointsData = await pointsRes.json();
+        this.state.pointsData = pointsData;
+        
+        // Generate polygons dynamically
+        const dDeg = 0.0003;
+        this.state.polygonsData = {
+          type: "FeatureCollection",
+          features: pointsData.features.map(f => {
+            const lng = f.geometry.coordinates[0];
+            const lat = f.geometry.coordinates[1];
+            return {
+              type: "Feature",
+              properties: { ...f.properties },
+              geometry: {
+                type: "Polygon",
+                coordinates: [[
+                  [lng - dDeg, lat + dDeg],
+                  [lng + dDeg, lat + dDeg],
+                  [lng + dDeg, lat - dDeg],
+                  [lng - dDeg, lat - dDeg],
+                  [lng - dDeg, lat + dDeg]
+                ]]
+              }
+            };
+          })
+        };
+        
+        // Reset default exercises tracking lists
+        this.state.exercises['default'] = {
+          pointsData: null,
+          polygonsData: null,
+          verifiedData: {},
+          customPoints: [],
+          deletedPointIds: []
+        };
+      } else {
+        this.state.pointsData = { type: "FeatureCollection", features: [] };
+        this.state.polygonsData = { type: "FeatureCollection", features: [] };
+      }
 
       this.saveExerciseState();
       this.parseFeatures();
@@ -1394,6 +1559,8 @@ const App = {
       this.state.navigationMode = 'IDLE';
       this.state.selectedTarget = null;
       this.state.activeCorner = null;
+      this.state.currentRoute = null;
+      this.state.routeTargetCoords = null;
       
       // Remove mini navigation card
       document.getElementById('miniNavWidget').classList.add('hidden');
@@ -1402,6 +1569,14 @@ const App = {
       if (this.state.navigationLine) {
         this.state.navigationLine.remove();
         this.state.navigationLine = null;
+      }
+      if (this.state.navigationConnStart) {
+        this.state.navigationConnStart.remove();
+        this.state.navigationConnStart = null;
+      }
+      if (this.state.navigationConnEnd) {
+        this.state.navigationConnEnd.remove();
+        this.state.navigationConnEnd = null;
       }
     });
 
@@ -1727,23 +1902,166 @@ const App = {
     const uLat = this.state.userLocation ? this.state.userLocation[0] : targetLat + 0.0015;
     const uLng = this.state.userLocation ? this.state.userLocation[1] : targetLng - 0.0015;
 
-    const distance = NavigationEngine.calculateDistance(uLat, uLng, targetLat, targetLng);
+    let distance = NavigationEngine.calculateDistance(uLat, uLng, targetLat, targetLng);
     const bearing = NavigationEngine.calculateBearing(uLat, uLng, targetLat, targetLng);
 
-    // Draw real-time dashed navigation vector line on the map
+    // Draw real-time navigation path on the map
     if (this.state.map) {
       const userLatLng = L.latLng(uLat, uLng);
       const targetLatLng = L.latLng(targetLat, targetLng);
-      if (this.state.navigationLine) {
-        this.state.navigationLine.setLatLngs([userLatLng, targetLatLng]);
+      
+      // Lazy load roads when navigation starts if not ready
+      if (typeof RoadRouter !== 'undefined' && !RoadRouter.isReady && typeof OfflineManager !== 'undefined' && !OfflineManager.isLoadingRoads) {
+        OfflineManager.isLoadingRoads = true;
+        OfflineManager.loadCachedRoads().then(() => {
+          OfflineManager.isLoadingRoads = false;
+          // Trigger updates once loaded to compute road-based route
+          this.updateNavigationMetrics();
+        });
+      }
+
+      let route = null;
+      if (typeof RoadRouter !== 'undefined' && RoadRouter.isReady) {
+        const targetChanged = !this.state.routeTargetCoords || 
+                              this.state.routeTargetCoords[0] !== targetLat || 
+                              this.state.routeTargetCoords[1] !== targetLng;
+
+        if (targetChanged) {
+          this.state.currentRoute = null;
+        }
+
+        if (this.state.currentRoute) {
+          // Find closest point on existing route path to project the user's position
+          let closestIdx = 0;
+          let minUserToRouteDist = Infinity;
+          const routePath = this.state.currentRoute.path;
+
+          for (let i = 0; i < routePath.length; i++) {
+            const pt = routePath[i];
+            const d = NavigationEngine.calculateDistance(uLat, uLng, pt.lat, pt.lng);
+            if (d < minUserToRouteDist) {
+              minUserToRouteDist = d;
+              closestIdx = i;
+            }
+          }
+
+          // If the user is within 150m of the active route, reuse it to avoid heavy A* runs
+          if (minUserToRouteDist <= 150) {
+            route = {
+              path: routePath,
+              closestIdx: closestIdx,
+              startNodeCoords: [routePath[closestIdx].lat, routePath[closestIdx].lng],
+              endNodeCoords: this.state.currentRoute.endNodeCoords,
+              isCached: true
+            };
+          }
+        }
+
+        // If no cached route (or user went off-route), compute a new A* route
+        if (!route) {
+          const newRoute = RoadRouter.findRoute(uLat, uLng, targetLat, targetLng);
+          if (newRoute) {
+            this.state.currentRoute = newRoute;
+            this.state.routeTargetCoords = [targetLat, targetLng];
+            route = {
+              ...newRoute,
+              closestIdx: 0,
+              isCached: false
+            };
+          }
+        }
+      }
+
+      if (route && route.path && route.path.length >= 2) {
+        const snappedRoadLatLng = route.path[route.closestIdx];
+        const roadEndLatLng = L.latLng(route.endNodeCoords[0], route.endNodeCoords[1]);
+        const remainingPath = route.path.slice(route.closestIdx);
+
+        // 1. Draw solid road path line
+        if (remainingPath.length >= 2) {
+          if (this.state.navigationLine) {
+            this.state.navigationLine.setLatLngs(remainingPath);
+            this.state.navigationLine.setStyle({ dashArray: '' }); // Solid
+            this.state.navigationLine.addTo(this.state.map);
+          } else {
+            this.state.navigationLine = L.polyline(remainingPath, {
+              color: '#38bdf8', // Glowing cyan solid path line
+              weight: 4,
+              opacity: 0.95,
+              className: 'nav-path-line'
+            }).addTo(this.state.map);
+          }
+        } else {
+          if (this.state.navigationLine) this.state.navigationLine.remove();
+          this.state.navigationLine = null;
+        }
+
+        // 2. Draw user-to-road connection dashed line
+        if (this.state.navigationConnStart) {
+          this.state.navigationConnStart.setLatLngs([userLatLng, snappedRoadLatLng]);
+          this.state.navigationConnStart.addTo(this.state.map);
+        } else {
+          this.state.navigationConnStart = L.polyline([userLatLng, snappedRoadLatLng], {
+            color: '#a855f7', // Glowing purple connection line
+            weight: 3,
+            dashArray: '5, 5',
+            opacity: 0.8,
+            className: 'nav-conn-line'
+          }).addTo(this.state.map);
+        }
+
+        // 3. Draw road-to-target connection dashed line
+        if (this.state.navigationConnEnd) {
+          this.state.navigationConnEnd.setLatLngs([roadEndLatLng, targetLatLng]);
+          this.state.navigationConnEnd.addTo(this.state.map);
+        } else {
+          this.state.navigationConnEnd = L.polyline([roadEndLatLng, targetLatLng], {
+            color: '#a855f7', // Glowing purple connection line
+            weight: 3,
+            dashArray: '5, 5',
+            opacity: 0.8,
+            className: 'nav-conn-line'
+          }).addTo(this.state.map);
+        }
+
+        // Calculate total distance: snapped start offset + remaining road + end offset
+        let remainingRoadDistance = 0;
+        if (route.isCached) {
+          for (let i = route.closestIdx; i < route.path.length - 1; i++) {
+            remainingRoadDistance += NavigationEngine.calculateDistance(
+              route.path[i].lat, route.path[i].lng,
+              route.path[i+1].lat, route.path[i+1].lng
+            );
+          }
+        } else {
+          remainingRoadDistance = route.roadDistance;
+        }
+
+        const connStartDist = NavigationEngine.calculateDistance(uLat, uLng, snappedRoadLatLng.lat, snappedRoadLatLng.lng);
+        const connEndDist = NavigationEngine.calculateDistance(roadEndLatLng.lat, roadEndLatLng.lng, targetLat, targetLng);
+        distance = remainingRoadDistance + connStartDist + connEndDist;
+
       } else {
-        this.state.navigationLine = L.polyline([userLatLng, targetLatLng], {
-          color: '#38bdf8', // Glowing cyan vector path line
-          weight: 4,
-          dashArray: '8, 8',
-          opacity: 0.9,
-          className: 'nav-path-line'
-        }).addTo(this.state.map);
+        // Fallback: draw straight dashed line
+        if (this.state.navigationLine) {
+          this.state.navigationLine.setLatLngs([userLatLng, targetLatLng]);
+          this.state.navigationLine.setStyle({ dashArray: '8, 8' }); // Dashed
+          this.state.navigationLine.addTo(this.state.map);
+        } else {
+          this.state.navigationLine = L.polyline([userLatLng, targetLatLng], {
+            color: '#38bdf8', // Glowing cyan vector path line
+            weight: 4,
+            dashArray: '8, 8',
+            opacity: 0.9,
+            className: 'nav-path-line'
+          }).addTo(this.state.map);
+        }
+
+        // Remove connection lines if they exist
+        if (this.state.navigationConnStart) this.state.navigationConnStart.remove();
+        if (this.state.navigationConnEnd) this.state.navigationConnEnd.remove();
+        this.state.navigationConnStart = null;
+        this.state.navigationConnEnd = null;
       }
     }
 
@@ -1823,13 +2141,22 @@ const App = {
       document.getElementById('navStatusIcon').className = distance < 10 ? 'fa-solid fa-crosshairs text-emerald' : 'fa-solid fa-crosshairs text-red';
     }
 
-    // Compass Vector Calculations:
-    // Rotate compass needle based on bearing and phone magnetic alignment
+    // Cache bearing for fast compass updates
+    this.state.currentBearing = bearing;
+
+    // Rotate compass elements
+    this.updateCompassRotation(NavigationEngine.deviceHeading || 0);
+  },
+
+  // Update compass needle/card styles directly (fast, no routing or Haversine math)
+  updateCompassRotation(heading) {
+    if (this.state.navigationMode === 'IDLE') return;
+
+    const bearing = this.state.currentBearing || 0;
     let needleRotation = bearing;
     let cardRotation = 0;
 
     if (NavigationEngine.orientationSupported) {
-      const heading = NavigationEngine.deviceHeading;
       // Compass needle rotates so it absolute-points towards target relative to the phone heading
       needleRotation = bearing - heading;
       // Compass ring card rotates so N faces real physical North
@@ -1842,8 +2169,10 @@ const App = {
     }
 
     // Rotate compass elements
-    document.getElementById('compassRing').style.transform = `rotate(${cardRotation}deg)`;
-    document.getElementById('navigationPointer').style.transform = `translateX(-50%) rotate(${needleRotation}deg)`;
+    const compassRing = document.getElementById('compassRing');
+    const navigationPointer = document.getElementById('navigationPointer');
+    if (compassRing) compassRing.style.transform = `rotate(${cardRotation}deg)`;
+    if (navigationPointer) navigationPointer.style.transform = `translateX(-50%) rotate(${needleRotation}deg)`;
   },
 
   // Setup Device Magnetometer Compass Listener
@@ -1852,11 +2181,11 @@ const App = {
   initCompassSensor() {
     NavigationEngine.initCompassSensor((heading) => {
       const now = Date.now();
-      // Throttle: only update if 150ms has elapsed OR heading changed by >= 1 degree
-      if (now - this.lastCompassUpdate > 150 || Math.abs(heading - this.lastHeading) >= 1.0) {
+      // Throttle: update compass rotation up to every 50ms for smooth movement
+      if (now - this.lastCompassUpdate > 50 || Math.abs(heading - this.lastHeading) >= 0.5) {
         this.lastCompassUpdate = now;
         this.lastHeading = heading;
-        this.updateNavigationMetrics();
+        this.updateCompassRotation(heading);
       }
     });
   },
@@ -1996,9 +2325,6 @@ const App = {
         OfflineManager.toggleRoadsVisibility();
       });
     }
-
-    // Load any cached roads from a previous session on startup
-    setTimeout(() => OfflineManager.loadCachedRoads(), 1500);
 
     // Refresh Local storage displays
     OfflineManager.updateStorageDisplay();

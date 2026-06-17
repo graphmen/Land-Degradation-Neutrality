@@ -2874,3 +2874,21 @@ input:checked + .slider::before { transform: translateX(16px); }
   box-shadow: 0 4px 12px rgba(244, 63, 94, 0.25) !important;
   font-weight: 600 !important;
 }
+
+/* Premium Dark Tooltip for Point ID Labels */
+.point-id-tooltip {
+  background: rgba(9, 13, 22, 0.88) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 6px !important;
+  color: var(--text-primary) !important;
+  font-weight: 700 !important;
+  font-family: var(--font-mono) !important;
+  font-size: 9px !important;
+  padding: 3px 6px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
+}
+.point-id-tooltip:before {
+  border-top-color: rgba(9, 13, 22, 0.88) !important;
+}

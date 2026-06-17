@@ -1,0 +1,90 @@
+{
+  "additions": [],
+  "deletions": [],
+  "edits": {
+    "200001": {
+      "_id": 200001,
+      "enumerator_name": "Tinashe Maturure",
+      "date_of_observation": "2026-05-14",
+      "ward_name": "Ward 4",
+      "village_location": "Chivi Centre",
+      "coordinates": "-20.3200 30.4850",
+      "area_type": [
+        "Arable",
+        "Grazing",
+        "Wetland",
+        "Other",
+        "Forest/Woodland"
+      ],
+      "dominant_soil_type": "Jecha (Sandy)",
+      "distance_to_river": 150,
+      "distance_to_wetland": 450,
+      "distance_to_road": 20,
+      "vegetation_condition": "Moderately Degraded",
+      "estimated_vegetation_cover": 35,
+      "invasive_species_present": "No",
+      "invasive_species_name": "",
+      "current_land_cover_types": [
+        "Cropland",
+        "Grassland"
+      ],
+      "soil_erosion_present": "Yes",
+      "type_of_erosion": [
+        "Sheet",
+        "Rill"
+      ],
+      "erosion_severity": "Moderate",
+      "gully_dimensions": "",
+      "erosion_expanding": "Yes",
+      "assets_threatened": [
+        "Cropland",
+        "Grazing Land"
+      ],
+      "water_sources_present": [
+        "Borehole",
+        "Seasonal water point"
+      ],
+      "water_quality_visual": [
+        "Slightly Turbid"
+      ],
+      "evidence_of_siltation": "Yes",
+      "wetland_cultivation_observed": "No",
+      "water_notes": "Borehole water is clear, seasonal water point highly silted due to upstream sandy runoff.",
+      "climate_change_indicators": [
+        "Prolonged dry spells",
+        "Failed crops"
+      ],
+      "site_flood_prone": "No",
+      "flood_notes": "",
+      "evidence_of_recent_fire": "No",
+      "fire_notes": "",
+      "signs_of_drought_stress": "Yes",
+      "drought_notes": "Crops showing severe wilting, grazing lands dry.",
+      "dominant_livelihoods": [
+        "Rain-fed farming",
+        "Livestock rearing"
+      ],
+      "livelihood_notes": "",
+      "grazing_pressure": [
+        "High"
+      ],
+      "grazing_notes": "High cattle density noticed around key boreholes.",
+      "observed_land_use_conflicts": [
+        "Crop vs livestock"
+      ],
+      "conflict_notes": "Livestock encroaching into unharvested croplands.",
+      "land_use_compatible": "Partially",
+      "compatibility_explanation": "Rain-fed farming on highly vulnerable sandy slopes is causing heavy runoff.",
+      "priority_level": "Medium",
+      "priority_explanation": "Erosion is moderate but active and threatens crop fields.",
+      "recommended_interventions": [
+        "Vetiver planting",
+        "Contour ridges"
+      ],
+      "intervention_notes": "Deploy contour works and plant vetiver grass to buffer active sheet wash zones.",
+      "cost_category": "Medium",
+      "cost_explanation": "Contour ridges can be constructed via community works.",
+      "additional_notes": "Recommend immediate community awareness meetings for soil protection."
+    }
+  }
+}

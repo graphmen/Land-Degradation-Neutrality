@@ -1,0 +1,804 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="previous_ldn_repro" id="previous_ldn_repro">
+	<SimpleField name="X" type="float"></SimpleField>
+	<SimpleField name="Y" type="float"></SimpleField>
+	<SimpleField name="Satelite S" type="float"></SimpleField>
+	<SimpleField name="Field SOC" type="float"></SimpleField>
+</Schema>
+<Folder><name>previous_ldn_repro</name>
+  <Placemark id="previous_ldn_repro.1">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-20.248000000000001</SimpleData>
+		<SimpleData name="Y">31.001249999999999</SimpleData>
+		<SimpleData name="Satelite S">52.950000000000003</SimpleData>
+		<SimpleData name="Field SOC">0.000000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>31.00125,-20.248</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.2">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-16.929800000000000</SimpleData>
+		<SimpleData name="Y">30.226250000000000</SimpleData>
+		<SimpleData name="Satelite S">37.680000000000000</SimpleData>
+		<SimpleData name="Field SOC">55.899999999999999</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.22625,-16.9298</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.3">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.098800000000001</SimpleData>
+		<SimpleData name="Y">29.931750000000001</SimpleData>
+		<SimpleData name="Satelite S">25.609999999999999</SimpleData>
+		<SimpleData name="Field SOC">191.460000000000008</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>29.93175,-18.0988</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.4">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-16.789100000000001</SimpleData>
+		<SimpleData name="Y">29.649660000000001</SimpleData>
+		<SimpleData name="Satelite S">38.539999999999999</SimpleData>
+		<SimpleData name="Field SOC">57.229999999999997</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>29.64966,-16.7891</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.5">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-19.343800000000002</SimpleData>
+		<SimpleData name="Y">30.244530000000001</SimpleData>
+		<SimpleData name="Satelite S">26.530000000000001</SimpleData>
+		<SimpleData name="Field SOC">37.950000000000003</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.24453,-19.3438</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.6">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-16.531199999999998</SimpleData>
+		<SimpleData name="Y">28.768200000000000</SimpleData>
+		<SimpleData name="Satelite S">31.750000000000000</SimpleData>
+		<SimpleData name="Field SOC">63.579999999999998</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>28.7682,-16.5312</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.7">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-19.995999999999999</SimpleData>
+		<SimpleData name="Y">31.370950000000001</SimpleData>
+		<SimpleData name="Satelite S">36.340000000000003</SimpleData>
+		<SimpleData name="Field SOC">40.820000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>31.37095,-19.996</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.8">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-16.101900000000001</SimpleData>
+		<SimpleData name="Y">28.998419999999999</SimpleData>
+		<SimpleData name="Satelite S">28.500000000000000</SimpleData>
+		<SimpleData name="Field SOC">30.600000000000001</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>28.99842,-16.1019</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.9">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-19.977599999999999</SimpleData>
+		<SimpleData name="Y">31.788119999999999</SimpleData>
+		<SimpleData name="Satelite S">31.850000000000001</SimpleData>
+		<SimpleData name="Field SOC">74.480000000000004</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>31.78812,-19.9776</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.10">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-19.480799999999999</SimpleData>
+		<SimpleData name="Y">30.642540000000000</SimpleData>
+		<SimpleData name="Satelite S">26.480000000000000</SimpleData>
+		<SimpleData name="Field SOC">76.930000000000007</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.64254,-19.4808</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.11">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-20.279599999999999</SimpleData>
+		<SimpleData name="Y">30.486100000000000</SimpleData>
+		<SimpleData name="Satelite S">22.149999999999999</SimpleData>
+		<SimpleData name="Field SOC">26.730000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.4861,-20.2796</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.12">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-20.349799999999998</SimpleData>
+		<SimpleData name="Y">31.461659999999998</SimpleData>
+		<SimpleData name="Satelite S">29.989999999999998</SimpleData>
+		<SimpleData name="Field SOC">64.000000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>31.46166,-20.3498</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.13">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-20.984000000000002</SimpleData>
+		<SimpleData name="Y">31.236249999999998</SimpleData>
+		<SimpleData name="Satelite S">19.379999999999999</SimpleData>
+		<SimpleData name="Field SOC">57.420000000000002</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>31.23625,-20.984</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.14">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.551500000000001</SimpleData>
+		<SimpleData name="Y">29.828840000000000</SimpleData>
+		<SimpleData name="Satelite S">24.510000000000002</SimpleData>
+		<SimpleData name="Field SOC">67.200000000000003</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>29.82884,-18.5515</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.15">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-21.362600000000000</SimpleData>
+		<SimpleData name="Y">30.728110000000001</SimpleData>
+		<SimpleData name="Satelite S">18.800000000000001</SimpleData>
+		<SimpleData name="Field SOC">163.750000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.72811,-21.3626</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.16">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-20.960699999999999</SimpleData>
+		<SimpleData name="Y">31.935960000000001</SimpleData>
+		<SimpleData name="Satelite S">25.550000000000001</SimpleData>
+		<SimpleData name="Field SOC">59.329999999999998</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>31.93596,-20.9607</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.17">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-21.054400000000001</SimpleData>
+		<SimpleData name="Y">30.735370000000000</SimpleData>
+		<SimpleData name="Satelite S">24.039999999999999</SimpleData>
+		<SimpleData name="Field SOC">71.459999999999994</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.73537,-21.0544</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.18">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-17.601900000000001</SimpleData>
+		<SimpleData name="Y">30.666100000000000</SimpleData>
+		<SimpleData name="Satelite S">36.180000000000000</SimpleData>
+		<SimpleData name="Field SOC">35.159999999999997</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.6661,-17.6019</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.19">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-20.803300000000000</SimpleData>
+		<SimpleData name="Y">30.930330000000001</SimpleData>
+		<SimpleData name="Satelite S">31.370000000000001</SimpleData>
+		<SimpleData name="Field SOC">146.870000000000005</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.93033,-20.8033</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.20">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-17.355000000000000</SimpleData>
+		<SimpleData name="Y">30.275549999999999</SimpleData>
+		<SimpleData name="Satelite S">37.829999999999998</SimpleData>
+		<SimpleData name="Field SOC">32.680000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.27555,-17.355</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.21">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-19.325399999999998</SimpleData>
+		<SimpleData name="Y">30.913090000000000</SimpleData>
+		<SimpleData name="Satelite S">33.659999999999997</SimpleData>
+		<SimpleData name="Field SOC">26.300000000000001</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.91309,-19.3254</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.22">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-19.806100000000001</SimpleData>
+		<SimpleData name="Y">31.253430000000002</SimpleData>
+		<SimpleData name="Satelite S">23.590000000000000</SimpleData>
+		<SimpleData name="Field SOC">87.939999999999998</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>31.25343,-19.8061</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.23">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-19.857700000000001</SimpleData>
+		<SimpleData name="Y">30.748310000000000</SimpleData>
+		<SimpleData name="Satelite S">25.149999999999999</SimpleData>
+		<SimpleData name="Field SOC">43.920000000000002</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.74831,-19.8577</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.24">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-17.834900000000001</SimpleData>
+		<SimpleData name="Y">30.157570000000000</SimpleData>
+		<SimpleData name="Satelite S">30.010000000000002</SimpleData>
+		<SimpleData name="Field SOC">160.240000000000009</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.15757,-17.8349</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.25">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.103200000000001</SimpleData>
+		<SimpleData name="Y">30.316510000000001</SimpleData>
+		<SimpleData name="Satelite S">34.630000000000003</SimpleData>
+		<SimpleData name="Field SOC">21.270000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.31651,-18.1032</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.26">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-20.261900000000001</SimpleData>
+		<SimpleData name="Y">30.946600000000000</SimpleData>
+		<SimpleData name="Satelite S">36.210000000000001</SimpleData>
+		<SimpleData name="Field SOC">22.079999999999998</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.9466,-20.2619</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.27">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-19.948000000000000</SimpleData>
+		<SimpleData name="Y">30.786090000000002</SimpleData>
+		<SimpleData name="Satelite S">27.230000000000000</SimpleData>
+		<SimpleData name="Field SOC">29.250000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.78609,-19.948</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.28">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.256000000000000</SimpleData>
+		<SimpleData name="Y">30.309950000000001</SimpleData>
+		<SimpleData name="Satelite S">24.670000000000002</SimpleData>
+		<SimpleData name="Field SOC">43.880000000000003</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.30995,-18.256</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.29">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-16.576799999999999</SimpleData>
+		<SimpleData name="Y">29.679240000000000</SimpleData>
+		<SimpleData name="Satelite S">32.579999999999998</SimpleData>
+		<SimpleData name="Field SOC">37.039999999999999</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>29.67924,-16.5768</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.30">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-17.846699999999998</SimpleData>
+		<SimpleData name="Y">31.087289999999999</SimpleData>
+		<SimpleData name="Satelite S">33.600000000000001</SimpleData>
+		<SimpleData name="Field SOC">0.000000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>31.08729,-17.8467</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.31">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.172400000000000</SimpleData>
+		<SimpleData name="Y">30.094639999999998</SimpleData>
+		<SimpleData name="Satelite S">36.009999999999998</SimpleData>
+		<SimpleData name="Field SOC">24.840000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.09464,-18.1724</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.32">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.250299999999999</SimpleData>
+		<SimpleData name="Y">28.982810000000001</SimpleData>
+		<SimpleData name="Satelite S">29.570000000000000</SimpleData>
+		<SimpleData name="Field SOC">21.170000000000002</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>28.98281,-18.2503</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.33">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.795400000000001</SimpleData>
+		<SimpleData name="Y">29.348250000000000</SimpleData>
+		<SimpleData name="Satelite S">21.890000000000001</SimpleData>
+		<SimpleData name="Field SOC">45.140000000000001</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>29.34825,-18.7954</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.34">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-19.069500000000001</SimpleData>
+		<SimpleData name="Y">29.804250000000000</SimpleData>
+		<SimpleData name="Satelite S">23.059999999999999</SimpleData>
+		<SimpleData name="Field SOC">66.390000000000001</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>29.80425,-19.0695</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.35">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-20.423200000000001</SimpleData>
+		<SimpleData name="Y">29.736049999999999</SimpleData>
+		<SimpleData name="Satelite S">24.969999999999999</SimpleData>
+		<SimpleData name="Field SOC">22.090000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>29.73605,-20.4232</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.36">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-17.683100000000000</SimpleData>
+		<SimpleData name="Y">27.427990000000001</SimpleData>
+		<SimpleData name="Satelite S">26.840000000000000</SimpleData>
+		<SimpleData name="Field SOC">164.650000000000006</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>27.42799,-17.6831</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.37">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-21.624800000000000</SimpleData>
+		<SimpleData name="Y">29.821639999999999</SimpleData>
+		<SimpleData name="Satelite S">16.960000000000001</SimpleData>
+		<SimpleData name="Field SOC">51.869999999999997</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>29.82164,-21.6248</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.38">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.449600000000000</SimpleData>
+		<SimpleData name="Y">26.878699999999998</SimpleData>
+		<SimpleData name="Satelite S">26.250000000000000</SimpleData>
+		<SimpleData name="Field SOC">22.559999999999999</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>26.8787,-18.4496</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.39">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-20.602000000000000</SimpleData>
+		<SimpleData name="Y">29.009170000000001</SimpleData>
+		<SimpleData name="Satelite S">26.739999999999998</SimpleData>
+		<SimpleData name="Field SOC">23.100000000000001</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>29.00917,-20.602</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.40">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-20.480499999999999</SimpleData>
+		<SimpleData name="Y">28.042739999999998</SimpleData>
+		<SimpleData name="Satelite S">25.969999999999999</SimpleData>
+		<SimpleData name="Field SOC">52.539999999999999</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>28.04274,-20.4805</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.41">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-21.011299999999999</SimpleData>
+		<SimpleData name="Y">29.155380000000001</SimpleData>
+		<SimpleData name="Satelite S">20.399999999999999</SimpleData>
+		<SimpleData name="Field SOC">19.100000000000001</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>29.15538,-21.0113</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.42">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.949900000000000</SimpleData>
+		<SimpleData name="Y">27.765100000000000</SimpleData>
+		<SimpleData name="Satelite S">20.059999999999999</SimpleData>
+		<SimpleData name="Field SOC">82.819999999999993</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>27.7651,-18.9499</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.43">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-17.596699999999998</SimpleData>
+		<SimpleData name="Y">27.673279999999998</SimpleData>
+		<SimpleData name="Satelite S">30.730000000000000</SimpleData>
+		<SimpleData name="Field SOC">41.500000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>27.67328,-17.5967</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.44">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-21.243800000000000</SimpleData>
+		<SimpleData name="Y">28.262370000000001</SimpleData>
+		<SimpleData name="Satelite S">16.059999999999999</SimpleData>
+		<SimpleData name="Field SOC">34.240000000000002</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>28.26237,-21.2438</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.45">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-17.697900000000001</SimpleData>
+		<SimpleData name="Y">28.551189999999998</SimpleData>
+		<SimpleData name="Satelite S">24.230000000000000</SimpleData>
+		<SimpleData name="Field SOC">22.000000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>28.55119,-17.6979</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.46">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-19.351099999999999</SimpleData>
+		<SimpleData name="Y">28.181960000000000</SimpleData>
+		<SimpleData name="Satelite S">18.670000000000002</SimpleData>
+		<SimpleData name="Field SOC">60.590000000000003</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>28.18196,-19.3511</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.47">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-19.976099999999999</SimpleData>
+		<SimpleData name="Y">28.961500000000001</SimpleData>
+		<SimpleData name="Satelite S">30.660000000000000</SimpleData>
+		<SimpleData name="Field SOC">21.829999999999998</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>28.9615,-19.9761</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.48">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.145099999999999</SimpleData>
+		<SimpleData name="Y">27.084980000000002</SimpleData>
+		<SimpleData name="Satelite S">27.859999999999999</SimpleData>
+		<SimpleData name="Field SOC">46.430000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>27.08498,-18.1451</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.49">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.384200000000000</SimpleData>
+		<SimpleData name="Y">26.628940000000000</SimpleData>
+		<SimpleData name="Satelite S">30.410000000000000</SimpleData>
+		<SimpleData name="Field SOC">181.750000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>26.62894,-18.3842</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.50">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.334499999999998</SimpleData>
+		<SimpleData name="Y">26.472709999999999</SimpleData>
+		<SimpleData name="Satelite S">25.649999999999999</SimpleData>
+		<SimpleData name="Field SOC">24.020000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>26.47271,-18.3345</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.51">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.038499999999999</SimpleData>
+		<SimpleData name="Y">25.836379999999998</SimpleData>
+		<SimpleData name="Satelite S">22.550000000000001</SimpleData>
+		<SimpleData name="Field SOC">129.509999999999991</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>25.83638,-18.0385</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.52">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.230899999999998</SimpleData>
+		<SimpleData name="Y">26.032689999999999</SimpleData>
+		<SimpleData name="Satelite S">24.980000000000000</SimpleData>
+		<SimpleData name="Field SOC">26.340000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>26.03269,-18.2309</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.53">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-17.658899999999999</SimpleData>
+		<SimpleData name="Y">27.532100000000000</SimpleData>
+		<SimpleData name="Satelite S">29.210000000000001</SimpleData>
+		<SimpleData name="Field SOC">191.000000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>27.5321,-17.6589</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.54">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.147099999999998</SimpleData>
+		<SimpleData name="Y">28.925000000000001</SimpleData>
+		<SimpleData name="Satelite S">28.379999999999999</SimpleData>
+		<SimpleData name="Field SOC">24.300000000000001</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>28.925,-18.1471</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.55">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.420400000000001</SimpleData>
+		<SimpleData name="Y">28.859480000000001</SimpleData>
+		<SimpleData name="Satelite S">26.699999999999999</SimpleData>
+		<SimpleData name="Field SOC">23.149999999999999</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>28.85948,-18.4204</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.56">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-19.091100000000001</SimpleData>
+		<SimpleData name="Y">27.905899999999999</SimpleData>
+		<SimpleData name="Satelite S">18.629999999999999</SimpleData>
+		<SimpleData name="Field SOC">60.219999999999999</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>27.9059,-19.0911</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.57">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-19.877300000000002</SimpleData>
+		<SimpleData name="Y">27.917110000000001</SimpleData>
+		<SimpleData name="Satelite S">27.219999999999999</SimpleData>
+		<SimpleData name="Field SOC">27.180000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>27.91711,-19.8773</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.58">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-20.391300000000001</SimpleData>
+		<SimpleData name="Y">27.887979999999999</SimpleData>
+		<SimpleData name="Satelite S">23.879999999999999</SimpleData>
+		<SimpleData name="Field SOC">59.079999999999998</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>27.88798,-20.3913</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.59">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-20.692399999999999</SimpleData>
+		<SimpleData name="Y">29.526930000000000</SimpleData>
+		<SimpleData name="Satelite S">24.480000000000000</SimpleData>
+		<SimpleData name="Field SOC">21.780000000000001</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>29.52693,-20.6924</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.60">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.641400000000001</SimpleData>
+		<SimpleData name="Y">32.635790000000000</SimpleData>
+		<SimpleData name="Satelite S">48.840000000000003</SimpleData>
+		<SimpleData name="Field SOC">77.230000000000004</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>32.63579,-18.6414</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.61">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-17.317699999999999</SimpleData>
+		<SimpleData name="Y">31.564889999999998</SimpleData>
+		<SimpleData name="Satelite S">35.009999999999998</SimpleData>
+		<SimpleData name="Field SOC">74.450000000000003</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>31.56489,-17.3177</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.62">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-17.534199999999998</SimpleData>
+		<SimpleData name="Y">30.987539999999999</SimpleData>
+		<SimpleData name="Satelite S">39.049999999999997</SimpleData>
+		<SimpleData name="Field SOC">47.259999999999998</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.98754,-17.5342</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.63">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-17.113499999999998</SimpleData>
+		<SimpleData name="Y">31.398409999999998</SimpleData>
+		<SimpleData name="Satelite S">33.420000000000002</SimpleData>
+		<SimpleData name="Field SOC">76.969999999999999</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>31.39841,-17.1135</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.64">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-17.958800000000000</SimpleData>
+		<SimpleData name="Y">31.307950000000002</SimpleData>
+		<SimpleData name="Satelite S">36.079999999999998</SimpleData>
+		<SimpleData name="Field SOC">22.399999999999999</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>31.30795,-17.9588</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.65">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.131699999999999</SimpleData>
+		<SimpleData name="Y">30.886050000000001</SimpleData>
+		<SimpleData name="Satelite S">27.670000000000002</SimpleData>
+		<SimpleData name="Field SOC">19.730000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.88605,-18.1317</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.66">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-17.683199999999999</SimpleData>
+		<SimpleData name="Y">31.498889999999999</SimpleData>
+		<SimpleData name="Satelite S">39.939999999999998</SimpleData>
+		<SimpleData name="Field SOC">93.760000000000005</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>31.49889,-17.6832</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.67">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.398900000000001</SimpleData>
+		<SimpleData name="Y">32.680380000000000</SimpleData>
+		<SimpleData name="Satelite S">73.019999999999996</SimpleData>
+		<SimpleData name="Field SOC">170.729999999999990</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>32.68038,-18.3989</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.68">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-17.421299999999999</SimpleData>
+		<SimpleData name="Y">31.792120000000001</SimpleData>
+		<SimpleData name="Satelite S">34.799999999999997</SimpleData>
+		<SimpleData name="Field SOC">69.939999999999998</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>31.79212,-17.4213</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.69">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.163900000000002</SimpleData>
+		<SimpleData name="Y">32.741419999999998</SimpleData>
+		<SimpleData name="Satelite S">36.189999999999998</SimpleData>
+		<SimpleData name="Field SOC">28.710000000000001</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>32.74142,-18.1639</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.70">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-19.957899999999999</SimpleData>
+		<SimpleData name="Y">32.364390000000000</SimpleData>
+		<SimpleData name="Satelite S">21.920000000000002</SimpleData>
+		<SimpleData name="Field SOC">84.920000000000002</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>32.36439,-19.9579</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.71">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.778900000000000</SimpleData>
+		<SimpleData name="Y">30.901650000000000</SimpleData>
+		<SimpleData name="Satelite S">22.829999999999998</SimpleData>
+		<SimpleData name="Field SOC">27.620000000000001</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.90165,-18.7789</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.72">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-20.233599999999999</SimpleData>
+		<SimpleData name="Y">32.639139999999998</SimpleData>
+		<SimpleData name="Satelite S">53.240000000000002</SimpleData>
+		<SimpleData name="Field SOC">59.090000000000003</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>32.63914,-20.2336</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.73">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.386500000000002</SimpleData>
+		<SimpleData name="Y">32.491940000000000</SimpleData>
+		<SimpleData name="Satelite S">48.399999999999999</SimpleData>
+		<SimpleData name="Field SOC">72.409999999999997</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>32.49194,-18.3865</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.74">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-19.406199999999998</SimpleData>
+		<SimpleData name="Y">32.573380000000000</SimpleData>
+		<SimpleData name="Satelite S">32.930000000000000</SimpleData>
+		<SimpleData name="Field SOC">61.539999999999999</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>32.57338,-19.4062</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.75">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-19.100000000000001</SimpleData>
+		<SimpleData name="Y">32.723999999999997</SimpleData>
+		<SimpleData name="Satelite S">62.789999999999999</SimpleData>
+		<SimpleData name="Field SOC">184.650000000000006</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>32.724,-19.1</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.76">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-19.829999999999998</SimpleData>
+		<SimpleData name="Y">32.828989999999997</SimpleData>
+		<SimpleData name="Satelite S">45.799999999999997</SimpleData>
+		<SimpleData name="Field SOC">79.480000000000004</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>32.82899,-19.83</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.77">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-19.245200000000001</SimpleData>
+		<SimpleData name="Y">30.785750000000000</SimpleData>
+		<SimpleData name="Satelite S">25.340000000000000</SimpleData>
+		<SimpleData name="Field SOC">36.250000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>30.78575,-19.2452</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.78">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-16.673900000000000</SimpleData>
+		<SimpleData name="Y">31.523050000000001</SimpleData>
+		<SimpleData name="Satelite S">32.789999999999999</SimpleData>
+		<SimpleData name="Field SOC">40.710000000000001</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>31.52305,-16.6739</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.79">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.960599999999999</SimpleData>
+		<SimpleData name="Y">31.541229999999999</SimpleData>
+		<SimpleData name="Satelite S">36.329999999999998</SimpleData>
+		<SimpleData name="Field SOC">100.900000000000006</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>31.54123,-18.9606</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.80">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.547899999999998</SimpleData>
+		<SimpleData name="Y">31.412289999999999</SimpleData>
+		<SimpleData name="Satelite S">34.469999999999999</SimpleData>
+		<SimpleData name="Field SOC">51.920000000000002</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>31.41229,-18.5479</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.81">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.939399999999999</SimpleData>
+		<SimpleData name="Y">32.490130000000001</SimpleData>
+		<SimpleData name="Satelite S">33.390000000000001</SimpleData>
+		<SimpleData name="Field SOC">184.860000000000014</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>32.49013,-18.9394</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.82">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.949000000000002</SimpleData>
+		<SimpleData name="Y">32.644210000000001</SimpleData>
+		<SimpleData name="Satelite S">56.700000000000003</SimpleData>
+		<SimpleData name="Field SOC">30.250000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>32.64421,-18.949</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.83">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-18.949000000000002</SimpleData>
+		<SimpleData name="Y">32.644210000000001</SimpleData>
+		<SimpleData name="Satelite S">56.700000000000003</SimpleData>
+		<SimpleData name="Field SOC">173.110000000000014</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>32.64421,-18.949</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.84">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-17.406700000000001</SimpleData>
+		<SimpleData name="Y">32.339979999999997</SimpleData>
+		<SimpleData name="Satelite S">33.509999999999998</SimpleData>
+		<SimpleData name="Field SOC">30.250000000000000</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>32.33998,-17.4067</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.85">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-17.406700000000001</SimpleData>
+		<SimpleData name="Y">32.339979999999997</SimpleData>
+		<SimpleData name="Satelite S">33.509999999999998</SimpleData>
+		<SimpleData name="Field SOC">173.110000000000014</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>32.33998,-17.4067</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.86">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-20.369000000000000</SimpleData>
+		<SimpleData name="Y">32.497549999999997</SimpleData>
+		<SimpleData name="Satelite S">39.240000000000002</SimpleData>
+		<SimpleData name="Field SOC">62.100000000000001</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>32.49755,-20.369</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.87">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-17.164200000000001</SimpleData>
+		<SimpleData name="Y">32.396090000000001</SimpleData>
+		<SimpleData name="Satelite S">23.359999999999999</SimpleData>
+		<SimpleData name="Field SOC">41.689999999999998</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>32.39609,-17.1642</coordinates></Point>
+  </Placemark>
+  <Placemark id="previous_ldn_repro.88">
+	<ExtendedData><SchemaData schemaUrl="#previous_ldn_repro">
+		<SimpleData name="X">-17.584900000000001</SimpleData>
+		<SimpleData name="Y">31.937429999999999</SimpleData>
+		<SimpleData name="Satelite S">32.140000000000001</SimpleData>
+		<SimpleData name="Field SOC">85.609999999999999</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>31.93743,-17.5849</coordinates></Point>
+  </Placemark>
+</Folder>
+</Document></kml>

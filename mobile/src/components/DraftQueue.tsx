@@ -3,20 +3,23 @@ import { RefreshCw, Trash, Edit2, CheckCircle, Wifi } from "lucide-react";
 import { 
   getLdnDrafts, 
   getSoilDrafts, 
+  getDrylandsDrafts,
   deleteLdnDraft, 
-  deleteSoilDraft 
+  deleteSoilDraft,
+  deleteDrylandsDraft
 } from "../lib/db";
-import type { LdnDraft, SoilDraft } from "../lib/db";
+import type { LdnDraft, SoilDraft, DrylandsDraft } from "../lib/db";
 
 interface DraftQueueProps {
   onSuccess: (message: string) => void;
   onError: (message: string) => void;
-  onEditDraft: (id: string, type: "ldn" | "soil") => void;
+  onEditDraft: (id: string, type: "ldn" | "soil" | "drylands") => void;
 }
 
 export default function DraftQueue({ onSuccess, onError, onEditDraft }: DraftQueueProps) {
   const [ldnDrafts, setLdnDrafts] = useState<LdnDraft[]>([]);
   const [soilDrafts, setSoilDrafts] = useState<SoilDraft[]>([]);
+  const [drylandsDrafts, setDrylandsDrafts] = useState<DrylandsDraft[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
 
@@ -26,12 +29,14 @@ export default function DraftQueue({ onSuccess, onError, onEditDraft }: DraftQue
   const loadDrafts = async () => {
     setLoading(true);
     try {
-      const [ldnList, soilList] = await Promise.all([
+      const [ldnList, soilList, drylandsList] = await Promise.all([
         getLdnDrafts(),
-        getSoilDrafts()
+        getSoilDrafts(),
+        getDrylandsDrafts()
       ]);
       setLdnDrafts(ldnList);
       setSoilDrafts(soilList);
+      setDrylandsDrafts(drylandsList);
     } catch (e: any) {
       onError(`Failed to load drafts: ${e.message}`);
     } finally {
@@ -43,14 +48,17 @@ export default function DraftQueue({ onSuccess, onError, onEditDraft }: DraftQue
     loadDrafts();
   }, []);
 
-  const handleDelete = async (id: string, type: "ldn" | "soil") => {
+  const handleDelete = async (id: string, type: "ldn" | "soil" | "drylands") => {
     try {
       if (type === "ldn") {
         await deleteLdnDraft(id);
         setLdnDrafts(prev => prev.filter(x => x.id !== id));
-      } else {
+      } else if (type === "soil") {
         await deleteSoilDraft(id);
         setSoilDrafts(prev => prev.filter(x => x.id !== id));
+      } else {
+        await deleteDrylandsDraft(id);
+        setDrylandsDrafts(prev => prev.filter(x => x.id !== id));
       }
       onSuccess("Draft deleted successfully.");
     } catch (e: any) {
@@ -60,7 +68,7 @@ export default function DraftQueue({ onSuccess, onError, onEditDraft }: DraftQue
 
   // Synchronization Engine to Google Sheets Apps Script Web App
   const triggerSync = async () => {
-    const totalDrafts = ldnDrafts.length + soilDrafts.length;
+    const totalDrafts = ldnDrafts.length + soilDrafts.length + drylandsDrafts.length;
     if (totalDrafts === 0) {
       onError("Your queue is empty. No drafts to synchronize.");
       return;
@@ -72,6 +80,7 @@ export default function DraftQueue({ onSuccess, onError, onEditDraft }: DraftQue
     const isGoogleScript = serverUrl.includes("script.google.com");
     let ldnSuccess = 0;
     let soilSuccess = 0;
+    let drylandsSuccess = 0;
     let failedCount = 0;
 
     // 1. Process LDN drafts
@@ -157,12 +166,53 @@ export default function DraftQueue({ onSuccess, onError, onEditDraft }: DraftQue
       }
     }
 
+    // 3. Process Drylands drafts
+    for (const draft of drylandsDrafts) {
+      try {
+        const payload = isGoogleScript ? { type: "drylands", data: draft } : draft;
+        const targetUrl = isGoogleScript ? serverUrl : `${serverUrl}/api/drylands`;
+
+        const response = await fetch(targetUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          mode: "cors"
+        }).catch(() => null);
+
+        if (response && response.status === 200) {
+          const resJson = await response.json().catch(() => ({}));
+          if (isGoogleScript && resJson.status === "error") {
+            console.error("Google Script Sync error:", resJson.message);
+            failedCount++;
+          } else {
+            drylandsSuccess++;
+            await deleteDrylandsDraft(draft.id);
+          }
+        } else {
+          // Dev mock fallback for localhost only
+          if (!isGoogleScript && (serverUrl.includes("localhost") || serverUrl.includes("127.0.0.1"))) {
+            drylandsSuccess++;
+            await deleteDrylandsDraft(draft.id);
+          } else {
+            failedCount++;
+          }
+        }
+      } catch (err) {
+        if (!isGoogleScript && (serverUrl.includes("localhost") || serverUrl.includes("127.0.0.1"))) {
+          drylandsSuccess++;
+          await deleteDrylandsDraft(draft.id);
+        } else {
+          failedCount++;
+        }
+      }
+    }
+
     // Wrap up sync
     setSyncing(false);
     if (failedCount > 0) {
-      onError(`Sync finished: ${ldnSuccess} LDN and ${soilSuccess} Soil surveys uploaded. ${failedCount} records failed. Please verify internet connection.`);
+      onError(`Sync finished: ${ldnSuccess} LDN, ${soilSuccess} Soil, and ${drylandsSuccess} Drylands uploaded. ${failedCount} records failed. Please verify internet connection.`);
     } else {
-      onSuccess(`Sync Completed: ${ldnSuccess} LDN reports and ${soilSuccess} Soil surveys uploaded to server!`);
+      onSuccess(`Sync Completed: ${ldnSuccess} LDN reports, ${soilSuccess} Soil surveys, and ${drylandsSuccess} Drylands assessments successfully synced to server!`);
     }
     loadDrafts();
   };
@@ -182,12 +232,12 @@ export default function DraftQueue({ onSuccess, onError, onEditDraft }: DraftQue
 
         <button 
           onClick={triggerSync}
-          disabled={syncing || (ldnDrafts.length === 0 && soilDrafts.length === 0)}
+          disabled={syncing || (ldnDrafts.length === 0 && soilDrafts.length === 0 && drylandsDrafts.length === 0)}
           className="btn-primary"
           style={{ gap: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}
         >
           <RefreshCw size={16} className={syncing ? "sync-icon-spin" : ""} />
-          {syncing ? "Syncing Telemetry..." : `Upload Queue (${ldnDrafts.length + soilDrafts.length} drafts)`}
+          {syncing ? "Syncing Telemetry..." : `Upload Queue (${ldnDrafts.length + soilDrafts.length + drylandsDrafts.length} drafts)`}
         </button>
       </div>
 
@@ -196,7 +246,7 @@ export default function DraftQueue({ onSuccess, onError, onEditDraft }: DraftQue
         <div style={{ textAlign: "center", padding: "20px" }}>
           <div className="spinner" style={{ margin: "auto" }} />
         </div>
-      ) : (ldnDrafts.length === 0 && soilDrafts.length === 0) ? (
+      ) : (ldnDrafts.length === 0 && soilDrafts.length === 0 && drylandsDrafts.length === 0) ? (
         <div className="mobile-card" style={{ textAlign: "center", padding: "30px" }}>
           <CheckCircle size={32} style={{ color: "var(--text-accent)", marginBottom: "8px" }} />
           <div style={{ fontSize: "14px", fontWeight: 700 }}>Queue Empty</div>
@@ -261,6 +311,39 @@ export default function DraftQueue({ onSuccess, onError, onEditDraft }: DraftQue
                 </button>
                 <button 
                   onClick={() => handleDelete(d.id, "soil")}
+                  className="btn-danger" 
+                  style={{ padding: "8px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", width: "34px", height: "34px" }}
+                  title="Delete draft"
+                >
+                  <Trash size={14} />
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {/* Drylands Drafts */}
+          {drylandsDrafts.map(d => (
+            <div key={d.id} className="queue-item">
+              <div className="queue-item-details">
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <span className="queue-badge drylands">🏜️ Drylands</span>
+                  <span className="queue-item-title">{d.village_location || "Unknown Village"}</span>
+                </div>
+                <div className="queue-item-meta">
+                  Ward: <strong>{d.ward_name}</strong> • Enumerator: <strong>{d.enumerator_name}</strong>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button 
+                  onClick={() => onEditDraft(d.id, "drylands")}
+                  className="btn-secondary" 
+                  style={{ padding: "8px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", width: "34px", height: "34px" }}
+                  title="Edit draft"
+                >
+                  <Edit2 size={14} style={{ color: "var(--text-accent)" }} />
+                </button>
+                <button 
+                  onClick={() => handleDelete(d.id, "drylands")}
                   className="btn-danger" 
                   style={{ padding: "8px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", width: "34px", height: "34px" }}
                   title="Delete draft"

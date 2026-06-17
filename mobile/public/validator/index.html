@@ -31,7 +31,6 @@
       <i class="fa-solid fa-compass-drafting logo-icon"></i>
       <div class="logo-text">
         <h1>LDN VALIDATOR</h1>
-        <span>Manuel Ndebele GIS TOOLS</span>
       </div>
     </div>
     <div class="offline-badge" id="networkStatus">
@@ -162,14 +161,22 @@
               <span>Waypoint</span>
             </div>
 
-            <div class="legend-section-title">Validation Targets</div>
+            <div class="legend-section-title">Validation Targets (Categories)</div>
             <div class="map-legend-item">
-              <span class="legend-icon-dot" style="background:#c0ff00; border:2px solid #fff;"></span>
-              <span>Target Centroid (Pending)</span>
+              <span class="legend-icon-dot" style="background:#0ea5e9; border:2px solid #fff;"></span>
+              <span>1km Buffer</span>
             </div>
             <div class="map-legend-item">
-              <span class="legend-icon-dot" style="background:#10b981; border:2px solid #fff;"></span>
-              <span>Target Centroid (Validated)</span>
+              <span class="legend-icon-dot" style="background:#f59e0b; border:2px solid #fff;"></span>
+              <span>20km Radius</span>
+            </div>
+            <div class="map-legend-item">
+              <span class="legend-icon-dot" style="background:#f43f5e; border:2px solid #fff;"></span>
+              <span>Previous LDN Data</span>
+            </div>
+            <div class="map-legend-item" style="margin-top: 6px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 6px;">
+              <span class="legend-icon-dot" style="background:transparent; border:3px solid #10b981; box-shadow:0 0 6px rgba(16,185,129,0.7); width:8px; height:8px; display:inline-block; border-radius:50%;"></span>
+              <span>Validated (Green Ring)</span>
             </div>
             <div class="map-legend-item">
               <span class="legend-line" style="border-color:#ef4444; border-style:solid;"></span>
@@ -518,22 +525,10 @@
           <button class="action-btn" id="btnShowAddPointModal" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border: 1px solid rgba(16, 185, 129, 0.3); box-shadow: none;">
             <i class="fa-solid fa-location-dot text-emerald"></i> Add Point Manually
           </button>
-          <div style="display: flex; gap: 8px;">
-            <button class="action-btn" id="btnTriggerImportGeoJson" style="flex: 1; font-size: 11px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border: 1px solid rgba(16, 185, 129, 0.3); box-shadow: none;">
-              <i class="fa-solid fa-file-import text-sky"></i> Import GeoJSON
-            </button>
-            <button class="action-btn" id="btnTriggerImportKml" style="flex: 1; font-size: 11px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border: 1px solid rgba(16, 185, 129, 0.3); box-shadow: none;">
-              <i class="fa-solid fa-file-import text-yellow-500"></i> Import KML
-            </button>
-          </div>
-          <div style="display: flex; gap: 8px;">
-            <button class="action-btn danger-btn" id="btnClearAllTargets" style="flex: 1; font-size: 11px; padding: 8px; height: auto;">
-              <i class="fa-solid fa-eraser"></i> Clear Targets
-            </button>
-            <button class="action-btn secondary-btn" id="btnResetToDefaults" style="flex: 1; font-size: 11px; padding: 8px; height: auto; border-color: rgba(255, 255, 255, 0.1);">
-              <i class="fa-solid fa-rotate-left"></i> Reset Defaults
-            </button>
-          </div>
+          <!-- Import options hidden at user request -->
+          <button class="action-btn secondary-btn" id="btnResetToDefaults" style="font-size: 11px; padding: 8px; height: auto; border-color: rgba(255, 255, 255, 0.1);">
+            <i class="fa-solid fa-rotate-left"></i> Reset Defaults
+          </button>
         </div>
       </div>
       

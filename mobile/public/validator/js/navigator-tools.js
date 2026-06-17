@@ -191,25 +191,41 @@ const NavigatorTools = {
     // Roads Layer toggle switch (map drawer)
     const roadsSwitch = document.getElementById('switchRoadsLayer');
     if (roadsSwitch) {
-      roadsSwitch.addEventListener('change', () => {
+      roadsSwitch.addEventListener('change', async () => {
         const map = App.state.map;
         if (!map) return;
 
         if (roadsSwitch.checked) {
-          // Try to show roads layer — load from cache if not yet rendered
           if (App.state.roadsLayer) {
-            App.state.roadsLayer.addTo(map);
+            if (map.getZoom() >= 12) {
+              App.state.roadsLayer.addTo(map);
+            }
+            // Also sync toggle button in UI if it exists
+            const btn = document.getElementById('toggleRoadsBtn');
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i> Hide Roads Layer';
           } else {
-            OfflineManager.loadCachedRoads();
-            if (!App.state.roadsLayer) {
-              // Nothing cached yet — user must download first
-              alert('ℹ️ No roads downloaded yet.\n\nGo to Offline tab → Download Roads & Tracks first.');
-              roadsSwitch.checked = false;
+            if (OfflineManager.roadsGeoJSON) {
+              OfflineManager.renderRoadsLayer(OfflineManager.roadsGeoJSON, true);
+              const btn = document.getElementById('toggleRoadsBtn');
+              if (btn) btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i> Hide Roads Layer';
+            } else {
+              roadsSwitch.disabled = true;
+              const success = await OfflineManager.loadCachedRoads(true);
+              roadsSwitch.disabled = false;
+              if (success) {
+                const btn = document.getElementById('toggleRoadsBtn');
+                if (btn) btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i> Hide Roads Layer';
+              } else {
+                alert('ℹ️ No roads downloaded or preloaded yet.\n\nGo to Offline tab → Download Roads & Tracks first.');
+                roadsSwitch.checked = false;
+              }
             }
           }
         } else {
           if (App.state.roadsLayer && map.hasLayer(App.state.roadsLayer)) {
             map.removeLayer(App.state.roadsLayer);
+            const btn = document.getElementById('toggleRoadsBtn');
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-eye"></i> Show Roads Layer';
           }
         }
       });

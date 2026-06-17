@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ldn-validator-v2';
+const CACHE_NAME = 'ldn-validator-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -12,8 +12,8 @@ const ASSETS_TO_CACHE = [
   './js/munsell-db.js',
   './js/soil-analyzer.js',
   './manifest.json',
-  './field_validation_polygons.geojson',
-  './field_validation_points.geojson',
+  './preloaded_points.geojson',
+  './preloaded_roads.geojson',
   './webfonts/fa-solid-900.woff2',
   './webfonts/fa-regular-400.woff2',
   './webfonts/fa-brands-400.woff2'

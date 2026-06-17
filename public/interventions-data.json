@@ -1,0 +1,93 @@
+{
+  "count": 4,
+  "records": [
+    {
+      "_id": 100001,
+      "name": "Chivi Gullies Erosion Control",
+      "category": "Erosion Control",
+      "org": "EMA",
+      "admin_level": "District",
+      "admin_area": "Chivi District",
+      "size": "45 ha",
+      "status": "Ongoing",
+      "budget": "$35,000 / EMA Reclamation Fund",
+      "timeline": "Feb 2026 - Nov 2026",
+      "lat": -20.30,
+      "lng": 30.50,
+      "indicators": {
+        "area_protected": 45,
+        "sustainable_practices": 60,
+        "carbon_sequestration": 120,
+        "beneficiaries": 1800
+      },
+      "evidence": "Constructed 24 siltation traps and stone check dams across three major gullies. Planted vetiver grass to stabilise runoff areas.",
+      "_submission_time": "2026-02-15T09:30:00Z"
+    },
+    {
+      "_id": 100002,
+      "name": "Gutu Wetland Protection and Fencing",
+      "category": "Wetland Protection",
+      "org": "GEF 7 Drylands Program",
+      "admin_level": "Ward",
+      "admin_area": "Gutu Ward 12",
+      "size": "15 ha",
+      "status": "Completed",
+      "budget": "$15,000 / GEF 7 & UNDP",
+      "timeline": "Sep 2025 - Mar 2026",
+      "lat": -19.65,
+      "lng": 31.15,
+      "indicators": {
+        "area_protected": 15,
+        "sustainable_practices": 35,
+        "carbon_sequestration": 85,
+        "beneficiaries": 450
+      },
+      "evidence": "Completed 1.2km boundary fencing of the wetland core area. Established local community wetland management committee.",
+      "_submission_time": "2026-03-20T14:45:00Z"
+    },
+    {
+      "_id": 100003,
+      "name": "Manicaland Forest Reforestation Initiative",
+      "category": "Forest Reforestation",
+      "org": "Forestry Commission",
+      "admin_level": "Province",
+      "admin_area": "Manicaland Province",
+      "size": "250 ha",
+      "status": "Ongoing",
+      "budget": "$120,000 / Forestry Commission Trust",
+      "timeline": "Nov 2025 - Jun 2027",
+      "lat": -19.00,
+      "lng": 32.65,
+      "indicators": {
+        "area_protected": 250,
+        "sustainable_practices": 400,
+        "carbon_sequestration": 1800,
+        "beneficiaries": 6500
+      },
+      "evidence": "Planted 15,000 indigenous saplings in degraded pine/wattle zones. Established nursery centers.",
+      "_submission_time": "2025-11-10T11:00:00Z"
+    },
+    {
+      "_id": 100004,
+      "name": "National Conservation Cropland Program",
+      "category": "Conservation Cropland",
+      "org": "Agritex",
+      "admin_level": "National",
+      "admin_area": "Zimbabwe National Croplands",
+      "size": "5000 ha",
+      "status": "Ongoing",
+      "budget": "$500,000 / Ministry of Agriculture",
+      "timeline": "Oct 2025 - Oct 2028",
+      "lat": -19.0154,
+      "lng": 29.1549,
+      "indicators": {
+        "area_protected": 5000,
+        "sustainable_practices": 12500,
+        "carbon_sequestration": 9500,
+        "beneficiaries": 42000
+      },
+      "evidence": "Promoted conservation agriculture (pfumvudza/intwasa) digging basins, mulching, and crop rotation training guidelines distributed to 50 districts.",
+      "_submission_time": "2025-10-01T08:00:00Z"
+    }
+  ]
+}

@@ -211,22 +211,26 @@ export async function GET(req: Request) {
       console.log(`Serving LDN records from cache (age: ${Math.round((now - ldnCache.timestamp) / 1000)}s)`);
     } else if (!bypassCache) {
       try {
-        const fallback = await loadLocalFallback();
-        records = fallback.records;
-        source = "fallback_cache";
-        
-        // Populate cache for subsequent hits
+        console.log("Cache expired. Fetching fresh LDN records from sources...");
+        const fetched = await fetchLdnRawRecords();
+        records = fetched.records;
+        source = fetched.source;
         ldnCache = {
           records,
           source,
           timestamp: now
         };
-        console.log(`Loaded ${records.length} LDN records from local fallback data file (instant load)`);
+        // Update local file with newly fetched raw records
+        const newJson = {
+          count: records.length,
+          records: records
+        };
+        await fs.writeFile(ldnDataPath, JSON.stringify(newJson, null, 2), "utf-8");
       } catch (err: any) {
-        console.warn(`Local cache load failed: ${err.message}. Fetching raw records...`);
-        const fetched = await fetchLdnRawRecords();
-        records = fetched.records;
-        source = fetched.source;
+        console.warn(`Live LDN fetch failed: ${err.message}. Falling back to local data file.`);
+        const fallback = await loadLocalFallback();
+        records = fallback.records;
+        source = "fallback_cache";
         ldnCache = {
           records,
           source,

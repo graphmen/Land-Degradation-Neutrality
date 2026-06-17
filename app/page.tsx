@@ -118,6 +118,8 @@ export default function Home() {
   const [metrics, setMetrics] = useState({
     ldn: { count: 0, extra: 0 },
     soil: { count: 0, extra: 0 },
+    interventions: { count: 0, budget: 0 },
+    drylands: { count: 0, extra: 0 },
     totalPoints: 0,
     combinedDistricts: 0,
     highSeverityLdn: 0,
@@ -129,9 +131,11 @@ export default function Home() {
   useEffect(() => {
     async function loadData() {
       try {
-        const [ldnRes, soilRes] = await Promise.all([
+        const [ldnRes, soilRes, intRes, dryRes] = await Promise.all([
           fetch("/api/ldn", { cache: "no-store" }).then((r) => r.json()).catch(() => ({ count: 0, records: [] })),
           fetch("/api/soil", { cache: "no-store" }).then((r) => r.json()).catch(() => ({ count: 0, records: [] })),
+          fetch("/api/interventions", { cache: "no-store" }).then((r) => r.json()).catch(() => ({ count: 0, records: [] })),
+          fetch("/api/drylands", { cache: "no-store" }).then((r) => r.json()).catch(() => ({ count: 0, records: [] })),
         ]);
 
         const ldnRecords = ldnRes.records ?? [];
@@ -141,6 +145,9 @@ export default function Home() {
         const soilRecords = soilRes.records ?? [];
         const soilDistricts = soilRecords.map((r: any) => r.dist || r["geninfo/dist"] || r.district || r.District).filter(Boolean);
 
+        const dryRecords = dryRes.records ?? [];
+        const dryWards = new Set(dryRecords.map((r: any) => r.ward_name).filter(Boolean)).size;
+
         const combinedDistricts = new Set([...ldnDistricts, ...soilDistricts]).size;
         const uniqueTextures = new Set(soilRecords.map((r: any) => r.tex || r.soil_texture || r.Texture || r["sampl/tex"]).filter(Boolean)).size;
 
@@ -149,10 +156,22 @@ export default function Home() {
           return s.includes("high") || s.includes("severe");
         }).length;
 
+        const intRecords = intRes.records ?? [];
+        const totalBudget = intRecords.reduce((sum: number, r: any) => {
+          const match = r.budget?.match(/\$?([\d,]+)/);
+          if (match) {
+            const val = parseFloat(match[1].replace(/,/g, ""));
+            return sum + (isNaN(val) ? 0 : val);
+          }
+          return sum;
+        }, 0);
+
         setMetrics({
           ldn: { count: ldnRecords.length, extra: uniqueLdnDistricts },
           soil: { count: soilRecords.length, extra: uniqueTextures },
-          totalPoints: ldnRecords.length + soilRecords.length,
+          interventions: { count: intRecords.length, budget: totalBudget },
+          drylands: { count: dryRecords.length, extra: dryWards },
+          totalPoints: ldnRecords.length + soilRecords.length + dryRecords.length,
           combinedDistricts,
           highSeverityLdn,
           uniqueTextures
@@ -258,6 +277,10 @@ export default function Home() {
               <div className="home-kpi-card-num" style={{ color: "var(--accent-amber)" }}>{metrics.uniqueTextures}</div>
               <div className="home-kpi-card-label">Analyzed Soil Textures</div>
             </div>
+            <div className="home-kpi-card">
+              <div className="home-kpi-card-num" style={{ color: "var(--accent-green)" }}>{metrics.interventions.count}</div>
+              <div className="home-kpi-card-label">Restoration Projects</div>
+            </div>
           </div>
 
           <div className="home-section-divider">
@@ -266,7 +289,7 @@ export default function Home() {
           </div>
 
           {/* Home Core Monitoring Grid */}
-          <div className="home-grid" style={{ gridTemplateColumns: "repeat(2, 1fr)" }}>
+          <div className="home-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
             {/* LDN Monitoring Card */}
             <Link href="/ldn" style={{ textDecoration: "none" }}>
               <div className="home-card" style={{ borderLeft: "4px solid var(--accent-blue)" }}>
@@ -289,6 +312,60 @@ export default function Home() {
                       {metrics.ldn.extra}
                     </div>
                     <div className="home-kpi-lbl">Districts Checked</div>
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Drylands Card */}
+            <Link href="/drylands" style={{ textDecoration: "none" }}>
+              <div className="home-card" style={{ borderLeft: "4px solid var(--accent-gold)" }}>
+                <div className="home-card-header">
+                  <span className="home-card-icon">🏜️</span>
+                  <h3 className="home-card-title">Drylands Hub</h3>
+                </div>
+                <p className="home-card-desc">
+                  GEF 7 Drylands Sustainable Landscapes program tracking. Capturing soil moisture, vegetation cover, and crop/livestock stress factors.
+                </p>
+                <div className="home-kpis">
+                  <div className="home-kpi">
+                    <div className="home-kpi-val" style={{ color: "var(--accent-gold)" }}>
+                      {metrics.drylands.count}
+                    </div>
+                    <div className="home-kpi-lbl">Assessments</div>
+                  </div>
+                  <div className="home-kpi">
+                    <div className="home-kpi-val">
+                      {metrics.drylands.extra}
+                    </div>
+                    <div className="home-kpi-lbl">Wards Monitored</div>
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Interventions Card */}
+            <Link href="/interventions" style={{ textDecoration: "none" }}>
+              <div className="home-card" style={{ borderLeft: "4px solid var(--accent-green)" }}>
+                <div className="home-card-header">
+                  <span className="home-card-icon">🛠️</span>
+                  <h3 className="home-card-title">Interventions Hub</h3>
+                </div>
+                <p className="home-card-desc">
+                  Tracking restoration actions to achieve national targets. Manage wetland fencing, check dams, and local projects by organisation.
+                </p>
+                <div className="home-kpis">
+                  <div className="home-kpi">
+                    <div className="home-kpi-val" style={{ color: "var(--accent-green)" }}>
+                      {metrics.interventions.count}
+                    </div>
+                    <div className="home-kpi-lbl">Restoration Projects</div>
+                  </div>
+                  <div className="home-kpi">
+                    <div className="home-kpi-val" style={{ color: "var(--accent-blue)" }}>
+                      ${metrics.interventions.budget.toLocaleString()}
+                    </div>
+                    <div className="home-kpi-lbl">Total Budget</div>
                   </div>
                 </div>
               </div>

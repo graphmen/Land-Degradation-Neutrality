@@ -1,0 +1,273 @@
+{
+  "count": 3,
+  "records": [
+    {
+      "_id": 200001,
+      "date_of_observation": "2026-05-14",
+      "enumerator_name": "Tinashe Maturure",
+      "ward_name": "Ward 4",
+      "village_location": "Chivi Centre",
+      "coordinates": "-20.3200 30.4850",
+      "area_type": [
+        "Arable",
+        "Grazing",
+        "Wetland",
+        "Other",
+        "Forest/Woodland"
+      ],
+      "area_type_other": "",
+      "dominant_soil_type": "Jecha (Sandy)",
+      "dominant_soil_type_other": "",
+      "distance_to_river": 150,
+      "distance_to_wetland": 450,
+      "distance_to_road": 20,
+      "vegetation_condition": "Moderately Degraded",
+      "vegetation_description": "Shrubs showing heavy browse signs, sparse grass cover with sandy spots.",
+      "estimated_vegetation_cover": 35,
+      "invasive_species_present": "No",
+      "invasive_species_name": "",
+      "current_land_cover_types": [
+        "Cropland",
+        "Grassland"
+      ],
+      "current_land_cover_other": "",
+      "soil_erosion_present": "Yes",
+      "type_of_erosion": [
+        "Sheet",
+        "Rill"
+      ],
+      "erosion_severity": "Moderate",
+      "gully_dimensions": "",
+      "erosion_expanding": "Yes",
+      "assets_threatened": [
+        "Cropland",
+        "Grazing Land"
+      ],
+      "assets_threatened_other": "",
+      "water_sources_present": [
+        "Borehole",
+        "Seasonal water point"
+      ],
+      "water_sources_other": "",
+      "water_quality_visual": [
+        "Slightly Turbid"
+      ],
+      "evidence_of_siltation": "Yes",
+      "wetland_cultivation_observed": "No",
+      "water_notes": "Borehole water is clear, seasonal water point highly silted due to upstream sandy runoff.",
+      "climate_change_indicators": [
+        "Prolonged dry spells",
+        "Failed crops"
+      ],
+      "climate_change_other": "",
+      "site_flood_prone": "No",
+      "flood_notes": "",
+      "evidence_of_recent_fire": "No",
+      "fire_notes": "",
+      "signs_of_drought_stress": "Yes",
+      "drought_notes": "Crops showing severe wilting, grazing lands dry.",
+      "dominant_livelihoods": [
+        "Rain-fed farming",
+        "Livestock rearing"
+      ],
+      "livelihood_notes": "",
+      "grazing_pressure": [
+        "High"
+      ],
+      "grazing_notes": "High cattle density noticed around key boreholes.",
+      "observed_land_use_conflicts": [
+        "Crop vs livestock"
+      ],
+      "conflict_notes": "Livestock encroaching into unharvested croplands.",
+      "land_use_compatible": "Partially",
+      "compatibility_explanation": "Rain-fed farming on highly vulnerable sandy slopes is causing heavy runoff.",
+      "priority_level": "Medium",
+      "priority_explanation": "Erosion is moderate but active and threatens crop fields.",
+      "recommended_interventions": [
+        "Vetiver planting",
+        "Contour ridges"
+      ],
+      "intervention_notes": "Deploy contour works and plant vetiver grass to buffer active sheet wash zones.",
+      "cost_category": "Medium",
+      "cost_explanation": "Contour ridges can be constructed via community works.",
+      "photo_1": "",
+      "photo_2": "",
+      "photo_3": "",
+      "additional_notes": "Recommend immediate community awareness meetings for soil protection.",
+      "_submission_time": "2026-05-14T11:20:00Z"
+    },
+    {
+      "_id": 200002,
+      "date_of_observation": "2026-05-18",
+      "enumerator_name": "Rudo Sibanda",
+      "ward_name": "Ward 18",
+      "village_location": "Musikavanhu",
+      "coordinates": "-20.2100 32.3500",
+      "area_type": [
+        "Forest/Woodland"
+      ],
+      "area_type_other": "",
+      "dominant_soil_type": "Red sandy clay",
+      "dominant_soil_type_other": "",
+      "distance_to_river": 50,
+      "distance_to_wetland": 900,
+      "distance_to_road": 250,
+      "vegetation_condition": "Intact",
+      "vegetation_description": "Healthy woodland canopy, minimal logging seen.",
+      "estimated_vegetation_cover": 75,
+      "invasive_species_present": "No",
+      "invasive_species_name": "",
+      "current_land_cover_types": [
+        "Woodland"
+      ],
+      "current_land_cover_other": "",
+      "soil_erosion_present": "No",
+      "type_of_erosion": [],
+      "erosion_severity": "",
+      "gully_dimensions": "",
+      "erosion_expanding": "No",
+      "assets_threatened": [],
+      "assets_threatened_other": "",
+      "water_sources_present": [
+        "River"
+      ],
+      "water_sources_other": "",
+      "water_quality_visual": [
+        "Clear"
+      ],
+      "evidence_of_siltation": "No",
+      "wetland_cultivation_observed": "No",
+      "water_notes": "River flow is stable and water visually clear.",
+      "climate_change_indicators": [],
+      "climate_change_other": "",
+      "site_flood_prone": "No",
+      "flood_notes": "",
+      "evidence_of_recent_fire": "No",
+      "fire_notes": "",
+      "signs_of_drought_stress": "No",
+      "drought_notes": "",
+      "dominant_livelihoods": [
+        "Livestock rearing"
+      ],
+      "livelihood_notes": "",
+      "grazing_pressure": [
+        "Low"
+      ],
+      "grazing_notes": "Well managed grazing rotations.",
+      "observed_land_use_conflicts": [
+        "None"
+      ],
+      "conflict_notes": "",
+      "land_use_compatible": "Yes",
+      "compatibility_explanation": "Woodland protection is maintaining ecological balance.",
+      "priority_level": "Low",
+      "priority_explanation": "Stable woodland cover, no erosion threats present.",
+      "recommended_interventions": [
+        "Buffer demarcation",
+        "Controlled grazing"
+      ],
+      "intervention_notes": "Define conservancy boundary buffers to protect against upcoming wood harvesting pressures.",
+      "cost_category": "Low",
+      "cost_explanation": "Requires only boundary demarcation.",
+      "photo_1": "",
+      "photo_2": "",
+      "photo_3": "",
+      "additional_notes": "Excellent community forest protection structure present.",
+      "_submission_time": "2026-05-18T15:40:00Z"
+    },
+    {
+      "_id": 200003,
+      "date_of_observation": "2026-05-22",
+      "enumerator_name": "Chenjerai Hove",
+      "ward_name": "Ward 11",
+      "village_location": "Gutu Mission Area",
+      "coordinates": "-19.6600 31.1800",
+      "area_type": [
+        "Wetland",
+        "Grazing"
+      ],
+      "area_type_other": "",
+      "dominant_soil_type": "Very sandy infertile soil",
+      "dominant_soil_type_other": "",
+      "distance_to_river": 200,
+      "distance_to_wetland": 10,
+      "distance_to_road": 80,
+      "vegetation_condition": "Severely Degraded",
+      "vegetation_description": "Severe loss of sedges, visible sand deposition in wetland channels, heavy erosion cuts.",
+      "estimated_vegetation_cover": 20,
+      "invasive_species_present": "Yes",
+      "invasive_species_name": "Lantana Camara",
+      "current_land_cover_types": [
+        "Bare Land",
+        "Wetland Vegetation"
+      ],
+      "current_land_cover_other": "",
+      "soil_erosion_present": "Yes",
+      "type_of_erosion": [
+        "Gully"
+      ],
+      "erosion_severity": "Severe",
+      "gully_dimensions": "Length: 45m, Width: 3.5m, Depth: 2.1m",
+      "erosion_expanding": "Yes",
+      "assets_threatened": [
+        "Wetland",
+        "Grazing Land",
+        "Homestead"
+      ],
+      "assets_threatened_other": "",
+      "water_sources_present": [
+        "Wetland",
+        "Stream"
+      ],
+      "water_sources_other": "",
+      "water_quality_visual": [
+        "Highly Silted"
+      ],
+      "evidence_of_siltation": "Yes",
+      "wetland_cultivation_observed": "Yes",
+      "water_notes": "Siltation is critical. Stream flow has stopped, leaving silted ponds.",
+      "climate_change_indicators": [
+        "Drying wetlands",
+        "Reduced stream flow"
+      ],
+      "climate_change_other": "",
+      "site_flood_prone": "Yes",
+      "flood_notes": "Flash floods cause rapid gully expansion during storm events.",
+      "evidence_of_recent_fire": "Yes",
+      "fire_notes": "Veld fires burned reed beds two months ago.",
+      "signs_of_drought_stress": "Yes",
+      "drought_notes": "Wetland core water table has dropped significantly.",
+      "dominant_livelihoods": [
+        "Rain-fed farming",
+        "Brick moulding"
+      ],
+      "livelihood_notes": "Heavy brick moulding activities on wetland borders are excavating clay soil.",
+      "grazing_pressure": [
+        "High"
+      ],
+      "grazing_notes": "Cattle grazing directly inside drying wetland core.",
+      "observed_land_use_conflicts": [
+        "Wetland encroachment"
+      ],
+      "conflict_notes": "Encroachment of agricultural plots into the wetland core boundary.",
+      "land_use_compatible": "No",
+      "compatibility_explanation": "Brick moulding and core cultivation are drying up the wetland hydrology.",
+      "priority_level": "High (Immediate Action Required)",
+      "priority_explanation": "Wetland is on the verge of complete drying and gully expansion threatens homestead.",
+      "recommended_interventions": [
+        "Vetiver planting",
+        "Stone pitching",
+        "Gabions",
+        "Buffer demarcation"
+      ],
+      "intervention_notes": "Construct gabions to stabilize the active gully head, fence the wetland core, and demarcate a 30m cultivation buffer.",
+      "cost_category": "High",
+      "cost_explanation": "Requires wire mesh for gabions and extensive community fencing.",
+      "photo_1": "",
+      "photo_2": "",
+      "photo_3": "",
+      "additional_notes": "Critical hotspot. Needs urgent intervention under GEF 7 program.",
+      "_submission_time": "2026-05-22T09:15:00Z"
+    }
+  ]
+}
