@@ -263,6 +263,75 @@ export default function DrylandsPage() {
     load();
   }, []);
 
+  // Filter logic
+  const filteredRecords = useMemo(() => {
+    return records.filter((r) => {
+      const searchLower = search.toLowerCase();
+      const matchSearch =
+        String(r.enumerator_name || "").toLowerCase().includes(searchLower) ||
+        String(r.village_location || "").toLowerCase().includes(searchLower) ||
+        String(r.ward_name || "").toLowerCase().includes(searchLower);
+
+      const matchVeg = vegFilter === "all" || r.vegetation_condition === vegFilter;
+      const matchPriority = priorityFilter === "all" || String(r.priority_level || "").toLowerCase().includes(priorityFilter.toLowerCase());
+      const matchSoil = soilFilter === "all" || r.dominant_soil_type === soilFilter;
+
+      return matchSearch && matchVeg && matchPriority && matchSoil;
+    });
+  }, [records, search, vegFilter, priorityFilter, soilFilter]);
+
+  // Aggregated scorecards
+  const totalAssessments = filteredRecords.length;
+  const highPriorityPct = totalAssessments > 0
+    ? Math.round((filteredRecords.filter(r => String(r.priority_level).toLowerCase().includes("high")).length / totalAssessments) * 100)
+    : 0;
+  
+  const avgVegCover = totalAssessments > 0
+    ? Math.round(filteredRecords.reduce((sum, r) => sum + (r.estimated_vegetation_cover || 0), 0) / totalAssessments)
+    : 0;
+
+  const erosionPresentPct = totalAssessments > 0
+    ? Math.round((filteredRecords.filter(r => String(r.soil_erosion_present).toLowerCase() === "yes").length / totalAssessments) * 100)
+    : 0;
+
+  const dashboardStats = useMemo(() => {
+    const total = filteredRecords.length;
+    const priorityCnt: Record<string, number> = {};
+    const vegCnt: Record<string, number> = {};
+    const soilCnt: Record<string, number> = {};
+
+    filteredRecords.forEach(r => {
+      // Normalize priority level
+      let p = "Low";
+      const pStr = String(r.priority_level || "").toLowerCase();
+      if (pStr.includes("high")) p = "High";
+      else if (pStr.includes("medium") || pStr.includes("moderate")) p = "Medium";
+      priorityCnt[p] = (priorityCnt[p] || 0) + 1;
+
+      const veg = r.vegetation_condition || "Unknown";
+      vegCnt[veg] = (vegCnt[veg] || 0) + 1;
+
+      const soil = r.dominant_soil_type || "Unknown";
+      soilCnt[soil] = (soilCnt[soil] || 0) + 1;
+    });
+
+    const priorityData = [
+      { name: "Low", value: priorityCnt["Low"] || 0, fill: "#10b981" },
+      { name: "Medium", value: priorityCnt["Medium"] || 0, fill: "#f59e0b" },
+      { name: "High", value: priorityCnt["High"] || 0, fill: "#ef4444" }
+    ].filter(item => item.value > 0 || total > 0);
+
+    const vegData = Object.entries(vegCnt).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+    const soilData = Object.entries(soilCnt).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+
+    return {
+      total,
+      priorityData,
+      vegData,
+      soilData
+    };
+  }, [filteredRecords]);
+
   if (loading) {
     return (
       <div className="loading-screen">
@@ -272,20 +341,7 @@ export default function DrylandsPage() {
     );
   }
 
-  // Filter logic
-  const filteredRecords = records.filter((r) => {
-    const searchLower = search.toLowerCase();
-    const matchSearch =
-      String(r.enumerator_name || "").toLowerCase().includes(searchLower) ||
-      String(r.village_location || "").toLowerCase().includes(searchLower) ||
-      String(r.ward_name || "").toLowerCase().includes(searchLower);
 
-    const matchVeg = vegFilter === "all" || r.vegetation_condition === vegFilter;
-    const matchPriority = priorityFilter === "all" || String(r.priority_level || "").toLowerCase().includes(priorityFilter.toLowerCase());
-    const matchSoil = soilFilter === "all" || r.dominant_soil_type === soilFilter;
-
-    return matchSearch && matchVeg && matchPriority && matchSoil;
-  });
 
   // Pagination (10 per page)
   const itemsPerPage = 10;
@@ -513,57 +569,7 @@ export default function DrylandsPage() {
     return "active-status"; // low
   };
 
-  // Aggregated scorecards
-  const totalAssessments = filteredRecords.length;
-  const highPriorityPct = totalAssessments > 0
-    ? Math.round((filteredRecords.filter(r => String(r.priority_level).toLowerCase().includes("high")).length / totalAssessments) * 100)
-    : 0;
-  
-  const avgVegCover = totalAssessments > 0
-    ? Math.round(filteredRecords.reduce((sum, r) => sum + (r.estimated_vegetation_cover || 0), 0) / totalAssessments)
-    : 0;
 
-  const erosionPresentPct = totalAssessments > 0
-    ? Math.round((filteredRecords.filter(r => String(r.soil_erosion_present).toLowerCase() === "yes").length / totalAssessments) * 100)
-    : 0;
-
-  const dashboardStats = useMemo(() => {
-    const total = filteredRecords.length;
-    const priorityCnt: Record<string, number> = {};
-    const vegCnt: Record<string, number> = {};
-    const soilCnt: Record<string, number> = {};
-
-    filteredRecords.forEach(r => {
-      // Normalize priority level
-      let p = "Low";
-      const pStr = String(r.priority_level || "").toLowerCase();
-      if (pStr.includes("high")) p = "High";
-      else if (pStr.includes("medium") || pStr.includes("moderate")) p = "Medium";
-      priorityCnt[p] = (priorityCnt[p] || 0) + 1;
-
-      const veg = r.vegetation_condition || "Unknown";
-      vegCnt[veg] = (vegCnt[veg] || 0) + 1;
-
-      const soil = r.dominant_soil_type || "Unknown";
-      soilCnt[soil] = (soilCnt[soil] || 0) + 1;
-    });
-
-    const priorityData = [
-      { name: "Low", value: priorityCnt["Low"] || 0, fill: "#10b981" },
-      { name: "Medium", value: priorityCnt["Medium"] || 0, fill: "#f59e0b" },
-      { name: "High", value: priorityCnt["High"] || 0, fill: "#ef4444" }
-    ].filter(item => item.value > 0 || total > 0);
-
-    const vegData = Object.entries(vegCnt).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
-    const soilData = Object.entries(soilCnt).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
-
-    return {
-      total,
-      priorityData,
-      vegData,
-      soilData
-    };
-  }, [filteredRecords]);
 
   const exportPanel = (
     <div className="sidebar-export-panel">

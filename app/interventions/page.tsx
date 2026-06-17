@@ -198,6 +198,62 @@ export default function InterventionsPage() {
     load();
   }, []);
 
+  // Filter logic
+  const filteredRecords = useMemo(() => {
+    return records.filter((r) => {
+      const searchLower = search.toLowerCase();
+      const matchSearch =
+        String(r.name || "").toLowerCase().includes(searchLower) ||
+        String(r.org || "").toLowerCase().includes(searchLower) ||
+        String(r.admin_area || "").toLowerCase().includes(searchLower);
+
+      const matchCategory = categoryFilter === "all" || r.category === categoryFilter;
+      const matchStatus = statusFilter === "all" || r.status === statusFilter;
+      const matchAdminLevel = adminLevelFilter === "all" || r.admin_level === adminLevelFilter;
+
+      return matchSearch && matchCategory && matchStatus && matchAdminLevel;
+    });
+  }, [records, search, categoryFilter, statusFilter, adminLevelFilter]);
+
+  const totalAreaProtected = useMemo(() => {
+    return filteredRecords.reduce((sum, r) => sum + (r.indicators?.area_protected || 0), 0);
+  }, [filteredRecords]);
+
+  const dashboardStats = useMemo(() => {
+    const total = filteredRecords.length;
+    const sustainableArea = filteredRecords.reduce((sum, r) => sum + (r.indicators?.sustainable_practices || 0), 0);
+    const carbonSeq = filteredRecords.reduce((sum, r) => sum + (r.indicators?.carbon_sequestration || 0), 0);
+
+    const categoryCnt: Record<string, number> = {};
+    const statusCnt: Record<string, number> = {};
+
+    filteredRecords.forEach(r => {
+      const cat = r.category || "Unknown";
+      categoryCnt[cat] = (categoryCnt[cat] || 0) + 1;
+      
+      const stat = r.status || "Unknown";
+      statusCnt[stat] = (statusCnt[stat] || 0) + 1;
+    });
+
+    const categoryData = Object.entries(categoryCnt).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+    const statusData = Object.entries(statusCnt).map(([name, value]) => ({ name, value }));
+
+    const indicatorData = [
+      { name: "Protected Area (ha)", value: totalAreaProtected, fill: "#22c55e" },
+      { name: "Sustainable Land (ha)", value: sustainableArea, fill: "#10b981" },
+      { name: "Carbon Sequestration (t)", value: carbonSeq, fill: "#14b8a6" }
+    ];
+
+    return {
+      total,
+      sustainableArea,
+      carbonSeq,
+      categoryData,
+      statusData,
+      indicatorData
+    };
+  }, [filteredRecords, totalAreaProtected]);
+
   if (loading) {
     return (
       <div className="loading-screen">
@@ -207,20 +263,7 @@ export default function InterventionsPage() {
     );
   }
 
-  // Filter logic
-  const filteredRecords = records.filter((r) => {
-    const searchLower = search.toLowerCase();
-    const matchSearch =
-      String(r.name || "").toLowerCase().includes(searchLower) ||
-      String(r.org || "").toLowerCase().includes(searchLower) ||
-      String(r.admin_area || "").toLowerCase().includes(searchLower);
 
-    const matchCategory = categoryFilter === "all" || r.category === categoryFilter;
-    const matchStatus = statusFilter === "all" || r.status === statusFilter;
-    const matchAdminLevel = adminLevelFilter === "all" || r.admin_level === adminLevelFilter;
-
-    return matchSearch && matchCategory && matchStatus && matchAdminLevel;
-  });
 
   // Pagination (10 per page)
   const itemsPerPage = 10;
@@ -401,43 +444,7 @@ export default function InterventionsPage() {
     return sum;
   }, 0);
 
-  const totalAreaProtected = filteredRecords.reduce((sum, r) => sum + (r.indicators?.area_protected || 0), 0);
   const totalBeneficiaries = filteredRecords.reduce((sum, r) => sum + (r.indicators?.beneficiaries || 0), 0);
-
-  const dashboardStats = useMemo(() => {
-    const total = filteredRecords.length;
-    const sustainableArea = filteredRecords.reduce((sum, r) => sum + (r.indicators?.sustainable_practices || 0), 0);
-    const carbonSeq = filteredRecords.reduce((sum, r) => sum + (r.indicators?.carbon_sequestration || 0), 0);
-
-    const categoryCnt: Record<string, number> = {};
-    const statusCnt: Record<string, number> = {};
-
-    filteredRecords.forEach(r => {
-      const cat = r.category || "Unknown";
-      categoryCnt[cat] = (categoryCnt[cat] || 0) + 1;
-      
-      const stat = r.status || "Unknown";
-      statusCnt[stat] = (statusCnt[stat] || 0) + 1;
-    });
-
-    const categoryData = Object.entries(categoryCnt).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
-    const statusData = Object.entries(statusCnt).map(([name, value]) => ({ name, value }));
-
-    const indicatorData = [
-      { name: "Protected Area (ha)", value: totalAreaProtected, fill: "#22c55e" },
-      { name: "Sustainable Land (ha)", value: sustainableArea, fill: "#10b981" },
-      { name: "Carbon Sequestration (t)", value: carbonSeq, fill: "#14b8a6" }
-    ];
-
-    return {
-      total,
-      sustainableArea,
-      carbonSeq,
-      categoryData,
-      statusData,
-      indicatorData
-    };
-  }, [filteredRecords, totalAreaProtected]);
 
   const exportPanel = (
     <div className="sidebar-export-panel">

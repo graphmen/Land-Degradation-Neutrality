@@ -135,90 +135,42 @@ export default function LdnPage() {
 
   useEffect(load, []);
 
-  const SEVERITY_COLORS: Record<string, string> = {
-    "None": "#10b981",
-    "Slight": "#14b8a6",
-    "Moderate": "#f59e0b",
-    "Medium": "#f59e0b",
-    "Severe": "#f97316",
-    "High": "#f97316",
-    "Critical": "#ef4444",
-    "Low": "#06b6d4"
-  };
-  const getSeverityColor = (sev: string) => {
-    const norm = String(sev).trim();
-    return SEVERITY_COLORS[norm] || "#64748b";
+  const { kpis, geojson, charts, landUses } = data || {
+    kpis: { total_monitors: 0, active_districts: 0, land_uses: 0, mapped_points: 0 },
+    geojson: { type: "FeatureCollection", features: [], total: 0 },
+    charts: { by_severity: [] },
+    landUses: []
   };
 
-  if (loading)
-    return (
-      <div className="loading-screen">
-        <div className="spinner" style={{ borderTopColor: "var(--accent-blue)" }} />
-        <div style={{ color: "#64748b", fontSize: 13 }}>Loading LDN Framework…</div>
-      </div>
-    );
+  const filteredFeatures = useMemo(() => {
+    if (!geojson || !geojson.features) return [];
+    return geojson.features.filter((f: any) => {
+      const props = f.properties;
+      const district = String(props.dist || "").toLowerCase();
+      const ward = String(props.ward || "").toLowerCase();
+      const ceid = String(props.ceid || "").toLowerCase();
+      const landus = String(props.landus || "").toLowerCase();
+      const searchLower = search.toLowerCase();
 
-  const { kpis, geojson, charts, landUses } = data;
+      const matchSearch = 
+        district.includes(searchLower) || 
+        ward.includes(searchLower) || 
+        ceid.includes(searchLower) || 
+        landus.includes(searchLower);
 
-  const getUnccdStatus = (props: any) => {
-    const severity = String(props.sev || "").toLowerCase();
-    if (severity.includes("high") || severity.includes("severe") || severity.includes("critical")) {
-      return { label: "Hotspot", icon: "⚠️", className: "danger-status" };
-    }
-    if (severity.includes("low") || severity.includes("minimal") || severity.includes("stable") || severity.includes("none")) {
-      return { label: "Bright Spot", icon: "🌟", className: "active-status" };
-    }
-    return null;
-  };
+      const severity = (props.sev || "").toLowerCase();
+      const matchSeverity = severityFilter === "all" || severity.includes(severityFilter);
+      const matchLanduse = landuseFilter === "all" || props.landus === landuseFilter;
 
-  const filteredFeatures = geojson.features.filter((f: any) => {
-    const props = f.properties;
-    const district = String(props.dist || "").toLowerCase();
-    const ward = String(props.ward || "").toLowerCase();
-    const ceid = String(props.ceid || "").toLowerCase();
-    const landus = String(props.landus || "").toLowerCase();
-    const searchLower = search.toLowerCase();
+      const isHotspot = severity.includes("high") || severity.includes("severe") || severity.includes("critical");
+      const isBrightSpot = severity.includes("low") || severity.includes("minimal") || severity.includes("stable") || severity.includes("none");
+      const matchUnccd = unccdFilter === "all" || 
+                         (unccdFilter === "hotspot" && isHotspot) || 
+                         (unccdFilter === "brightspot" && isBrightSpot);
 
-    const matchSearch = 
-      district.includes(searchLower) || 
-      ward.includes(searchLower) || 
-      ceid.includes(searchLower) || 
-      landus.includes(searchLower);
-
-    const severity = (props.sev || "").toLowerCase();
-    const matchSeverity = severityFilter === "all" || severity.includes(severityFilter);
-    const matchLanduse = landuseFilter === "all" || props.landus === landuseFilter;
-
-    const isHotspot = severity.includes("high") || severity.includes("severe") || severity.includes("critical");
-    const isBrightSpot = severity.includes("low") || severity.includes("minimal") || severity.includes("stable") || severity.includes("none");
-    const matchUnccd = unccdFilter === "all" || 
-                       (unccdFilter === "hotspot" && isHotspot) || 
-                       (unccdFilter === "brightspot" && isBrightSpot);
-
-    return matchSearch && matchSeverity && matchLanduse && matchUnccd;
-  });
-
-  const handleExport = () => {
-    const format = (document.getElementById("ldn-export-format") as HTMLSelectElement)?.value || "csv";
-    const { records } = data;
-    
-    if (format === "geojson") {
-      const geojsonObj = {
-        type: "FeatureCollection",
-        features: filteredFeatures
-      };
-      const geojsonStr = JSON.stringify(geojsonObj, null, 2);
-      downloadFile(geojsonStr, `ldn_data_export_${Date.now()}.geojson`, "application/json");
-    } else if (format === "kml") {
-      const kmlStr = convertToKML(filteredFeatures, "Zimbabwe LDN Data Export");
-      downloadFile(kmlStr, `ldn_data_export_${Date.now()}.kml`, "application/vnd.google-earth.kml+xml");
-    } else {
-      const filteredIdSet = new Set(filteredFeatures.map((f: any) => f.properties._id));
-      const filteredOriginalRecords = records.filter((r: any) => filteredIdSet.has(r._id));
-      const csvStr = convertToCSV(filteredOriginalRecords);
-      downloadFile(csvStr, `ldn_data_export_${Date.now()}.csv`, "text/csv;charset=utf-8;");
-    }
-  };
+      return matchSearch && matchSeverity && matchLanduse && matchUnccd;
+    });
+  }, [geojson.features, search, severityFilter, landuseFilter, unccdFilter]);
 
   // Pagination (10 per page)
   const itemsPerPage = 10;
@@ -271,6 +223,62 @@ export default function LdnPage() {
       districtData
     };
   }, [filteredFeatures, data]);
+
+  const SEVERITY_COLORS: Record<string, string> = {
+    "None": "#10b981",
+    "Slight": "#14b8a6",
+    "Moderate": "#f59e0b",
+    "Medium": "#f59e0b",
+    "Severe": "#f97316",
+    "High": "#f97316",
+    "Critical": "#ef4444",
+    "Low": "#06b6d4"
+  };
+  const getSeverityColor = (sev: string) => {
+    const norm = String(sev).trim();
+    return SEVERITY_COLORS[norm] || "#64748b";
+  };
+
+  const getUnccdStatus = (props: any) => {
+    const severity = String(props.sev || "").toLowerCase();
+    if (severity.includes("high") || severity.includes("severe") || severity.includes("critical")) {
+      return { label: "Hotspot", icon: "⚠️", className: "danger-status" };
+    }
+    if (severity.includes("low") || severity.includes("minimal") || severity.includes("stable") || severity.includes("none")) {
+      return { label: "Bright Spot", icon: "🌟", className: "active-status" };
+    }
+    return null;
+  };
+
+  const handleExport = () => {
+    const format = (document.getElementById("ldn-export-format") as HTMLSelectElement)?.value || "csv";
+    const { records } = data || { records: [] };
+    
+    if (format === "geojson") {
+      const geojsonObj = {
+        type: "FeatureCollection",
+        features: filteredFeatures
+      };
+      const geojsonStr = JSON.stringify(geojsonObj, null, 2);
+      downloadFile(geojsonStr, `ldn_data_export_${Date.now()}.geojson`, "application/json");
+    } else if (format === "kml") {
+      const kmlStr = convertToKML(filteredFeatures, "Zimbabwe LDN Data Export");
+      downloadFile(kmlStr, `ldn_data_export_${Date.now()}.kml`, "application/vnd.google-earth.kml+xml");
+    } else {
+      const filteredIdSet = new Set(filteredFeatures.map((f: any) => f.properties._id));
+      const filteredOriginalRecords = records.filter((r: any) => filteredIdSet.has(r._id));
+      const csvStr = convertToCSV(filteredOriginalRecords);
+      downloadFile(csvStr, `ldn_data_export_${Date.now()}.csv`, "text/csv;charset=utf-8;");
+    }
+  };
+
+  if (loading)
+    return (
+      <div className="loading-screen">
+        <div className="spinner" style={{ borderTopColor: "var(--accent-blue)" }} />
+        <div style={{ color: "#64748b", fontSize: 13 }}>Loading LDN Framework…</div>
+      </div>
+    );
 
   // Severity badge classes
   const getBadgeClass = (severity: string) => {

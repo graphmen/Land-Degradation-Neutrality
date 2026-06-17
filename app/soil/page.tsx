@@ -238,92 +238,47 @@ export default function SoilPage() {
 
   useEffect(load, []);
 
-  if (loading)
-    return (
-      <div className="loading-screen">
-        <div className="spinner" style={{ borderTopColor: "var(--accent-amber)" }} />
-        <div style={{ color: "#64748b", fontSize: 13 }}>Loading Soil Core Hub…</div>
-      </div>
-    );
-
-  const { kpis, geojson, charts, error, records, textures, districts } = data;
-
-  if (error)
-    return (
-      <div
-        className="eartheye-container"
-        style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "#0b1120" }}
-      >
-        <div
-          style={{
-            background: "rgba(244,63,94,0.1)",
-            border: "1px solid var(--accent-rose)",
-            padding: 30,
-            borderRadius: 12,
-            maxWidth: 600,
-            color: "var(--accent-rose)",
-          }}
-        >
-          <h2 style={{ marginTop: 0, display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 24 }}>⚠️</span> API Connection Error
-          </h2>
-          <p style={{ lineHeight: 1.5 }}>{error}</p>
-          <p style={{ fontSize: 12, opacity: 0.8, marginTop: 20 }}>
-            Please check the network tab or API configuration.
-          </p>
-        </div>
-      </div>
-    );
-
-  const filteredFeatures = geojson.features.filter((f: any) => {
-    const props = f.properties;
-    const district = String(props._mapped_dist || "").toLowerCase();
-    const ward = String(props.ward || "").toLowerCase();
-    const ceid = String(props.ceid || "").toLowerCase();
-    const texture = String(props._mapped_tex || "").toLowerCase();
-    const loc = String(props._mapped_loc || props.samloc || "").toLowerCase();
-    const moisture = String(props._mapped_moist || "").toLowerCase();
-    const searchLower = search.toLowerCase();
-
-    const matchSearch = 
-      district.includes(searchLower) || 
-      ward.includes(searchLower) || 
-      ceid.includes(searchLower) || 
-      texture.includes(searchLower) || 
-      loc.includes(searchLower);
-
-    const matchTexture = textureFilter === "all" || props._mapped_tex === textureFilter;
-    const matchDistrict = districtFilter === "all" || props._mapped_dist === districtFilter;
-
-    const isHotspot = texture.includes("sand") && moisture.includes("dry");
-    const isBrightSpot = texture.includes("loam") || texture.includes("silt");
-    const matchSoilStatus = soilStatusFilter === "all" || 
-                            (soilStatusFilter === "hotspot" && isHotspot) || 
-                            (soilStatusFilter === "brightspot" && isBrightSpot);
-
-    return matchSearch && matchTexture && matchDistrict && matchSoilStatus;
-  });
-
-  const handleExport = () => {
-    const format = (document.getElementById("soil-export-format") as HTMLSelectElement)?.value || "csv";
-    
-    if (format === "geojson") {
-      const geojsonObj = {
-        type: "FeatureCollection",
-        features: filteredFeatures
-      };
-      const geojsonStr = JSON.stringify(geojsonObj, null, 2);
-      downloadFile(geojsonStr, `soil_data_export_${Date.now()}.geojson`, "application/json");
-    } else if (format === "kml") {
-      const kmlStr = convertToKML(filteredFeatures, "Zimbabwe Soil Data Export");
-      downloadFile(kmlStr, `soil_data_export_${Date.now()}.kml`, "application/vnd.google-earth.kml+xml");
-    } else {
-      const filteredIdSet = new Set(filteredFeatures.map((f: any) => f.properties._id));
-      const filteredOriginalRecords = records.filter((r: any) => filteredIdSet.has(r._id));
-      const csvStr = convertToCSV(filteredOriginalRecords);
-      downloadFile(csvStr, `soil_data_export_${Date.now()}.csv`, "text/csv;charset=utf-8;");
-    }
+  const { kpis, geojson, charts, error, records, textures, districts } = data || {
+    kpis: { total_cores: 0, mapped_points: 0, unique_textures: 0, active_districts: 0 },
+    geojson: { type: "FeatureCollection", features: [], total: 0 },
+    charts: { by_texture: [] },
+    error: null,
+    records: [],
+    textures: [],
+    districts: []
   };
+
+  const filteredFeatures = useMemo(() => {
+    if (!geojson || !geojson.features) return [];
+    return geojson.features.filter((f: any) => {
+      const props = f.properties;
+      const district = String(props._mapped_dist || "").toLowerCase();
+      const ward = String(props.ward || "").toLowerCase();
+      const ceid = String(props.ceid || "").toLowerCase();
+      const texture = String(props._mapped_tex || "").toLowerCase();
+      const loc = String(props._mapped_loc || props.samloc || "").toLowerCase();
+      const moisture = String(props._mapped_moist || "").toLowerCase();
+      const searchLower = search.toLowerCase();
+
+      const matchSearch = 
+        district.includes(searchLower) || 
+        ward.includes(searchLower) || 
+        ceid.includes(searchLower) || 
+        texture.includes(searchLower) || 
+        loc.includes(searchLower);
+
+      const matchTexture = textureFilter === "all" || props._mapped_tex === textureFilter;
+      const matchDistrict = districtFilter === "all" || props._mapped_dist === districtFilter;
+
+      const isHotspot = texture.includes("sand") && moisture.includes("dry");
+      const isBrightSpot = texture.includes("loam") || texture.includes("silt");
+      const matchSoilStatus = soilStatusFilter === "all" || 
+                              (soilStatusFilter === "hotspot" && isHotspot) || 
+                              (soilStatusFilter === "brightspot" && isBrightSpot);
+
+      return matchSearch && matchTexture && matchDistrict && matchSoilStatus;
+    });
+  }, [geojson.features, search, textureFilter, districtFilter, soilStatusFilter]);
 
   // Pagination (10 per page)
   const itemsPerPage = 10;
@@ -394,6 +349,62 @@ export default function SoilPage() {
       ocRangeData
     };
   }, [filteredFeatures, data]);
+
+  const handleExport = () => {
+    const format = (document.getElementById("soil-export-format") as HTMLSelectElement)?.value || "csv";
+    
+    if (format === "geojson") {
+      const geojsonObj = {
+        type: "FeatureCollection",
+        features: filteredFeatures
+      };
+      const geojsonStr = JSON.stringify(geojsonObj, null, 2);
+      downloadFile(geojsonStr, `soil_data_export_${Date.now()}.geojson`, "application/json");
+    } else if (format === "kml") {
+      const kmlStr = convertToKML(filteredFeatures, "Zimbabwe Soil Data Export");
+      downloadFile(kmlStr, `soil_data_export_${Date.now()}.kml`, "application/vnd.google-earth.kml+xml");
+    } else {
+      const filteredIdSet = new Set(filteredFeatures.map((f: any) => f.properties._id));
+      const filteredOriginalRecords = records.filter((r: any) => filteredIdSet.has(r._id));
+      const csvStr = convertToCSV(filteredOriginalRecords);
+      downloadFile(csvStr, `soil_data_export_${Date.now()}.csv`, "text/csv;charset=utf-8;");
+    }
+  };
+
+  if (loading)
+    return (
+      <div className="loading-screen">
+        <div className="spinner" style={{ borderTopColor: "var(--accent-amber)" }} />
+        <div style={{ color: "#64748b", fontSize: 13 }}>Loading Soil Core Hub…</div>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div
+        className="eartheye-container"
+        style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "#0b1120" }}
+      >
+        <div
+          style={{
+            background: "rgba(244,63,94,0.1)",
+            border: "1px solid var(--accent-rose)",
+            padding: 30,
+            borderRadius: 12,
+            maxWidth: 600,
+            color: "var(--accent-rose)",
+          }}
+        >
+          <h2 style={{ marginTop: 0, display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 24 }}>⚠️</span> API Connection Error
+          </h2>
+          <p style={{ lineHeight: 1.5 }}>{error}</p>
+          <p style={{ fontSize: 12, opacity: 0.8, marginTop: 20 }}>
+            Please check the network tab or API configuration.
+          </p>
+        </div>
+      </div>
+    );
 
   // Texture badge color mapper
   const getBadgeClass = (texture: string) => {
