@@ -1,9 +1,22 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { downloadFile } from "@/lib/export";
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  CartesianGrid
+} from "recharts";
 
 const DrylandsMapView = dynamic(() => import("@/components/DrylandsMapView"), { ssr: false });
 
@@ -152,6 +165,7 @@ function convertDrylandsToKML(records: any[], title: string = "Zimbabwe Drylands
 }
 
 export default function DrylandsPage() {
+  const [viewMode, setViewMode] = useState<"spatial" | "dashboard">("spatial");
   const [records, setRecords] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [vegFilter, setVegFilter] = useState("all");
@@ -513,6 +527,44 @@ export default function DrylandsPage() {
     ? Math.round((filteredRecords.filter(r => String(r.soil_erosion_present).toLowerCase() === "yes").length / totalAssessments) * 100)
     : 0;
 
+  const dashboardStats = useMemo(() => {
+    const total = filteredRecords.length;
+    const priorityCnt: Record<string, number> = {};
+    const vegCnt: Record<string, number> = {};
+    const soilCnt: Record<string, number> = {};
+
+    filteredRecords.forEach(r => {
+      // Normalize priority level
+      let p = "Low";
+      const pStr = String(r.priority_level || "").toLowerCase();
+      if (pStr.includes("high")) p = "High";
+      else if (pStr.includes("medium") || pStr.includes("moderate")) p = "Medium";
+      priorityCnt[p] = (priorityCnt[p] || 0) + 1;
+
+      const veg = r.vegetation_condition || "Unknown";
+      vegCnt[veg] = (vegCnt[veg] || 0) + 1;
+
+      const soil = r.dominant_soil_type || "Unknown";
+      soilCnt[soil] = (soilCnt[soil] || 0) + 1;
+    });
+
+    const priorityData = [
+      { name: "Low", value: priorityCnt["Low"] || 0, fill: "#10b981" },
+      { name: "Medium", value: priorityCnt["Medium"] || 0, fill: "#f59e0b" },
+      { name: "High", value: priorityCnt["High"] || 0, fill: "#ef4444" }
+    ].filter(item => item.value > 0 || total > 0);
+
+    const vegData = Object.entries(vegCnt).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+    const soilData = Object.entries(soilCnt).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+
+    return {
+      total,
+      priorityData,
+      vegData,
+      soilData
+    };
+  }, [filteredRecords]);
+
   const exportPanel = (
     <div className="sidebar-export-panel">
       <div className="sidebar-export-panel-title">Export Dataset</div>
@@ -535,7 +587,77 @@ export default function DrylandsPage() {
   );
 
   return (
-    <div className="buims-container">
+    <div style={{ display: "flex", flexDirection: "column", flex: 1, height: "100%", overflow: "hidden" }}>
+      {/* Top Header Bar with Switcher */}
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "12px 24px",
+        background: "#ffffff",
+        borderBottom: "1px solid var(--border-color)",
+        flexShrink: 0
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <span style={{ fontSize: "20px" }}>🏜️</span>
+          <div>
+            <h1 style={{ fontSize: "16px", fontWeight: 800, color: "var(--text-primary)", margin: 0, fontFamily: "var(--font-title)" }}>
+              Drylands Monitoring & Vulnerability
+            </h1>
+            <p style={{ fontSize: "10px", color: "var(--text-muted)", margin: 0, fontWeight: 500 }}>
+              Assessing Soil Erosion, Land degradation & Desertification in Vulnerable Zones
+            </p>
+          </div>
+        </div>
+
+        {/* View Mode Switcher Pill */}
+        <div style={{
+          display: "inline-flex",
+          background: "#f1f5f9",
+          padding: "3px",
+          borderRadius: "9999px",
+          border: "1px solid #e2e8f0"
+        }}>
+          <button
+            onClick={() => setViewMode("spatial")}
+            style={{
+              padding: "5px 14px",
+              fontSize: "11px",
+              fontWeight: 700,
+              borderRadius: "9999px",
+              transition: "all 0.2s ease",
+              background: viewMode === "spatial" ? "#ffffff" : "transparent",
+              color: viewMode === "spatial" ? "#0f172a" : "#64748b",
+              border: "none",
+              boxShadow: viewMode === "spatial" ? "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)" : "none",
+              cursor: "pointer"
+            }}
+          >
+            Spatial Map View
+          </button>
+          <button
+            onClick={() => setViewMode("dashboard")}
+            style={{
+              padding: "5px 14px",
+              fontSize: "11px",
+              fontWeight: 700,
+              borderRadius: "9999px",
+              transition: "all 0.2s ease",
+              background: viewMode === "dashboard" ? "#ffffff" : "transparent",
+              color: viewMode === "dashboard" ? "#0f172a" : "#64748b",
+              border: "none",
+              boxShadow: viewMode === "dashboard" ? "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)" : "none",
+              cursor: "pointer"
+            }}
+          >
+            Project Dashboard
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content Zone */}
+      {viewMode === "spatial" ? (
+        <div className="buims-container">
       {/* Panel 2: List Panel */}
       <div className={`buims-list-panel ${leftCollapsed ? "collapsed" : ""}`}>
         <div className="panel-header">
@@ -1219,6 +1341,137 @@ export default function DrylandsPage() {
         {/* Render export panel dynamically into sidebar portal */}
         {mounted && createPortal(exportPanel, document.getElementById("sidebar-export-container")!)}
       </div>
+      </div>
+      ) : (
+        <div style={{ flex: 1, overflowY: "auto", background: "#f8fafc", padding: "24px" }}>
+          {/* KPI Dashboard Cards Grid */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "16px",
+            marginBottom: "24px"
+          }}>
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)" }}>Assessments Conducted</span>
+                <span style={{ fontSize: "20px" }}>🏜️</span>
+              </div>
+              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)" }}>{dashboardStats?.total}</div>
+              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Active filtered dryland records</div>
+            </div>
+
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)" }}>Avg Vegetation Cover</span>
+                <span style={{ fontSize: "20px" }}>🌱</span>
+              </div>
+              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)" }}>{avgVegCover}%</div>
+              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Average estimated cover percentage</div>
+            </div>
+
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)", borderLeft: "4px solid var(--accent-rose)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--accent-rose)" }}>High Priority Area Pct</span>
+                <span style={{ fontSize: "20px" }}>🚨</span>
+              </div>
+              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--accent-rose)" }}>{highPriorityPct}%</div>
+              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Assessments requiring immediate intervention</div>
+            </div>
+
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)" }}>Active Erosion Pct</span>
+                <span style={{ fontSize: "20px" }}>⚠️</span>
+              </div>
+              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)" }}>{erosionPresentPct}%</div>
+              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Sites with confirmed active soil erosion</div>
+            </div>
+          </div>
+
+          {/* Recharts Graphs Grid */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
+            gap: "20px"
+          }}>
+            {/* Chart 1: Priority Levels */}
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "20px", boxShadow: "var(--shadow-sm)" }}>
+              <h3 style={{ fontSize: "12px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                Intervention Priority Levels
+              </h3>
+              {dashboardStats?.priorityData && dashboardStats.priorityData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={260}>
+                  <PieChart>
+                    <Pie
+                      data={dashboardStats.priorityData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={85}
+                      paddingAngle={3}
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                      labelLine={false}
+                    >
+                      {dashboardStats.priorityData.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => [`${value} Sites`, "Count"]} />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: "260px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: "11px" }}>No data to display</div>
+              )}
+            </div>
+
+            {/* Chart 2: Vegetation conditions */}
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "20px", boxShadow: "var(--shadow-sm)" }}>
+              <h3 style={{ fontSize: "12px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                Vegetation Condition Profile
+              </h3>
+              {dashboardStats?.vegData && dashboardStats.vegData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={dashboardStats.vegData} margin={{ top: 10, right: 10, left: -25, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="name" tick={{ fontSize: 9 }} interval={0} />
+                    <YAxis tick={{ fontSize: 9 }} />
+                    <Tooltip formatter={(value) => [`${value} Sites`, "Count"]} />
+                    <Bar dataKey="value" name="Sites" radius={[4, 4, 0, 0]}>
+                      {dashboardStats.vegData.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={["#10b981", "#f59e0b", "#ef4444", "#3b82f6"][index % 4]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: "260px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: "11px" }}>No data to display</div>
+              )}
+            </div>
+
+            {/* Chart 3: Dominant soil types */}
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "20px", boxShadow: "var(--shadow-sm)", gridColumn: "span 3" }}>
+              <h3 style={{ fontSize: "12px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                Dominant Soil Type Distribution
+              </h3>
+              {dashboardStats?.soilData && dashboardStats.soilData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={dashboardStats.soilData} margin={{ top: 10, right: 10, left: -25, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="name" tick={{ fontSize: 9 }} interval={0} />
+                    <YAxis tick={{ fontSize: 9 }} />
+                    <Tooltip formatter={(value) => [`${value} Sites`, "Count"]} />
+                    <Bar dataKey="value" name="Sites" fill="#d97706" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: "260px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: "11px" }}>No data to display</div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      {mounted && createPortal(exportPanel, document.getElementById("sidebar-export-container")!)}
     </div>
   );
 }

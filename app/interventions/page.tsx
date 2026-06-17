@@ -1,9 +1,22 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { downloadFile } from "@/lib/export";
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  CartesianGrid
+} from "recharts";
 
 const InterventionsMapView = dynamic(() => import("@/components/InterventionsMapView"), { ssr: false });
 
@@ -120,6 +133,7 @@ function convertInterventionsToKML(records: any[], title: string = "Zimbabwe Int
 }
 
 export default function InterventionsPage() {
+  const [viewMode, setViewMode] = useState<"spatial" | "dashboard">("spatial");
   const [records, setRecords] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -390,6 +404,41 @@ export default function InterventionsPage() {
   const totalAreaProtected = filteredRecords.reduce((sum, r) => sum + (r.indicators?.area_protected || 0), 0);
   const totalBeneficiaries = filteredRecords.reduce((sum, r) => sum + (r.indicators?.beneficiaries || 0), 0);
 
+  const dashboardStats = useMemo(() => {
+    const total = filteredRecords.length;
+    const sustainableArea = filteredRecords.reduce((sum, r) => sum + (r.indicators?.sustainable_practices || 0), 0);
+    const carbonSeq = filteredRecords.reduce((sum, r) => sum + (r.indicators?.carbon_sequestration || 0), 0);
+
+    const categoryCnt: Record<string, number> = {};
+    const statusCnt: Record<string, number> = {};
+
+    filteredRecords.forEach(r => {
+      const cat = r.category || "Unknown";
+      categoryCnt[cat] = (categoryCnt[cat] || 0) + 1;
+      
+      const stat = r.status || "Unknown";
+      statusCnt[stat] = (statusCnt[stat] || 0) + 1;
+    });
+
+    const categoryData = Object.entries(categoryCnt).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+    const statusData = Object.entries(statusCnt).map(([name, value]) => ({ name, value }));
+
+    const indicatorData = [
+      { name: "Protected Area (ha)", value: totalAreaProtected, fill: "#22c55e" },
+      { name: "Sustainable Land (ha)", value: sustainableArea, fill: "#10b981" },
+      { name: "Carbon Sequestration (t)", value: carbonSeq, fill: "#14b8a6" }
+    ];
+
+    return {
+      total,
+      sustainableArea,
+      carbonSeq,
+      categoryData,
+      statusData,
+      indicatorData
+    };
+  }, [filteredRecords, totalAreaProtected]);
+
   const exportPanel = (
     <div className="sidebar-export-panel">
       <div className="sidebar-export-panel-title">Export Dataset</div>
@@ -412,7 +461,77 @@ export default function InterventionsPage() {
   );
 
   return (
-    <div className="buims-container">
+    <div style={{ display: "flex", flexDirection: "column", flex: 1, height: "100%", overflow: "hidden" }}>
+      {/* Top Header Bar with Switcher */}
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "12px 24px",
+        background: "#ffffff",
+        borderBottom: "1px solid var(--border-color)",
+        flexShrink: 0
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <span style={{ fontSize: "20px" }}>🛠️</span>
+          <div>
+            <h1 style={{ fontSize: "16px", fontWeight: 800, color: "var(--text-primary)", margin: 0, fontFamily: "var(--font-title)" }}>
+              Interventions & Reclamation Hub
+            </h1>
+            <p style={{ fontSize: "10px", color: "var(--text-muted)", margin: 0, fontWeight: 500 }}>
+              Tracking Land Reclamation, Reforestation & Sustainable Practices
+            </p>
+          </div>
+        </div>
+
+        {/* View Mode Switcher Pill */}
+        <div style={{
+          display: "inline-flex",
+          background: "#f1f5f9",
+          padding: "3px",
+          borderRadius: "9999px",
+          border: "1px solid #e2e8f0"
+        }}>
+          <button
+            onClick={() => setViewMode("spatial")}
+            style={{
+              padding: "5px 14px",
+              fontSize: "11px",
+              fontWeight: 700,
+              borderRadius: "9999px",
+              transition: "all 0.2s ease",
+              background: viewMode === "spatial" ? "#ffffff" : "transparent",
+              color: viewMode === "spatial" ? "#0f172a" : "#64748b",
+              border: "none",
+              boxShadow: viewMode === "spatial" ? "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)" : "none",
+              cursor: "pointer"
+            }}
+          >
+            Spatial Map View
+          </button>
+          <button
+            onClick={() => setViewMode("dashboard")}
+            style={{
+              padding: "5px 14px",
+              fontSize: "11px",
+              fontWeight: 700,
+              borderRadius: "9999px",
+              transition: "all 0.2s ease",
+              background: viewMode === "dashboard" ? "#ffffff" : "transparent",
+              color: viewMode === "dashboard" ? "#0f172a" : "#64748b",
+              border: "none",
+              boxShadow: viewMode === "dashboard" ? "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)" : "none",
+              cursor: "pointer"
+            }}
+          >
+            Project Dashboard
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content Zone */}
+      {viewMode === "spatial" ? (
+        <div className="buims-container">
       {/* Panel 2: List Panel */}
       <div className={`buims-list-panel ${leftCollapsed ? "collapsed" : ""}`}>
         <div className="panel-header">
@@ -946,9 +1065,148 @@ export default function InterventionsPage() {
               </div>
             </form>
           )}
-
         </div>
       </div>
+      </div>
+      ) : (
+        <div style={{ flex: 1, overflowY: "auto", background: "#f8fafc", padding: "24px" }}>
+          {/* KPI Dashboard Cards Grid */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "16px",
+            marginBottom: "24px"
+          }}>
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)" }}>Total Projects</span>
+                <span style={{ fontSize: "20px" }}>🛠️</span>
+              </div>
+              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)" }}>{dashboardStats?.total}</div>
+              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Active filtered interventions</div>
+            </div>
+
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)" }}>Total Budget</span>
+                <span style={{ fontSize: "20px" }}>💰</span>
+              </div>
+              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)" }}>${totalBudget.toLocaleString()}</div>
+              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Accumulated budget size</div>
+            </div>
+
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)" }}>Protected Area</span>
+                <span style={{ fontSize: "20px" }}>🌍</span>
+              </div>
+              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)" }}>{totalAreaProtected.toFixed(1)} ha</div>
+              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Total land area protected</div>
+            </div>
+
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)", borderLeft: "4px solid var(--accent-green)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--accent-green)" }}>Total Beneficiaries</span>
+                <span style={{ fontSize: "20px" }}>👥</span>
+              </div>
+              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--accent-green)" }}>{totalBeneficiaries.toLocaleString()}</div>
+              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Local community stakeholders reached</div>
+            </div>
+          </div>
+
+          {/* Recharts Graphs Grid */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
+            gap: "20px"
+          }}>
+            {/* Chart 1: Project categories */}
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "20px", boxShadow: "var(--shadow-sm)", gridColumn: "span 2" }}>
+              <h3 style={{ fontSize: "12px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                Interventions by Project Category
+              </h3>
+              {dashboardStats?.categoryData && dashboardStats.categoryData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={dashboardStats.categoryData} margin={{ top: 10, right: 10, left: -25, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="name" tick={{ fontSize: 9 }} interval={0} />
+                    <YAxis tick={{ fontSize: 9 }} />
+                    <Tooltip formatter={(value) => [`${value} Projects`, "Count"]} />
+                    <Bar dataKey="value" name="Projects" radius={[4, 4, 0, 0]}>
+                      {dashboardStats.categoryData.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={["#10b981", "#14b8a6", "#3b82f6", "#f59e0b", "#8b5cf6", "#ef4444"][index % 6]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: "260px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: "11px" }}>No data to display</div>
+              )}
+            </div>
+
+            {/* Chart 2: Project status */}
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "20px", boxShadow: "var(--shadow-sm)" }}>
+              <h3 style={{ fontSize: "12px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                Project Implementation Status
+              </h3>
+              {dashboardStats?.statusData && dashboardStats.statusData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={260}>
+                  <PieChart>
+                    <Pie
+                      data={dashboardStats.statusData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={85}
+                      paddingAngle={3}
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                      labelLine={false}
+                    >
+                      {dashboardStats.statusData.map((entry: any, index: number) => {
+                        const statusColors: Record<string, string> = {
+                          "Completed": "#10b981",
+                          "Ongoing": "#f59e0b",
+                          "Planned": "#3b82f6",
+                          "Suspended": "#ef4444"
+                        };
+                        return <Cell key={`cell-${index}`} fill={statusColors[entry.name] || "#64748b"} />;
+                      })}
+                    </Pie>
+                    <Tooltip formatter={(value) => [`${value} Projects`, "Count"]} />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: "260px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: "11px" }}>No data to display</div>
+              )}
+            </div>
+
+            {/* Chart 3: Indicators Aggregate */}
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "20px", boxShadow: "var(--shadow-sm)", gridColumn: "span 3" }}>
+              <h3 style={{ fontSize: "12px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                Key Reclamation Indicator Performance (ha / t CO2e)
+              </h3>
+              {dashboardStats?.indicatorData && dashboardStats.indicatorData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={dashboardStats.indicatorData} margin={{ top: 10, right: 10, left: -25, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="name" tick={{ fontSize: 9 }} interval={0} />
+                    <YAxis tick={{ fontSize: 9 }} />
+                    <Tooltip formatter={(value) => [`${value}`, "Value"]} />
+                    <Bar dataKey="value" name="Value" radius={[4, 4, 0, 0]}>
+                      {dashboardStats.indicatorData.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: "260px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: "11px" }}>No data to display</div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {mounted && typeof document !== "undefined" && document.getElementById("sidebar-export-container") ? (
         createPortal(exportPanel, document.getElementById("sidebar-export-container")!)

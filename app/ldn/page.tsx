@@ -1,9 +1,22 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { downloadFile, convertToKML, convertToCSV } from "@/lib/export";
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  CartesianGrid
+} from "recharts";
 
 const MapView = dynamic(() => import("@/components/MapView"), { ssr: false });
 
@@ -89,6 +102,7 @@ function buildDashboardData(records: any[]) {
 }
 
 export default function LdnPage() {
+  const [viewMode, setViewMode] = useState<"spatial" | "dashboard">("spatial");
   const [data, setData] = useState<any>(null);
   const [search, setSearch] = useState("");
   const [severityFilter, setSeverityFilter] = useState("all");
@@ -120,6 +134,21 @@ export default function LdnPage() {
   };
 
   useEffect(load, []);
+
+  const SEVERITY_COLORS: Record<string, string> = {
+    "None": "#10b981",
+    "Slight": "#14b8a6",
+    "Moderate": "#f59e0b",
+    "Medium": "#f59e0b",
+    "Severe": "#f97316",
+    "High": "#f97316",
+    "Critical": "#ef4444",
+    "Low": "#06b6d4"
+  };
+  const getSeverityColor = (sev: string) => {
+    const norm = String(sev).trim();
+    return SEVERITY_COLORS[norm] || "#64748b";
+  };
 
   if (loading)
     return (
@@ -198,6 +227,51 @@ export default function LdnPage() {
 
   const activeFeature = geojson.features.find((f: any) => f.properties._id === activeId);
 
+  const dashboardStats = useMemo(() => {
+    if (!data) return null;
+    const records = filteredFeatures.map(f => f.properties);
+    const total = records.length;
+    
+    const landuseCnt: Record<string, number> = {};
+    const districtCnt: Record<string, number> = {};
+    const severityCnt: Record<string, number> = {};
+    let hotspots = 0;
+    let brightspots = 0;
+
+    records.forEach(r => {
+      const lu = r.landus || "Unknown";
+      landuseCnt[lu] = (landuseCnt[lu] || 0) + 1;
+      
+      const dist = r.dist || "Unknown";
+      districtCnt[dist] = (districtCnt[dist] || 0) + 1;
+      
+      const sev = r.sev || "Unknown";
+      severityCnt[sev] = (severityCnt[sev] || 0) + 1;
+
+      const sevLower = sev.toLowerCase();
+      if (sevLower.includes("high") || sevLower.includes("severe") || sevLower.includes("critical")) {
+        hotspots++;
+      } else if (sevLower.includes("low") || sevLower.includes("minimal") || sevLower.includes("stable") || sevLower.includes("none")) {
+        brightspots++;
+      }
+    });
+
+    const severityData = Object.entries(severityCnt).map(([name, value]) => ({ name, value }));
+    const landuseData = Object.entries(landuseCnt).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+    const districtData = Object.entries(districtCnt).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+
+    return {
+      total,
+      hotspots,
+      brightspots,
+      activeDistricts: Object.keys(districtCnt).length,
+      uniqueLandcovers: Object.keys(landuseCnt).length,
+      severityData,
+      landuseData,
+      districtData
+    };
+  }, [filteredFeatures, data]);
+
   // Severity badge classes
   const getBadgeClass = (severity: string) => {
     const s = (severity || "").toLowerCase();
@@ -228,7 +302,77 @@ export default function LdnPage() {
   );
 
   return (
-    <div className="buims-container">
+    <div style={{ display: "flex", flexDirection: "column", flex: 1, height: "100%", overflow: "hidden" }}>
+      {/* Top Header Bar with Switcher */}
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "12px 24px",
+        background: "#ffffff",
+        borderBottom: "1px solid var(--border-color)",
+        flexShrink: 0
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <span style={{ fontSize: "20px" }}>🌳</span>
+          <div>
+            <h1 style={{ fontSize: "16px", fontWeight: 800, color: "var(--text-primary)", margin: 0, fontFamily: "var(--font-title)" }}>
+              Land Degradation Neutrality (LDN) Framework
+            </h1>
+            <p style={{ fontSize: "10px", color: "var(--text-muted)", margin: 0, fontWeight: 500 }}>
+              Monitoring SDG 15.3.1 - Land Degradation & Telemetry
+            </p>
+          </div>
+        </div>
+
+        {/* View Mode Switcher Pill */}
+        <div style={{
+          display: "inline-flex",
+          background: "#f1f5f9",
+          padding: "3px",
+          borderRadius: "9999px",
+          border: "1px solid #e2e8f0"
+        }}>
+          <button
+            onClick={() => setViewMode("spatial")}
+            style={{
+              padding: "5px 14px",
+              fontSize: "11px",
+              fontWeight: 700,
+              borderRadius: "9999px",
+              transition: "all 0.2s ease",
+              background: viewMode === "spatial" ? "#ffffff" : "transparent",
+              color: viewMode === "spatial" ? "#0f172a" : "#64748b",
+              border: "none",
+              boxShadow: viewMode === "spatial" ? "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)" : "none",
+              cursor: "pointer"
+            }}
+          >
+            Spatial Map View
+          </button>
+          <button
+            onClick={() => setViewMode("dashboard")}
+            style={{
+              padding: "5px 14px",
+              fontSize: "11px",
+              fontWeight: 700,
+              borderRadius: "9999px",
+              transition: "all 0.2s ease",
+              background: viewMode === "dashboard" ? "#ffffff" : "transparent",
+              color: viewMode === "dashboard" ? "#0f172a" : "#64748b",
+              border: "none",
+              boxShadow: viewMode === "dashboard" ? "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)" : "none",
+              cursor: "pointer"
+            }}
+          >
+            Project Dashboard
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content Zone */}
+      {viewMode === "spatial" ? (
+        <div className="buims-container">
       {/* Panel 2: List Panel */}
       <div className={`buims-list-panel ${leftCollapsed ? "collapsed" : ""}`}>
         <div className="panel-header">
@@ -556,6 +700,136 @@ export default function LdnPage() {
           </button>
         </div>
       </div>
+      </div>
+      ) : (
+        <div style={{ flex: 1, overflowY: "auto", background: "#f8fafc", padding: "24px" }}>
+          {/* KPI Dashboard Cards Grid */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "16px",
+            marginBottom: "24px"
+          }}>
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)" }}>Total Surveys</span>
+                <span style={{ fontSize: "20px" }}>🌲</span>
+              </div>
+              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)" }}>{dashboardStats?.total}</div>
+              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Active filtered telemetry records</div>
+            </div>
+
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)" }}>Active Districts</span>
+                <span style={{ fontSize: "20px" }}>🗺️</span>
+              </div>
+              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)" }}>{dashboardStats?.activeDistricts}</div>
+              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Districts reporting data</div>
+            </div>
+
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)" }}>Land Cover Classes</span>
+                <span style={{ fontSize: "20px" }}>🌿</span>
+              </div>
+              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)" }}>{dashboardStats?.uniqueLandcovers}</div>
+              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Unique land cover categories</div>
+            </div>
+
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)", borderLeft: "4px solid var(--accent-rose)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--accent-rose)" }}>Degraded Hotspots</span>
+                <span style={{ fontSize: "20px" }}>⚠️</span>
+              </div>
+              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--accent-rose)" }}>{dashboardStats?.hotspots}</div>
+              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Nodes classified as degraded</div>
+            </div>
+          </div>
+
+          {/* Recharts Graphs Grid */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
+            gap: "20px"
+          }}>
+            {/* Chart 1: Severity Distribution */}
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "20px", boxShadow: "var(--shadow-sm)" }}>
+              <h3 style={{ fontSize: "12px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                Degradation Severity Distribution
+              </h3>
+              {dashboardStats?.severityData && dashboardStats.severityData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={260}>
+                  <PieChart>
+                    <Pie
+                      data={dashboardStats.severityData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={85}
+                      paddingAngle={3}
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                      labelLine={false}
+                    >
+                      {dashboardStats.severityData.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={getSeverityColor(entry.name)} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => [`${value} Sites`, "Count"]} />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: "260px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: "11px" }}>No data to display</div>
+              )}
+            </div>
+
+            {/* Chart 2: Landuse cover */}
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "20px", boxShadow: "var(--shadow-sm)" }}>
+              <h3 style={{ fontSize: "12px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                Land Cover (LULC) Classification
+              </h3>
+              {dashboardStats?.landuseData && dashboardStats.landuseData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={dashboardStats.landuseData} margin={{ top: 10, right: 10, left: -25, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="name" tick={{ fontSize: 9 }} interval={0} angle={-10} textAnchor="end" />
+                    <YAxis tick={{ fontSize: 9 }} />
+                    <Tooltip formatter={(value) => [`${value} Sites`, "Count"]} />
+                    <Bar dataKey="value" name="Sites" radius={[4, 4, 0, 0]}>
+                      {dashboardStats.landuseData.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={["#22c55e", "#10b981", "#14b8a6", "#06b6d4", "#3b82f6", "#6366f1", "#8b5cf6"][index % 7]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: "260px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: "11px" }}>No data to display</div>
+              )}
+            </div>
+
+            {/* Chart 3: District Monitoring */}
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "20px", boxShadow: "var(--shadow-sm)" }}>
+              <h3 style={{ fontSize: "12px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                Monitoring Activity by District
+              </h3>
+              {dashboardStats?.districtData && dashboardStats.districtData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={dashboardStats.districtData} margin={{ top: 10, right: 10, left: -25, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="name" tick={{ fontSize: 9 }} interval={0} />
+                    <YAxis tick={{ fontSize: 9 }} />
+                    <Tooltip formatter={(value) => [`${value} Records`, "Count"]} />
+                    <Bar dataKey="value" name="Records" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: "260px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: "11px" }}>No data to display</div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       {mounted && typeof document !== "undefined" && document.getElementById("sidebar-export-container") ? (
         createPortal(exportPanel, document.getElementById("sidebar-export-container")!)
       ) : null}

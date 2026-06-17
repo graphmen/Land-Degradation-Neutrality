@@ -1,9 +1,22 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { downloadFile, convertToKML, convertToCSV } from "@/lib/export";
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  CartesianGrid
+} from "recharts";
 
 const MapView = dynamic(() => import("@/components/MapView"), { ssr: false });
 
@@ -189,6 +202,7 @@ function buildDashboardData(records: any[], error: string | null = null) {
 }
 
 export default function SoilPage() {
+  const [viewMode, setViewMode] = useState<"spatial" | "dashboard">("spatial");
   const [data, setData] = useState<any>(null);
   const [search, setSearch] = useState("");
   const [textureFilter, setTextureFilter] = useState("all");
@@ -318,6 +332,69 @@ export default function SoilPage() {
 
   const activeFeature = geojson.features.find((f: any) => f.properties._id === activeId);
 
+  const dashboardStats = useMemo(() => {
+    if (!data) return null;
+    const records = filteredFeatures.map(f => f.properties);
+    const total = records.length;
+
+    let totalDepth = 0;
+    let depthCount = 0;
+    const textureCnt: Record<string, number> = {};
+    const districtDepthSums: Record<string, number> = {};
+    const districtDepthCounts: Record<string, number> = {};
+    let ocCount = 0;
+
+    let ocLow = 0;
+    let ocMedium = 0;
+    let ocHigh = 0;
+
+    records.forEach(r => {
+      const dep = parseFloat(r._mapped_dep);
+      if (!isNaN(dep)) {
+        totalDepth += dep;
+        depthCount++;
+
+        const dist = r._mapped_dist || "Unknown";
+        districtDepthSums[dist] = (districtDepthSums[dist] || 0) + dep;
+        districtDepthCounts[dist] = (districtDepthCounts[dist] || 0) + 1;
+      }
+
+      const tex = r._mapped_tex || "Unknown";
+      textureCnt[tex] = (textureCnt[tex] || 0) + 1;
+
+      if (r.organic_carbon !== undefined && r.organic_carbon !== null) {
+        ocCount++;
+        const val = parseFloat(r.organic_carbon);
+        if (val < 1.0) ocLow++;
+        else if (val <= 2.0) ocMedium++;
+        else ocHigh++;
+      }
+    });
+
+    const textureData = Object.entries(textureCnt).map(([name, value]) => ({ name, value }));
+    
+    const districtData = Object.keys(districtDepthSums).map(dist => ({
+      name: dist,
+      avgDepth: +(districtDepthSums[dist] / districtDepthCounts[dist]).toFixed(1)
+    })).sort((a, b) => b.avgDepth - a.avgDepth);
+
+    const ocRangeData = [
+      { name: "Low (<1.0%)", value: ocLow, fill: "#ef4444" },
+      { name: "Medium (1.0-2.0%)", value: ocMedium, fill: "#f59e0b" },
+      { name: "High (>2.0%)", value: ocHigh, fill: "#10b981" }
+    ].filter(item => item.value > 0 || ocCount > 0);
+
+    return {
+      total,
+      avgDepth: depthCount > 0 ? +(totalDepth / depthCount).toFixed(1) : 0,
+      uniqueTextures: Object.keys(textureCnt).length,
+      ocCount,
+      textureData,
+      districtData,
+      ocRangeData
+    };
+  }, [filteredFeatures, data]);
+
   // Texture badge color mapper
   const getBadgeClass = (texture: string) => {
     const t = (texture || "").toLowerCase();
@@ -348,7 +425,77 @@ export default function SoilPage() {
   );
 
   return (
-    <div className="buims-container">
+    <div style={{ display: "flex", flexDirection: "column", flex: 1, height: "100%", overflow: "hidden" }}>
+      {/* Top Header Bar with Switcher */}
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "12px 24px",
+        background: "#ffffff",
+        borderBottom: "1px solid var(--border-color)",
+        flexShrink: 0
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <span style={{ fontSize: "20px" }}>🧪</span>
+          <div>
+            <h1 style={{ fontSize: "16px", fontWeight: 800, color: "var(--text-primary)", margin: 0, fontFamily: "var(--font-title)" }}>
+              Soil Quality Core Monitoring
+            </h1>
+            <p style={{ fontSize: "10px", color: "var(--text-muted)", margin: 0, fontWeight: 500 }}>
+              Physical & Chemical Analysis of Soil Horizon Cores
+            </p>
+          </div>
+        </div>
+
+        {/* View Mode Switcher Pill */}
+        <div style={{
+          display: "inline-flex",
+          background: "#f1f5f9",
+          padding: "3px",
+          borderRadius: "9999px",
+          border: "1px solid #e2e8f0"
+        }}>
+          <button
+            onClick={() => setViewMode("spatial")}
+            style={{
+              padding: "5px 14px",
+              fontSize: "11px",
+              fontWeight: 700,
+              borderRadius: "9999px",
+              transition: "all 0.2s ease",
+              background: viewMode === "spatial" ? "#ffffff" : "transparent",
+              color: viewMode === "spatial" ? "#0f172a" : "#64748b",
+              border: "none",
+              boxShadow: viewMode === "spatial" ? "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)" : "none",
+              cursor: "pointer"
+            }}
+          >
+            Spatial Map View
+          </button>
+          <button
+            onClick={() => setViewMode("dashboard")}
+            style={{
+              padding: "5px 14px",
+              fontSize: "11px",
+              fontWeight: 700,
+              borderRadius: "9999px",
+              transition: "all 0.2s ease",
+              background: viewMode === "dashboard" ? "#ffffff" : "transparent",
+              color: viewMode === "dashboard" ? "#0f172a" : "#64748b",
+              border: "none",
+              boxShadow: viewMode === "dashboard" ? "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)" : "none",
+              cursor: "pointer"
+            }}
+          >
+            Project Dashboard
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content Zone */}
+      {viewMode === "spatial" ? (
+        <div className="buims-container">
       {/* Panel 2: List Panel */}
       <div className={`buims-list-panel ${leftCollapsed ? "collapsed" : ""}`}>
         <div className="panel-header">
@@ -627,6 +774,24 @@ export default function SoilPage() {
                         {props._submission_time ? new Date(props._submission_time).toLocaleDateString() : "—"}
                       </span>
                     </div>
+                    {props.lab_number && (
+                      <div className="detail-item-row">
+                        <span className="detail-item-label">
+                          <span className="detail-item-icon">🧪</span> Lab Ref Number
+                        </span>
+                        <span className="detail-item-value" style={{ fontWeight: 700 }}>{props.lab_number}</span>
+                      </div>
+                    )}
+                    {props.organic_carbon !== undefined && props.organic_carbon !== null && (
+                      <div className="detail-item-row">
+                        <span className="detail-item-label">
+                          <span className="detail-item-icon">💎</span> Measured Organic Carbon
+                        </span>
+                        <span className="detail-item-value" style={{ color: "var(--accent-green)", fontWeight: 800 }}>
+                          {props.organic_carbon}%
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Soil Organic Carbon (SOC) Baseline Alignment Card */}
@@ -666,14 +831,20 @@ export default function SoilPage() {
                         <div style={{ fontSize: 11, color: "var(--text-primary)", fontWeight: 700, marginBottom: 6 }}>
                           Land Cover: <span style={{ color: "var(--text-muted)", fontWeight: 500 }}>{landCoverType}</span>
                         </div>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
-                          <div style={{ padding: "6px 8px", background: "rgba(0,0,0,0.02)", borderRadius: 4, textAlign: "center" }}>
-                            <div style={{ fontSize: 8, color: "var(--text-muted)", textTransform: "uppercase" }}>UNCCD Target</div>
-                            <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)" }}>{targetSOC} t/ha</div>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6, marginBottom: 8 }}>
+                          <div style={{ padding: "4px 6px", background: "rgba(0,0,0,0.02)", borderRadius: 4, textAlign: "center" }}>
+                            <div style={{ fontSize: 7, color: "var(--text-muted)", textTransform: "uppercase" }}>UNCCD Target</div>
+                            <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text-primary)" }}>{targetSOC} t/ha</div>
                           </div>
-                          <div style={{ padding: "6px 8px", background: "rgba(0,0,0,0.02)", borderRadius: 4, textAlign: "center" }}>
-                            <div style={{ fontSize: 8, color: "var(--text-muted)", textTransform: "uppercase" }}>Estimated SOC</div>
-                            <div style={{ fontSize: 12, fontWeight: 700, color: isMeetingTarget ? "var(--accent-blue)" : "var(--accent-rose)" }}>{estimatedSOC} t/ha</div>
+                          <div style={{ padding: "4px 6px", background: "rgba(0,0,0,0.02)", borderRadius: 4, textAlign: "center" }}>
+                            <div style={{ fontSize: 7, color: "var(--text-muted)", textTransform: "uppercase" }}>Estimated SOC</div>
+                            <div style={{ fontSize: 10, fontWeight: 700, color: isMeetingTarget ? "var(--accent-blue)" : "var(--accent-rose)" }}>{estimatedSOC} t/ha</div>
+                          </div>
+                          <div style={{ padding: "4px 6px", background: "rgba(0,0,0,0.02)", borderRadius: 4, textAlign: "center" }}>
+                            <div style={{ fontSize: 7, color: "var(--text-muted)", textTransform: "uppercase" }}>Lab Measured</div>
+                            <div style={{ fontSize: 10, fontWeight: 700, color: props.organic_carbon !== undefined && props.organic_carbon !== null ? "var(--accent-green)" : "var(--text-muted)" }}>
+                              {props.organic_carbon !== undefined && props.organic_carbon !== null ? `${props.organic_carbon}%` : "N/A"}
+                            </div>
                           </div>
                         </div>
                         <div style={{ fontSize: 10, color: "var(--text-muted)", lineHeight: 1.4 }}>
@@ -768,6 +939,138 @@ export default function SoilPage() {
           </button>
         </div>
       </div>
+      </div>
+      ) : (
+        <div style={{ flex: 1, overflowY: "auto", background: "#f8fafc", padding: "24px" }}>
+          {/* KPI Dashboard Cards Grid */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "16px",
+            marginBottom: "24px"
+          }}>
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)" }}>Total Core Samples</span>
+                <span style={{ fontSize: "20px" }}>🧪</span>
+              </div>
+              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)" }}>{dashboardStats?.total}</div>
+              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Active filtered soil samples</div>
+            </div>
+
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)" }}>Average Core Depth</span>
+                <span style={{ fontSize: "20px" }}>📐</span>
+              </div>
+              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)" }}>{dashboardStats?.avgDepth} cm</div>
+              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Average depth of filtered profiles</div>
+            </div>
+
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)" }}>Unique Textures</span>
+                <span style={{ fontSize: "20px" }}>🎨</span>
+              </div>
+              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)" }}>{dashboardStats?.uniqueTextures}</div>
+              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Texture categories reported</div>
+            </div>
+
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)", borderLeft: "4px solid var(--accent-green)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--accent-green)" }}>Organic Carbon Lab Records</span>
+                <span style={{ fontSize: "20px" }}>💎</span>
+              </div>
+              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--accent-green)" }}>{dashboardStats?.ocCount}</div>
+              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Samples with verified lab values</div>
+            </div>
+          </div>
+
+          {/* Recharts Graphs Grid */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
+            gap: "20px"
+          }}>
+            {/* Chart 1: Texture Profile */}
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "20px", boxShadow: "var(--shadow-sm)" }}>
+              <h3 style={{ fontSize: "12px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                Soil Texture Profile Distribution
+              </h3>
+              {dashboardStats?.textureData && dashboardStats.textureData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={260}>
+                  <PieChart>
+                    <Pie
+                      data={dashboardStats.textureData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={85}
+                      paddingAngle={3}
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                      labelLine={false}
+                    >
+                      {dashboardStats.textureData.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={["#d97706", "#f59e0b", "#3b82f6", "#10b981", "#8b5cf6"][index % 5]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => [`${value} Cores`, "Count"]} />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: "260px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: "11px" }}>No data to display</div>
+              )}
+            </div>
+
+            {/* Chart 2: Average core depth by district */}
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "20px", boxShadow: "var(--shadow-sm)" }}>
+              <h3 style={{ fontSize: "12px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                Average Soil Core Depth by District
+              </h3>
+              {dashboardStats?.districtData && dashboardStats.districtData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={dashboardStats.districtData} margin={{ top: 10, right: 10, left: -25, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="name" tick={{ fontSize: 9 }} interval={0} />
+                    <YAxis tick={{ fontSize: 9 }} label={{ value: "cm", angle: -90, position: "insideLeft", fontSize: 9 }} />
+                    <Tooltip formatter={(value) => [`${value} cm`, "Average Depth"]} />
+                    <Bar dataKey="avgDepth" name="Average Depth" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: "260px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: "11px" }}>No data to display</div>
+              )}
+            </div>
+
+            {/* Chart 3: Measured Organic Carbon % distribution ranges */}
+            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "20px", boxShadow: "var(--shadow-sm)" }}>
+              <h3 style={{ fontSize: "12px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                Measured Organic Carbon (%) Ranges
+              </h3>
+              {dashboardStats?.ocCount && dashboardStats.ocCount > 0 ? (
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={dashboardStats.ocRangeData} margin={{ top: 10, right: 10, left: -25, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="name" tick={{ fontSize: 9 }} interval={0} />
+                    <YAxis tick={{ fontSize: 9 }} />
+                    <Tooltip formatter={(value) => [`${value} Cores`, "Count"]} />
+                    <Bar dataKey="value" name="Cores" radius={[4, 4, 0, 0]}>
+                      {dashboardStats.ocRangeData.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: "260px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: "11px", textAlign: "center", padding: "0 20px" }}>
+                  No lab carbon analysis data matching current filter criteria. Run synchronization to populate actual values.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       {mounted && typeof document !== "undefined" && document.getElementById("sidebar-export-container") ? (
         createPortal(exportPanel, document.getElementById("sidebar-export-container")!)
       ) : null}

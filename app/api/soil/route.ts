@@ -270,6 +270,42 @@ export async function GET(req: Request) {
     }
   }
 
+  // Merge Soil Organic Carbon data on the fly from public/soil-organic-carbon.json
+  try {
+    const socPath = path.join(process.cwd(), "public", "soil-organic-carbon.json");
+    const socRaw = await fs.readFile(socPath, "utf-8").catch(() => null);
+    if (socRaw) {
+      const socMapping = JSON.parse(socRaw);
+      records = records.map((r: any) => {
+        const ceid = r["geninfo/ceid"] || r.ceid;
+        if (ceid && socMapping[ceid]) {
+          const ocList = socMapping[ceid];
+          const updatedRecord = { ...r };
+          if (Array.isArray(updatedRecord.sampl)) {
+            updatedRecord.sampl = updatedRecord.sampl.map((s: any, idx: number) => {
+              if (idx < ocList.length) {
+                return {
+                  ...s,
+                  lab_number: ocList[idx].lab_number,
+                  "sampl/lab_number": ocList[idx].lab_number,
+                  organic_carbon: ocList[idx].organic_carbon,
+                  "sampl/organic_carbon": ocList[idx].organic_carbon,
+                  sample_ref: ocList[idx].sample_ref,
+                  "sampl/sample_ref": ocList[idx].sample_ref
+                };
+              }
+              return s;
+            });
+          }
+          return updatedRecord;
+        }
+        return r;
+      });
+    }
+  } catch (err) {
+    console.error("Failed to merge soil organic carbon data dynamically in API route:", err);
+  }
+
   // APPLY LOCAL OVERRIDES (Reconciliation for Soil)
   const deletionsSet = new Set(mod.deletions.map((id: any) => String(id)));
   const editsMap = mod.edits || {};

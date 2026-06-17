@@ -155,6 +155,8 @@ export default function DatabaseExplorer() {
     priority: true,
     vegetation: true,
     soil_type: true,
+    lab_number: true,
+    organic_carbon: true,
     status: true,
     actions: true
   });
@@ -379,7 +381,7 @@ export default function DatabaseExplorer() {
       if (aVal === undefined || aVal === null) return sortDirection === "asc" ? 1 : -1;
       if (bVal === undefined || bVal === null) return sortDirection === "asc" ? -1 : 1;
 
-      if (sortField === "depth" || sortField === "dep" || sortField === "sampl/dep" || sortField === "ward" || sortField === "estimated_vegetation_cover") {
+      if (sortField === "depth" || sortField === "dep" || sortField === "sampl/dep" || sortField === "ward" || sortField === "estimated_vegetation_cover" || sortField === "organic_carbon" || sortField === "sampl/organic_carbon") {
         aVal = parseFloat(aVal) || 0;
         bVal = parseFloat(bVal) || 0;
       } else {
@@ -1193,9 +1195,9 @@ export default function DatabaseExplorer() {
                     Toggle Columns
                   </div>
                   {Object.keys(visibleColumns).map(col => {
-                    if (activeTab === "ldn" && ["tex", "moisture", "dep", "village", "priority", "vegetation", "soil_type"].includes(col)) return null;
+                    if (activeTab === "ldn" && ["tex", "moisture", "dep", "village", "priority", "vegetation", "soil_type", "lab_number", "organic_carbon"].includes(col)) return null;
                     if (activeTab === "soil" && ["landus", "sev", "village", "priority", "vegetation", "soil_type"].includes(col)) return null;
-                    if (activeTab === "drylands" && ["landus", "sev", "tex", "moisture", "dep"].includes(col)) return null;
+                    if (activeTab === "drylands" && ["landus", "sev", "tex", "moisture", "dep", "lab_number", "organic_carbon"].includes(col)) return null;
                     
                     const label = col === "idx" ? "Index Row"
                       : col === "submission_time" ? "Submission Date" 
@@ -1207,6 +1209,8 @@ export default function DatabaseExplorer() {
                       : col === "priority" ? "Priority Level"
                       : col === "vegetation" ? "Vegetation Condition"
                       : col === "soil_type" ? "Dominant Soil Type"
+                      : col === "lab_number" ? "Lab Number"
+                      : col === "organic_carbon" ? "Organic Carbon (%)"
                       : col.charAt(0).toUpperCase() + col.slice(1);
                       
                     return (
@@ -1356,6 +1360,17 @@ export default function DatabaseExplorer() {
                             </div>
                           </th>
                         )}
+                        {visibleColumns.lab_number && <th style={{ padding: "6px 8px", color: "var(--text-muted)", fontWeight: 700 }}>Lab Number</th>}
+                        {visibleColumns.organic_carbon && (
+                          <th 
+                            onClick={() => handleSort("organic_carbon")}
+                            style={{ padding: "6px 8px", color: "var(--text-muted)", fontWeight: 700, cursor: "pointer" }}
+                          >
+                            <div style={{ display: "flex", alignItems: "center", gap: "3px" }}>
+                              Organic Carbon (%) <ArrowUpDown size={11} />
+                            </div>
+                          </th>
+                        )}
                       </>
                     ) : (
                       <>
@@ -1384,7 +1399,7 @@ export default function DatabaseExplorer() {
                 <tbody>
                   {paginatedRecords.length === 0 ? (
                     <tr>
-                      <td colSpan={ activeTab === "ldn" ? 11 : (activeTab === "soil" ? 12 : 13) } style={{ padding: "20px", textAlign: "center", color: "var(--text-muted)" }}>
+                      <td colSpan={ activeTab === "ldn" ? 11 : (activeTab === "soil" ? 14 : 13) } style={{ padding: "20px", textAlign: "center", color: "var(--text-muted)" }}>
                         No records match the active query. Try modifying your search or dropdown filters.
                       </td>
                     </tr>
@@ -1457,6 +1472,12 @@ export default function DatabaseExplorer() {
                               {visibleColumns.tex && <td style={{ padding: "6px 8px", fontWeight: 600 }}>{r.tex || r["sampl/tex"] || r.texture || r._mapped_tex || "—"}</td>}
                               {visibleColumns.moisture && <td style={{ padding: "6px 8px" }}>{getSeverityOrMoistureBadge(r)}</td>}
                               {visibleColumns.dep && <td style={{ padding: "6px 8px", fontWeight: 700, color: "var(--accent-amber)" }}>{r.dep || r["sampl/dep"] || r.depth || r.Depth || "—"}</td>}
+                              {visibleColumns.lab_number && <td style={{ padding: "6px 8px" }}>{r.lab_number || "—"}</td>}
+                              {visibleColumns.organic_carbon && (
+                                <td style={{ padding: "6px 8px", fontWeight: 700, color: "var(--accent-green)" }}>
+                                  {r.organic_carbon !== undefined && r.organic_carbon !== null ? `${r.organic_carbon}%` : "—"}
+                                </td>
+                              )}
                             </>
                           ) : (
                             <>
