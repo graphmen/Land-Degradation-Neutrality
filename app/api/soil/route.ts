@@ -8,6 +8,7 @@ const soilDataPath = path.join(process.cwd(), "public", "soil-data.json");
 export const dynamic = "force-dynamic";
 
 const KOBO_URL = "https://kc.kobotoolbox.org/api/v1/data";
+const KOBO_V2_URL = "https://kf.kobotoolbox.org/api/v2";
 const KOBO_USER = process.env.KOBO_USERNAME || "vegris2020";
 const KOBO_PASS = process.env.KOBO_PASSWORD || "musasa2020";
 const AUTH = Buffer.from(`${KOBO_USER}:${KOBO_PASS}`).toString("base64");
@@ -102,52 +103,50 @@ async function fetchSoilRawRecords(): Promise<{ records: any[]; source: string }
     }
   }
 
-  // 2. Direct Kobo API Fetch Fallback
+  // 2. Direct Kobo API Fetch Fallback (Consolidating both new and legacy forms using Kobo v2 API)
   if (!backendFetched) {
     try {
-      console.log("Fetching forms list directly from Kobo...");
-      const formsRes = await fetchWithTimeout(KOBO_URL, {
-        headers: { Authorization: `Basic ${AUTH}` },
-        cache: "no-store",
-        timeout: 4000,
-      });
+      const assetIds = ["am3UGrEY8tYcnrMp3Xddys", "ahkCvpctsofMKN4GzCH3BT"];
+      console.log("Fetching soil records directly from Kobo v2 API...");
       
-      if (!formsRes.ok) {
-        throw new Error(`KoboToolbox Error fetching forms: ${formsRes.status}`);
+      const koboRecords: any[] = [];
+      for (const assetId of assetIds) {
+        try {
+          const url = `${KOBO_V2_URL}/assets/${assetId}/data/?format=json&limit=5000`;
+          const dataRes = await fetchWithTimeout(url, {
+            headers: { Authorization: `Basic ${AUTH}` },
+            cache: "no-store",
+            timeout: 6000,
+          });
+          if (dataRes.ok) {
+            const json = await dataRes.json();
+            const rawRecords = json.results || [];
+            console.log(`Successfully fetched ${rawRecords.length} records for form ${assetId}`);
+            koboRecords.push(...rawRecords);
+          } else {
+            console.warn(`Kobo v2 fetch for form ${assetId} failed with status ${dataRes.status}`);
+          }
+        } catch (err: any) {
+          console.warn(`Kobo v2 fetch for form ${assetId} failed: ${err.message}`);
+        }
       }
       
-      const forms = await formsRes.json();
-      const matchingForms = forms.filter((f: any) => 
-        (f.title && f.title.toLowerCase().includes("soil")) ||
-        (f.id_string && f.id_string.toLowerCase().includes("soil"))
-      );
-
-      if (matchingForms.length === 0) {
-        throw new Error("Could not find any form with 'soil'.");
+      if (koboRecords.length > 0) {
+        // Deduplicate and normalise
+        const seenIds = new Set();
+        records = [];
+        for (const r of koboRecords) {
+          const rid = String(r._id || r.id || "");
+          if (rid) {
+            if (seenIds.has(rid)) continue;
+            seenIds.add(rid);
+          }
+          records.push(normalise(r));
+        }
+        source = "kobotoolbox";
+      } else {
+        throw new Error("No records could be retrieved from Kobo v2 API.");
       }
-
-      matchingForms.sort((a: any, b: any) => {
-        const aExact = a.title.toLowerCase() === "soil samples form" ? 1 : 0;
-        const bExact = b.title.toLowerCase() === "soil samples form" ? 1 : 0;
-        return bExact - aExact;
-      });
-
-      const targetForm = matchingForms[0];
-      console.log(`Fetching form data from Kobo for form: ${targetForm.title}`);
-      const dataRes = await fetchWithTimeout(targetForm.url, {
-        headers: { Authorization: `Basic ${AUTH}` },
-        cache: "no-store",
-        timeout: 6000,
-      });
-
-      if (!dataRes.ok) {
-        throw new Error(`KoboToolbox Error fetching data: ${dataRes.status}`);
-      }
-
-      const json = await dataRes.json();
-      const rawRecords = Array.isArray(json) ? json : (json.results || []);
-      records = rawRecords.map(normalise);
-      source = "kobotoolbox";
     } catch (e: any) {
       console.warn(`Direct Kobo fetch failed: ${e.message}. Falling back to local data file.`);
       const fallback = await loadLocalFallback();

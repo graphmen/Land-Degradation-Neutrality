@@ -33,7 +33,7 @@ GOOGLE_SHEET_SCRIPT_URL = os.getenv("GOOGLE_SHEET_SCRIPT_URL")
 
 FORMS = {
     "ldn": "apM5C5mTP34m2m3DSwdd4E",
-    "soil": "ahkCvpctsofMKN4GzCH3BT"
+    "soil": "am3UGrEY8tYcnrMp3Xddys"
 }
 
 auth = base64.b64encode(f"{USERNAME}:{PASSWORD}".encode()).decode()
@@ -56,35 +56,43 @@ def download_sheet_data():
         print(f"Warning: Could not fetch Google Sheets data: {e}")
         return {"ldn": [], "soil": []}
 
-def download_form_data(name, asset_id, sheet_records):
+def download_form_data(name, asset_ids, sheet_records):
+    if isinstance(asset_ids, str):
+        asset_ids = [asset_ids]
+        
     records = []
-    url = f"{KOBO_URL}/assets/{asset_id}/data/?format=json&limit=5000"
-    page = 0
-    print(f"Downloading {name} ({asset_id}) from Kobo...")
     
-    try:
-        while url:
-            page += 1
-            print(f"  Fetching page {page}...")
-            req = urllib.request.Request(url, headers=headers)
-            with urllib.request.urlopen(req, timeout=60) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
-                batch = data.get("results", [])
-                records.extend(batch)
-                url = data.get("next")
-                print(f"  Got {len(batch)} Kobo records (total: {len(records)})")
-    except Exception as e:
-        print(f"Error downloading Kobo form {name}: {e}")
+    for asset_id in asset_ids:
+        url = f"{KOBO_URL}/assets/{asset_id}/data/?format=json&limit=5000"
+        page = 0
+        print(f"Downloading {name} ({asset_id}) from Kobo...")
+        
+        try:
+            while url:
+                page += 1
+                print(f"  Fetching page {page} for asset {asset_id}...")
+                req = urllib.request.Request(url, headers=headers)
+                with urllib.request.urlopen(req, timeout=60) as resp:
+                    data = json.loads(resp.read().decode("utf-8"))
+                    batch = data.get("results", [])
+                    records.extend(batch)
+                    url = data.get("next")
+                    print(f"  Got {len(batch)} Kobo records (total: {len(records)})")
+        except Exception as e:
+            print(f"Error downloading Kobo form {name} ({asset_id}): {e}")
         
     print(f"Merging Google Sheets records for {name} ({len(sheet_records)} records)...")
     seen_ids = set()
     combined = []
     
-    # Process Kobo records
+    # Process Kobo records (with deduplication)
     for r in records:
         rid = r.get("_id") or r.get("id")
         if rid:
-            seen_ids.add(str(rid))
+            rid_str = str(rid)
+            if rid_str in seen_ids:
+                continue
+            seen_ids.add(rid_str)
         combined.append(r)
         
     # Process Sheet records
@@ -109,4 +117,4 @@ sheet_data = download_sheet_data()
 
 # Download and merge both
 download_form_data("ldn", FORMS["ldn"], sheet_data.get("ldn", []))
-download_form_data("soil", FORMS["soil"], sheet_data.get("soil", []))
+download_form_data("soil", [FORMS["soil"], "ahkCvpctsofMKN4GzCH3BT"], sheet_data.get("soil", []))

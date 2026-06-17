@@ -8,6 +8,7 @@ const ldnDataPath = path.join(process.cwd(), "public", "ldn-data.json");
 export const dynamic = "force-dynamic";
 
 const KOBO_URL = "https://kc.kobotoolbox.org/api/v1/data";
+const KOBO_V2_URL = "https://kf.kobotoolbox.org/api/v2";
 const KOBO_USER = process.env.KOBO_USERNAME || "vegris2020";
 const KOBO_PASS = process.env.KOBO_PASSWORD || "musasa2020";
 const AUTH = Buffer.from(`${KOBO_USER}:${KOBO_PASS}`).toString("base64");
@@ -105,40 +106,21 @@ async function fetchLdnRawRecords(): Promise<{ records: any[]; source: string }>
   // 2. Direct Kobo API Fetch Fallback (if backend fetch was skipped or failed)
   if (!backendFetched) {
     try {
-      console.log("Fetching forms list directly from Kobo...");
-      const formsRes = await fetchWithTimeout(KOBO_URL, {
-        headers: { Authorization: `Basic ${AUTH}` },
-        cache: "no-store",
-        timeout: 4000,
-      });
-      
-      if (!formsRes.ok) {
-        throw new Error(`KoboToolbox Error fetching forms: ${formsRes.status}`);
-      }
-      
-      const forms = await formsRes.json();
-      const targetForm = forms.find((f: any) => 
-        (f.title && f.title.toLowerCase().includes("ldn validation form")) ||
-        (f.id_string && f.id_string.toLowerCase().includes("ldn"))
-      );
-
-      if (!targetForm) {
-        throw new Error("Could not find LDN validation form.");
-      }
-
-      console.log(`Fetching form data from Kobo for form: ${targetForm.title}`);
-      const dataRes = await fetchWithTimeout(targetForm.url, {
+      const assetId = "apM5C5mTP34m2m3DSwdd4E";
+      console.log(`Fetching LDN records directly from Kobo v2 API for form ${assetId}...`);
+      const url = `${KOBO_V2_URL}/assets/${assetId}/data/?format=json&limit=5000`;
+      const dataRes = await fetchWithTimeout(url, {
         headers: { Authorization: `Basic ${AUTH}` },
         cache: "no-store",
         timeout: 6000,
       });
 
       if (!dataRes.ok) {
-        throw new Error(`KoboToolbox Error fetching data: ${dataRes.status}`);
+        throw new Error(`KoboToolbox v2 Error fetching data: ${dataRes.status}`);
       }
 
       const json = await dataRes.json();
-      const rawRecords = Array.isArray(json) ? json : (json.results || []);
+      const rawRecords = json.results || [];
       records = rawRecords.map(normalise);
       source = "kobotoolbox";
     } catch (e: any) {
