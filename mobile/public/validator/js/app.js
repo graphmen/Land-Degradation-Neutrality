@@ -2334,13 +2334,13 @@ const App = {
     let sizeEstimate = 0;
 
     if (radius === 100) {
-      tileEstimate = this.state.targetsList.length * 8; // approx 8 tiles per point across zoom 14-18
+      tileEstimate = this.state.targetsList.length * 12; // approx 12 tiles per point across zoom 10-18
       sizeEstimate = (tileEstimate * 20) / 1024;
     } else if (radius === 250) {
-      tileEstimate = this.state.targetsList.length * 28;
+      tileEstimate = this.state.targetsList.length * 32;
       sizeEstimate = (tileEstimate * 20) / 1024;
     } else {
-      tileEstimate = this.state.targetsList.length * 75;
+      tileEstimate = this.state.targetsList.length * 79;
       sizeEstimate = (tileEstimate * 20) / 1024;
     }
 

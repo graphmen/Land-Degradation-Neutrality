@@ -71,23 +71,46 @@ if (typeof L !== 'undefined' && L.TileLayer) {
     L.DomEvent.on(tile, 'load',  L.Util.bind(this._tileOnLoad,  this, done, tile));
     L.DomEvent.on(tile, 'error', L.Util.bind(this._tileOnError, this, done, tile));
 
-    const tileUrl  = this.getTileUrl(coords);
-    const cacheKey = `${coords.z}/${coords.x}/${coords.y}`;
+    const tileUrl = this.getTileUrl(coords);
+    
+    // Determine provider dynamically from the layer's URL template
+    const urlTemplate = this._url || '';
+    let provider = null;
+    if (urlTemplate.includes('google') || urlTemplate.includes('lyrs=')) {
+      provider = 'googleHybrid';
+    } else if (urlTemplate.includes('arcgisonline') || urlTemplate.includes('World_Imagery')) {
+      provider = 'satellite';
+    } else if (urlTemplate.includes('tile.openstreetmap.org')) {
+      provider = 'osm';
+    }
 
-    TileDB.get(cacheKey).then(blob => {
-      if (blob && blob.size > 0) {
-        const reader = new FileReader();
-        reader.onloadend = function() {
-          tile.src = reader.result;
-        };
-        reader.onerror = function() {
+    if (provider) {
+      const cacheKey = `${provider}/${coords.z}/${coords.x}/${coords.y}`;
+      const legacyKey = `${coords.z}/${coords.x}/${coords.y}`;
+
+      TileDB.get(cacheKey).then(blob => {
+        if (!blob && provider === 'googleHybrid') {
+          // Fallback to legacy un-prefixed key for backwards compatibility
+          return TileDB.get(legacyKey);
+        }
+        return blob;
+      }).then(blob => {
+        if (blob && blob.size > 0) {
+          const reader = new FileReader();
+          reader.onloadend = function() {
+            tile.src = reader.result;
+          };
+          reader.onerror = function() {
+            tile.src = tileUrl;
+          };
+          reader.readAsDataURL(blob);
+        } else {
           tile.src = tileUrl;
-        };
-        reader.readAsDataURL(blob);
-      } else {
-        tile.src = tileUrl;
-      }
-    }).catch(() => { tile.src = tileUrl; });
+        }
+      }).catch(() => { tile.src = tileUrl; });
+    } else {
+      tile.src = tileUrl;
+    }
 
     return tile;
   };
@@ -160,11 +183,19 @@ const OfflineManager = {
     const template = this.tileServers[provider];
 
     features.forEach(feature => {
-      let coords = [];
-      if (feature.geometry.type === 'Point') {
-        coords = feature.geometry.coordinates;
-      } else if (feature.geometry.type === 'MultiPolygon') {
-        coords = [feature.properties.location_x, feature.properties.location_y];
+      let coords = null;
+      
+      // Parse coordinates robustly for Point, Polygon, and MultiPolygon geometry types
+      if (feature.properties && feature.properties.location_x !== undefined && feature.properties.location_y !== undefined) {
+        coords = [Number(feature.properties.location_x), Number(feature.properties.location_y)];
+      } else if (feature.geometry) {
+        if (feature.geometry.type === 'Point') {
+          coords = feature.geometry.coordinates;
+        } else if (feature.geometry.type === 'Polygon' && feature.geometry.coordinates[0] && feature.geometry.coordinates[0][0]) {
+          coords = feature.geometry.coordinates[0][0]; // First coordinate of exterior ring
+        } else if (feature.geometry.type === 'MultiPolygon' && feature.geometry.coordinates[0] && feature.geometry.coordinates[0][0] && feature.geometry.coordinates[0][0][0]) {
+          coords = feature.geometry.coordinates[0][0][0]; // First coordinate of first polygon
+        }
       }
 
       if (coords && coords.length >= 2) {
@@ -177,8 +208,8 @@ const OfflineManager = {
               .replace('{z}', tile.z)
               .replace('{x}', tile.x)
               .replace('{y}', tile.y);
-            // KEY FORMAT: must match createTile intercept exactly — plain z/x/y
-            const cacheKey = `${tile.z}/${tile.x}/${tile.y}`;
+            // KEY FORMAT: prefix with provider name to avoid clashing map layers
+            const cacheKey = `${provider}/${tile.z}/${tile.x}/${tile.y}`;
             urls.push({ key, url: tileUrl, cacheKey });
           }
         });
@@ -197,8 +228,8 @@ const OfflineManager = {
     this.downloadedCount = 0;
     this.failedCount = 0;
 
-    // We cache high resolution zoom levels 14 to 18
-    const zoomLevels = [14, 15, 16, 17, 18];
+    // Cache zoom levels 10 to 18 so map is fully visible at all zooms when offline
+    const zoomLevels = [10, 11, 12, 13, 14, 15, 16, 17, 18];
     const tileList = this.generateTileUrls(features, provider, radiusMeters, zoomLevels);
     
     this.totalToDownload = tileList.length;
