@@ -488,8 +488,11 @@ const App = {
       }
     }).addTo(this.state.markersGroup);
 
-    // Fit map bounds to polygons
-    if (this.state.polygonsGroup.getLayers().length > 0) {
+    // Fit map bounds to polygons — ONLY when the user is not actively navigating.
+    // During navigation the user manually zooms in to their box; calling fitBounds
+    // would snap back out to show all points, which is very disruptive.
+    const isNavigating = this.state.navigationMode && this.state.navigationMode !== 'IDLE';
+    if (!isNavigating && this.state.polygonsGroup.getLayers().length > 0) {
       this.state.map.fitBounds(this.state.polygonsGroup.getBounds());
     }
 
@@ -605,8 +608,9 @@ const App = {
     this.updateOfflineStats();
     this.updateExerciseDropdown();
 
-    // Fit map bounds to new polygons if there are any
-    if (this.state.polygonsGroup && this.state.polygonsGroup.getLayers().length > 0) {
+    // Fit map bounds to new polygons only when not in active navigation
+    const isNav = this.state.navigationMode && this.state.navigationMode !== 'IDLE';
+    if (!isNav && this.state.polygonsGroup && this.state.polygonsGroup.getLayers().length > 0) {
       this.state.map.fitBounds(this.state.polygonsGroup.getBounds());
     }
 
@@ -1909,159 +1913,218 @@ const App = {
     if (this.state.map) {
       const userLatLng = L.latLng(uLat, uLng);
       const targetLatLng = L.latLng(targetLat, targetLng);
-      
-      // Lazy load roads when navigation starts if not ready
-      if (typeof RoadRouter !== 'undefined' && !RoadRouter.isReady && typeof OfflineManager !== 'undefined' && !OfflineManager.isLoadingRoads) {
-        OfflineManager.isLoadingRoads = true;
-        OfflineManager.loadCachedRoads().then(() => {
-          OfflineManager.isLoadingRoads = false;
-          // Trigger updates once loaded to compute road-based route
-          this.updateNavigationMetrics();
-        });
-      }
 
-      let route = null;
-      if (typeof RoadRouter !== 'undefined' && RoadRouter.isReady) {
-        const targetChanged = !this.state.routeTargetCoords || 
-                              this.state.routeTargetCoords[0] !== targetLat || 
-                              this.state.routeTargetCoords[1] !== targetLng;
+      // ─────────────────────────────────────────────────────────────────────
+      // NAVIGATION MODE DECISION
+      //
+      // > 2 km  →  ROAD MODE  (A* routing, prefer big roads via farMode=true)
+      // ≤ 2 km  →  DIRECT MODE (straight line, actual crow-fly distance)
+      //            Avoids the "route sticking to road" problem in the final
+      //            approach when you leave the track to reach the sample point.
+      // ─────────────────────────────────────────────────────────────────────
+      const DIRECT_THRESHOLD_M = 800; // 800 m switch-over distance (direct approach)
+      const useDirectMode = distance <= DIRECT_THRESHOLD_M;
 
-        if (targetChanged) {
-          this.state.currentRoute = null;
-        }
-
-        if (this.state.currentRoute) {
-          // Find closest point on existing route path to project the user's position
-          let closestIdx = 0;
-          let minUserToRouteDist = Infinity;
-          const routePath = this.state.currentRoute.path;
-
-          for (let i = 0; i < routePath.length; i++) {
-            const pt = routePath[i];
-            const d = NavigationEngine.calculateDistance(uLat, uLng, pt.lat, pt.lng);
-            if (d < minUserToRouteDist) {
-              minUserToRouteDist = d;
-              closestIdx = i;
-            }
-          }
-
-          // If the user is within 150m of the active route, reuse it to avoid heavy A* runs
-          if (minUserToRouteDist <= 150) {
-            route = {
-              path: routePath,
-              closestIdx: closestIdx,
-              startNodeCoords: [routePath[closestIdx].lat, routePath[closestIdx].lng],
-              endNodeCoords: this.state.currentRoute.endNodeCoords,
-              isCached: true
-            };
-          }
-        }
-
-        // If no cached route (or user went off-route), compute a new A* route
-        if (!route) {
-          const newRoute = RoadRouter.findRoute(uLat, uLng, targetLat, targetLng);
-          if (newRoute) {
-            this.state.currentRoute = newRoute;
-            this.state.routeTargetCoords = [targetLat, targetLng];
-            route = {
-              ...newRoute,
-              closestIdx: 0,
-              isCached: false
-            };
-          }
-        }
-      }
-
-      if (route && route.path && route.path.length >= 2) {
-        const snappedRoadLatLng = route.path[route.closestIdx];
-        const roadEndLatLng = L.latLng(route.endNodeCoords[0], route.endNodeCoords[1]);
-        const remainingPath = route.path.slice(route.closestIdx);
-
-        // 1. Draw solid road path line
-        if (remainingPath.length >= 2) {
-          if (this.state.navigationLine) {
-            this.state.navigationLine.setLatLngs(remainingPath);
-            this.state.navigationLine.setStyle({ dashArray: '' }); // Solid
-            this.state.navigationLine.addTo(this.state.map);
-          } else {
-            this.state.navigationLine = L.polyline(remainingPath, {
-              color: '#38bdf8', // Glowing cyan solid path line
-              weight: 4,
-              opacity: 0.95,
-              className: 'nav-path-line'
-            }).addTo(this.state.map);
-          }
+      // Update the navigation mode badge in the overlay
+      const navModeLbl = document.getElementById('navModeLabel');
+      if (navModeLbl) {
+        if (useDirectMode) {
+          navModeLbl.style.background = 'rgba(34,197,94,0.18)';
+          navModeLbl.style.color = '#22c55e';
+          navModeLbl.style.borderColor = 'rgba(34,197,94,0.35)';
+          navModeLbl.textContent = '🎯 DIRECT APPROACH';
         } else {
-          if (this.state.navigationLine) this.state.navigationLine.remove();
-          this.state.navigationLine = null;
+          navModeLbl.style.background = 'rgba(56,189,248,0.18)';
+          navModeLbl.style.color = '#38bdf8';
+          navModeLbl.style.borderColor = 'rgba(56,189,248,0.3)';
+          navModeLbl.textContent = '🛣 ROAD ROUTING';
         }
+      }
 
-        // 2. Draw user-to-road connection dashed line
+      if (useDirectMode) {
+        // ── DIRECT / FINAL-APPROACH MODE ────────────────────────────────────
+        // Clear any existing road-routing polylines so they don't clutter the map
         if (this.state.navigationConnStart) {
-          this.state.navigationConnStart.setLatLngs([userLatLng, snappedRoadLatLng]);
-          this.state.navigationConnStart.addTo(this.state.map);
-        } else {
-          this.state.navigationConnStart = L.polyline([userLatLng, snappedRoadLatLng], {
-            color: '#a855f7', // Glowing purple connection line
-            weight: 3,
-            dashArray: '5, 5',
-            opacity: 0.8,
-            className: 'nav-conn-line'
-          }).addTo(this.state.map);
+          this.state.navigationConnStart.remove();
+          this.state.navigationConnStart = null;
         }
-
-        // 3. Draw road-to-target connection dashed line
         if (this.state.navigationConnEnd) {
-          this.state.navigationConnEnd.setLatLngs([roadEndLatLng, targetLatLng]);
-          this.state.navigationConnEnd.addTo(this.state.map);
-        } else {
-          this.state.navigationConnEnd = L.polyline([roadEndLatLng, targetLatLng], {
-            color: '#a855f7', // Glowing purple connection line
-            weight: 3,
-            dashArray: '5, 5',
-            opacity: 0.8,
-            className: 'nav-conn-line'
-          }).addTo(this.state.map);
+          this.state.navigationConnEnd.remove();
+          this.state.navigationConnEnd = null;
         }
+        // Also invalidate cached road route so it gets recomputed when we go back to road mode
+        this.state.currentRoute = null;
 
-        // Calculate total distance: snapped start offset + remaining road + end offset
-        let remainingRoadDistance = 0;
-        if (route.isCached) {
-          for (let i = route.closestIdx; i < route.path.length - 1; i++) {
-            remainingRoadDistance += NavigationEngine.calculateDistance(
-              route.path[i].lat, route.path[i].lng,
-              route.path[i+1].lat, route.path[i+1].lng
-            );
-          }
-        } else {
-          remainingRoadDistance = route.roadDistance;
-        }
-
-        const connStartDist = NavigationEngine.calculateDistance(uLat, uLng, snappedRoadLatLng.lat, snappedRoadLatLng.lng);
-        const connEndDist = NavigationEngine.calculateDistance(roadEndLatLng.lat, roadEndLatLng.lng, targetLat, targetLng);
-        distance = remainingRoadDistance + connStartDist + connEndDist;
-
-      } else {
-        // Fallback: draw straight dashed line
+        // Draw (or update) a solid direct line from user → target
+        const directColor = '#22c55e'; // Bright green for final approach
         if (this.state.navigationLine) {
           this.state.navigationLine.setLatLngs([userLatLng, targetLatLng]);
-          this.state.navigationLine.setStyle({ dashArray: '8, 8' }); // Dashed
+          this.state.navigationLine.setStyle({ color: directColor, dashArray: '', weight: 4 });
           this.state.navigationLine.addTo(this.state.map);
         } else {
           this.state.navigationLine = L.polyline([userLatLng, targetLatLng], {
-            color: '#38bdf8', // Glowing cyan vector path line
+            color: directColor,
             weight: 4,
-            dashArray: '8, 8',
-            opacity: 0.9,
-            className: 'nav-path-line'
+            opacity: 0.95,
+            className: 'nav-path-line nav-direct-line'
           }).addTo(this.state.map);
         }
 
-        // Remove connection lines if they exist
-        if (this.state.navigationConnStart) this.state.navigationConnStart.remove();
-        if (this.state.navigationConnEnd) this.state.navigationConnEnd.remove();
-        this.state.navigationConnStart = null;
-        this.state.navigationConnEnd = null;
+        // Distance is already the true Haversine distance – no adjustment needed
+
+      } else {
+        // ── ROAD ROUTING MODE  (user is > 2 km from destination) ────────────
+        // farMode=true tells A* to penalise minor roads so it prefers big roads
+        const farMode = true;
+
+        // Lazy load roads when navigation starts if not ready
+        if (typeof RoadRouter !== 'undefined' && !RoadRouter.isReady && typeof OfflineManager !== 'undefined' && !OfflineManager.isLoadingRoads) {
+          OfflineManager.isLoadingRoads = true;
+          OfflineManager.loadCachedRoads().then(() => {
+            OfflineManager.isLoadingRoads = false;
+            this.updateNavigationMetrics();
+          });
+        }
+
+        let route = null;
+        if (typeof RoadRouter !== 'undefined' && RoadRouter.isReady) {
+          const targetChanged = !this.state.routeTargetCoords ||
+                                this.state.routeTargetCoords[0] !== targetLat ||
+                                this.state.routeTargetCoords[1] !== targetLng;
+
+          if (targetChanged) {
+            this.state.currentRoute = null;
+          }
+
+          if (this.state.currentRoute) {
+            // Find closest point on existing route path to project the user's position
+            let closestIdx = 0;
+            let minUserToRouteDist = Infinity;
+            const routePath = this.state.currentRoute.path;
+
+            for (let i = 0; i < routePath.length; i++) {
+              const pt = routePath[i];
+              const d = NavigationEngine.calculateDistance(uLat, uLng, pt.lat, pt.lng);
+              if (d < minUserToRouteDist) {
+                minUserToRouteDist = d;
+                closestIdx = i;
+              }
+            }
+
+            // If the user is within 150m of the active route, reuse it
+            if (minUserToRouteDist <= 150) {
+              route = {
+                path: routePath,
+                closestIdx: closestIdx,
+                startNodeCoords: [routePath[closestIdx].lat, routePath[closestIdx].lng],
+                endNodeCoords: this.state.currentRoute.endNodeCoords,
+                isCached: true
+              };
+            }
+          }
+
+          // If no cached route (or user went off-route), compute a new A* route
+          if (!route) {
+            // Pass farMode so A* prefers motorways/trunks/primary roads
+            const newRoute = RoadRouter.findRoute(uLat, uLng, targetLat, targetLng, farMode);
+            if (newRoute) {
+              this.state.currentRoute = newRoute;
+              this.state.routeTargetCoords = [targetLat, targetLng];
+              route = { ...newRoute, closestIdx: 0, isCached: false };
+            }
+          }
+        }
+
+        if (route && route.path && route.path.length >= 2) {
+          const snappedRoadLatLng = route.path[route.closestIdx];
+          const roadEndLatLng = L.latLng(route.endNodeCoords[0], route.endNodeCoords[1]);
+          const remainingPath = route.path.slice(route.closestIdx);
+
+          // 1. Draw solid road path line (cyan = road-following mode)
+          if (remainingPath.length >= 2) {
+            if (this.state.navigationLine) {
+              this.state.navigationLine.setLatLngs(remainingPath);
+              this.state.navigationLine.setStyle({ color: '#38bdf8', dashArray: '', weight: 4 });
+              this.state.navigationLine.addTo(this.state.map);
+            } else {
+              this.state.navigationLine = L.polyline(remainingPath, {
+                color: '#38bdf8', // Cyan — road-following route
+                weight: 4,
+                opacity: 0.95,
+                className: 'nav-path-line'
+              }).addTo(this.state.map);
+            }
+          } else {
+            if (this.state.navigationLine) this.state.navigationLine.remove();
+            this.state.navigationLine = null;
+          }
+
+          // 2. User → nearest road node (purple dashed connection)
+          if (this.state.navigationConnStart) {
+            this.state.navigationConnStart.setLatLngs([userLatLng, snappedRoadLatLng]);
+            this.state.navigationConnStart.addTo(this.state.map);
+          } else {
+            this.state.navigationConnStart = L.polyline([userLatLng, snappedRoadLatLng], {
+              color: '#a855f7',
+              weight: 3,
+              dashArray: '5, 5',
+              opacity: 0.8,
+              className: 'nav-conn-line'
+            }).addTo(this.state.map);
+          }
+
+          // 3. Road end node → target (purple dashed connection)
+          if (this.state.navigationConnEnd) {
+            this.state.navigationConnEnd.setLatLngs([roadEndLatLng, targetLatLng]);
+            this.state.navigationConnEnd.addTo(this.state.map);
+          } else {
+            this.state.navigationConnEnd = L.polyline([roadEndLatLng, targetLatLng], {
+              color: '#a855f7',
+              weight: 3,
+              dashArray: '5, 5',
+              opacity: 0.8,
+              className: 'nav-conn-line'
+            }).addTo(this.state.map);
+          }
+
+          // Recalculate distance via road
+          let remainingRoadDistance = 0;
+          if (route.isCached) {
+            for (let i = route.closestIdx; i < route.path.length - 1; i++) {
+              remainingRoadDistance += NavigationEngine.calculateDistance(
+                route.path[i].lat, route.path[i].lng,
+                route.path[i+1].lat, route.path[i+1].lng
+              );
+            }
+          } else {
+            remainingRoadDistance = route.roadDistance;
+          }
+
+          const connStartDist = NavigationEngine.calculateDistance(uLat, uLng, snappedRoadLatLng.lat, snappedRoadLatLng.lng);
+          const connEndDist = NavigationEngine.calculateDistance(roadEndLatLng.lat, roadEndLatLng.lng, targetLat, targetLng);
+          distance = remainingRoadDistance + connStartDist + connEndDist;
+
+        } else {
+          // No road route found — fall back to dashed straight line
+          if (this.state.navigationLine) {
+            this.state.navigationLine.setLatLngs([userLatLng, targetLatLng]);
+            this.state.navigationLine.setStyle({ color: '#38bdf8', dashArray: '8, 8', weight: 4 });
+            this.state.navigationLine.addTo(this.state.map);
+          } else {
+            this.state.navigationLine = L.polyline([userLatLng, targetLatLng], {
+              color: '#38bdf8',
+              weight: 4,
+              dashArray: '8, 8',
+              opacity: 0.9,
+              className: 'nav-path-line'
+            }).addTo(this.state.map);
+          }
+
+          if (this.state.navigationConnStart) this.state.navigationConnStart.remove();
+          if (this.state.navigationConnEnd) this.state.navigationConnEnd.remove();
+          this.state.navigationConnStart = null;
+          this.state.navigationConnEnd = null;
+        }
       }
     }
 
