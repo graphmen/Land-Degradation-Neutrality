@@ -592,6 +592,22 @@
         <span class="badge" id="navTargetBadge">CENTROID NAVIGATION</span>
         <h2 id="navTargetId">Point #11650_16620</h2>
       </div>
+      <!-- Voice mute toggle -->
+      <button id="navVoiceBtn" title="Toggle voice guidance"
+        style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:8px;padding:6px 10px;color:#c0ff00;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:5px;">
+        <i class="fa-solid fa-volume-high" id="navVoiceIcon"></i>
+      </button>
+    </div>
+
+    <!-- Turn-by-turn banner (hidden until a turn is upcoming) -->
+    <div id="turnBanner" class="turn-banner hidden">
+      <div class="turn-arrow-box" id="turnArrowBox">
+        <i class="fa-solid fa-arrow-up" id="turnArrowIcon"></i>
+      </div>
+      <div class="turn-text-box">
+        <div class="turn-in" id="turnInLabel">In 500 m</div>
+        <div class="turn-direction" id="turnDirectionLabel">Turn Left</div>
+      </div>
     </div>
 
     <div class="nav-guidance-container">
@@ -601,6 +617,8 @@
         <span class="value" id="navDistance">--</span>
         <span class="unit" id="navDistanceUnit">meters</span>
         <span class="bearing-reading" id="navBearingText">Bearing: --° (N)</span>
+        <!-- Navigation mode indicator: Road Routing vs Direct Approach -->
+        <span id="navModeLabel" style="display:inline-block; margin-top:6px; padding:3px 10px; border-radius:20px; font-size:10px; font-weight:700; font-family:var(--font-mono); letter-spacing:0.04em; background:rgba(56,189,248,0.18); color:#38bdf8; border:1px solid rgba(56,189,248,0.3);">🛣 ROAD ROUTING</span>
       </div>
 
       <!-- Large Floating Compass -->

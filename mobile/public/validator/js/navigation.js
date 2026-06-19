@@ -268,11 +268,48 @@ class MinHeap {
 // RoadRouter - Offline Road Graph Builder & A* Route Finder
 // ==========================================================================
 const RoadRouter = {
-  graph: {}, // Map of key -> array of { to: key, dist: meters }
+  graph: {}, // Map of key -> array of { to: key, dist: meters, highway: string }
   coordsMap: {}, // Map of key -> [lng, lat]
   grid: {}, // Spatial grid index: Map of "gridX,gridY" -> Array of keys
   cellSize: 0.05, // Grid size in degrees (~5.5km)
   isReady: false,
+
+  // ==========================================================================
+  // Road Priority Weights
+  // Lower number = better road = preferred when far from destination.
+  // In "far mode" (>2 km away), minor roads get a cost multiplier so that
+  // A* strongly prefers motorways / trunk / primary / secondary roads.
+  // ==========================================================================
+  HIGHWAY_WEIGHTS: {
+    motorway:      1.0,  // Best – major highway
+    motorway_link: 1.0,
+    trunk:         1.0,  // Trunk road
+    trunk_link:    1.0,
+    primary:       1.1,  // Primary road
+    primary_link:  1.1,
+    secondary:     1.2,  // Secondary road
+    secondary_link:1.2,
+    tertiary:      1.5,  // Tertiary road (small)
+    tertiary_link: 1.5,
+    unclassified:  2.0,  // Unclassified
+    road:          2.0,
+    residential:   2.5,  // Residential street
+    living_street: 2.5,
+    service:       3.0,  // Service road
+    track:         3.5,  // Dirt track
+    path:          4.0,  // Footpath / cycle path
+    footway:       4.0,
+    bridleway:     4.0,
+    pedestrian:    4.0,
+    cycleway:      3.5,
+    unknown:       2.5
+  },
+
+  getHighwayWeight(highway, farMode) {
+    const w = this.HIGHWAY_WEIGHTS[highway] || this.HIGHWAY_WEIGHTS.unknown;
+    // In far mode apply the full penalty; within 2 km all weights collapse to 1
+    return farMode ? w : 1.0;
+  },
 
   buildGraph(geojson) {
     console.log("Building routing graph from preloaded roads...");
@@ -290,6 +327,9 @@ const RoadRouter = {
       const coords = feature.geometry.coordinates;
       if (!coords || coords.length < 2) return;
 
+      // Read highway type from feature properties (set by overpassToGeoJSON)
+      const highway = (feature.properties && feature.properties.highway) ? feature.properties.highway : 'unknown';
+
       for (let i = 0; i < coords.length - 1; i++) {
         const c1 = coords[i];
         const c2 = coords[i+1];
@@ -304,8 +344,9 @@ const RoadRouter = {
         if (!this.graph[key1]) this.graph[key1] = [];
         if (!this.graph[key2]) this.graph[key2] = [];
 
-        this.graph[key1].push({ to: key2, dist: dist });
-        this.graph[key2].push({ to: key1, dist: dist });
+        // Store highway type alongside the edge so A* can weight it
+        this.graph[key1].push({ to: key2, dist: dist, highway });
+        this.graph[key2].push({ to: key1, dist: dist, highway });
 
         this.coordsMap[key1] = c1;
         this.coordsMap[key2] = c2;
@@ -386,14 +427,16 @@ const RoadRouter = {
   },
 
   // High-performance A* routing algorithm
-  findRoute(startLat, startLng, endLat, endLng) {
+  // farMode: when true (user is >2 km from destination), minor roads are penalised
+  // so the router prefers main roads for the bulk of the journey.
+  findRoute(startLat, startLng, endLat, endLng, farMode = false) {
     if (!this.isReady || Object.keys(this.graph).length === 0) return null;
 
     // Find closest nodes in road graph to user and target
     const startNode = this.findClosestNode(startLat, startLng);
     const endNode = this.findClosestNode(endLat, endLng);
 
-    // If either point is too far from any road, we fail the route and fall back to straight line
+    // If either point is too far from any road, fall back to straight line
     if (!startNode || !endNode) {
       return null;
     }
@@ -431,7 +474,6 @@ const RoadRouter = {
       visited.add(currKey);
 
       const neighbors = this.graph[currKey] || [];
-      const currCoords = this.coordsMap[currKey];
 
       for (let i = 0; i < neighbors.length; i++) {
         const neighbor = neighbors[i];
@@ -439,13 +481,15 @@ const RoadRouter = {
 
         if (visited.has(neighborKey)) continue;
 
-        const tentativeGScore = gScore[currKey] + neighbor.dist;
+        // Apply road-class weight: in far mode, small roads cost more → A* avoids them
+        const roadWeight = this.getHighwayWeight(neighbor.highway || 'unknown', farMode);
+        const tentativeGScore = gScore[currKey] + neighbor.dist * roadWeight;
 
         if (gScore[neighborKey] === undefined || tentativeGScore < gScore[neighborKey]) {
           cameFrom[neighborKey] = currKey;
           gScore[neighborKey] = tentativeGScore;
-          
-          // Heuristic: Straight-line distance to end node
+
+          // Heuristic: straight-line distance to end node (admissible, never over-estimates)
           const nCoords = this.coordsMap[neighborKey];
           const h = NavigationEngine.calculateDistance(
             nCoords[1], nCoords[0],
@@ -477,5 +521,208 @@ const RoadRouter = {
       endNodeCoords: [endNode.coords[1], endNode.coords[0]],
       roadDistance: gScore[endKey]
     };
+  }
+};
+
+/* ==========================================================================
+   TurnGuide — Turn-by-Turn Voice & Visual Navigation
+   ==========================================================================
+   Uses the route path (array of L.latLng points) returned by RoadRouter to:
+     1. Detect the next significant turn (bearing change > 25°)
+     2. Show a visual turn banner with direction arrow + distance
+     3. Speak the instruction via Web Speech API at 500m / 200m / 50m
+     4. Support a mute toggle (persisted in localStorage)
+   ========================================================================== */
+const TurnGuide = {
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  muted: false,
+  _lastSpokenDist: null,   // distance at which we last spoke (prevents repeats)
+  _lastTurnIdx: -1,        // index of the detected upcoming turn in the path
+  _announcedThresholds: new Set(), // which distance thresholds already spoken
+
+  // ── Initialise: wire up the mute button ────────────────────────────────────
+  init() {
+    this.muted = localStorage.getItem('turnGuide_muted') === 'true';
+    this._updateMuteIcon();
+
+    const btn = document.getElementById('navVoiceBtn');
+    if (btn) {
+      btn.addEventListener('click', () => this.toggleMute());
+    }
+  },
+
+  toggleMute() {
+    this.muted = !this.muted;
+    localStorage.setItem('turnGuide_muted', this.muted);
+    this._updateMuteIcon();
+    // Give immediate feedback
+    if (!this.muted) this._speak('Voice guidance on');
+  },
+
+  _updateMuteIcon() {
+    const icon = document.getElementById('navVoiceIcon');
+    if (!icon) return;
+    icon.className = this.muted
+      ? 'fa-solid fa-volume-xmark'
+      : 'fa-solid fa-volume-high';
+    const btn = document.getElementById('navVoiceBtn');
+    if (btn) btn.style.opacity = this.muted ? '0.4' : '1';
+  },
+
+  // ── Voice via Web Speech API ───────────────────────────────────────────────
+  _speak(text) {
+    if (this.muted) return;
+    if (!window.speechSynthesis) return;
+    // Cancel any queued utterances so we don't pile up
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang   = 'en-US';
+    utt.rate   = 0.92;
+    utt.pitch  = 1.0;
+    utt.volume = 1.0;
+    window.speechSynthesis.speak(utt);
+  },
+
+  // ── Classify turn from bearing delta ──────────────────────────────────────
+  // Returns { type, icon, label, cssClass }
+  _classifyTurn(deltaDeg) {
+    // Normalize to -180 → +180
+    let d = ((deltaDeg + 540) % 360) - 180;
+    if (d > 150 || d < -150) return { type: 'uturn',    icon: 'fa-solid fa-rotate-left',        label: 'Make U-Turn',        cssClass: 'uturn' };
+    if (d >  45)              return { type: 'right',   icon: 'fa-solid fa-turn-right',          label: 'Turn Right',         cssClass: 'right' };
+    if (d < -45)              return { type: 'left',    icon: 'fa-solid fa-turn-left',           label: 'Turn Left',          cssClass: 'left'  };
+    if (d >  20)              return { type: 'slight-right', icon: 'fa-solid fa-arrow-trend-up', label: 'Keep Right',         cssClass: 'right' };
+    if (d < -20)              return { type: 'slight-left',  icon: 'fa-solid fa-arrow-trend-up', label: 'Keep Left',          cssClass: 'left'  };
+    return                           { type: 'straight', icon: 'fa-solid fa-arrow-up',           label: 'Continue Straight',  cssClass: '' };
+  },
+
+  // ── Find the next significant turn ahead in the route path ────────────────
+  // pathPoints: array of L.latLng, startIdx: current closest index on route
+  // Returns { turnPoint, distToTurn, info } or null
+  findNextTurn(pathPoints, startIdx, userLat, userLng) {
+    if (!pathPoints || pathPoints.length < 3) return null;
+
+    // Accumulate distance from user to each node to get distance to turn
+    let accumulated = NavigationEngine.calculateDistance(
+      userLat, userLng,
+      pathPoints[startIdx].lat, pathPoints[startIdx].lng
+    );
+
+    const MIN_TURN_ANGLE = 25; // degrees — smaller changes are noise
+    const LOOKAHEAD_M   = 3000; // don't report turns > 3km away
+
+    for (let i = Math.max(startIdx, 1); i < pathPoints.length - 1; i++) {
+      const prev = pathPoints[i - 1];
+      const curr = pathPoints[i];
+      const next = pathPoints[i + 1];
+
+      // Bearing of the incoming segment
+      const b1 = NavigationEngine.calculateBearing(prev.lat, prev.lng, curr.lat, curr.lng);
+      // Bearing of the outgoing segment
+      const b2 = NavigationEngine.calculateBearing(curr.lat, curr.lng, next.lat, next.lng);
+
+      const delta = b2 - b1;
+      const absDelta = Math.abs(((delta + 540) % 360) - 180);
+
+      // Accumulate segment length
+      const segLen = NavigationEngine.calculateDistance(prev.lat, prev.lng, curr.lat, curr.lng);
+      accumulated += segLen;
+
+      if (accumulated > LOOKAHEAD_M) break;
+
+      if (absDelta >= MIN_TURN_ANGLE) {
+        return {
+          turnPoint: curr,
+          distToTurn: accumulated,
+          info: this._classifyTurn(delta),
+          nodeIdx: i
+        };
+      }
+    }
+    return null;
+  },
+
+  // ── Format distance for display and speech ────────────────────────────────
+  _fmtDist(m) {
+    if (m >= 950) return `${Math.round(m / 100) * 100} meters`;
+    if (m >= 100) return `${Math.round(m / 50) * 50} meters`;
+    return `${Math.round(m)} meters`;
+  },
+  _fmtDistShort(m) {
+    if (m >= 950) return `${(m/1000).toFixed(1)} km`;
+    return `${Math.round(m)} m`;
+  },
+
+  // ── Main update: called every GPS tick ────────────────────────────────────
+  // pathPoints: remaining route path, closestIdx: user's position index
+  update(pathPoints, closestIdx, userLat, userLng) {
+    const banner    = document.getElementById('turnBanner');
+    const arrowBox  = document.getElementById('turnArrowBox');
+    const arrowIcon = document.getElementById('turnArrowIcon');
+    const inLabel   = document.getElementById('turnInLabel');
+    const dirLabel  = document.getElementById('turnDirectionLabel');
+
+    if (!banner) return;
+
+    const turn = this.findNextTurn(pathPoints, closestIdx, userLat, userLng);
+
+    if (!turn || turn.info.type === 'straight') {
+      // No significant turn ahead — hide banner
+      banner.classList.add('hidden');
+      banner.classList.remove('urgent');
+      return;
+    }
+
+    const { distToTurn, info } = turn;
+    const distShort = this._fmtDistShort(distToTurn);
+
+    // ── Update visual banner ─────────────────────────────────────────────────
+    banner.classList.remove('hidden');
+    banner.classList.toggle('urgent', distToTurn < 100);
+
+    // Arrow colour class
+    arrowBox.classList.remove('left', 'right', 'uturn');
+    if (info.cssClass) arrowBox.classList.add(info.cssClass);
+
+    arrowIcon.className = info.icon;
+    inLabel.textContent = `In ${distShort}`;
+    dirLabel.textContent = info.label;
+
+    // ── Voice announcements at 500m / 200m / 50m ──────────────────────────
+    const thresholds = [500, 200, 50];
+    for (const thresh of thresholds) {
+      const key = `${info.type}_${thresh}`;
+      if (distToTurn <= thresh + 30 && distToTurn > thresh - 30 && !this._announcedThresholds.has(key)) {
+        this._announcedThresholds.add(key);
+        const distWord = thresh === 50 ? 'in 50 meters' : `in ${thresh} meters`;
+        this._speak(`${distWord}, ${info.label}`);
+      }
+    }
+
+    // Reset announced thresholds when turn is passed (dist increases or new turn detected)
+    if (turn.nodeIdx !== this._lastTurnIdx) {
+      this._announcedThresholds.clear();
+      this._lastTurnIdx = turn.nodeIdx;
+    }
+  },
+
+  // ── Reset state when navigation ends or target changes ────────────────────
+  reset() {
+    this._announcedThresholds.clear();
+    this._lastTurnIdx = -1;
+    this._lastSpokenDist = null;
+    const banner = document.getElementById('turnBanner');
+    if (banner) {
+      banner.classList.add('hidden');
+      banner.classList.remove('urgent');
+    }
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+  },
+
+  // ── Announce destination reached ──────────────────────────────────────────
+  announceArrival(targetName) {
+    this.reset();
+    this._speak(`You have arrived at ${targetName || 'your destination'}`);
   }
 };

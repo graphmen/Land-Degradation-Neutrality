@@ -1503,6 +1503,12 @@ const App = {
     // Show Full Screen Overlay
     document.getElementById('navigationOverlay').classList.remove('hidden');
 
+    // Initialise turn-by-turn voice guidance
+    if (typeof TurnGuide !== 'undefined') {
+      TurnGuide.init();
+      TurnGuide.reset();
+    }
+
     // Update coordinates navigation display immediately
     this.updateNavigationMetrics();
   },
@@ -1568,6 +1574,9 @@ const App = {
       
       // Remove mini navigation card
       document.getElementById('miniNavWidget').classList.add('hidden');
+
+      // Reset turn-by-turn voice guidance
+      if (typeof TurnGuide !== 'undefined') TurnGuide.reset();
 
       // Remove real-time navigation line from map
       if (this.state.navigationLine) {
@@ -2054,6 +2063,11 @@ const App = {
                 className: 'nav-path-line'
               }).addTo(this.state.map);
             }
+
+            // Update turn-by-turn guidance from the remaining road path
+            if (typeof TurnGuide !== 'undefined') {
+              TurnGuide.update(remainingPath, 0, uLat, uLng);
+            }
           } else {
             if (this.state.navigationLine) this.state.navigationLine.remove();
             this.state.navigationLine = null;
@@ -2180,6 +2194,11 @@ const App = {
         document.getElementById('centroidSuccessPanel').classList.remove('hidden');
         document.getElementById('navStatusText').innerText = 'ARRIVED';
         document.getElementById('navStatusIcon').className = 'fa-solid fa-trophy text-emerald';
+
+        // Announce arrival via voice
+        if (typeof TurnGuide !== 'undefined') {
+          TurnGuide.announceArrival(`Point ${target.id}`);
+        }
    
         // Unlock corners buttons UI
         this.renderCornerButtons();

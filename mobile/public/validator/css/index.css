@@ -2892,3 +2892,83 @@ input:checked + .slider::before { transform: translateX(16px); }
 .point-id-tooltip:before {
   border-top-color: rgba(9, 13, 22, 0.88) !important;
 }
+
+/* ── Navigation Direct-Approach Line ─────────────────────────────────────── */
+/* The green line shown when user is within 2 km of the target point          */
+@keyframes navDirectPulse {
+  0%   { opacity: 1; stroke-width: 4; }
+  50%  { opacity: 0.6; stroke-width: 5; }
+  100% { opacity: 1; stroke-width: 4; }
+}
+.nav-direct-line path {
+  animation: navDirectPulse 1.4s ease-in-out infinite;
+}
+
+/* Leaflet SVG path override for direct line (applied via className) */
+.leaflet-overlay-pane svg .nav-direct-line {
+  animation: navDirectPulse 1.4s ease-in-out infinite;
+}
+
+/* ── Turn-by-Turn Banner ─────────────────────────────────────────────────── */
+.turn-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 12px 0;
+  padding: 10px 16px;
+  background: rgba(9, 13, 22, 0.92);
+  border: 1px solid rgba(192, 255, 0, 0.25);
+  border-radius: 14px;
+  backdrop-filter: blur(10px);
+  animation: turnBannerIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+.turn-banner.hidden { display: none; }
+
+@keyframes turnBannerIn {
+  from { opacity: 0; transform: translateY(-12px) scale(0.94); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.turn-arrow-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: rgba(192,255,0,0.12);
+  border: 2px solid rgba(192,255,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 26px;
+  color: #c0ff00;
+  transition: background 0.3s, border-color 0.3s, color 0.3s;
+}
+.turn-arrow-box.left  { background: rgba(56,189,248,0.12); border-color: rgba(56,189,248,0.4); color: #38bdf8; }
+.turn-arrow-box.right { background: rgba(251,191,36,0.12); border-color: rgba(251,191,36,0.4); color: #fbbf24; }
+.turn-arrow-box.uturn { background: rgba(244,63,94,0.12);  border-color: rgba(244,63,94,0.4);  color: #f43f5e; }
+
+.turn-text-box { display: flex; flex-direction: column; gap: 2px; }
+.turn-in {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.turn-direction {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+}
+
+/* Urgent pulse when very close to the turn (< 100 m) */
+.turn-banner.urgent .turn-arrow-box {
+  animation: turnUrgentPulse 0.6s ease-in-out infinite;
+}
+@keyframes turnUrgentPulse {
+  0%, 100% { transform: scale(1);    box-shadow: 0 0 0 0 rgba(192,255,0,0); }
+  50%       { transform: scale(1.08); box-shadow: 0 0 0 8px rgba(192,255,0,0.15); }
+}
