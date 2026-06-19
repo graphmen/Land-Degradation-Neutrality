@@ -622,75 +622,240 @@ const OfflineManager = {
     return { type: 'FeatureCollection', features };
   },
 
-  // Render OSM roads layer on the Leaflet map
+  // ── HIGH-PERFORMANCE Canvas Roads Renderer ────────────────────────────────
+  //
+  // Problem: Leaflet's default L.geoJSON() creates one SVG <path> per road
+  // segment.  With 38 000+ features this produces tens of thousands of DOM
+  // nodes that must be repainted on every pan/zoom → the app freezes.
+  //
+  // Solution:
+  //  1. L.canvas() renderer  →  all roads drawn on ONE <canvas> element.
+  //  2. Three priority tier LayerGroups (major / minor / tracks) so that
+  //     show/hide is instant (just canvas.style.display flip).
+  //  3. Zoom-level gating:
+  //       Major roads  (motorway/trunk/primary)     visible ≥ zoom 10
+  //       Minor roads  (secondary/tertiary/etc.)    visible ≥ zoom 12
+  //       Tracks/paths (track/footway/path/…)       visible ≥ zoom 14
+  //  4. Async chunked rendering (100 features per frame) keeps the UI
+  //     fully responsive during the initial build — no "white screen" freeze.
+  // ──────────────────────────────────────────────────────────────────────────
   renderRoadsLayer(geojson, forceAddToMap = false) {
     const map = App.state.map;
     if (!map) return;
 
-    // Remove existing roads layer if any
-    if (App.state.roadsLayer) {
-      App.state.roadsLayer.remove();
-      App.state.roadsLayer = null;
-    }
+    // Remove any existing roads layers & listeners
+    this._removeRoadsLayers();
 
-    // Colour-code by road type for easy navigation
     const roadColors = {
-      motorway: '#e879f9',     // Purple - major highway
-      trunk: '#e879f9',
-      primary: '#f97316',      // Orange - primary road
-      secondary: '#c0ff00',    // Yellow - secondary road
-      tertiary: '#a3a3a3',     // Grey - tertiary
-      unclassified: '#6b7280', // Dark grey
-      road: '#6b7280',
-      residential: '#94a3b8',  // Light slate
-      service: '#94a3b8',
-      track: '#a16207',        // Brown - dirt track
-      path: '#84cc16',         // Lime - footpath
-      footway: '#84cc16',
-      bridleway: '#84cc16',
-      living_street: '#94a3b8',
-      pedestrian: '#84cc16',
+      motorway: '#e879f9', motorway_link: '#e879f9',
+      trunk: '#e879f9',    trunk_link: '#e879f9',
+      primary: '#f97316',  primary_link: '#f97316',
+      secondary: '#c0ff00', secondary_link: '#c0ff00',
+      tertiary: '#a3a3a3',  tertiary_link: '#a3a3a3',
+      unclassified: '#6b7280', road: '#6b7280',
+      residential: '#94a3b8', living_street: '#94a3b8', service: '#94a3b8',
+      track: '#c8961e',     path: '#84cc16', footway: '#84cc16',
+      bridleway: '#84cc16', pedestrian: '#84cc16', cycleway: '#84cc16',
       unknown: '#64748b'
     };
 
-    console.log("Instantiating Leaflet layer for roads...");
-    App.state.roadsLayer = L.geoJSON(geojson, {
-      style: (feature) => {
-        const highway = feature.properties.highway || 'unknown';
-        const color = roadColors[highway] || roadColors.unknown;
-        const isTrack = highway === 'track' || highway === 'path' || highway === 'footway' || highway === 'bridleway';
-        return {
-          color: color,
-          weight: isTrack ? 1.5 : 2.5,
-          opacity: 0.85,
-          dashArray: isTrack ? '6,5' : ''
-        };
-      },
-      onEachFeature: (feature, layer) => {
-        const name = feature.properties.name;
-        const type = feature.properties.highway;
-        const surface = feature.properties.surface;
-        if (name || type) {
-          layer.bindPopup(`
-            <div style="font-family: monospace; font-size: 12px;">
-              <strong>${name || 'Unnamed ' + type}</strong><br>
-              Type: ${type || 'road'}<br>
-              ${surface ? 'Surface: ' + surface : ''}
-            </div>
-          `);
-        }
+    // ── Tier classification ──────────────────────────────────────────────────
+    const MAJOR  = new Set(['motorway','motorway_link','trunk','trunk_link','primary','primary_link']);
+    const MINOR  = new Set(['secondary','secondary_link','tertiary','tertiary_link','unclassified','road','residential','living_street','service']);
+    // everything else → TRACK tier
+
+    // ── One canvas renderer per tier (separate canvas contexts = no contention) ──
+    const canvasMajor = L.canvas({ padding: 0.5, tolerance: 5 });
+    const canvasMinor = L.canvas({ padding: 0.5, tolerance: 3 });
+    const canvasTrack = L.canvas({ padding: 0.5, tolerance: 2 });
+
+    const layerMajor = L.layerGroup();
+    const layerMinor = L.layerGroup();
+    const layerTrack = L.layerGroup();
+
+    // Store on state for toggle/remove
+    App.state.roadsLayer      = layerMajor; // backward-compat reference
+    App.state.roadsLayerMinor = layerMinor;
+    App.state.roadsLayerTrack = layerTrack;
+    App.state.roadsLayerMajor = layerMajor;
+
+    const features = geojson.features;
+    const CHUNK    = 150; // features per async frame
+    let   idx      = 0;
+
+    const statusEl = document.getElementById('roadsLayerStatus');
+
+    // ── Async chunked build ──────────────────────────────────────────────────
+    const processChunk = () => {
+      const end = Math.min(idx + CHUNK, features.length);
+      for (; idx < end; idx++) {
+        const feat    = features[idx];
+        const highway = (feat.properties && feat.properties.highway) || 'unknown';
+        const color   = roadColors[highway] || roadColors.unknown;
+        const isMajor = MAJOR.has(highway);
+        const isMinor = MINOR.has(highway);
+        const isTrack = !isMajor && !isMinor;
+
+        const weight    = isMajor ? 3   : isMinor ? 2   : 1.2;
+        const opacity   = isMajor ? 0.9 : isMinor ? 0.8 : 0.65;
+        const dashArray = isTrack ? '5,4' : null;
+        const renderer  = isMajor ? canvasMajor : isMinor ? canvasMinor : canvasTrack;
+        const target    = isMajor ? layerMajor  : isMinor ? layerMinor  : layerTrack;
+
+        try {
+          const line = L.geoJSON(feat, {
+            renderer,
+            style: { color, weight, opacity, dashArray, lineCap: 'round', lineJoin: 'round' }
+          });
+          target.addLayer(line);
+        } catch(e) { /* skip malformed feature */ }
+      }
+
+      if (statusEl) statusEl.innerText = `Building roads… ${Math.round(idx/features.length*100)}%`;
+
+      if (idx < features.length) {
+        // Schedule next chunk on next animation frame — keeps UI alive
+        setTimeout(processChunk, 0);
+      } else {
+        // All chunks done → hook up zoom gating
+        this._attachRoadsZoomGating(map, forceAddToMap);
+        if (statusEl) statusEl.innerText = `${features.length.toLocaleString()} segments loaded`;
+        console.log(`Roads canvas layers built: ${features.length} segments`);
+      }
+    };
+
+    // Kick off
+    processChunk();
+  },
+
+  // ── Zoom-gated add/remove logic ──────────────────────────────────────────
+  _attachRoadsZoomGating(map, forceAddToMap) {
+    const roadsSwitch = document.getElementById('switchRoadsLayer');
+    const shouldShow  = forceAddToMap || (roadsSwitch && roadsSwitch.checked);
+
+    const applyZoom = () => {
+      const z = map.getZoom();
+      const majorL = App.state.roadsLayerMajor;
+      const minorL = App.state.roadsLayerMinor;
+      const trackL = App.state.roadsLayerTrack;
+      if (!majorL) return; // layers removed
+
+      const showMajor = shouldShow || (roadsSwitch && roadsSwitch.checked);
+      if (!showMajor) return; // roads toggled off, nothing to do
+
+      // Major roads: zoom >= 10
+      if (z >= 10) { if (!map.hasLayer(majorL)) map.addLayer(majorL); }
+      else          { if (map.hasLayer(majorL))  map.removeLayer(majorL); }
+
+      // Minor roads: zoom >= 12
+      if (z >= 12) { if (!map.hasLayer(minorL)) map.addLayer(minorL); }
+      else          { if (map.hasLayer(minorL))  map.removeLayer(minorL); }
+
+      // Tracks / paths: zoom >= 14
+      if (z >= 14) { if (!map.hasLayer(trackL)) map.addLayer(trackL); }
+      else          { if (map.hasLayer(trackL))  map.removeLayer(trackL); }
+    };
+
+    // Store listener ref so we can remove it later
+    App.state._roadsZoomListener = applyZoom;
+    map.on('zoomend', applyZoom);
+
+    // Apply immediately
+    if (shouldShow) applyZoom();
+  },
+
+  // ── Clean removal of all roads layers & listeners ────────────────────────
+  _removeRoadsLayers() {
+    const map = App.state.map;
+    if (map && App.state._roadsZoomListener) {
+      map.off('zoomend', App.state._roadsZoomListener);
+      App.state._roadsZoomListener = null;
+    }
+    ['roadsLayer','roadsLayerMajor','roadsLayerMinor','roadsLayerTrack'].forEach(key => {
+      if (App.state[key]) {
+        try { App.state[key].remove(); } catch(e) {}
+        App.state[key] = null;
       }
     });
+  },
 
-    // Only add to map if switch is checked or if forced AND map zoom >= 12
-    const roadsSwitch = document.getElementById('switchRoadsLayer');
-    if (forceAddToMap || (roadsSwitch && roadsSwitch.checked)) {
-      if (map.getZoom() >= 12) {
-        App.state.roadsLayer.addTo(map);
+  // ── Show all road tier layers (called by toggle ON) ──────────────────────
+  _showRoadsLayers() {
+    const map = App.state.map;
+    if (!map) return;
+    // Trigger the zoom gating handler to add appropriate tiers
+    if (App.state._roadsZoomListener) {
+      App.state._roadsZoomListener();
+    } else {
+      // Fallback: add all tiers
+      ['roadsLayerMajor','roadsLayerMinor','roadsLayerTrack'].forEach(key => {
+        if (App.state[key] && !map.hasLayer(App.state[key])) {
+          map.addLayer(App.state[key]);
+        }
+      });
+    }
+  },
+
+  // ── Hide all road tier layers (called by toggle OFF) ─────────────────────
+  _hideRoadsLayers() {
+    const map = App.state.map;
+    if (!map) return;
+    ['roadsLayerMajor','roadsLayerMinor','roadsLayerTrack'].forEach(key => {
+      if (App.state[key] && map.hasLayer(App.state[key])) {
+        map.removeLayer(App.state[key]);
       }
+    });
+  },
+
+  // Toggle roads layer visibility (instant — no re-render)
+  async toggleRoadsVisibility() {
+    const map = App.state.map;
+    if (!map) return;
+
+    const hasAnyLayer = ['roadsLayerMajor','roadsLayerMinor','roadsLayerTrack']
+      .some(k => App.state[k] && map.hasLayer(App.state[k]));
+
+    if (!App.state.roadsLayerMajor) {
+      // Layers not built yet — load & build
+      const btn = document.getElementById('toggleRoadsBtn');
+      if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
+
+      let success = false;
+      if (this.roadsGeoJSON) {
+        this.renderRoadsLayer(this.roadsGeoJSON, true);
+        success = true;
+      } else {
+        success = await this.loadCachedRoads(true);
+      }
+
+      if (btn) {
+        if (success) {
+          btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i> Hide Roads Layer';
+          const sw = document.getElementById('switchRoadsLayer');
+          if (sw) sw.checked = true;
+        } else {
+          btn.innerHTML = '<i class="fa-solid fa-eye"></i> Show Roads Layer';
+          alert('ℹ️ No roads downloaded or preloaded yet.\n\nGo to Offline tab → Download Roads & Tracks first.');
+        }
+      }
+      return;
     }
 
-    console.log(`Roads layer rendered with ${geojson.features.length} segments.`);
+    if (hasAnyLayer) {
+      // Roads visible → hide instantly (no re-render, just remove from map)
+      this._hideRoadsLayers();
+      const btn = document.getElementById('toggleRoadsBtn');
+      if (btn) btn.innerHTML = '<i class="fa-solid fa-eye"></i> Show Roads Layer';
+      const sw = document.getElementById('switchRoadsLayer');
+      if (sw) sw.checked = false;
+    } else {
+      // Roads hidden → show instantly via zoom gating
+      this._showRoadsLayers();
+      const btn = document.getElementById('toggleRoadsBtn');
+      if (btn) btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i> Hide Roads Layer';
+      const sw = document.getElementById('switchRoadsLayer');
+      if (sw) sw.checked = true;
+    }
   },
 
   roadsGeoJSON: null,
@@ -753,50 +918,6 @@ const OfflineManager = {
     return false;
   },
 
-  // Toggle roads layer visibility
-  async toggleRoadsVisibility() {
-    const map = App.state.map;
-    if (!map) return;
-
-    if (!App.state.roadsLayer) {
-      const btn = document.getElementById('toggleRoadsBtn');
-      if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
-      
-      let success = false;
-      if (this.roadsGeoJSON) {
-        this.renderRoadsLayer(this.roadsGeoJSON, true);
-        success = true;
-      } else {
-        success = await this.loadCachedRoads(true);
-      }
-
-      if (btn) {
-        if (success) {
-          btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i> Hide Roads Layer';
-          const switchEl = document.getElementById('switchRoadsLayer');
-          if (switchEl) switchEl.checked = true;
-        } else {
-          btn.innerHTML = '<i class="fa-solid fa-eye"></i> Show Roads Layer';
-          alert('ℹ️ No roads downloaded or preloaded yet.\n\nGo to Offline tab → Download Roads & Tracks first.');
-        }
-      }
-      return;
-    }
-
-    if (map.hasLayer(App.state.roadsLayer)) {
-      map.removeLayer(App.state.roadsLayer);
-      document.getElementById('toggleRoadsBtn').innerHTML = '<i class="fa-solid fa-eye"></i> Show Roads Layer';
-      const switchEl = document.getElementById('switchRoadsLayer');
-      if (switchEl) switchEl.checked = false;
-    } else {
-      if (map.getZoom() >= 12) {
-        App.state.roadsLayer.addTo(map);
-      }
-      document.getElementById('toggleRoadsBtn').innerHTML = '<i class="fa-solid fa-eye-slash"></i> Hide Roads Layer';
-      const switchEl = document.getElementById('switchRoadsLayer');
-      if (switchEl) switchEl.checked = true;
-    }
-  },
 
   // Toggle offline basemap — checks IndexedDB (TileDB), not old Cache Storage
   toggleOfflineBasemap() {
