@@ -9,56 +9,86 @@ const TileDB = {
   DB_NAME: 'ldn-tiles-idb',
   DB_STORE: 'tiles',
   _db: null,
+  _openPromise: null,
 
   async open() {
     if (this._db) return this._db;
-    return new Promise((resolve, reject) => {
+    if (this._openPromise) return this._openPromise;
+
+    this._openPromise = new Promise((resolve, reject) => {
       const req = indexedDB.open(this.DB_NAME, 1);
       req.onupgradeneeded = (e) => {
         e.target.result.createObjectStore(this.DB_STORE);
       };
-      req.onsuccess = (e) => { this._db = e.target.result; resolve(this._db); };
-      req.onerror  = () => reject(req.error);
+      req.onsuccess = (e) => { 
+        this._db = e.target.result; 
+        this._openPromise = null;
+        resolve(this._db); 
+      };
+      req.onerror  = () => {
+        this._openPromise = null;
+        reject(req.error);
+      };
+      req.onblocked = () => {
+        console.warn('IndexedDB open blocked');
+        this._openPromise = null;
+        reject(new Error('IndexedDB blocked'));
+      };
     });
+    return this._openPromise;
   },
 
   async get(key) {
-    const db = await this.open();
-    return new Promise((resolve) => {
-      const req = db.transaction(this.DB_STORE, 'readonly')
-                    .objectStore(this.DB_STORE).get(key);
-      req.onsuccess = () => resolve(req.result || null);
-      req.onerror  = () => resolve(null);
-    });
+    try {
+      const db = await this.open();
+      return new Promise((resolve) => {
+        const req = db.transaction(this.DB_STORE, 'readonly')
+                      .objectStore(this.DB_STORE).get(key);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror  = () => resolve(null);
+      });
+    } catch (e) {
+      return null;
+    }
   },
 
   async put(key, blob) {
-    const db = await this.open();
-    return new Promise((resolve) => {
-      const tx  = db.transaction(this.DB_STORE, 'readwrite');
-      tx.objectStore(this.DB_STORE).put(blob, key);
-      tx.oncomplete = () => resolve(true);
-      tx.onerror    = () => resolve(false);
-    });
+    try {
+      const db = await this.open();
+      return new Promise((resolve) => {
+        const tx  = db.transaction(this.DB_STORE, 'readwrite');
+        tx.objectStore(this.DB_STORE).put(blob, key);
+        tx.oncomplete = () => resolve(true);
+        tx.onerror    = () => resolve(false);
+      });
+    } catch (e) {
+      return false;
+    }
   },
 
   async count() {
-    const db = await this.open();
-    return new Promise((resolve) => {
-      const req = db.transaction(this.DB_STORE, 'readonly')
-                    .objectStore(this.DB_STORE).count();
-      req.onsuccess = () => resolve(req.result);
-      req.onerror  = () => resolve(0);
-    });
+    try {
+      const db = await this.open();
+      return new Promise((resolve) => {
+        const req = db.transaction(this.DB_STORE, 'readonly')
+                      .objectStore(this.DB_STORE).count();
+        req.onsuccess = () => resolve(req.result);
+        req.onerror  = () => resolve(0);
+      });
+    } catch (e) {
+      return 0;
+    }
   },
 
   async clear() {
-    const db = await this.open();
-    return new Promise((resolve) => {
-      const tx = db.transaction(this.DB_STORE, 'readwrite');
-      tx.objectStore(this.DB_STORE).clear();
-      tx.oncomplete = () => resolve();
-    });
+    try {
+      const db = await this.open();
+      return new Promise((resolve) => {
+        const tx = db.transaction(this.DB_STORE, 'readwrite');
+        tx.objectStore(this.DB_STORE).clear();
+        tx.oncomplete = () => resolve();
+      });
+    } catch (e) {}
   }
 };
 
@@ -245,6 +275,16 @@ const OfflineManager = {
     document.getElementById('downloadProgressBar').style.width = '0%';
     document.getElementById('downloadTilesProgress').innerText = `Tile 0 / ${this.totalToDownload}`;
 
+    // Ensure database is opened once before starting workers (avoids IndexedDB lock races)
+    try {
+      await TileDB.open();
+    } catch (dbErr) {
+      console.error('Failed to open database:', dbErr);
+      alert('Database error: Unable to open offline storage.');
+      this.isDownloading = false;
+      return;
+    }
+
     // Parallel downloads pool
     const CONCURRENCY = 8;
     const startTime = Date.now();
@@ -305,10 +345,38 @@ const OfflineManager = {
   },
 
   // Fetch one tile and save to IndexedDB
-  // Tries 4 methods in order: Capacitor native HTTP → CORS fetch → no-cors fetch → Image→Canvas
+  // Tries 4 methods in order: Standard fetch (native bypass) → Capacitor native HTTP → Image→Canvas
   fetchAndStoreTile(url, key) {
     return new Promise(async (resolve) => {
-      // 1. Try Capacitor Native HTTP if running inside Capacitor
+      let resolved = false;
+      const done = (result) => {
+        if (resolved) return;
+        resolved = true;
+        clearTimeout(globalTimeout);
+        resolve(result);
+      };
+
+      // Strict 8-second global timeout per tile to ensure the queue NEVER hangs
+      const globalTimeout = setTimeout(() => {
+        console.warn('Timeout downloading tile:', url);
+        done(false);
+      }, 8000);
+
+      // 1. Try standard fetch first (automatically runs natively and bypasses CORS when CapacitorHttp plugin is active)
+      try {
+        const resp = await fetch(url, { cache: 'no-store' });
+        if (resp.ok) {
+          const blob = await resp.blob();
+          if (blob && blob.size > 500) {
+            const saved = await TileDB.put(key, blob);
+            return done(saved);
+          }
+        }
+      } catch (fetchErr) {
+        console.warn('Standard fetch failed for tile, trying fallbacks:', fetchErr);
+      }
+
+      // 2. Try Capacitor Native HTTP if standard fetch failed
       const capHttp = typeof window !== 'undefined' && window.Capacitor && (
         (window.Capacitor.Plugins && window.Capacitor.Plugins.CapacitorHttp) || 
         window.Capacitor.Http
@@ -323,15 +391,13 @@ const OfflineManager = {
           };
           const response = await capHttp.request(options);
           if (response && response.status === 200 && response.data) {
-            const base64Str = response.data;
-            const binaryStr = atob(base64Str);
+            const binaryStr = atob(response.data);
             const len = binaryStr.length;
             const bytes = new Uint8Array(len);
             for (let i = 0; i < len; i++) {
               bytes[i] = binaryStr.charCodeAt(i);
             }
             
-            // Get content type
             let contentType = 'image/jpeg';
             if (response.headers) {
               const ct = response.headers['content-type'] || response.headers['Content-Type'];
@@ -340,128 +406,43 @@ const OfflineManager = {
             
             const blob = new Blob([bytes], { type: contentType });
             if (blob && blob.size > 500) {
-              await TileDB.put(key, blob);
-              return resolve(true);
+              const saved = await TileDB.put(key, blob);
+              return done(saved);
             }
           }
         } catch (capErr) {
-          console.warn('Capacitor native HTTP download failed, falling back:', capErr);
+          console.warn('Capacitor native HTTP fallback failed:', capErr);
         }
       }
 
-      // METHOD 2: Standard CORS fetch (works perfectly for OSM)
+      // 3. Fallback: Image → Canvas → Blob (for web/browser testing contexts)
       try {
-        const resp = await fetch(url, { mode: 'cors', cache: 'no-store' });
-        if (resp.ok) {
-          const blob = await resp.blob();
-          if (blob && blob.size > 500) {
-            await TileDB.put(key, blob);
-            return resolve(true);
-          }
-        }
-      } catch (_) { /* fall through */ }
-
-      // METHOD 3: no-cors fetch — on Android WebView the response body
-      // IS readable even if status=0 (opaque). Try to get the blob directly.
-      try {
-        const resp = await fetch(url, { mode: 'no-cors', cache: 'no-store' });
-        if (resp.type === 'opaque' || resp.ok) {
-          const blob = await resp.blob();
-          if (blob && blob.size > 500) {
-            await TileDB.put(key, blob);
-            return resolve(true);
-          }
-        }
-      } catch (_) { /* fall through */ }
-
-      // METHOD 4: Image → Canvas → Blob
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-
-      const timeout = setTimeout(() => {
-        img.onload = img.onerror = null;
-        resolve(false);
-      }, 12000);
-
-      img.onload = () => {
-        clearTimeout(timeout);
-        try {
-          const canvas = document.createElement('canvas');
-          canvas.width  = img.naturalWidth  || 256;
-          canvas.height = img.naturalHeight || 256;
-          canvas.getContext('2d').drawImage(img, 0, 0);
-          canvas.toBlob(async (blob) => {
-            if (blob && blob.size > 500) {
-              await TileDB.put(key, blob);
-              resolve(true);
-            } else {
-              resolve(false);
-            }
-          }, 'image/jpeg', 0.85);
-        } catch (canvasErr) {
-          console.warn('Tainted canvas fallback for key', key);
-          const imgFallback = new Image();
-          const fallbackTimeout = setTimeout(() => {
-            imgFallback.onload = imgFallback.onerror = null;
-            resolve(false);
-          }, 8000);
-          
-          imgFallback.onload = () => {
-            clearTimeout(fallbackTimeout);
-            try {
-              const canvasFb = document.createElement('canvas');
-              canvasFb.width = imgFallback.naturalWidth || 256;
-              canvasFb.height = imgFallback.naturalHeight || 256;
-              canvasFb.getContext('2d').drawImage(imgFallback, 0, 0);
-              canvasFb.toBlob(async (blob) => {
-                if (blob && blob.size > 500) {
-                  await TileDB.put(key, blob);
-                  resolve(true);
-                } else {
-                  resolve(false);
-                }
-              }, 'image/jpeg', 0.85);
-            } catch (innerErr) {
-              resolve(false);
-            }
-          };
-          imgFallback.onerror = () => { clearTimeout(fallbackTimeout); resolve(false); };
-          imgFallback.src = url;
-        }
-      };
-
-      img.onerror = () => {
-        clearTimeout(timeout);
-        const imgNoCors = new Image();
-        const noCorsTimeout = setTimeout(() => {
-          imgNoCors.onload = imgNoCors.onerror = null;
-          resolve(false);
-        }, 10000);
-        
-        imgNoCors.onload = () => {
-          clearTimeout(noCorsTimeout);
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
           try {
             const canvas = document.createElement('canvas');
-            canvas.width = imgNoCors.naturalWidth || 256;
-            canvas.height = imgNoCors.naturalHeight || 256;
-            canvas.getContext('2d').drawImage(imgNoCors, 0, 0);
+            canvas.width  = img.naturalWidth  || 256;
+            canvas.height = img.naturalHeight || 256;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
             canvas.toBlob(async (blob) => {
               if (blob && blob.size > 500) {
-                await TileDB.put(key, blob);
-                resolve(true);
+                const saved = await TileDB.put(key, blob);
+                done(saved);
               } else {
-                resolve(false);
+                done(false);
               }
             }, 'image/jpeg', 0.85);
           } catch (e) {
-            resolve(false);
+            done(false);
           }
         };
-        imgNoCors.onerror = () => { clearTimeout(noCorsTimeout); resolve(false); };
-        imgNoCors.src = url;
-      };
-
-      img.src = url + (url.includes('?') ? '&' : '?') + '_cb=' + Date.now();
+        img.onerror = () => done(false);
+        img.src = url;
+      } catch (imgErr) {
+        done(false);
+      }
     });
   },
 
