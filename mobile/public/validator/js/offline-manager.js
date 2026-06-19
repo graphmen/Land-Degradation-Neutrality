@@ -662,22 +662,16 @@ const OfflineManager = {
     // ── Tier classification ──────────────────────────────────────────────────
     const MAJOR  = new Set(['motorway','motorway_link','trunk','trunk_link','primary','primary_link']);
     const MINOR  = new Set(['secondary','secondary_link','tertiary','tertiary_link','unclassified','road','residential','living_street','service']);
-    // everything else → TRACK tier
 
-    // ── One canvas renderer per tier (separate canvas contexts = no contention) ──
-    const canvasMajor = L.canvas({ padding: 0.5, tolerance: 5 });
-    const canvasMinor = L.canvas({ padding: 0.5, tolerance: 3 });
-    const canvasTrack = L.canvas({ padding: 0.5, tolerance: 2 });
-
-    const layerMajor = L.layerGroup();
-    const layerMinor = L.layerGroup();
-    const layerTrack = L.layerGroup();
+    // ── One single canvas renderer for ALL roads (maximum efficiency) ──────────
+    const canvasRenderer = L.canvas({ padding: 0.5, tolerance: 3 });
+    const layerGroup = L.layerGroup();
 
     // Store on state for toggle/remove
-    App.state.roadsLayer      = layerMajor; // backward-compat reference
-    App.state.roadsLayerMinor = layerMinor;
-    App.state.roadsLayerTrack = layerTrack;
-    App.state.roadsLayerMajor = layerMajor;
+    App.state.roadsLayer      = layerGroup; // Main unified layer reference
+    App.state.roadsLayerMinor = layerGroup; // Backward compat
+    App.state.roadsLayerTrack = layerGroup; // Backward compat
+    App.state.roadsLayerMajor = layerGroup; // Backward compat
 
     const features = geojson.features;
     const CHUNK    = 150; // features per async frame
@@ -699,28 +693,26 @@ const OfflineManager = {
         const weight    = isMajor ? 3   : isMinor ? 2   : 1.2;
         const opacity   = isMajor ? 0.9 : isMinor ? 0.8 : 0.65;
         const dashArray = isTrack ? '5,4' : null;
-        const renderer  = isMajor ? canvasMajor : isMinor ? canvasMinor : canvasTrack;
-        const target    = isMajor ? layerMajor  : isMinor ? layerMinor  : layerTrack;
 
         try {
           const line = L.geoJSON(feat, {
-            renderer,
+            renderer: canvasRenderer,
             style: { color, weight, opacity, dashArray, lineCap: 'round', lineJoin: 'round' }
           });
-          target.addLayer(line);
+          layerGroup.addLayer(line);
         } catch(e) { /* skip malformed feature */ }
       }
 
       if (statusEl) statusEl.innerText = `Building roads… ${Math.round(idx/features.length*100)}%`;
 
       if (idx < features.length) {
-        // Schedule next chunk on next animation frame — keeps UI alive
+        // Schedule next chunk on next animation frame
         setTimeout(processChunk, 0);
       } else {
         // All chunks done → hook up zoom gating
         this._attachRoadsZoomGating(map, forceAddToMap);
         if (statusEl) statusEl.innerText = `${features.length.toLocaleString()} segments loaded`;
-        console.log(`Roads canvas layers built: ${features.length} segments`);
+        console.log(`Roads canvas layer built: ${features.length} segments`);
       }
     };
 
@@ -735,25 +727,18 @@ const OfflineManager = {
 
     const applyZoom = () => {
       const z = map.getZoom();
-      const majorL = App.state.roadsLayerMajor;
-      const minorL = App.state.roadsLayerMinor;
-      const trackL = App.state.roadsLayerTrack;
-      if (!majorL) return; // layers removed
+      const roadsL = App.state.roadsLayer;
+      if (!roadsL) return; // layer removed
 
-      const showMajor = shouldShow || (roadsSwitch && roadsSwitch.checked);
-      if (!showMajor) return; // roads toggled off, nothing to do
+      const showRoads = shouldShow || (roadsSwitch && roadsSwitch.checked);
+      if (!showRoads) return; // roads toggled off, nothing to do
 
-      // Major roads: zoom >= 10
-      if (z >= 10) { if (!map.hasLayer(majorL)) map.addLayer(majorL); }
-      else          { if (map.hasLayer(majorL))  map.removeLayer(majorL); }
-
-      // Minor roads: zoom >= 12
-      if (z >= 12) { if (!map.hasLayer(minorL)) map.addLayer(minorL); }
-      else          { if (map.hasLayer(minorL))  map.removeLayer(minorL); }
-
-      // Tracks / paths: zoom >= 14
-      if (z >= 14) { if (!map.hasLayer(trackL)) map.addLayer(trackL); }
-      else          { if (map.hasLayer(trackL))  map.removeLayer(trackL); }
+      // All roads visible at zoom >= 9 (covering the whole work region)
+      if (z >= 9) {
+        if (!map.hasLayer(roadsL)) map.addLayer(roadsL);
+      } else {
+        if (map.hasLayer(roadsL)) map.removeLayer(roadsL);
+      }
     };
 
     // Store listener ref so we can remove it later
@@ -779,32 +764,26 @@ const OfflineManager = {
     });
   },
 
-  // ── Show all road tier layers (called by toggle ON) ──────────────────────
+  // ── Show all road layers (called by toggle ON) ──────────────────────
   _showRoadsLayers() {
     const map = App.state.map;
     if (!map) return;
-    // Trigger the zoom gating handler to add appropriate tiers
     if (App.state._roadsZoomListener) {
       App.state._roadsZoomListener();
     } else {
-      // Fallback: add all tiers
-      ['roadsLayerMajor','roadsLayerMinor','roadsLayerTrack'].forEach(key => {
-        if (App.state[key] && !map.hasLayer(App.state[key])) {
-          map.addLayer(App.state[key]);
-        }
-      });
+      if (App.state.roadsLayer && !map.hasLayer(App.state.roadsLayer)) {
+        map.addLayer(App.state.roadsLayer);
+      }
     }
   },
 
-  // ── Hide all road tier layers (called by toggle OFF) ─────────────────────
+  // ── Hide all road layers (called by toggle OFF) ─────────────────────
   _hideRoadsLayers() {
     const map = App.state.map;
     if (!map) return;
-    ['roadsLayerMajor','roadsLayerMinor','roadsLayerTrack'].forEach(key => {
-      if (App.state[key] && map.hasLayer(App.state[key])) {
-        map.removeLayer(App.state[key]);
-      }
-    });
+    if (App.state.roadsLayer && map.hasLayer(App.state.roadsLayer)) {
+      map.removeLayer(App.state.roadsLayer);
+    }
   },
 
   // Toggle roads layer visibility (instant — no re-render)

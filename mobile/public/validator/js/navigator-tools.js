@@ -197,7 +197,7 @@ const NavigatorTools = {
 
         if (roadsSwitch.checked) {
           if (App.state.roadsLayer) {
-            if (map.getZoom() >= 12) {
+            if (map.getZoom() >= 9) {
               App.state.roadsLayer.addTo(map);
             }
             // Also sync toggle button in UI if it exists

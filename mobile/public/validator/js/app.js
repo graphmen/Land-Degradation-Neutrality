@@ -305,7 +305,7 @@ const App = {
         const roadsSwitch = document.getElementById('switchRoadsLayer');
         const showRoads = (roadsSwitch && roadsSwitch.checked);
         if (showRoads) {
-          if (zoom >= 12) {
+          if (zoom >= 9) {
             if (!this.state.map.hasLayer(App.state.roadsLayer)) {
               App.state.roadsLayer.addTo(this.state.map);
             }
