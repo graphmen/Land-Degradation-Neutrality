@@ -272,7 +272,7 @@ const App = {
 
     this.state.layers.offlineCache = L.tileLayer(cachedUrl, {
       maxZoom: 22,
-      maxNativeZoom: cachedProvider === 'googleHybrid' ? 21 : 19,
+      maxNativeZoom: 18,
       attribution: `Offline Cache (${cachedProvider})`
     });
 
@@ -409,6 +409,49 @@ const App = {
     map.on('click', () => {
       panel.classList.add('hidden');
       toggleBtn.classList.remove('active-layer-btn');
+    });
+
+    // Synchronize custom switcher UI with layers added/removed from map
+    const updateSwitcherUI = (activeName) => {
+      if (activeLayerName === activeName) return;
+      activeLayerName = activeName;
+      panel.querySelectorAll('.layer-option-btn').forEach(b => {
+        if (b.dataset.layer === activeName) {
+          b.classList.add('active');
+        } else {
+          b.classList.remove('active');
+        }
+      });
+      toggleBtn.innerHTML = `<i class="fa-solid ${icons[activeName] || 'fa-layer-group'}"></i>`;
+    };
+
+    map.on('layeradd', (e) => {
+      for (const [name, layer] of Object.entries(basemaps)) {
+        if (e.layer === layer) {
+          updateSwitcherUI(name);
+          break;
+        }
+      }
+      
+      // Update drawer button if offlineCache is added
+      if (e.layer === this.state.layers.offlineCache) {
+        const btn = document.getElementById('drawerToggleBasemapBtn') || document.getElementById('toggleBasemapBtn');
+        if (btn) {
+          btn.innerHTML = '<i class="fa-solid fa-check"></i> Active';
+          btn.classList.add('active-layer-btn');
+        }
+      }
+    });
+
+    map.on('layerremove', (e) => {
+      // Update drawer button if offlineCache is removed
+      if (e.layer === this.state.layers.offlineCache) {
+        const btn = document.getElementById('drawerToggleBasemapBtn') || document.getElementById('toggleBasemapBtn');
+        if (btn) {
+          btn.textContent = 'Toggle';
+          btn.classList.remove('active-layer-btn');
+        }
+      }
     });
   },
 
@@ -1509,8 +1552,22 @@ const App = {
       TurnGuide.reset();
     }
 
-    // Update coordinates navigation display immediately
-    this.updateNavigationMetrics();
+    // Delay metrics update and auto-zooming to let the tab/modal transition render smoothly
+    setTimeout(() => {
+      if (this.state.navigationMode === 'IDLE') return;
+      this.updateNavigationMetrics();
+
+      if (this.state.map) {
+        const targetLatLng = L.latLng(target.centroid[0], target.centroid[1]);
+        const userLatLng = this.state.userLocation ? L.latLng(this.state.userLocation) : null;
+        if (userLatLng) {
+          const bounds = L.latLngBounds([userLatLng, targetLatLng]);
+          this.state.map.fitBounds(bounds, { padding: [60, 60] });
+        } else {
+          this.state.map.setView(targetLatLng, 17);
+        }
+      }
+    }, 150);
   },
 
   // Render validation state on corner buttons in Nav Screen
@@ -2032,14 +2089,39 @@ const App = {
             }
           }
 
-          // If no cached route (or user went off-route), compute a new A* route
+          // If no cached route (or user went off-route), compute a new A* route with an 8s cooldown to prevent main-thread lag spikes
           if (!route) {
-            // Pass farMode so A* prefers motorways/trunks/primary roads
-            const newRoute = RoadRouter.findRoute(uLat, uLng, targetLat, targetLng, farMode);
-            if (newRoute) {
-              this.state.currentRoute = newRoute;
-              this.state.routeTargetCoords = [targetLat, targetLng];
-              route = { ...newRoute, closestIdx: 0, isCached: false };
+            const now = Date.now();
+            const lastCalc = this.state.lastRouteCalcTime || 0;
+            if (now - lastCalc > 8000) {
+              this.state.lastRouteCalcTime = now;
+              // Pass farMode so A* prefers motorways/trunks/primary roads
+              const newRoute = RoadRouter.findRoute(uLat, uLng, targetLat, targetLng, farMode);
+              if (newRoute) {
+                this.state.currentRoute = newRoute;
+                this.state.routeTargetCoords = [targetLat, targetLng];
+                route = { ...newRoute, closestIdx: 0, isCached: false };
+              }
+            } else if (this.state.currentRoute) {
+              // Within cooldown, project user onto the existing route anyway
+              const routePath = this.state.currentRoute.path;
+              let closestIdx = 0;
+              let minUserToRouteDist = Infinity;
+              for (let i = 0; i < routePath.length; i++) {
+                const pt = routePath[i];
+                const d = NavigationEngine.calculateDistance(uLat, uLng, pt.lat, pt.lng);
+                if (d < minUserToRouteDist) {
+                  minUserToRouteDist = d;
+                  closestIdx = i;
+                }
+              }
+              route = {
+                path: routePath,
+                closestIdx: closestIdx,
+                startNodeCoords: [routePath[closestIdx].lat, routePath[closestIdx].lng],
+                endNodeCoords: this.state.currentRoute.endNodeCoords,
+                isCached: true
+              };
             }
           }
         }
@@ -2388,19 +2470,7 @@ const App = {
     });
 
     // Roads & Tracks button bindings
-    const downloadRoadsBtn = document.getElementById('downloadRoadsBtn');
     const toggleRoadsBtn = document.getElementById('toggleRoadsBtn');
-
-    if (downloadRoadsBtn) {
-      downloadRoadsBtn.addEventListener('click', async () => {
-        // Combine all points and polygon features for bounding box calculation
-        const allFeatures = [
-          ...(this.state.pointsData ? this.state.pointsData.features : []),
-          ...(this.state.polygonsData ? this.state.polygonsData.features : [])
-        ];
-        await OfflineManager.downloadRoadsAndTracks(allFeatures);
-      });
-    }
 
     if (toggleRoadsBtn) {
       toggleRoadsBtn.addEventListener('click', () => {

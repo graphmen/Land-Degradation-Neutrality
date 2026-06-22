@@ -129,7 +129,7 @@
 
           <div class="tool-switch-row">
             <span class="tool-switch-label"><i class="fa-solid fa-layer-group" style="color:#a78bfa;"></i> Offline Basemap</span>
-            <button class="action-btn mini-btn" id="drawerToggleBasemapBtn" onclick="OfflineManager.toggleOfflineBasemap(); this.classList.toggle('active-layer-btn');" style="width:auto; padding:5px 10px; font-size:10px;">Toggle</button>
+            <button class="action-btn mini-btn" id="drawerToggleBasemapBtn" onclick="OfflineManager.toggleOfflineBasemap();" style="width:auto; padding:5px 10px; font-size:10px;">Toggle</button>
           </div>
 
           <div class="tool-switch-row">
@@ -436,47 +436,6 @@
         <button class="action-btn danger-btn" id="clearCacheBtn">
           <i class="fa-solid fa-trash-can"></i> Wipe Offline Cache
         </button>
-      </div>
-
-      <!-- Roads & Tracks Downloader Card -->
-      <div class="offline-control-card glass-panel" style="border-color: rgba(161, 98, 7, 0.5);">
-        <div class="card-icon-header">
-          <i class="fa-solid fa-road main-icon" style="color: #a16207;"></i>
-          <div>
-            <h3>Download Roads & Tracks</h3>
-            <p>Download all roads, dirt tracks, footpaths, and bridleways around your validation terrain from OpenStreetMap for offline navigation.</p>
-          </div>
-        </div>
-
-        <!-- Roads Layer Status -->
-        <div class="download-stats" style="margin-bottom: 12px;">
-          <div class="stat">
-            <span class="label">Road Segments</span>
-            <span class="value" id="roadsLayerStatus">Not downloaded</span>
-          </div>
-          <div class="stat">
-            <span class="label">Buffer Zone</span>
-            <span class="value">~5 km radius</span>
-          </div>
-        </div>
-
-        <!-- Road Legend -->
-        <div class="road-legend">
-          <div class="legend-row"><span class="legend-dot" style="background:#f97316;"></span> Primary Roads</div>
-          <div class="legend-row"><span class="legend-dot" style="background:#c0ff00;"></span> Secondary Roads</div>
-          <div class="legend-row"><span class="legend-dot" style="background:#a16207; border: 1px dashed #a16207;"></span> Dirt Tracks</div>
-          <div class="legend-row"><span class="legend-dot" style="background:#84cc16;"></span> Paths & Footways</div>
-        </div>
-
-        <!-- Status Text -->
-        <p class="roads-status-txt" id="roadsDownloadStatus">Tap download to fetch all navigable ways from OpenStreetMap.</p>
-
-        <!-- Action Buttons -->
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-          <button class="action-btn download-btn" id="downloadRoadsBtn" style="flex: 1; background: linear-gradient(135deg, #a16207, #78350f);">
-            <i class="fa-solid fa-road"></i> Download Roads & Tracks
-          </button>
-        </div>
       </div>
     </section>
 

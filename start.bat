@@ -15,19 +15,19 @@ if not exist ".venv" (
 start "OAU-Backend" cmd /k "call .venv\Scripts\activate && uvicorn main:app --reload --port 8000"
 
 :: ---- Frontend ----
-echo [2/2] Starting Next.js frontend on http://localhost:3001
+echo [2/2] Starting Next.js frontend on http://localhost:3002
 cd /d "%~dp0"
 if not exist "node_modules" (
     echo Installing frontend dependencies...
     npm install
 )
-start "OAU-Frontend" cmd /k "npm run dev -- -p 3001"
+start "OAU-Frontend" cmd /k "npm run dev -- -p 3002"
 
 echo.
 echo Dashboard launching...
-echo   Frontend: http://localhost:3001
+echo   Frontend: http://localhost:3002
 echo   API:      http://localhost:8000
 echo   API Docs: http://localhost:8000/docs
 ping 127.0.0.1 -n 6 > nul
-start http://localhost:3001
+start http://localhost:3002
 

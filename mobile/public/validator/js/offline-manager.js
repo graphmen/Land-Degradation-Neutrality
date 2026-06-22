@@ -15,6 +15,19 @@ const TileDB = {
     if (this._db) return this._db;
     if (this._openPromise) return this._openPromise;
 
+    // Request persistent storage to prevent OS from purging offline basemaps
+    if (navigator.storage && navigator.storage.persist) {
+      navigator.storage.persist().then(granted => {
+        if (granted) {
+          console.log('Storage persistence granted successfully.');
+        } else {
+          console.warn('Storage persistence was not granted by browser.');
+        }
+      }).catch(err => {
+        console.warn('Failed to request storage persistence:', err);
+      });
+    }
+
     this._openPromise = new Promise((resolve, reject) => {
       const req = indexedDB.open(this.DB_NAME, 1);
       req.onupgradeneeded = (e) => {
@@ -44,7 +57,15 @@ const TileDB = {
       return new Promise((resolve) => {
         const req = db.transaction(this.DB_STORE, 'readonly')
                       .objectStore(this.DB_STORE).get(key);
-        req.onsuccess = () => resolve(req.result || null);
+        req.onsuccess = () => {
+          let result = req.result || null;
+          if (result && result instanceof ArrayBuffer) {
+            // Convert ArrayBuffer back to Blob for Leaflet compatibility
+            const type = key.includes('osm') ? 'image/png' : 'image/jpeg';
+            result = new Blob([result], { type });
+          }
+          resolve(result);
+        };
         req.onerror  = () => resolve(null);
       });
     } catch (e) {
@@ -52,12 +73,16 @@ const TileDB = {
     }
   },
 
-  async put(key, blob) {
+  async put(key, blobOrBuffer) {
     try {
+      let dataToStore = blobOrBuffer;
+      if (blobOrBuffer instanceof Blob) {
+        dataToStore = await blobOrBuffer.arrayBuffer();
+      }
       const db = await this.open();
       return new Promise((resolve) => {
         const tx  = db.transaction(this.DB_STORE, 'readwrite');
-        tx.objectStore(this.DB_STORE).put(blob, key);
+        tx.objectStore(this.DB_STORE).put(dataToStore, key);
         tx.oncomplete = () => resolve(true);
         tx.onerror    = () => resolve(false);
       });
@@ -98,9 +123,6 @@ const TileDB = {
 if (typeof L !== 'undefined' && L.TileLayer) {
   L.TileLayer.prototype.createTile = function(coords, done) {
     const tile = document.createElement('img');
-    L.DomEvent.on(tile, 'load',  L.Util.bind(this._tileOnLoad,  this, done, tile));
-    L.DomEvent.on(tile, 'error', L.Util.bind(this._tileOnError, this, done, tile));
-
     const tileUrl = this.getTileUrl(coords);
     
     // Determine provider dynamically from the layer's URL template
@@ -113,6 +135,18 @@ if (typeof L !== 'undefined' && L.TileLayer) {
     } else if (urlTemplate.includes('tile.openstreetmap.org')) {
       provider = 'osm';
     }
+
+    const onLoad = () => {
+      L.DomEvent.off(tile, 'load', onLoad);
+      L.DomEvent.off(tile, 'error', onError);
+      this._tileOnLoad(done, tile);
+    };
+
+    const onError = () => {
+      L.DomEvent.off(tile, 'load', onLoad);
+      L.DomEvent.off(tile, 'error', onError);
+      this._tileOnError(done, tile);
+    };
 
     if (provider) {
       const cacheKey = `${provider}/${coords.z}/${coords.x}/${coords.y}`;
@@ -128,17 +162,29 @@ if (typeof L !== 'undefined' && L.TileLayer) {
         if (blob && blob.size > 0) {
           const reader = new FileReader();
           reader.onloadend = function() {
+            L.DomEvent.on(tile, 'load', onLoad);
+            L.DomEvent.on(tile, 'error', onError);
             tile.src = reader.result;
           };
           reader.onerror = function() {
+            L.DomEvent.on(tile, 'load', onLoad);
+            L.DomEvent.on(tile, 'error', onError);
             tile.src = tileUrl;
           };
           reader.readAsDataURL(blob);
         } else {
+          L.DomEvent.on(tile, 'load', onLoad);
+          L.DomEvent.on(tile, 'error', onError);
           tile.src = tileUrl;
         }
-      }).catch(() => { tile.src = tileUrl; });
+      }).catch(() => {
+        L.DomEvent.on(tile, 'load', onLoad);
+        L.DomEvent.on(tile, 'error', onError);
+        tile.src = tileUrl;
+      });
     } else {
+      L.DomEvent.on(tile, 'load', onLoad);
+      L.DomEvent.on(tile, 'error', onError);
       tile.src = tileUrl;
     }
 
@@ -492,147 +538,7 @@ const OfflineManager = {
     }
   },
 
-  /* ===================================================================
-     ROADS & TRACKS DOWNLOADER (OpenStreetMap Overpass API)
-     =================================================================== */
 
-  // Download all roads, tracks and paths around validation terrain
-  async downloadRoadsAndTracks(features) {
-    const statusEl = document.getElementById('roadsDownloadStatus');
-    const btnEl = document.getElementById('downloadRoadsBtn');
-
-    if (!features || features.length === 0) {
-      statusEl.innerText = '⚠ No validation points loaded yet. Open the app first.';
-      return;
-    }
-
-    // Build bounding box from all feature centroids with a generous buffer (0.05 degrees ~ 5km)
-    const BUFFER = 0.05;
-    let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
-
-    features.forEach(f => {
-      let lat, lng;
-      if (f.geometry && f.geometry.type === 'Point') {
-        lng = f.geometry.coordinates[0];
-        lat = f.geometry.coordinates[1];
-      } else if (f.properties && f.properties.location_x && f.properties.location_y) {
-        lng = f.properties.location_x;
-        lat = f.properties.location_y;
-      }
-      if (lat !== undefined) {
-        minLat = Math.min(minLat, lat);
-        maxLat = Math.max(maxLat, lat);
-        minLng = Math.min(minLng, lng);
-        maxLng = Math.max(maxLng, lng);
-      }
-    });
-
-    // Apply buffer
-    minLat -= BUFFER; maxLat += BUFFER;
-    minLng -= BUFFER; maxLng += BUFFER;
-
-    const bbox = `${minLat.toFixed(5)},${minLng.toFixed(5)},${maxLat.toFixed(5)},${maxLng.toFixed(5)}`;
-
-    statusEl.innerText = `🛰 Querying OpenStreetMap for roads in area ${bbox}...`;
-    btnEl.disabled = true;
-    btnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Downloading...';
-
-    // Overpass API query - fetch ALL navigable ways: roads, tracks, paths, footways, bridleways
-    const overpassQuery = `
-      [out:json][timeout:90];
-      (
-        way["highway"~"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|road|track|path|footway|bridleway|service|living_street|pedestrian)$"](${bbox});
-      );
-      out body;
-      >;
-      out skel qt;
-    `;
-
-    const overpassUrl = 'https://overpass-api.de/api/interpreter';
-
-    try {
-      const response = await fetch(overpassUrl, {
-        method: 'POST',
-        body: overpassQuery,
-        headers: { 'Content-Type': 'text/plain' }
-      });
-
-      if (!response.ok) throw new Error(`Overpass API error: ${response.status}`);
-
-      const data = await response.json();
-      statusEl.innerText = `✅ Downloaded ${data.elements.length} OSM elements. Converting to map layer...`;
-
-      // Convert Overpass JSON to GeoJSON
-      const geojson = this.overpassToGeoJSON(data);
-
-      // Store in localStorage for offline use
-      try {
-        localStorage.setItem('ldn-roads-geojson', JSON.stringify(geojson));
-      } catch(e) {
-        console.warn('localStorage full, roads not persisted:', e);
-      }
-
-      // Cache in memory & build graph
-      this.roadsGeoJSON = geojson;
-      if (typeof RoadRouter !== 'undefined') {
-        RoadRouter.buildGraph(geojson);
-      }
-
-      // Render on the map
-      this.renderRoadsLayer(geojson);
-
-      const roadCount = geojson.features.length;
-      statusEl.innerHTML = `<i class="fa-solid fa-circle-check" style="color: var(--emerald-light)"></i> ${roadCount.toLocaleString()} road segments loaded & displayed on map!`;
-      document.getElementById('roadsLayerStatus').innerText = `${roadCount.toLocaleString()} segments loaded`;
-
-    } catch (err) {
-      console.error('Roads download failed:', err);
-      statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation" style="color: var(--red-alert)"></i> Download failed: ${err.message}. Check internet connection.`;
-    }
-
-    btnEl.disabled = false;
-    btnEl.innerHTML = '<i class="fa-solid fa-road"></i> Download Roads & Tracks';
-  },
-
-  // Convert raw Overpass JSON response to GeoJSON FeatureCollection
-  overpassToGeoJSON(data) {
-    // Build a lookup of all node IDs to coordinates
-    const nodeMap = {};
-    data.elements.forEach(el => {
-      if (el.type === 'node') {
-        nodeMap[el.id] = [el.lon, el.lat];
-      }
-    });
-
-    const features = [];
-
-    data.elements.forEach(el => {
-      if (el.type !== 'way') return;
-      if (!el.nodes || el.nodes.length < 2) return;
-
-      const coords = el.nodes
-        .map(nodeId => nodeMap[nodeId])
-        .filter(c => c !== undefined);
-
-      if (coords.length < 2) return;
-
-      features.push({
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: coords
-        },
-        properties: {
-          highway: el.tags ? el.tags.highway : 'unknown',
-          name: el.tags ? (el.tags.name || el.tags['name:en'] || '') : '',
-          surface: el.tags ? (el.tags.surface || '') : '',
-          osm_id: el.id
-        }
-      });
-    });
-
-    return { type: 'FeatureCollection', features };
-  },
 
   // ── HIGH-PERFORMANCE Canvas Roads Renderer ────────────────────────────────
   //
@@ -927,18 +833,10 @@ const OfflineManager = {
         return;
       }
 
-      // Find and update the drawer basemap toggle button if it exists
-      const btn = document.getElementById('drawerToggleBasemapBtn') ||
-                  document.getElementById('toggleBasemapBtn');
-
       if (map.hasLayer(offlineLayer)) {
         // Switch back to online
         map.removeLayer(offlineLayer);
         if (defaultLayer) map.addLayer(defaultLayer);
-        if (btn) {
-          btn.textContent = 'Toggle';
-          btn.classList.remove('active-layer-btn');
-        }
         console.log(`Offline basemap OFF (${count} tiles cached)`);
       } else {
         // Switch to offline
@@ -950,10 +848,6 @@ const OfflineManager = {
         map.addLayer(offlineLayer);
         // Force tile refresh so IndexedDB tiles are loaded
         offlineLayer.redraw();
-        if (btn) {
-          btn.innerHTML = '<i class="fa-solid fa-check"></i> Active';
-          btn.classList.add('active-layer-btn');
-        }
         console.log(`Offline basemap ON (${count} tiles from IndexedDB)`);
       }
     }).catch(err => {

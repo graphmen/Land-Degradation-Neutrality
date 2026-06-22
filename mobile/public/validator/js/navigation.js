@@ -547,7 +547,8 @@ const TurnGuide = {
     this._updateMuteIcon();
 
     const btn = document.getElementById('navVoiceBtn');
-    if (btn) {
+    if (btn && !btn.dataset.listenerBound) {
+      btn.dataset.listenerBound = 'true';
       btn.addEventListener('click', () => this.toggleMute());
     }
   },
@@ -574,14 +575,26 @@ const TurnGuide = {
   _speak(text) {
     if (this.muted) return;
     if (!window.speechSynthesis) return;
-    // Cancel any queued utterances so we don't pile up
-    window.speechSynthesis.cancel();
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.lang   = 'en-US';
-    utt.rate   = 0.92;
-    utt.pitch  = 1.0;
-    utt.volume = 1.0;
-    window.speechSynthesis.speak(utt);
+    
+    // Web Speech API bug in Chromium/WebViews: calling cancel() and speak() in the same tick 
+    // can block or silence the speech queue. Using cancel() with a small timeout fixes this.
+    try {
+      window.speechSynthesis.cancel();
+    } catch (e) {}
+
+    setTimeout(() => {
+      try {
+        window.speechSynthesis.resume(); // Ensure TTS engine is not in a paused state
+        const utt = new SpeechSynthesisUtterance(text);
+        utt.lang   = 'en-US';
+        utt.rate   = 0.92;
+        utt.pitch  = 1.0;
+        utt.volume = 1.0;
+        window.speechSynthesis.speak(utt);
+      } catch (e) {
+        console.warn('speechSynthesis.speak failed:', e);
+      }
+    }, 80);
   },
 
   // ── Classify turn from bearing delta ──────────────────────────────────────
