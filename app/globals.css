@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 @import url('https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css');
+@import url('https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css');
+@import url('https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css');
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -762,10 +764,160 @@ html, body {
   font-weight: 600;
 }
 
+.legend-footnote {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color);
+  font-size: 9px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
 .legend-color {
   width: 10px;
   height: 10px;
   border-radius: 50%;
+}
+
+.legend-icon-pin {
+  width: 18px;
+  height: 18px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.legend-icon-pin span {
+  transform: rotate(45deg);
+  font-size: 9px;
+  line-height: 1;
+  color: #fff;
+  font-weight: 700;
+}
+
+/* Premium data markers */
+.custom-data-marker-wrap {
+  background: transparent !important;
+  border: none !important;
+}
+
+.data-marker {
+  position: relative;
+  width: 38px;
+  height: 46px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35));
+  transition: transform 0.2s ease;
+}
+
+.data-marker:hover {
+  transform: translateY(-2px) scale(1.06);
+  z-index: 1000 !important;
+}
+
+.data-marker-ring {
+  position: absolute;
+  inset: 2px 2px 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+}
+
+.data-marker-body {
+  position: absolute;
+  top: 0;
+  left: 3px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50% 50% 50% 4px;
+  transform: rotate(-45deg);
+  background: linear-gradient(145deg, var(--m-color), color-mix(in srgb, var(--m-color) 75%, #000));
+  border: 2.5px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.data-marker-icon {
+  transform: rotate(45deg);
+  font-size: 13px;
+  line-height: 1;
+  color: #fff;
+  font-weight: 800;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.data-marker-pointer {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform: translateX(-50%);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 10px solid var(--m-color);
+  filter: brightness(0.85);
+}
+
+.data-marker-active .data-marker-body {
+  animation: marker-pulse 1.6s ease-in-out infinite;
+  box-shadow:
+    0 0 0 3px var(--m-glow),
+    0 0 14px var(--m-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+@keyframes marker-pulse {
+  0%, 100% { transform: rotate(-45deg) scale(1); }
+  50% { transform: rotate(-45deg) scale(1.08); }
+}
+
+/* Marker clusters */
+.marker-cluster-custom-wrap {
+  background: transparent !important;
+  border: none !important;
+}
+
+.marker-cluster-bubble {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 800;
+  font-size: 13px;
+  border: 3px solid rgba(255, 255, 255, 0.95);
+  background: radial-gradient(circle at 30% 30%, #059669, #004d26 70%);
+  box-shadow: 0 4px 14px rgba(0, 77, 38, 0.45);
+}
+
+.marker-cluster-bubble span {
+  line-height: 1;
+}
+
+.marker-cluster-medium .marker-cluster-bubble {
+  font-size: 14px;
+  background: radial-gradient(circle at 30% 30%, #d97706, #92400e 70%);
+  box-shadow: 0 4px 14px rgba(146, 64, 14, 0.45);
+}
+
+.marker-cluster-large .marker-cluster-bubble {
+  font-size: 15px;
+  background: radial-gradient(circle at 30% 30%, #dc2626, #7f1d1d 70%);
+  box-shadow: 0 4px 16px rgba(127, 29, 29, 0.5);
+}
+
+.leaflet-cluster-anim .leaflet-marker-icon,
+.leaflet-cluster-anim .leaflet-marker-shadow {
+  transition: transform 0.25s ease-out, opacity 0.25s ease-out;
 }
 
 /* 4. Right Detail Panel */

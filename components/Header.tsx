@@ -17,43 +17,52 @@ export default function Header({ isCollapsed, setIsCollapsed }: HeaderProps) {
   const handleSync = async () => {
     if (isSyncing) return;
     setIsSyncing(true);
-    addToast("info", "Sync Initialized", "Connecting to servers to retrieve the latest environmental telemetry...");
+    addToast("info", "Sync Initialized", "Pulling latest field records from Kobo Collect...");
     
     try {
-      const res = await fetch("/api/sync", { method: "POST" });
-      if (!res.ok) {
-        const data = await res.json();
-        
-        // Handle Vercel serverless environment warning gracefully by running direct sync from client
-        if (res.status === 400 || (data.error && (data.error.includes("serverless") || data.error.includes("Python")))) {
-          addToast("info", "Live Direct Sync", "Offline sync script not supported on serverless. Performing direct live API sync...");
-          
-          // Call API routes with bypassCache=true to trigger direct refresh
-          const [ldnRes, soilRes] = await Promise.all([
-            fetch("/api/ldn?bypassCache=true"),
-            fetch("/api/soil?bypassCache=true")
-          ]);
-          
-          if (!ldnRes.ok || !soilRes.ok) {
-            throw new Error("Direct live API sync failed.");
-          }
-          
-          addToast("success", "Sync Successful", "Live Kobo and Google Sheets telemetry caches refreshed.");
-          setTimeout(() => {
-            window.location.reload();
-          }, 2500);
-          return;
+      // Step 1: Run the Python sync script when available (updates local JSON + SOC mapping)
+      let scriptMessage = "";
+      try {
+        const syncRes = await fetch("/api/sync", { method: "POST", cache: "no-store" });
+        const syncData = await syncRes.json().catch(() => ({}));
+        if (syncRes.ok) {
+          scriptMessage = syncData.message || "Local cache refreshed.";
+        } else if (syncRes.status !== 400) {
+          console.warn("Background sync script failed:", syncData.error);
         }
-        
-        throw new Error(data.error || "Failed to sync data");
+      } catch (scriptErr) {
+        console.warn("Background sync script unavailable:", scriptErr);
       }
-      
-      addToast("success", "Sync Successful", "Telemetry caches updated. Re-indexing geospatial records...");
+
+      // Step 2: Always pull live data from Kobo Collect (bypassCache ignores OFFLINE_MODE)
+      const [ldnRes, soilRes] = await Promise.all([
+        fetch("/api/ldn?bypassCache=true&sync=true", { cache: "no-store" }),
+        fetch("/api/soil?bypassCache=true&sync=true", { cache: "no-store" }),
+      ]);
+
+      if (!ldnRes.ok || !soilRes.ok) {
+        const ldnErr = ldnRes.ok ? null : await ldnRes.text().catch(() => "");
+        const soilErr = soilRes.ok ? null : await soilRes.text().catch(() => "");
+        throw new Error(
+          ldnErr || soilErr || "Failed to refresh LDN and Soil data from Kobo Collect."
+        );
+      }
+
+      const ldn = await ldnRes.json();
+      const soil = await soilRes.json();
+
+      addToast(
+        "success",
+        "Sync Successful",
+        `Kobo Collect updated: ${ldn.count ?? 0} LDN records, ${soil.count ?? 0} soil records.` +
+          (scriptMessage ? ` ${scriptMessage}` : "")
+      );
+
       setTimeout(() => {
         window.location.reload();
-      }, 2500);
+      }, 2000);
     } catch (err: any) {
-      addToast("error", "Sync Execution Failed", err.message || "An unexpected network timeout occurred.");
+      addToast("error", "Sync Execution Failed", err.message || "Could not reach Kobo Collect. Check your network connection.");
     } finally {
       setIsSyncing(false);
     }

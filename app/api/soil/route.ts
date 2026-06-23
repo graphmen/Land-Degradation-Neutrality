@@ -73,7 +73,7 @@ async function loadLocalFallback() {
   }
 }
 
-async function fetchSoilRawRecords(): Promise<{ records: any[]; source: string }> {
+async function fetchSoilRawRecords(options: { forceLiveKobo?: boolean } = {}): Promise<{ records: any[]; source: string }> {
   let records: any[] = [];
   let source = "fallback";
 
@@ -82,28 +82,33 @@ async function fetchSoilRawRecords(): Promise<{ records: any[]; source: string }
 
   let backendFetched = false;
 
-  // 1. Try FastAPI backend if it's not a local backend on Vercel
-  if (!(isVercel && isLocalBackend)) {
+  const tryBackend = async () => {
+    if (isVercel && isLocalBackend) return false;
     try {
       console.log(`Connecting to backend at: ${BACKEND_URL}/api/soil`);
       const backendRes = await fetchWithTimeout(`${BACKEND_URL}/api/soil`, {
         cache: "no-store",
-        timeout: 2500,
+        timeout: 30000,
       });
       if (backendRes.ok) {
         const json = await backendRes.json();
         records = json.records || [];
         source = "backend";
-        backendFetched = true;
-      } else {
-        console.warn(`Backend returned status ${backendRes.status}. Falling back to direct Kobo API fetch...`);
+        return true;
       }
+      console.warn(`Backend returned status ${backendRes.status}. Falling back to direct Kobo API fetch...`);
     } catch (backendErr: any) {
       console.warn(`Failed to connect to backend at ${BACKEND_URL}: ${backendErr.message}`);
     }
+    return false;
+  };
+
+  // 1. Try FastAPI backend first for normal reads; sync tries Kobo direct first
+  if (!options.forceLiveKobo) {
+    backendFetched = await tryBackend();
   }
 
-  // 2. Direct Kobo API Fetch Fallback (Consolidating both new and legacy forms using Kobo v2 API)
+  // 2. Direct Kobo API fetch (if backend fetch was skipped or failed)
   if (!backendFetched) {
     try {
       const assetIds = ["am3UGrEY8tYcnrMp3Xddys", "ahkCvpctsofMKN4GzCH3BT"];
@@ -116,7 +121,7 @@ async function fetchSoilRawRecords(): Promise<{ records: any[]; source: string }
           const dataRes = await fetchWithTimeout(url, {
             headers: { Authorization: `Basic ${AUTH}` },
             cache: "no-store",
-            timeout: 6000,
+            timeout: 30000,
           });
           if (dataRes.ok) {
             const json = await dataRes.json();
@@ -144,14 +149,20 @@ async function fetchSoilRawRecords(): Promise<{ records: any[]; source: string }
           records.push(normalise(r));
         }
         source = "kobotoolbox";
+        backendFetched = true;
       } else {
         throw new Error("No records could be retrieved from Kobo v2 API.");
       }
     } catch (e: any) {
-      console.warn(`Direct Kobo fetch failed: ${e.message}. Falling back to local data file.`);
-      const fallback = await loadLocalFallback();
-      records = fallback.records;
-      source = "fallback";
+      console.warn(`Direct Kobo fetch failed: ${e.message}. Trying backend/local fallback...`);
+      if (options.forceLiveKobo && (await tryBackend())) {
+        backendFetched = true;
+      } else {
+        const fallback = await loadLocalFallback();
+        records = fallback.records;
+        source = "fallback";
+        backendFetched = true;
+      }
     }
   }
 
@@ -200,7 +211,8 @@ export async function GET(req: Request) {
   
   const mod = await loadSoilModifications();
 
-  if (OFFLINE_MODE) {
+  // OFFLINE_MODE serves cached JSON for normal reads; explicit sync always pulls from Kobo
+  if (OFFLINE_MODE && !bypassCache) {
     try {
       const fallback = await loadLocalFallback();
       records = fallback.records;
@@ -244,8 +256,8 @@ export async function GET(req: Request) {
         };
       }
     } else {
-      // Force sync: Fetch directly from live sources
-      const fetched = await fetchSoilRawRecords();
+      // Force sync: fetch directly from Kobo Collect (skip backend cache)
+      const fetched = await fetchSoilRawRecords({ forceLiveKobo: true });
       records = fetched.records;
       source = fetched.source;
       soilCache = {

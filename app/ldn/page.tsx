@@ -177,7 +177,16 @@ export default function LdnPage() {
   const totalPages = Math.max(1, Math.ceil(filteredFeatures.length / itemsPerPage));
   const currentFeatures = filteredFeatures.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  const activeFeature = geojson.features.find((f: any) => f.properties._id === activeId);
+  const filteredGeojson = useMemo(
+    () => ({
+      type: "FeatureCollection",
+      features: filteredFeatures,
+      total: filteredFeatures.length,
+    }),
+    [filteredFeatures]
+  );
+
+  const activeFeature = filteredFeatures.find((f: any) => f.properties._id === activeId);
 
   const dashboardStats = useMemo(() => {
     if (!data) return null;
@@ -512,7 +521,7 @@ export default function LdnPage() {
 
       {/* Panel 3: Center Map Panel */}
       <div className="buims-map-panel">
-        <MapView geojson={geojson} activeId={activeId} />
+        <MapView geojson={filteredGeojson} activeId={activeId} mode="ldn" />
       </div>
 
       {/* Right divider collapse toggle */}

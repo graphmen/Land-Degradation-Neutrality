@@ -73,7 +73,7 @@ async function loadLocalFallback() {
   }
 }
 
-async function fetchLdnRawRecords(): Promise<{ records: any[]; source: string }> {
+async function fetchLdnRawRecords(options: { forceLiveKobo?: boolean } = {}): Promise<{ records: any[]; source: string }> {
   let records: any[] = [];
   let source = "fallback";
 
@@ -82,28 +82,33 @@ async function fetchLdnRawRecords(): Promise<{ records: any[]; source: string }>
 
   let backendFetched = false;
 
-  // 1. Try FastAPI backend if it's not a local backend on Vercel
-  if (!(isVercel && isLocalBackend)) {
+  const tryBackend = async () => {
+    if (isVercel && isLocalBackend) return false;
     try {
       console.log(`Connecting to backend at: ${BACKEND_URL}/api/ldn`);
       const backendRes = await fetchWithTimeout(`${BACKEND_URL}/api/ldn`, {
         cache: "no-store",
-        timeout: 2500,
+        timeout: 30000,
       });
       if (backendRes.ok) {
         const json = await backendRes.json();
         records = json.records || [];
         source = "backend";
-        backendFetched = true;
-      } else {
-        console.warn(`Backend returned status ${backendRes.status}. Falling back to direct Kobo API fetch...`);
+        return true;
       }
+      console.warn(`Backend returned status ${backendRes.status}. Falling back to direct Kobo API fetch...`);
     } catch (backendErr: any) {
       console.warn(`Failed to connect to backend at ${BACKEND_URL}: ${backendErr.message}`);
     }
+    return false;
+  };
+
+  // 1. Try FastAPI backend first for normal reads; sync tries Kobo direct first
+  if (!options.forceLiveKobo) {
+    backendFetched = await tryBackend();
   }
 
-  // 2. Direct Kobo API Fetch Fallback (if backend fetch was skipped or failed)
+  // 2. Direct Kobo API fetch (if backend fetch was skipped or failed)
   if (!backendFetched) {
     try {
       const assetId = "apM5C5mTP34m2m3DSwdd4E";
@@ -112,7 +117,7 @@ async function fetchLdnRawRecords(): Promise<{ records: any[]; source: string }>
       const dataRes = await fetchWithTimeout(url, {
         headers: { Authorization: `Basic ${AUTH}` },
         cache: "no-store",
-        timeout: 6000,
+        timeout: 30000,
       });
 
       if (!dataRes.ok) {
@@ -123,11 +128,17 @@ async function fetchLdnRawRecords(): Promise<{ records: any[]; source: string }>
       const rawRecords = json.results || [];
       records = rawRecords.map(normalise);
       source = "kobotoolbox";
+      backendFetched = true;
     } catch (e: any) {
-      console.warn(`Direct Kobo fetch failed: ${e.message}. Falling back to local data file.`);
-      const fallback = await loadLocalFallback();
-      records = fallback.records;
-      source = "fallback";
+      console.warn(`Direct Kobo fetch failed: ${e.message}. Trying backend/local fallback...`);
+      if (options.forceLiveKobo && (await tryBackend())) {
+        backendFetched = true;
+      } else {
+        const fallback = await loadLocalFallback();
+        records = fallback.records;
+        source = "fallback";
+        backendFetched = true;
+      }
     }
   }
 
@@ -176,7 +187,8 @@ export async function GET(req: Request) {
   
   const mod = await loadLdnModifications();
 
-  if (OFFLINE_MODE) {
+  // OFFLINE_MODE serves cached JSON for normal reads; explicit sync always pulls from Kobo
+  if (OFFLINE_MODE && !bypassCache) {
     try {
       const fallback = await loadLocalFallback();
       records = fallback.records;
@@ -220,8 +232,8 @@ export async function GET(req: Request) {
         };
       }
     } else {
-      // Force sync: Fetch directly from live sources
-      const fetched = await fetchLdnRawRecords();
+      // Force sync: fetch directly from Kobo Collect (skip backend cache)
+      const fetched = await fetchLdnRawRecords({ forceLiveKobo: true });
       records = fetched.records;
       source = fetched.source;
       ldnCache = {
