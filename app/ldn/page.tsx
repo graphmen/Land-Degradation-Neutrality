@@ -406,7 +406,7 @@ export default function LdnPage() {
               }}
             />
           </div>
-          <div className="quick-filters" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+          <div className="quick-filters cols-3">
             <select
               value={severityFilter}
               onChange={(e) => {

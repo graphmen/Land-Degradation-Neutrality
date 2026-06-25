@@ -572,14 +572,13 @@ export default function InterventionsPage() {
               }}
             />
           </div>
-          <div className="quick-filters" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+          <div className="quick-filters cols-3">
             <select
               value={categoryFilter}
               onChange={(e) => {
                 setCategoryFilter(e.target.value);
                 setCurrentPage(1);
               }}
-              style={{ fontSize: "10px" }}
             >
               <option value="all">Categories</option>
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -590,7 +589,6 @@ export default function InterventionsPage() {
                 setStatusFilter(e.target.value);
                 setCurrentPage(1);
               }}
-              style={{ fontSize: "10px" }}
             >
               <option value="all">Statuses</option>
               {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
@@ -601,7 +599,6 @@ export default function InterventionsPage() {
                 setAdminLevelFilter(e.target.value);
                 setCurrentPage(1);
               }}
-              style={{ fontSize: "10px" }}
             >
               <option value="all">Admin Levels</option>
               {ADMIN_LEVELS.map(al => <option key={al} value={al}>{al}</option>)}

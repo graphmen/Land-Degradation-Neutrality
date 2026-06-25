@@ -516,7 +516,8 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  min-width: 320px; /* Prevent shrinking contents during collapse transition */
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .panel-title {
@@ -553,18 +554,38 @@ html, body {
 
 .quick-filters {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
+  width: 100%;
+}
+
+/* Three filters: two on top row, third spans full width below */
+.quick-filters.cols-3 > :nth-child(3) {
+  grid-column: 1 / -1;
+}
+
+/* Four filters: neat 2×2 grid */
+.quick-filters.cols-4 {
+  grid-template-columns: 1fr 1fr;
 }
 
 .quick-filters select {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   background: #ffffff;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
-  padding: 6px;
+  padding: 7px 8px;
   color: var(--text-primary);
   font-size: 11px;
   outline: none;
+  cursor: pointer;
+}
+
+.quick-filters select:focus {
+  border-color: var(--border-color-active);
+  box-shadow: 0 0 0 2px rgba(6, 75, 34, 0.08);
 }
 
 .list-scroll {
@@ -574,7 +595,7 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  min-width: 320px;
+  min-width: 0;
 }
 
 .site-card {

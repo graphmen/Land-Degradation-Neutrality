@@ -697,14 +697,13 @@ export default function DrylandsPage() {
               }}
             />
           </div>
-          <div className="quick-filters" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+          <div className="quick-filters cols-3">
             <select
               value={vegFilter}
               onChange={(e) => {
                 setVegFilter(e.target.value);
                 setCurrentPage(1);
               }}
-              style={{ fontSize: "10px" }}
             >
               <option value="all">Veg Condition</option>
               {VEG_CONDITIONS.map(c => <option key={c} value={c}>{c}</option>)}
@@ -715,7 +714,6 @@ export default function DrylandsPage() {
                 setPriorityFilter(e.target.value);
                 setCurrentPage(1);
               }}
-              style={{ fontSize: "10px" }}
             >
               <option value="all">Priority Level</option>
               <option value="low">Low</option>
@@ -728,7 +726,6 @@ export default function DrylandsPage() {
                 setSoilFilter(e.target.value);
                 setCurrentPage(1);
               }}
-              style={{ fontSize: "10px" }}
             >
               <option value="all">Soil Type</option>
               {SOIL_TYPES.map(s => <option key={s} value={s}>{s}</option>)}

@@ -208,7 +208,7 @@ export default function DatabaseExplorer() {
     setLoading(true);
     setError(null);
     try {
-      // 1. POST to /api/sync to trigger the python download_ldn.py script on the server
+      // 1. POST to /api/sync — tries Python script first, then direct Kobo API fallback
       const syncRes = await fetch("/api/sync", {
         method: "POST",
         cache: "no-store"
@@ -218,6 +218,13 @@ export default function DatabaseExplorer() {
         const errJson = await syncRes.json().catch(() => ({}));
         throw new Error(errJson.error || "Failed to trigger live sync on the server.");
       }
+
+      const syncJson = await syncRes.json().catch(() => ({}));
+      // Log if Python script failed but direct API fallback succeeded
+      if (syncJson.warning) {
+        console.warn("[Sync] Fallback method used:", syncJson.warning);
+      }
+      console.log("[Sync] Completed via", syncJson.method || "unknown", "-", syncJson.message);
 
       // 2. Fetch fresh records from endpoints with bypassCache=true
       const [ldnRes, soilRes, drylandsRes, ldnModifications, soilModifications, drylandsModifications] = await Promise.all([

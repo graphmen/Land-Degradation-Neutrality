@@ -45,7 +45,16 @@ backend-err.log
 backend-out.log
 frontend-out.log
 
-# Large Datasets and scientific PDFs
+# Large Datasets, Office temp files, and scientific exports
 *.pdf
 *.pptx
+*.xlsx
+*.qmd
+tsconfig.tsbuildinfo
+~$*
+
+# Auto-generated Kobo sync cache (re-downloaded at runtime)
+public/ldn-data.json
+public/soil-data.json
+public/soil-organic-carbon.json
 
