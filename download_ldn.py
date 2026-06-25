@@ -194,3 +194,12 @@ sheet_data = download_sheet_data()
 # Download and merge both
 download_form_data("ldn", FORMS["ldn"], sheet_data.get("ldn", []))
 download_form_data("soil", [FORMS["soil"], "ahkCvpctsofMKN4GzCH3BT"], sheet_data.get("soil", []))
+
+# Re-import ILUP drylands data from Excel (adds/updates records from field export)
+try:
+    import import_drylands
+    import importlib
+    importlib.reload(import_drylands)
+    print("\nOK: Drylands ILUP data import completed.")
+except Exception as e:
+    print(f"Warning: Could not run drylands import: {e}")
