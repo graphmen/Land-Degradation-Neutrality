@@ -12,17 +12,21 @@ const KOBO_V2_URL = "https://kf.kobotoolbox.org/api/v2";
 const KOBO_USER = process.env.KOBO_USERNAME || "vegris2020";
 const KOBO_PASS = process.env.KOBO_PASSWORD || "musasa2020";
 const AUTH = Buffer.from(`${KOBO_USER}:${KOBO_PASS}`).toString("base64");
-const OFFLINE_MODE = process.env.OFFLINE_MODE !== "false"; // Defaults to true (offline), set to 'false' in production env vars for live sync
+// On Vercel: always fetch live from Kobo (no Python script available, no persistent disk)
+// Locally: respect OFFLINE_MODE env var (defaults to true for fast local dev)
+const IS_VERCEL = !!process.env.VERCEL;
+const OFFLINE_MODE = IS_VERCEL ? false : process.env.OFFLINE_MODE !== "false";
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
 
-// In-memory cache variables for Vercel warm starts
+// In-memory cache — module-level so it persists across warm serverless invocations
 interface CacheData {
   records: any[];
   source: string;
   timestamp: number;
 }
 let ldnCache: CacheData | null = null;
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache TTL
+// On Vercel: 30 min TTL (reduce cold-start Kobo calls). Locally: 5 min for dev freshness.
+const CACHE_TTL = IS_VERCEL ? 30 * 60 * 1000 : 5 * 60 * 1000;
 
 async function fetchWithTimeout(url: string, options: RequestInit & { timeout?: number } = {}) {
   const { timeout = 2500, ...rest } = options;
@@ -187,7 +191,7 @@ export async function GET(req: Request) {
   
   const mod = await loadLdnModifications();
 
-  // OFFLINE_MODE serves cached JSON for normal reads; explicit sync always pulls from Kobo
+  // On Vercel: always go live (OFFLINE_MODE is forced false). Locally: respect OFFLINE_MODE.
   if (OFFLINE_MODE && !bypassCache) {
     try {
       const fallback = await loadLocalFallback();
@@ -197,9 +201,22 @@ export async function GET(req: Request) {
       return NextResponse.json({ count: 0, records: [], error: `Local fallback failed: ${fsErr.message}` }, { status: 500 });
     }
   } else {
-    // Check cache first
+    // Check cron cache first (populated by /api/cron/sync on Vercel)
     const now = Date.now();
-    if (!bypassCache && ldnCache && (now - ldnCache.timestamp < CACHE_TTL)) {
+    let cronRecords: any[] | null = null;
+    try {
+      // Dynamically import to avoid circular deps — cron cache is module-level
+      const cronMod = await import("@/app/api/cron/sync/route").catch(() => null);
+      if (cronMod?.cronCache?.ldn && (now - cronMod.cronCache.ldn.updatedAt < CACHE_TTL)) {
+        cronRecords = cronMod.cronCache.ldn.records;
+        console.log(`[LDN] Serving from cron cache (age: ${Math.round((now - cronMod.cronCache.ldn.updatedAt) / 1000)}s)`);
+      }
+    } catch {}
+
+    if (cronRecords) {
+      records = cronRecords;
+      source = "cron-cache";
+    } else if (!bypassCache && ldnCache && (now - ldnCache.timestamp < CACHE_TTL)) {
       records = ldnCache.records;
       source = ldnCache.source;
       console.log(`Serving LDN records from cache (age: ${Math.round((now - ldnCache.timestamp) / 1000)}s)`);

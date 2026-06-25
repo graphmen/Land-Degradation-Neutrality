@@ -53,8 +53,6 @@ frontend-out.log
 tsconfig.tsbuildinfo
 ~$*
 
-# Auto-generated Kobo sync cache (re-downloaded at runtime)
-public/ldn-data.json
-public/soil-data.json
+# Auto-generated derived data (re-generated from Excel at sync time)
 public/soil-organic-carbon.json
 
