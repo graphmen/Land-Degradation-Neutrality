@@ -1,14 +1,23 @@
-"""
-Import ILUP for Drylands Project Excel data into public/drylands-data.json
-Merges with any existing manually-added records (those with _id < 100000 or string IDs).
-"""
 import openpyxl
 import json
 import os
+import glob
 from datetime import datetime
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-EXCEL_FILE = os.path.join(script_dir, "ILUP_for_Drylands_Project_-_all_versions_-_labels_-_2026-05-12-08-42-15.xlsx")
+
+# Prefer the simple name; fall back to any ILUP_for_Drylands*.xlsx in the project root
+def find_ilup_excel():
+    preferred = os.path.join(script_dir, "ILUP_for_Drylands.xlsx")
+    if os.path.exists(preferred):
+        return preferred
+    matches = sorted(glob.glob(os.path.join(script_dir, "ILUP_for_Drylands*.xlsx")))
+    if matches:
+        print(f"  Using: {os.path.basename(matches[-1])}")
+        return matches[-1]
+    return None
+
+EXCEL_FILE = find_ilup_excel()
 OUTPUT_FILE = os.path.join(script_dir, "public", "drylands-data.json")
 
 # District lookup by ward number (from field knowledge)
