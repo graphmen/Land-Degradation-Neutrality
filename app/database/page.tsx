@@ -270,8 +270,14 @@ export default function DatabaseExplorer() {
     setSortDirection("desc");
   }, [activeTab]);
 
-  // Determine active modification tracker
-  const activeMods = activeTab === "ldn" ? ldnMods : (activeTab === "soil" ? soilMods : drylandsMods);
+  // Determine active modification tracker — normalize to safe shape in case API returned unexpected data
+  const rawMods = activeTab === "ldn" ? ldnMods : (activeTab === "soil" ? soilMods : drylandsMods);
+  const activeMods = {
+    additions: rawMods?.additions ?? [],
+    deletions: rawMods?.deletions ?? [],
+    edits: rawMods?.edits ?? {},
+    parentEdits: rawMods?.parentEdits,
+  };
   const activeRecords = activeTab === "ldn" ? ldnRecords : (activeTab === "soil" ? soilRecords : drylandsRecords);
 
   // Dynamic filter dropdown options

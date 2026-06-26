@@ -68,8 +68,17 @@ async function syncLocalDataFile(mod: any) {
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const action = searchParams.get("action");
+
+    // Return raw modifications ledger when requested
+    if (action === "modifications") {
+      const mod = await loadModifications();
+      return NextResponse.json(mod);
+    }
+
     const records = await loadData();
     const mod = await loadModifications();
 
