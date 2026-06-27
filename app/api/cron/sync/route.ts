@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { cronCache } from "@/lib/cronCache";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300; // Allow up to 5 minutes for Kobo fetches
@@ -8,16 +9,6 @@ const KOBO_USER = process.env.KOBO_USERNAME || "vegris2020";
 const KOBO_PASS = process.env.KOBO_PASSWORD || "musasa2020";
 const AUTH = Buffer.from(`${KOBO_USER}:${KOBO_PASS}`).toString("base64");
 const GOOGLE_SHEET_URL = process.env.GOOGLE_SHEET_SCRIPT_URL;
-
-// Shared in-memory cache — module-level so it persists across warm serverless invocations
-// Exported so /api/ldn and /api/soil routes can read from it
-export const cronCache: {
-  ldn: { records: any[]; updatedAt: number } | null;
-  soil: { records: any[]; updatedAt: number } | null;
-} = {
-  ldn: null,
-  soil: null,
-};
 
 const LDN_FORMS = ["apM5C5mTP34m2m3DSwdd4E"];
 const SOIL_FORMS = ["am3UGrEY8tYcnrMp3Xddys", "ahkCvpctsofMKN4GzCH3BT"];
@@ -66,7 +57,6 @@ function dedup(records: any[]): any[] {
 async function runFullSync(): Promise<{ ldn: number; soil: number }> {
   console.log("[Cron] Starting full KoboToolbox sync...");
 
-  // Fetch all sources in parallel
   const [ldnKobo, soilKoboA, soilKoboB, sheets] = await Promise.allSettled([
     fetchKoboForm(LDN_FORMS[0]),
     fetchKoboForm(SOIL_FORMS[0]),
@@ -97,14 +87,11 @@ async function runFullSync(): Promise<{ ldn: number; soil: number }> {
 }
 
 export async function GET(req: Request): Promise<NextResponse> {
-  // Validate cron secret — Vercel sends this header automatically when invoking crons.
-  // Also accept direct requests with the correct Bearer token.
   const cronSecret = process.env.CRON_SECRET;
   const authHeader = req.headers.get("authorization");
 
   const isVercelCron = req.headers.get("x-vercel-cron") === "1";
-  const hasValidToken =
-    cronSecret && authHeader === `Bearer ${cronSecret}`;
+  const hasValidToken = cronSecret && authHeader === `Bearer ${cronSecret}`;
 
   if (!isVercelCron && !hasValidToken) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

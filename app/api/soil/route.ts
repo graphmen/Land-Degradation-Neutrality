@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
+import { cronCache } from "@/lib/cronCache";
 
 const soilModPath = path.join(process.cwd(), "public", "soil-modifications.json");
 const soilDataPath = path.join(process.cwd(), "public", "soil-data.json");
@@ -228,10 +229,9 @@ export async function GET(req: Request) {
     const now = Date.now();
     let cronRecords: any[] | null = null;
     try {
-      const cronMod = await import("@/app/api/cron/sync/route").catch(() => null);
-      if (cronMod?.cronCache?.soil && (now - cronMod.cronCache.soil.updatedAt < CACHE_TTL)) {
-        cronRecords = cronMod.cronCache.soil.records;
-        console.log(`[Soil] Serving from cron cache (age: ${Math.round((now - cronMod.cronCache.soil.updatedAt) / 1000)}s)`);
+      if (cronCache?.soil && (now - cronCache.soil.updatedAt < CACHE_TTL)) {
+        cronRecords = cronCache.soil.records;
+        console.log(`[Soil] Serving from cron cache (age: ${Math.round((now - cronCache.soil.updatedAt) / 1000)}s)`);
       }
     } catch {}
 

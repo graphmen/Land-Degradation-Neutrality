@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
+import { cronCache } from "@/lib/cronCache";
 
 const ldnModPath = path.join(process.cwd(), "public", "ldn-modifications.json");
 const ldnDataPath = path.join(process.cwd(), "public", "ldn-data.json");
@@ -205,11 +206,9 @@ export async function GET(req: Request) {
     const now = Date.now();
     let cronRecords: any[] | null = null;
     try {
-      // Dynamically import to avoid circular deps — cron cache is module-level
-      const cronMod = await import("@/app/api/cron/sync/route").catch(() => null);
-      if (cronMod?.cronCache?.ldn && (now - cronMod.cronCache.ldn.updatedAt < CACHE_TTL)) {
-        cronRecords = cronMod.cronCache.ldn.records;
-        console.log(`[LDN] Serving from cron cache (age: ${Math.round((now - cronMod.cronCache.ldn.updatedAt) / 1000)}s)`);
+      if (cronCache?.ldn && (now - cronCache.ldn.updatedAt < CACHE_TTL)) {
+        cronRecords = cronCache.ldn.records;
+        console.log(`[LDN] Serving from cron cache (age: ${Math.round((now - cronCache.ldn.updatedAt) / 1000)}s)`);
       }
     } catch {}
 
