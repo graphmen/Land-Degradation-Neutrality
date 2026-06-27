@@ -1,5 +1,5 @@
 {
-  "count": 95,
+  "count": 113,
   "records": [
     {
       "_id": 760200888,
@@ -5890,6 +5890,1405 @@
       "_submitted_by": "vegris2020"
     },
     {
+      "_id": 792459074,
+      "formhub/uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "start": "2026-06-24T17:15:41.784+02:00",
+      "end": "2026-06-25T19:00:19.465+02:00",
+      "today": "2026-06-24",
+      "deviceid": "collect:9Sthv0fvWfBzovKD",
+      "geninfo/measurement_date": "2026-06-24",
+      "measurement_date": "2026-06-24",
+      "geninfo/prov": "maseas",
+      "prov": "maseas",
+      "geninfo/dist": "Goromonzi",
+      "dist": "Goromonzi",
+      "geninfo/ward": "12",
+      "ward": "12",
+      "geninfo/Team": "Muchawona",
+      "Team": "Muchawona",
+      "geninfo/ceid": "Zw6",
+      "ceid": "Zw6",
+      "sampl": [
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "cent",
+          "sampl/poin": "-17.6831783 31.4988883 1221.0 3.733",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "10yr4/1",
+          "sampl/tex": "clay"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "north",
+          "sampl/poin": "-17.6834817 31.49912 1246.2 4.25",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "10yr4/1",
+          "sampl/tex": "clay"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "east",
+          "sampl/poin": "-17.6830117 31.4991833 1246.3 3.75",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "10yr5/1",
+          "sampl/tex": "clay"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "south",
+          "sampl/poin": "-17.6834572 31.498647 1232.1 4.725",
+          "sampl/dep": "30",
+          "sampl/moisture": "Moist",
+          "sampl/col": "10yr4/1",
+          "sampl/tex": "clay"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "west",
+          "sampl/poin": "-17.6828993 31.4986171 1228.5 4.4",
+          "sampl/dep": "30",
+          "sampl/moisture": "Moist",
+          "sampl/col": "10yr4/1",
+          "sampl/tex": "clay"
+        }
+      ],
+      "__version__": "vZ3TxNWBfXwuY2zVtFqgns",
+      "meta/instanceID": "uuid:746b23df-50e6-46c8-915d-df4ec9688db3",
+      "instanceID": "uuid:746b23df-50e6-46c8-915d-df4ec9688db3",
+      "_xform_id_string": "am3UGrEY8tYcnrMp3Xddys",
+      "_uuid": "746b23df-50e6-46c8-915d-df4ec9688db3",
+      "meta/rootUuid": "uuid:746b23df-50e6-46c8-915d-df4ec9688db3",
+      "rootUuid": "uuid:746b23df-50e6-46c8-915d-df4ec9688db3",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2026-06-25T17:01:51",
+      "_validation_status": {},
+      "_submitted_by": "vegris2020"
+    },
+    {
+      "_id": 792552335,
+      "formhub/uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "start": "2026-06-25T08:11:03.382+02:00",
+      "end": "2026-06-25T08:33:12.902+02:00",
+      "today": "2026-06-25",
+      "deviceid": "collect:ahCaBKcq88CTtidr",
+      "geninfo/measurement_date": "2026-06-25",
+      "measurement_date": "2026-06-25",
+      "geninfo/prov": "matsou",
+      "prov": "matsou",
+      "geninfo/dist": "Matobo ",
+      "dist": "Matobo ",
+      "geninfo/ward": "25",
+      "ward": "25",
+      "geninfo/Team": "Chinofunga AT ",
+      "Team": "Chinofunga AT ",
+      "geninfo/ceid": "11692_16984",
+      "ceid": "11692_16984",
+      "sampl": [
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "cent",
+          "sampl/poin": "-20.3263183 28.36436 1384.4 2.6",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5YR 5/2",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "north",
+          "sampl/poin": "-20.3261153 28.3645918 1380.8 1.9",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 5/2",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "east",
+          "sampl/poin": "-20.3260761 28.3641398 1380.6 1.9",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5YR 5/2",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "south",
+          "sampl/poin": "-20.326425 28.3641167 1381.8 1.9",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 5/2",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "west",
+          "sampl/poin": "-20.3265316 28.3646011 1383.8 1.9",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 5/2",
+          "sampl/tex": "sand"
+        }
+      ],
+      "__version__": "vZ3TxNWBfXwuY2zVtFqgns",
+      "meta/instanceID": "uuid:580e36ca-d4e9-43ee-946d-96ae28aab3e1",
+      "instanceID": "uuid:580e36ca-d4e9-43ee-946d-96ae28aab3e1",
+      "_xform_id_string": "am3UGrEY8tYcnrMp3Xddys",
+      "_uuid": "580e36ca-d4e9-43ee-946d-96ae28aab3e1",
+      "meta/rootUuid": "uuid:580e36ca-d4e9-43ee-946d-96ae28aab3e1",
+      "rootUuid": "uuid:580e36ca-d4e9-43ee-946d-96ae28aab3e1",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2026-06-25T19:04:55",
+      "_validation_status": {},
+      "_submitted_by": "vegris2020"
+    },
+    {
+      "_id": 792553202,
+      "formhub/uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "start": "2026-06-25T09:38:35.788+02:00",
+      "end": "2026-06-25T09:52:39.393+02:00",
+      "today": "2026-06-25",
+      "deviceid": "collect:ahCaBKcq88CTtidr",
+      "geninfo/measurement_date": "2026-06-25",
+      "measurement_date": "2026-06-25",
+      "geninfo/prov": "matsou",
+      "prov": "matsou",
+      "geninfo/dist": "Bulilima ",
+      "dist": "Bulilima ",
+      "geninfo/ward": "19",
+      "ward": "19",
+      "geninfo/Team": "Chinofunga AT ",
+      "Team": "Chinofunga AT ",
+      "geninfo/ceid": "ZE12",
+      "ceid": "ZE12",
+      "sampl": [
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "cent",
+          "sampl/poin": "-20.4805283 28.042745 1482.4 4.0",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "10 YR 4/1",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "north",
+          "sampl/poin": "-20.4802081 28.0429672 1484.1000000000001 4.0",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "10YR 4/1",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "east",
+          "sampl/poin": "-20.4802201 28.0425152 1484.8000000000002 4.774",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "10YR 4/1",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "south",
+          "sampl/poin": "-20.4808167 28.0425717 1488.6000000000001 4.6",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "10YR 4/1",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "No",
+          "sampl/nosoil": "On the Road"
+        }
+      ],
+      "__version__": "vZ3TxNWBfXwuY2zVtFqgns",
+      "meta/instanceID": "uuid:c9431d3a-3d3d-4bcf-b45c-99be3203446e",
+      "instanceID": "uuid:c9431d3a-3d3d-4bcf-b45c-99be3203446e",
+      "_xform_id_string": "am3UGrEY8tYcnrMp3Xddys",
+      "_uuid": "c9431d3a-3d3d-4bcf-b45c-99be3203446e",
+      "meta/rootUuid": "uuid:c9431d3a-3d3d-4bcf-b45c-99be3203446e",
+      "rootUuid": "uuid:c9431d3a-3d3d-4bcf-b45c-99be3203446e",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2026-06-25T19:05:51",
+      "_validation_status": {},
+      "_submitted_by": "vegris2020"
+    },
+    {
+      "_id": 792554157,
+      "formhub/uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "start": "2026-06-25T14:36:05.048+02:00",
+      "end": "2026-06-25T14:53:45.702+02:00",
+      "today": "2026-06-25",
+      "deviceid": "collect:ahCaBKcq88CTtidr",
+      "geninfo/measurement_date": "2026-06-25",
+      "measurement_date": "2026-06-25",
+      "geninfo/prov": "matsou",
+      "prov": "matsou",
+      "geninfo/dist": "Mangwe",
+      "dist": "Mangwe",
+      "geninfo/ward": "16",
+      "ward": "16",
+      "geninfo/Team": "Chinofunga AT ",
+      "Team": "Chinofunga AT ",
+      "geninfo/ceid": "11796_16900",
+      "ceid": "11796_16900",
+      "sampl": [
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "cent",
+          "sampl/poin": "-21.2656233 28.163805 932.4 3.4",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 6/2",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "north",
+          "sampl/poin": "-21.2654314 28.1636033 931.6 3.0",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 6/2",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "east",
+          "sampl/poin": "-21.2654113 28.1641381 933.5 4.78",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 6/2",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "south",
+          "sampl/poin": "-21.265854 28.1639957 924.8 3.0",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 6/2",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "west",
+          "sampl/poin": "-21.2658445 28.1635829 927.6 2.0",
+          "sampl/dep": "30",
+          "sampl/moisture": "Wet",
+          "sampl/col": "7.5 YR 6/2",
+          "sampl/tex": "sand"
+        }
+      ],
+      "__version__": "vZ3TxNWBfXwuY2zVtFqgns",
+      "meta/instanceID": "uuid:615d3a39-47fc-42a8-9cc8-25165e92ffd7",
+      "instanceID": "uuid:615d3a39-47fc-42a8-9cc8-25165e92ffd7",
+      "_xform_id_string": "am3UGrEY8tYcnrMp3Xddys",
+      "_uuid": "615d3a39-47fc-42a8-9cc8-25165e92ffd7",
+      "meta/rootUuid": "uuid:615d3a39-47fc-42a8-9cc8-25165e92ffd7",
+      "rootUuid": "uuid:615d3a39-47fc-42a8-9cc8-25165e92ffd7",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2026-06-25T19:06:37",
+      "_validation_status": {},
+      "_submitted_by": "vegris2020"
+    },
+    {
+      "_id": 792554659,
+      "formhub/uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "start": "2026-06-25T15:47:47.267+02:00",
+      "end": "2026-06-25T15:57:29.605+02:00",
+      "today": "2026-06-25",
+      "deviceid": "collect:ahCaBKcq88CTtidr",
+      "geninfo/measurement_date": "2026-06-25",
+      "measurement_date": "2026-06-25",
+      "geninfo/prov": "matsou",
+      "prov": "matsou",
+      "geninfo/dist": "Matobo",
+      "dist": "Matobo",
+      "geninfo/ward": "18",
+      "ward": "18",
+      "geninfo/Team": "Chinofunga AT ",
+      "Team": "Chinofunga AT ",
+      "geninfo/ceid": "ZE14",
+      "ceid": "ZE14",
+      "sampl": [
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "cent",
+          "sampl/poin": "-21.243705 28.262355 962.1999999999999 3.55",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 6/2",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "north",
+          "sampl/poin": "-21.244 28.2626053 964.4 3.691",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 6/1",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "east",
+          "sampl/poin": "-21.2436092 28.2621229 962.6 3.842",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 6/2",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "No",
+          "sampl/nosoil": "In the road "
+        },
+        {
+          "sampl/samplecoll": "No",
+          "sampl/nosoil": "In the road "
+        }
+      ],
+      "__version__": "vZ3TxNWBfXwuY2zVtFqgns",
+      "meta/instanceID": "uuid:2edc963e-8005-4d5f-bf56-abd88d4ec9aa",
+      "instanceID": "uuid:2edc963e-8005-4d5f-bf56-abd88d4ec9aa",
+      "_xform_id_string": "am3UGrEY8tYcnrMp3Xddys",
+      "_uuid": "2edc963e-8005-4d5f-bf56-abd88d4ec9aa",
+      "meta/rootUuid": "uuid:2edc963e-8005-4d5f-bf56-abd88d4ec9aa",
+      "rootUuid": "uuid:2edc963e-8005-4d5f-bf56-abd88d4ec9aa",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2026-06-25T19:07:12",
+      "_validation_status": {},
+      "_submitted_by": "vegris2020"
+    },
+    {
+      "_id": 792554868,
+      "formhub/uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "start": "2026-06-25T17:30:57.730+02:00",
+      "end": "2026-06-25T17:38:10.439+02:00",
+      "today": "2026-06-25",
+      "deviceid": "collect:ahCaBKcq88CTtidr",
+      "geninfo/measurement_date": "2026-06-25",
+      "measurement_date": "2026-06-25",
+      "geninfo/prov": "matsou",
+      "prov": "matsou",
+      "geninfo/dist": "Matobo",
+      "dist": "Matobo",
+      "geninfo/ward": "8",
+      "ward": "8",
+      "geninfo/Team": "Chinofunga AT ",
+      "Team": "Chinofunga AT ",
+      "geninfo/ceid": "11788_16884_1",
+      "ceid": "11788_16884_1",
+      "sampl": [
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "cent",
+          "sampl/poin": "-21.1890083 28.404345 932.0 3.4",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 6/2",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "north",
+          "sampl/poin": "-21.1887855 28.4041713 945.9000000000001 3.35",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 6/2",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "east",
+          "sampl/poin": "-21.1887794 28.4044383 940.5 3.5",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 6/2",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "south",
+          "sampl/poin": "-21.1891409 28.4045399 920.4000000000001 2.7",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 6/2",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "west",
+          "sampl/poin": "-21.1891143 28.4042612 930.0 3.2",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 6/2",
+          "sampl/tex": "cllo"
+        }
+      ],
+      "__version__": "vZ3TxNWBfXwuY2zVtFqgns",
+      "meta/instanceID": "uuid:cf060eff-f421-48c1-b327-13e9728d57d0",
+      "instanceID": "uuid:cf060eff-f421-48c1-b327-13e9728d57d0",
+      "_xform_id_string": "am3UGrEY8tYcnrMp3Xddys",
+      "_uuid": "cf060eff-f421-48c1-b327-13e9728d57d0",
+      "meta/rootUuid": "uuid:cf060eff-f421-48c1-b327-13e9728d57d0",
+      "rootUuid": "uuid:cf060eff-f421-48c1-b327-13e9728d57d0",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2026-06-25T19:07:33",
+      "_validation_status": {},
+      "_submitted_by": "vegris2020"
+    },
+    {
+      "_id": 793420030,
+      "formhub/uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "start": "2026-06-24T10:07:53.680+02:00",
+      "end": "2026-06-24T10:20:51.010+02:00",
+      "today": "2026-06-24",
+      "deviceid": "collect:HztLeyxUBgtBWMzE",
+      "geninfo/measurement_date": "2026-06-24",
+      "measurement_date": "2026-06-24",
+      "geninfo/prov": "masv",
+      "prov": "masv",
+      "geninfo/dist": "Mwenezi",
+      "dist": "Mwenezi",
+      "geninfo/ward": "6",
+      "ward": "6",
+      "geninfo/Team": "Murepa",
+      "Team": "Murepa",
+      "geninfo/ceid": "ZC18",
+      "ceid": "ZC18",
+      "sampl": [
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "cent",
+          "sampl/poin": "-21.0543317 30.7353933 557.6999999999999 4.9",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "10YR3/1",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "north",
+          "sampl/poin": "-21.0543033 30.7352633 557.6 4.7",
+          "sampl/dep": "30",
+          "sampl/moisture": "Moist",
+          "sampl/col": "10YR4/1",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "east",
+          "sampl/poin": "-21.0540767 30.7355833 557.9 4.342",
+          "sampl/dep": "30",
+          "sampl/moisture": "Moist",
+          "sampl/col": "7YR6/3",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "south",
+          "sampl/poin": "-21.054635 30.7355617 559.0 4.114",
+          "sampl/dep": "30",
+          "sampl/moisture": "Moist",
+          "sampl/col": "7.5YR4/3",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "west",
+          "sampl/poin": "-21.054641 30.7351145 561.4 1.8",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "10YR5/4",
+          "sampl/tex": "sand"
+        }
+      ],
+      "__version__": "vZ3TxNWBfXwuY2zVtFqgns",
+      "meta/instanceID": "uuid:b4491fbc-f1ac-477a-94fa-2ff6fd099fec",
+      "instanceID": "uuid:b4491fbc-f1ac-477a-94fa-2ff6fd099fec",
+      "_xform_id_string": "am3UGrEY8tYcnrMp3Xddys",
+      "_uuid": "b4491fbc-f1ac-477a-94fa-2ff6fd099fec",
+      "meta/rootUuid": "uuid:b4491fbc-f1ac-477a-94fa-2ff6fd099fec",
+      "rootUuid": "uuid:b4491fbc-f1ac-477a-94fa-2ff6fd099fec",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2026-06-26T14:44:38",
+      "_validation_status": {},
+      "_submitted_by": "vegris2020"
+    },
+    {
+      "_id": 793420938,
+      "formhub/uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "start": "2026-06-24T11:46:15.162+02:00",
+      "end": "2026-06-24T11:55:22.520+02:00",
+      "today": "2026-06-24",
+      "deviceid": "collect:HztLeyxUBgtBWMzE",
+      "geninfo/measurement_date": "2026-06-24",
+      "measurement_date": "2026-06-24",
+      "geninfo/prov": "masv",
+      "prov": "masv",
+      "geninfo/dist": "Mwenezi",
+      "dist": "Mwenezi",
+      "geninfo/ward": "6",
+      "ward": "6",
+      "geninfo/Team": "Murepa",
+      "Team": "Murepa",
+      "geninfo/ceid": "11768_16668",
+      "ceid": "11768_16668",
+      "sampl": [
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "cent",
+          "sampl/poin": "-21.0128483 30.671645 617.5 2.5",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "10YR7/4",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "north",
+          "sampl/poin": "-21.0124775 30.6713402 618.6 4.95",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5YR4/3",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "east",
+          "sampl/poin": "-21.0124967 30.6718033 633.4 1.3",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5YR6/3",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "south",
+          "sampl/poin": "-21.0124933 30.671815 632.6999999999999 2.3",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5YR3/2",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "west",
+          "sampl/poin": "-21.0129417 30.671365 625.6 9.016",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5YR4/3",
+          "sampl/tex": "sanlo"
+        }
+      ],
+      "__version__": "vZ3TxNWBfXwuY2zVtFqgns",
+      "meta/instanceID": "uuid:0aa39a79-ec30-4ba7-b808-57b506e87f5b",
+      "instanceID": "uuid:0aa39a79-ec30-4ba7-b808-57b506e87f5b",
+      "_xform_id_string": "am3UGrEY8tYcnrMp3Xddys",
+      "_uuid": "0aa39a79-ec30-4ba7-b808-57b506e87f5b",
+      "meta/rootUuid": "uuid:0aa39a79-ec30-4ba7-b808-57b506e87f5b",
+      "rootUuid": "uuid:0aa39a79-ec30-4ba7-b808-57b506e87f5b",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2026-06-26T14:45:26",
+      "_validation_status": {},
+      "_submitted_by": "vegris2020"
+    },
+    {
+      "_id": 793420948,
+      "formhub/uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "start": "2026-06-24T13:20:05.764+02:00",
+      "end": "2026-06-24T13:27:54.496+02:00",
+      "today": "2026-06-24",
+      "deviceid": "collect:HztLeyxUBgtBWMzE",
+      "geninfo/measurement_date": "2026-06-24",
+      "measurement_date": "2026-06-24",
+      "geninfo/prov": "masv",
+      "prov": "masv",
+      "geninfo/dist": "Mwenezi",
+      "dist": "Mwenezi",
+      "geninfo/ceid": "ZC16",
+      "ceid": "ZC16",
+      "sampl": [
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "cent",
+          "sampl/poin": "-21.3626606 30.7281297 510.40000000000003 27.233",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5YR4/3",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "north",
+          "sampl/poin": "-21.3628598 30.7279282 507.6 16.7",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5YR7/4",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "east",
+          "sampl/poin": "-21.362445 30.727805 508.8 10.233",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "5YR6/4",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "south",
+          "sampl/poin": "-21.3623417 30.7282567 511.6 3.957",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5YR3/2",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "west",
+          "sampl/poin": "-21.3627167 30.728325 510.8 4.8",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5YR4/2",
+          "sampl/tex": "sanlo"
+        }
+      ],
+      "__version__": "vZ3TxNWBfXwuY2zVtFqgns",
+      "meta/instanceID": "uuid:1c49ba2b-bed0-47cd-a47b-d6e7ff8e8e94",
+      "instanceID": "uuid:1c49ba2b-bed0-47cd-a47b-d6e7ff8e8e94",
+      "_xform_id_string": "am3UGrEY8tYcnrMp3Xddys",
+      "_uuid": "1c49ba2b-bed0-47cd-a47b-d6e7ff8e8e94",
+      "meta/rootUuid": "uuid:1c49ba2b-bed0-47cd-a47b-d6e7ff8e8e94",
+      "rootUuid": "uuid:1c49ba2b-bed0-47cd-a47b-d6e7ff8e8e94",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2026-06-26T14:45:26",
+      "_validation_status": {},
+      "_submitted_by": "vegris2020"
+    },
+    {
+      "_id": 793422735,
+      "formhub/uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "start": "2026-06-25T07:44:55.477+02:00",
+      "end": "2026-06-25T08:06:55.304+02:00",
+      "today": "2026-06-25",
+      "deviceid": "collect:HztLeyxUBgtBWMzE",
+      "geninfo/measurement_date": "2026-06-25",
+      "measurement_date": "2026-06-25",
+      "geninfo/prov": "masv",
+      "prov": "masv",
+      "geninfo/dist": "Chiredzi",
+      "dist": "Chiredzi",
+      "geninfo/ward": "32",
+      "ward": "32",
+      "geninfo/Team": "Murepa",
+      "Team": "Murepa",
+      "geninfo/ceid": "ZC17",
+      "ceid": "ZC17",
+      "sampl": [
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "cent",
+          "sampl/poin": "-20.96068 31.9359817 438.2 4.2",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "2.5YR3/6",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "north",
+          "sampl/poin": "-20.9609083 31.93576 438.2 3.8",
+          "sampl/dep": "20",
+          "sampl/moisture": "Dry",
+          "sampl/col": "2.5YR3/4",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "east",
+          "sampl/poin": "-20.960485 31.935695 427.59999999999997 3.366",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "2.5YR3/4",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "south",
+          "sampl/poin": "-20.96045 31.9362 434.5 3.65",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "2.5YR2/3",
+          "sampl/tex": "cllo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "west",
+          "sampl/poin": "-20.9608383 31.93622 431.2 3.24",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "2.5YR3/4",
+          "sampl/tex": "sanlo"
+        }
+      ],
+      "__version__": "vZ3TxNWBfXwuY2zVtFqgns",
+      "meta/instanceID": "uuid:f22ed4d8-619e-4d5c-8202-92dcab2c3455",
+      "instanceID": "uuid:f22ed4d8-619e-4d5c-8202-92dcab2c3455",
+      "_xform_id_string": "am3UGrEY8tYcnrMp3Xddys",
+      "_uuid": "f22ed4d8-619e-4d5c-8202-92dcab2c3455",
+      "meta/rootUuid": "uuid:f22ed4d8-619e-4d5c-8202-92dcab2c3455",
+      "rootUuid": "uuid:f22ed4d8-619e-4d5c-8202-92dcab2c3455",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2026-06-26T14:46:53",
+      "_validation_status": {},
+      "_submitted_by": "vegris2020"
+    },
+    {
+      "_id": 793423484,
+      "formhub/uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "start": "2026-06-25T09:17:58.788+02:00",
+      "end": "2026-06-25T09:36:38.491+02:00",
+      "today": "2026-06-25",
+      "deviceid": "collect:HztLeyxUBgtBWMzE",
+      "geninfo/measurement_date": "2026-06-25",
+      "measurement_date": "2026-06-25",
+      "geninfo/prov": "masv",
+      "prov": "masv",
+      "geninfo/dist": "Chiredzi",
+      "dist": "Chiredzi",
+      "geninfo/ward": "25",
+      "ward": "25",
+      "geninfo/Team": "Murepa",
+      "Team": "Murepa",
+      "geninfo/ceid": "ZC15",
+      "ceid": "ZC15",
+      "sampl": [
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "cent",
+          "sampl/poin": "-20.9839967 31.2362883 491.7 2.5",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "2.5YR3/4",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "north",
+          "sampl/poin": "-20.9837693 31.2360165 491.29999999999995 4.887",
+          "sampl/dep": "30",
+          "sampl/moisture": "Moist",
+          "sampl/col": "2.5YR3/3",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "east",
+          "sampl/poin": "-20.9837777 31.236483 491.29999999999995 4.183",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "2.5YR3/3",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "No",
+          "sampl/nosoil": "Falling in a cattle kraal"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "west",
+          "sampl/poin": "-20.9842064 31.236051 491.5 3.666",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "2.5YR3/3",
+          "sampl/tex": "sanlo"
+        }
+      ],
+      "__version__": "vZ3TxNWBfXwuY2zVtFqgns",
+      "meta/instanceID": "uuid:e6fa683c-f1e6-462b-86fa-8aa5090bafb0",
+      "instanceID": "uuid:e6fa683c-f1e6-462b-86fa-8aa5090bafb0",
+      "_xform_id_string": "am3UGrEY8tYcnrMp3Xddys",
+      "_uuid": "e6fa683c-f1e6-462b-86fa-8aa5090bafb0",
+      "meta/rootUuid": "uuid:e6fa683c-f1e6-462b-86fa-8aa5090bafb0",
+      "rootUuid": "uuid:e6fa683c-f1e6-462b-86fa-8aa5090bafb0",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2026-06-26T14:47:29",
+      "_validation_status": {},
+      "_submitted_by": "vegris2020"
+    },
+    {
+      "_id": 793423947,
+      "formhub/uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "start": "2026-06-25T10:24:49.393+02:00",
+      "end": "2026-06-25T10:54:06.086+02:00",
+      "today": "2026-06-25",
+      "deviceid": "collect:HztLeyxUBgtBWMzE",
+      "geninfo/measurement_date": "2026-06-25",
+      "measurement_date": "2026-06-25",
+      "geninfo/prov": "masv",
+      "prov": "masv",
+      "geninfo/dist": "Chiredzi",
+      "dist": "Chiredzi",
+      "geninfo/ward": "5",
+      "ward": "5",
+      "geninfo/Team": "Murepa",
+      "Team": "Murepa",
+      "geninfo/ceid": "11750_16600",
+      "ceid": "11750_16600",
+      "sampl": [
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "cent",
+          "sampl/poin": "-20.85025 31.49781 504.2 2.5",
+          "sampl/dep": "30",
+          "sampl/moisture": "Moist",
+          "sampl/col": "7.5YR7/3",
+          "sampl/tex": "cllo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "north",
+          "sampl/poin": "-20.8504033 31.49802 501.5 4.94",
+          "sampl/dep": "30",
+          "sampl/moisture": "Moist",
+          "sampl/col": "5YR5/3",
+          "sampl/tex": "cllo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "east",
+          "sampl/poin": "-20.8504183 31.4975417 502.09999999999997 4.933",
+          "sampl/dep": "30",
+          "sampl/moisture": "Moist",
+          "sampl/col": "7.5YR5/3",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "south",
+          "sampl/poin": "-20.8499783 31.497565 502.29999999999995 3.633",
+          "sampl/dep": "30",
+          "sampl/moisture": "Moist",
+          "sampl/col": "7.5YR5/2",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "west",
+          "sampl/poin": "-20.8499817 31.4980433 498.59999999999997 4.9",
+          "sampl/dep": "30",
+          "sampl/moisture": "Moist",
+          "sampl/col": "7.5YR7/4",
+          "sampl/tex": "sand"
+        }
+      ],
+      "__version__": "vZ3TxNWBfXwuY2zVtFqgns",
+      "meta/instanceID": "uuid:23b1c081-43b2-47e3-b488-67adf55317d1",
+      "instanceID": "uuid:23b1c081-43b2-47e3-b488-67adf55317d1",
+      "_xform_id_string": "am3UGrEY8tYcnrMp3Xddys",
+      "_uuid": "23b1c081-43b2-47e3-b488-67adf55317d1",
+      "meta/rootUuid": "uuid:23b1c081-43b2-47e3-b488-67adf55317d1",
+      "rootUuid": "uuid:23b1c081-43b2-47e3-b488-67adf55317d1",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2026-06-26T14:48:00",
+      "_validation_status": {},
+      "_submitted_by": "vegris2020"
+    },
+    {
+      "_id": 793424334,
+      "formhub/uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "start": "2026-06-25T12:47:49.499+02:00",
+      "end": "2026-06-25T13:18:59.811+02:00",
+      "today": "2026-06-25",
+      "deviceid": "collect:HztLeyxUBgtBWMzE",
+      "geninfo/measurement_date": "2026-06-25",
+      "measurement_date": "2026-06-25",
+      "geninfo/prov": "masv",
+      "prov": "masv",
+      "geninfo/dist": "Gutu",
+      "dist": "Gutu",
+      "geninfo/ward": "24",
+      "ward": "24",
+      "geninfo/Team": "Murepa",
+      "Team": "Murepa",
+      "geninfo/ceid": "ZC23",
+      "ceid": "ZC23",
+      "sampl": [
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "cent",
+          "sampl/poin": "-19.8061183 31.2534217 1375.1000000000001 4.783",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "10YR7/2",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "north",
+          "sampl/poin": "-19.8058817 31.253145 1377.1000000000001 6.02",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "5YR7/3",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "east",
+          "sampl/poin": "-19.805875 31.2536967 1377.3 4.385",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5YR6/2",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "south",
+          "sampl/poin": "-19.806325 31.2536633 1402.6000000000001 4.0",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5YR7/3",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "west",
+          "sampl/poin": "-19.8063667 31.2531417 1387.0 4.7",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5YR8/2",
+          "sampl/tex": "sand"
+        }
+      ],
+      "__version__": "vZ3TxNWBfXwuY2zVtFqgns",
+      "meta/instanceID": "uuid:377a018b-61e7-4f90-a543-05da08a382a6",
+      "instanceID": "uuid:377a018b-61e7-4f90-a543-05da08a382a6",
+      "_xform_id_string": "am3UGrEY8tYcnrMp3Xddys",
+      "_uuid": "377a018b-61e7-4f90-a543-05da08a382a6",
+      "meta/rootUuid": "uuid:377a018b-61e7-4f90-a543-05da08a382a6",
+      "rootUuid": "uuid:377a018b-61e7-4f90-a543-05da08a382a6",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2026-06-26T14:48:26",
+      "_validation_status": {},
+      "_submitted_by": "vegris2020"
+    },
+    {
+      "_id": 793474235,
+      "formhub/uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "start": "2026-06-26T09:48:00.631+02:00",
+      "end": "2026-06-26T10:05:41.860+02:00",
+      "today": "2026-06-26",
+      "deviceid": "collect:ahCaBKcq88CTtidr",
+      "geninfo/measurement_date": "2026-06-26",
+      "measurement_date": "2026-06-26",
+      "geninfo/prov": "matnor",
+      "prov": "matnor",
+      "geninfo/dist": "Umguza ",
+      "dist": "Umguza ",
+      "geninfo/ward": "15",
+      "ward": "15",
+      "geninfo/Team": "Chinofunga AT ",
+      "Team": "Chinofunga AT ",
+      "geninfo/ceid": "11664_17008",
+      "ceid": "11664_17008",
+      "sampl": [
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "cent",
+          "sampl/poin": "-20.07338 28.3971867 1283.9 4.2",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 5/2",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "north",
+          "sampl/poin": "-20.0731783 28.3970667 1257.5 1.9",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 5/2",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "east",
+          "sampl/poin": "-20.0736732 28.3971038 1251.7 2.6",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 5/2",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "south",
+          "sampl/poin": "-20.0735801 28.3975167 1250.3000000000002 3.7",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 5/2",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "No",
+          "sampl/nosoil": "Rocky "
+        }
+      ],
+      "__version__": "vZ3TxNWBfXwuY2zVtFqgns",
+      "meta/instanceID": "uuid:6b1df0c8-5965-42ac-9edd-ab1967169e62",
+      "instanceID": "uuid:6b1df0c8-5965-42ac-9edd-ab1967169e62",
+      "_xform_id_string": "am3UGrEY8tYcnrMp3Xddys",
+      "_uuid": "6b1df0c8-5965-42ac-9edd-ab1967169e62",
+      "meta/rootUuid": "uuid:6b1df0c8-5965-42ac-9edd-ab1967169e62",
+      "rootUuid": "uuid:6b1df0c8-5965-42ac-9edd-ab1967169e62",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2026-06-26T15:27:37",
+      "_validation_status": {},
+      "_submitted_by": "vegris2020"
+    },
+    {
+      "_id": 793583810,
+      "formhub/uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "start": "2026-06-26T12:15:45.802+02:00",
+      "end": "2026-06-26T12:37:42.270+02:00",
+      "today": "2026-06-26",
+      "deviceid": "collect:ahCaBKcq88CTtidr",
+      "geninfo/measurement_date": "2026-06-26",
+      "measurement_date": "2026-06-26",
+      "geninfo/prov": "matnor",
+      "prov": "matnor",
+      "geninfo/dist": "Umguza ",
+      "dist": "Umguza ",
+      "geninfo/ward": "16",
+      "ward": "16",
+      "geninfo/Team": "Chinofunga AT ",
+      "Team": "Chinofunga AT ",
+      "geninfo/ceid": "116644_17036",
+      "ceid": "116644_17036",
+      "sampl": [
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "cent",
+          "sampl/poin": "-20.07342 28.1296217 1190.6000000000001 2.2",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 5/2",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "north",
+          "sampl/poin": "-20.0731893 28.1293568 1194.6000000000001 3.974",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 5/2",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "east",
+          "sampl/poin": "-20.0736362 28.1293559 1190.1000000000001 4.071",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 5/2",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "south",
+          "sampl/poin": "-20.0736282 28.1298425 1192.1000000000001 3.327",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 5/2",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "west",
+          "sampl/poin": "-20.0731733 28.1298283 1191.6000000000001 2.1",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 5/2",
+          "sampl/tex": "sanlo"
+        }
+      ],
+      "__version__": "vZ3TxNWBfXwuY2zVtFqgns",
+      "meta/instanceID": "uuid:be78178a-4741-4657-ad08-b1cf859c7b27",
+      "instanceID": "uuid:be78178a-4741-4657-ad08-b1cf859c7b27",
+      "_xform_id_string": "am3UGrEY8tYcnrMp3Xddys",
+      "_uuid": "be78178a-4741-4657-ad08-b1cf859c7b27",
+      "meta/rootUuid": "uuid:be78178a-4741-4657-ad08-b1cf859c7b27",
+      "rootUuid": "uuid:be78178a-4741-4657-ad08-b1cf859c7b27",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2026-06-26T17:03:35",
+      "_validation_status": {},
+      "_submitted_by": "vegris2020"
+    },
+    {
+      "_id": 793583892,
+      "formhub/uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "start": "2026-06-26T14:17:02.805+02:00",
+      "end": "2026-06-26T14:30:00.672+02:00",
+      "today": "2026-06-26",
+      "deviceid": "collect:ahCaBKcq88CTtidr",
+      "geninfo/measurement_date": "2026-06-26",
+      "measurement_date": "2026-06-26",
+      "geninfo/prov": "matnor",
+      "prov": "matnor",
+      "geninfo/dist": "Umguza ",
+      "dist": "Umguza ",
+      "geninfo/ward": "14",
+      "ward": "14",
+      "geninfo/Team": "Chinofunga AT ",
+      "Team": "Chinofunga AT ",
+      "geninfo/ceid": "11652_17060_1",
+      "ceid": "11652_17060_1",
+      "sampl": [
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "cent",
+          "sampl/poin": "-19.9478316 28.0248194 1158.1 3.737",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 6/1",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "north",
+          "sampl/poin": "-19.9478174 28.0250398 1161.6 4.902",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 6/1",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "east",
+          "sampl/poin": "-19.9480027 28.0249943 1159.0 4.822",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 6/1",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "south",
+          "sampl/poin": "-19.9479188 28.024647 1153.5 4.835",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 6/1",
+          "sampl/tex": "sand"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "west",
+          "sampl/poin": "-19.9477648 28.0247626 1153.5 4.676",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 6/1",
+          "sampl/tex": "sand"
+        }
+      ],
+      "__version__": "vZ3TxNWBfXwuY2zVtFqgns",
+      "meta/instanceID": "uuid:fb697484-420f-4d94-ba44-dc87e19b4ca5",
+      "instanceID": "uuid:fb697484-420f-4d94-ba44-dc87e19b4ca5",
+      "_xform_id_string": "am3UGrEY8tYcnrMp3Xddys",
+      "_uuid": "fb697484-420f-4d94-ba44-dc87e19b4ca5",
+      "meta/rootUuid": "uuid:fb697484-420f-4d94-ba44-dc87e19b4ca5",
+      "rootUuid": "uuid:fb697484-420f-4d94-ba44-dc87e19b4ca5",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2026-06-26T17:03:39",
+      "_validation_status": {},
+      "_submitted_by": "vegris2020"
+    },
+    {
+      "_id": 793583967,
+      "formhub/uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "uuid": "a6b7d7eb17804d6d8a029833c09714b4",
+      "start": "2026-06-26T15:44:06.962+02:00",
+      "end": "2026-06-26T16:05:16.639+02:00",
+      "today": "2026-06-26",
+      "deviceid": "collect:ahCaBKcq88CTtidr",
+      "geninfo/measurement_date": "2026-06-26",
+      "measurement_date": "2026-06-26",
+      "geninfo/prov": "matnor",
+      "prov": "matnor",
+      "geninfo/dist": "Tsholotsho ",
+      "dist": "Tsholotsho ",
+      "geninfo/ward": "20",
+      "ward": "20",
+      "geninfo/Team": "Chinofunga AT ",
+      "Team": "Chinofunga AT ",
+      "geninfo/ceid": "ZE27",
+      "ceid": "ZE27",
+      "sampl": [
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "cent",
+          "sampl/poin": "-19.8774033 27.9170233 1099.0 2.5",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "10 YR 4/1",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "north",
+          "sampl/poin": "-19.8771014 27.9173037 1092.7 4.929",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "10 YR 4/1",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "east",
+          "sampl/poin": "-19.8775804 27.917286 1090.5 4.815",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "10 YR 4/1",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "south",
+          "sampl/poin": "-19.8776484 27.917008 1096.1000000000001 4.866",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "10 YR 4/1",
+          "sampl/tex": "sanlo"
+        },
+        {
+          "sampl/samplecoll": "Yes",
+          "sampl/samloc": "west",
+          "sampl/poin": "-19.8771018 27.916875 1090.5 4.8",
+          "sampl/dep": "30",
+          "sampl/moisture": "Dry",
+          "sampl/col": "7.5 YR 5/1",
+          "sampl/tex": "sand"
+        }
+      ],
+      "__version__": "vZ3TxNWBfXwuY2zVtFqgns",
+      "meta/instanceID": "uuid:ca660669-312a-4bb6-8242-44e665ed9ec1",
+      "instanceID": "uuid:ca660669-312a-4bb6-8242-44e665ed9ec1",
+      "_xform_id_string": "am3UGrEY8tYcnrMp3Xddys",
+      "_uuid": "ca660669-312a-4bb6-8242-44e665ed9ec1",
+      "meta/rootUuid": "uuid:ca660669-312a-4bb6-8242-44e665ed9ec1",
+      "rootUuid": "uuid:ca660669-312a-4bb6-8242-44e665ed9ec1",
+      "_attachments": [],
+      "_status": "submitted_via_web",
+      "_geolocation": [
+        null,
+        null
+      ],
+      "_submission_time": "2026-06-26T17:03:43",
+      "_validation_status": {},
+      "_submitted_by": "vegris2020"
+    },
+    {
       "_id": 756835202,
       "formhub/uuid": "db3dc5dc018a41e0acba6a9e0874eb68",
       "uuid": "db3dc5dc018a41e0acba6a9e0874eb68",
@@ -7340,6 +8739,16 @@
       "_submission_time": "2026-05-22T07:10:40",
       "_validation_status": {},
       "_submitted_by": "vegris2020"
+    },
+    {
+      "cores": [
+        {
+          "dep": null
+        },
+        {
+          "dep": null
+        }
+      ]
     }
   ]
 }
