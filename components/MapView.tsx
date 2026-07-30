@@ -33,6 +33,7 @@ export default function MapView({ geojson, activeId, onSelect, mode = "mixed" }:
   const hasFitBoundsRef = useRef(false);
   const skipNextFocusRef = useRef(false);
   const [mapReady, setMapReady] = useState(false);
+  const [isLegendCollapsed, setIsLegendCollapsed] = useState(false);
 
   const legendItems: LegendItem[] =
     mode === "ldn" ? LDN_LEGEND : mode === "soil" ? SOIL_LEGEND : LDN_SOIL_LEGEND;
@@ -212,19 +213,47 @@ export default function MapView({ geojson, activeId, onSelect, mode = "mixed" }:
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
-      <div className="map-legend-overlay">
-        <div className="legend-title">Map Markers</div>
-        <div className="legend-list">
-          {legendItems.map((item, idx) => (
-            <div className="legend-item" key={idx}>
-              <span className="legend-icon-pin" style={{ background: item.color }}>
-                <span>{item.icon}</span>
-              </span>
-              <span>{item.name}</span>
-            </div>
-          ))}
+      <div
+        className="map-legend-overlay"
+        style={{
+          width: isLegendCollapsed ? "auto" : "200px",
+          padding: isLegendCollapsed ? "8px 14px" : "14px",
+          transition: "all 0.2s ease"
+        }}
+      >
+        <div
+          className="legend-title"
+          onClick={() => setIsLegendCollapsed(!isLegendCollapsed)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            cursor: "pointer",
+            marginBottom: isLegendCollapsed ? 0 : "10px",
+            userSelect: "none"
+          }}
+          title={isLegendCollapsed ? "Expand legend" : "Collapse legend"}
+        >
+          <span>{mode === "ldn" ? "LDN Legend" : mode === "soil" ? "Soil Legend" : "Map Markers"}</span>
+          <span style={{ fontSize: "10px", opacity: 0.7, marginLeft: "12px" }}>
+            {isLegendCollapsed ? "▲ Expand" : "▼ Collapse"}
+          </span>
         </div>
-        <div className="legend-footnote">Markers cluster when zoomed out</div>
+        {!isLegendCollapsed && (
+          <>
+            <div className="legend-list">
+              {legendItems.map((item, idx) => (
+                <div className="legend-item" key={idx}>
+                  <span className="legend-icon-pin" style={{ background: item.color }}>
+                    <span>{item.icon}</span>
+                  </span>
+                  <span>{item.name}</span>
+                </div>
+              ))}
+            </div>
+            <div className="legend-footnote">Markers cluster when zoomed out</div>
+          </>
+        )}
       </div>
     </div>
   );

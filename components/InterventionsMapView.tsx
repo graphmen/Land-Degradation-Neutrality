@@ -23,6 +23,7 @@ export default function InterventionsMapView({ records, activeId, onSelect }: Pr
   const containerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<Record<string, any>>({});
   const [mapReady, setMapReady] = useState(false);
+  const [isLegendCollapsed, setIsLegendCollapsed] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined" || !containerRef.current || mapRef.current) return;
@@ -159,19 +160,49 @@ export default function InterventionsMapView({ records, activeId, onSelect }: Pr
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
-      <div className="map-legend-overlay" style={{ bottom: "24px", left: "24px", width: "230px" }}>
-        <div className="legend-title">Intervention Types</div>
-        <div className="legend-list">
-          {INTERVENTIONS_LEGEND.map((item, idx) => (
-            <div className="legend-item" key={idx}>
-              <span className="legend-icon-pin" style={{ background: item.color }}>
-                <span>{item.icon}</span>
-              </span>
-              <span>{item.name}</span>
-            </div>
-          ))}
+      <div
+        className="map-legend-overlay"
+        style={{
+          bottom: "24px",
+          left: "24px",
+          width: isLegendCollapsed ? "auto" : "230px",
+          padding: isLegendCollapsed ? "8px 14px" : "14px",
+          transition: "all 0.2s ease"
+        }}
+      >
+        <div
+          className="legend-title"
+          onClick={() => setIsLegendCollapsed(!isLegendCollapsed)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            cursor: "pointer",
+            marginBottom: isLegendCollapsed ? 0 : "10px",
+            userSelect: "none"
+          }}
+          title={isLegendCollapsed ? "Expand legend" : "Collapse legend"}
+        >
+          <span>Intervention Types</span>
+          <span style={{ fontSize: "10px", opacity: 0.7, marginLeft: "12px" }}>
+            {isLegendCollapsed ? "▲ Expand" : "▼ Collapse"}
+          </span>
         </div>
-        <div className="legend-footnote">Markers cluster when zoomed out</div>
+        {!isLegendCollapsed && (
+          <>
+            <div className="legend-list">
+              {INTERVENTIONS_LEGEND.map((item, idx) => (
+                <div className="legend-item" key={idx}>
+                  <span className="legend-icon-pin" style={{ background: item.color }}>
+                    <span>{item.icon}</span>
+                  </span>
+                  <span>{item.name}</span>
+                </div>
+              ))}
+            </div>
+            <div className="legend-footnote">Markers cluster when zoomed out</div>
+          </>
+        )}
       </div>
     </div>
   );
