@@ -79,12 +79,17 @@ async function loadLocalFallback() {
 }
 
 async function fetchLdnRawRecords(options: { forceLiveKobo?: boolean } = {}): Promise<{ records: any[]; source: string }> {
-  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://pqfbcvxisrmtmhmuxbjk.supabase.co";
-  const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || Buffer.from("c2Jfc2VjcmV0X3pXVmVzZ0JnNU8zVU80WnVkUi1TQndfTXprQ0VuelI=", "base64").toString("utf-8");
+  const SUPABASE_URL = (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_URL.startsWith("http")) 
+    ? process.env.NEXT_PUBLIC_SUPABASE_URL 
+    : "https://pqfbcvxisrmtmhmuxbjk.supabase.co";
+  
+  const DEFAULT_KEY = Buffer.from("c2Jfc2VjcmV0X3pXVmVzZ0JnNU8zVU80WnVkUi1TQndfTXprQ0VuelI=", "base64").toString("utf-8");
+  const rawEnvKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const SUPABASE_KEY = (rawEnvKey && rawEnvKey.trim().length > 10) ? rawEnvKey.trim() : DEFAULT_KEY;
 
   try {
     console.log("Fetching LDN records directly from Supabase...");
-    const res = await fetchWithTimeout(`${SUPABASE_URL}/rest/v1/ldn_validations?select=*&limit=5000`, {
+    let res = await fetchWithTimeout(`${SUPABASE_URL}/rest/v1/ldn_validations?select=*&limit=5000`, {
       headers: {
         'apikey': SUPABASE_KEY,
         'Authorization': `Bearer ${SUPABASE_KEY}`,
@@ -93,6 +98,17 @@ async function fetchLdnRawRecords(options: { forceLiveKobo?: boolean } = {}): Pr
       cache: "no-store",
       timeout: 3000
     });
+    if (!res.ok) {
+      // Try querying public schema fallback
+      res = await fetchWithTimeout(`${SUPABASE_URL}/rest/v1/ldn_validations?select=*&limit=5000`, {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
+        },
+        cache: "no-store",
+        timeout: 3000
+      });
+    }
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
