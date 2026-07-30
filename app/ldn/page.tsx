@@ -88,6 +88,29 @@ async function fetchAllRecords(): Promise<any[]> {
   }
 }
 
+function extractPhotoUrl(r: any): string | null {
+  if (!r) return null;
+  if (typeof r.photo_url === "string" && r.photo_url.startsWith("http")) return r.photo_url;
+  if (typeof r.thumb_url === "string" && r.thumb_url.startsWith("http")) return r.thumb_url;
+
+  const sup = r._supabase_photos || r.raw_data?._supabase_photos;
+  if (Array.isArray(sup) && sup.length > 0) {
+    const first = sup[0];
+    if (typeof first === "string" && first.startsWith("http")) return first;
+    if (first && typeof first.url === "string" && first.url.startsWith("http")) return first.url;
+  }
+
+  const atts = r._attachments || r.raw_data?._attachments;
+  if (Array.isArray(atts) && atts.length > 0) {
+    const img = atts.find((att: any) =>
+      att && (att.download_medium_url || att.download_small_url || att.download_url)
+    ) || atts[0];
+    if (img) return img.download_medium_url || img.download_small_url || img.download_url || null;
+  }
+
+  return null;
+}
+
 function buildDashboardData(records: any[]) {
   const landuseCnt: Record<string, number> = {};
   const districtCnt: Record<string, number> = {};
@@ -132,6 +155,13 @@ function buildDashboardData(records: any[]) {
       props.dist = dist || props.dist;
       props.landus = landus || props.landus;
       props.sev = sev || props.sev;
+
+      const photoUrl = extractPhotoUrl(r);
+      if (photoUrl) {
+        props.photo_url = photoUrl;
+      }
+      const atts = r._attachments || r.raw_data?._attachments;
+      if (atts) props._attachments = atts;
 
       features.push({
         type: "Feature",

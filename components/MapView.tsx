@@ -167,8 +167,15 @@ export default function MapView({ geojson, activeId, onSelect, mode = "mixed" }:
         if (mErosion) rowsHtml += `<div class="popup-row"><span class="popup-key">Erosion/Notes</span><span class="popup-val">${mErosion}</span></div>`;
       }
 
+      const photoUrl = props.photo_url || props.thumb_url || props.photo_1_url;
+      const photoHtml = photoUrl
+        ? `<div style="width:100%; height:120px; border-radius:8px; overflow:hidden; margin-bottom:8px; background:#0f172a;">
+             <img src="/api/media?url=${encodeURIComponent(photoUrl)}" style="width:100%; height:100%; object-fit:cover;" alt="Field Photo" />
+           </div>`
+        : "";
+
       marker.bindPopup(
-        `<div class="popup-title">${visual.icon} ${title}</div>${badgeHtml}${rowsHtml}`,
+        `${photoHtml}<div class="popup-title">${visual.icon} ${title}</div>${badgeHtml}${rowsHtml}`,
         { maxWidth: 280 }
       );
 
