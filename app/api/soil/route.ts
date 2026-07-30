@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 import { cronCache } from "@/lib/cronCache";
+import soilDataStatic from "@/public/soil-data.json";
 
 const soilModPath = path.join(process.cwd(), "public", "soil-modifications.json");
 const soilDataPath = path.join(process.cwd(), "public", "soil-data.json");
@@ -13,19 +14,16 @@ const KOBO_V2_URL = "https://kf.kobotoolbox.org/api/v2";
 const KOBO_USER = process.env.KOBO_USERNAME || "vegris2020";
 const KOBO_PASS = process.env.KOBO_PASSWORD || "musasa2020";
 const AUTH = Buffer.from(`${KOBO_USER}:${KOBO_PASS}`).toString("base64");
-// On Vercel: always fetch live from Kobo. Locally: respect OFFLINE_MODE env var.
 const IS_VERCEL = !!process.env.VERCEL;
 const OFFLINE_MODE = IS_VERCEL ? false : process.env.OFFLINE_MODE !== "false";
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
 
-// In-memory cache — module-level so it persists across warm serverless invocations
 interface CacheData {
   records: any[];
   source: string;
   timestamp: number;
 }
 let soilCache: CacheData | null = null;
-// On Vercel: 30 min TTL (reduce cold-start Kobo calls). Locally: 5 min for dev freshness.
 const CACHE_TTL = IS_VERCEL ? 30 * 60 * 1000 : 5 * 60 * 1000;
 
 async function fetchWithTimeout(url: string, options: RequestInit & { timeout?: number } = {}) {
@@ -59,32 +57,28 @@ function normalise(record: any) {
 
 async function loadLocalFallback() {
   try {
-    const raw = await fs.readFile(soilDataPath, "utf-8");
-    const json = JSON.parse(raw);
-    const records = (json.records || []).map(normalise);
+    const rawRecords = (soilDataStatic && (soilDataStatic as any).records) ? (soilDataStatic as any).records : [];
+    const records = rawRecords.map(normalise);
     return {
       count: records.length,
       records: records,
       fallback: true
     };
   } catch (err: any) {
-    console.error("Local fallback load failed, using empty array:", err.message);
-    return {
-      count: 0,
-      records: [],
-      fallback: true
-    };
+    try {
+      const raw = await fs.readFile(soilDataPath, "utf-8");
+      const json = JSON.parse(raw);
+      const records = (json.records || []).map(normalise);
+      return { count: records.length, records: records, fallback: true };
+    } catch (e2) {
+      return { count: 0, records: [], fallback: true };
+    }
   }
 }
 
 async function fetchSoilRawRecords(options: { forceLiveKobo?: boolean } = {}): Promise<{ records: any[]; source: string }> {
-  const SUPABASE_URL = (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_URL.startsWith("http")) 
-    ? process.env.NEXT_PUBLIC_SUPABASE_URL 
-    : "https://pqfbcvxisrmtmhmuxbjk.supabase.co";
-  
-  const DEFAULT_KEY = Buffer.from("c2Jfc2VjcmV0X3pXVmVzZ0JnNU8zVU80WnVkUi1TQndfTXprQ0VuelI=", "base64").toString("utf-8");
-  const rawEnvKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const SUPABASE_KEY = (rawEnvKey && rawEnvKey.trim().length > 10) ? rawEnvKey.trim() : DEFAULT_KEY;
+  const SUPABASE_URL = "https://pqfbcvxisrmtmhmuxbjk.supabase.co";
+  const SUPABASE_KEY = Buffer.from("c2Jfc2VjcmV0X3pXVmVzZ0JnNU8zVU84WnVkUi1TQndfTXprQ0VuelI=", "base64").toString("utf-8");
 
   try {
     console.log("Fetching Soil records directly from Supabase...");
@@ -98,14 +92,13 @@ async function fetchSoilRawRecords(options: { forceLiveKobo?: boolean } = {}): P
       timeout: 8000
     });
     if (!res.ok) {
-      // Try querying public schema fallback
       res = await fetchWithTimeout(`${SUPABASE_URL}/rest/v1/soil_samples?select=*&limit=5000`, {
         headers: {
           'apikey': SUPABASE_KEY,
           'Authorization': `Bearer ${SUPABASE_KEY}`
         },
         cache: "no-store",
-        timeout: 3000
+        timeout: 8000
       });
     }
     if (res.ok) {
