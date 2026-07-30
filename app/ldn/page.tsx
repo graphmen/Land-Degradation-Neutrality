@@ -673,124 +673,83 @@ export default function LdnPage() {
 
               return (
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {/* Header */}
                   <div>
                     <div className="detail-site-name">{district}</div>
-                    <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 8 }}>Ward: {ward}</div>
+                    <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 6 }}>
+                      {ward ? (String(ward).startsWith("Ward") ? ward : `Ward ${ward}`) : "—"} · {props.landus || "Land Use Unknown"}
+                    </div>
                     <span className={`site-badge ${getBadgeClass(severity)}`}>{severity} Severity</span>
-                    <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 6, fontStyle: "italic", lineHeight: 1.4 }}>
-                      {severity.toLowerCase().includes("high") || severity.toLowerCase().includes("severe")
-                        ? "⚠️ High / Severe: Critical degradation or cover loss. Requires immediate field intervention."
-                        : severity.toLowerCase().includes("moderate") || severity.toLowerCase().includes("medium")
-                        ? "⚡ Moderate: Moderate degradation signs. Target with active soil conservation."
-                        : "🌱 Low / Minimal: Stable or recovering land cover. Maintain baseline protection."}
-                    </div>
-                    {/* Zimbabwe SDG Target 15.3 context */}
-                    <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 8, padding: "8px 10px", background: "rgba(6, 75, 34, 0.05)", borderRadius: 6, borderLeft: "3px solid var(--accent-blue)", lineHeight: 1.4 }}>
-                      <strong>Zimbabwe SDG 15.3 Alignment:</strong> In accordance with SDG Target 15.3.1, the Environmental Management Agency monitors these hotspots to implement reclamation strategies and achieve national Land Degradation Neutrality (LDN) by 2030.
-                    </div>
                   </div>
 
-                  {props.photo_url || props.thumb_url ? (
-                    <div style={{ width: "100%", height: "130px", borderRadius: "8px", overflow: "hidden", marginBottom: "8px", background: "#0f172a" }}>
-                      <img src={`/api/media?url=${encodeURIComponent(props.photo_url || props.thumb_url)}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Field Photo" />
+                  {/* Field Photo — prominent, point-specific */}
+                  {(props.photo_url || props.thumb_url) ? (
+                    <div style={{ width: "100%", height: "160px", borderRadius: "10px", overflow: "hidden", background: "#0f172a", flexShrink: 0 }}>
+                      <img
+                        src={`/api/media?url=${encodeURIComponent(props.photo_url || props.thumb_url)}`}
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        alt="Field Photo"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                      />
                     </div>
-                  ) : null}
+                  ) : (
+                    <div style={{ width: "100%", height: "90px", borderRadius: "10px", background: "rgba(0,0,0,0.04)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, color: "var(--text-muted)", fontSize: 11 }}>
+                      <span>📷</span> No field photo for this point
+                    </div>
+                  )}
+
+                  {/* Key attributes */}
                   <div className="detail-item-list">
                     <div className="detail-item-row">
-                      <span className="detail-item-label">
-                        <span className="detail-item-icon">🏷️</span> Survey CEID / ID
-                      </span>
+                      <span className="detail-item-label"><span className="detail-item-icon">🏷️</span> Survey CEID / ID</span>
                       <span className="detail-item-value" style={{ fontWeight: 700, color: "#0284c7" }}>{props.ceid || props.samplid || props._id || "—"}</span>
                     </div>
                     <div className="detail-item-row">
-                      <span className="detail-item-label">
-                        <span className="detail-item-icon">🗺️</span> District Jurisdiction
-                      </span>
+                      <span className="detail-item-label"><span className="detail-item-icon">🗺️</span> District Jurisdiction</span>
                       <span className="detail-item-value">{props.dist || "—"}</span>
                     </div>
                     <div className="detail-item-row">
-                      <span className="detail-item-label">
-                        <span className="detail-item-icon">📍</span> Electoral Ward
-                      </span>
-                      <span className="detail-item-value">{props.ward ? (String(props.ward).startsWith('Ward') ? props.ward : `Ward ${props.ward}`) : "—"}</span>
+                      <span className="detail-item-label"><span className="detail-item-icon">📍</span> Electoral Ward</span>
+                      <span className="detail-item-value">{props.ward ? (String(props.ward).startsWith("Ward") ? props.ward : `Ward ${props.ward}`) : "—"}</span>
                     </div>
                     <div className="detail-item-row">
-                      <span className="detail-item-label">
-                        <span className="detail-item-icon">⚠️</span> Degradation Severity Level
-                      </span>
+                      <span className="detail-item-label"><span className="detail-item-icon">⚠️</span> Degradation Severity</span>
                       <span className="detail-item-value" style={{ fontWeight: 700, color: String(severity).toLowerCase().includes("high") || String(severity).toLowerCase().includes("severe") ? "#e11d48" : "#10b981" }}>{severity || "—"}</span>
                     </div>
                     <div className="detail-item-row">
-                      <span className="detail-item-label">
-                        <span className="detail-item-icon">🌿</span> Land Use/Land Cover (LULC)
-                      </span>
+                      <span className="detail-item-label"><span className="detail-item-icon">🌿</span> Land Use / Cover (LULC)</span>
                       <span className="detail-item-value">{props.landus || "—"}</span>
                     </div>
                     {props.veg_cover && (
                       <div className="detail-item-row">
-                        <span className="detail-item-label">
-                          <span className="detail-item-icon">🌱</span> Vegetation Cover (%)
-                        </span>
+                        <span className="detail-item-label"><span className="detail-item-icon">🌱</span> Vegetation Cover (%)</span>
                         <span className="detail-item-value">{props.veg_cover}</span>
                       </div>
                     )}
                     {props.erosion_signs && (
                       <div className="detail-item-row">
-                        <span className="detail-item-label">
-                          <span className="detail-item-icon">🏜️</span> Erosion Signs / Notes
-                        </span>
+                        <span className="detail-item-label"><span className="detail-item-icon">🏜️</span> Erosion Signs / Notes</span>
                         <span className="detail-item-value">{props.erosion_signs}</span>
                       </div>
                     )}
                     <div className="detail-item-row">
-                      <span className="detail-item-label">
-                        <span className="detail-item-icon">👷</span> Survey Observer / Team
-                      </span>
+                      <span className="detail-item-label"><span className="detail-item-icon">👷</span> Survey Observer / Team</span>
                       <span className="detail-item-value">{props.agent || props.team || "—"}</span>
                     </div>
                     <div className="detail-item-row">
-                      <span className="detail-item-label">
-                        <span className="detail-item-icon">🌐</span> Latitude (GIS Coordinate)
-                      </span>
+                      <span className="detail-item-label"><span className="detail-item-icon">🌐</span> Latitude</span>
                       <span className="detail-item-value">{lat.toFixed(6)}</span>
                     </div>
                     <div className="detail-item-row">
-                      <span className="detail-item-label">
-                        <span className="detail-item-icon">🌐</span> Longitude (GIS Coordinate)
-                      </span>
+                      <span className="detail-item-label"><span className="detail-item-icon">🌐</span> Longitude</span>
                       <span className="detail-item-value">{lng.toFixed(6)}</span>
                     </div>
                     <div className="detail-item-row">
-                      <span className="detail-item-label">
-                        <span className="detail-item-icon">📅</span> Telemetry Date
-                      </span>
-                      <span className="detail-item-value">
-                        {props._submission_time ? new Date(props._submission_time).toLocaleDateString() : "—"}
-                      </span>
+                      <span className="detail-item-label"><span className="detail-item-icon">📅</span> Survey Date</span>
+                      <span className="detail-item-value">{props._submission_time ? new Date(props._submission_time).toLocaleDateString() : "—"}</span>
                     </div>
                   </div>
 
-                  {/* UNCCD Strategic Objectives Alignment Card */}
-                  {(() => {
-                    const isHotspot = String(severity).toLowerCase().includes("high") || String(severity).toLowerCase().includes("severe");
-                    return (
-                      <div className="detail-explanation-card" style={{ borderLeftColor: isHotspot ? "var(--accent-rose)" : "var(--accent-green)", background: "rgba(255,255,255,0.4)" }}>
-                        <div className="detail-explanation-title" style={{ color: isHotspot ? "var(--accent-rose)" : "var(--accent-green)" }}>
-                          <span>🌍</span> UNCCD Strategic Objective Alignment
-                        </div>
-                        <div style={{ color: "var(--text-primary)", fontSize: 10, fontWeight: 600, marginBottom: 4 }}>
-                          {isHotspot ? "⚠️ SO-1: Combat Land Degradation (Critical Target)" : "🌟 SO-1: Avoid & Reduce Land Degradation"}
-                        </div>
-                        <div style={{ color: "var(--text-muted)", fontSize: 10, lineHeight: 1.4 }}>
-                          {isHotspot ? (
-                            <span>This node is flagged as a <strong>degraded hotspot</strong> under SDG 15.3.1. Immediate intervention is required to avoid further decline and restore land cover via mechanical reclamation, reforestation, or soil conservation.</span>
-                          ) : (
-                            <span>This node is classified as a <strong>bright spot</strong> or stable zone. Target for baseline protection. Ensure conservation farming practices are maintained to support ongoing recovery.</span>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })()}
                   {/* All Raw Survey Fields — collapsible */}
                   <AllFieldsAccordion props={props} />
                 </div>

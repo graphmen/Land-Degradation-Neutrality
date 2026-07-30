@@ -864,6 +864,22 @@ export default function DrylandsPage() {
                 </div>
               </div>
 
+              {/* Field Photo — point-specific */}
+              {(activeRecord.photo_1_url || activeRecord.photo_2_url) ? (
+                <div style={{ width: "100%", height: "160px", borderRadius: "10px", overflow: "hidden", background: "#0f172a", flexShrink: 0 }}>
+                  <img
+                    src={`/api/media?url=${encodeURIComponent(activeRecord.photo_1_url || activeRecord.photo_2_url)}`}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    alt="Field Photo"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  />
+                </div>
+              ) : (
+                <div style={{ width: "100%", height: "80px", borderRadius: "10px", background: "rgba(0,0,0,0.04)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, color: "var(--text-muted)", fontSize: 11 }}>
+                  <span>📷</span> No field photo for this point
+                </div>
+              )}
+
               {/* Collapsible details sections */}
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                 <div style={{ background: "#f8fafc", border: "1px solid var(--border-color)", borderRadius: 6, padding: "8px 10px" }}>
