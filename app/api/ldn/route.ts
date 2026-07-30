@@ -109,102 +109,23 @@ async function fetchLdnRawRecords(options: { forceLiveKobo?: boolean } = {}): Pr
   return { records: fallback.records, source: "fallback" };
 }
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const action = searchParams.get("action");
-  const bypassCache = searchParams.get("bypassCache") === "true" || searchParams.get("sync") === "true";
   
   if (action === "modifications") {
     const mod = await loadLdnModifications();
     return NextResponse.json(mod);
   }
 
-  let records: any[] = [];
-  let source = "fallback";
-  
   const mod = await loadLdnModifications();
-
-  // On Vercel: always go live (OFFLINE_MODE is forced false). Locally: respect OFFLINE_MODE.
-  if (OFFLINE_MODE && !bypassCache) {
-    try {
-      const fallback = await loadLocalFallback();
-      records = fallback.records;
-      source = "fallback";
-    } catch (fsErr: any) {
-      return NextResponse.json({ count: 0, records: [], error: `Local fallback failed: ${fsErr.message}` }, { status: 500 });
-    }
-  } else {
-    // Check cron cache first (populated by /api/cron/sync on Vercel)
-    const now = Date.now();
-    let cronRecords: any[] | null = null;
-    try {
-      if (cronCache?.ldn && (now - cronCache.ldn.updatedAt < CACHE_TTL)) {
-        cronRecords = cronCache.ldn.records;
-        console.log(`[LDN] Serving from cron cache (age: ${Math.round((now - cronCache.ldn.updatedAt) / 1000)}s)`);
-      }
-    } catch {}
-
-    if (cronRecords) {
-      records = cronRecords;
-      source = "cron-cache";
-    } else if (!bypassCache && ldnCache && (now - ldnCache.timestamp < CACHE_TTL)) {
-      records = ldnCache.records;
-      source = ldnCache.source;
-      console.log(`Serving LDN records from cache (age: ${Math.round((now - ldnCache.timestamp) / 1000)}s)`);
-    } else if (!bypassCache) {
-      try {
-        console.log("Cache expired. Fetching fresh LDN records from sources...");
-        const fetched = await fetchLdnRawRecords();
-        records = fetched.records;
-        source = fetched.source;
-        ldnCache = {
-          records,
-          source,
-          timestamp: now
-        };
-        // Update local file with newly fetched raw records
-        const newJson = {
-          count: records.length,
-          records: records
-        };
-        await fs.writeFile(ldnDataPath, JSON.stringify(newJson, null, 2), "utf-8");
-      } catch (err: any) {
-        console.warn(`Live LDN fetch failed: ${err.message}. Falling back to local data file.`);
-        const fallback = await loadLocalFallback();
-        records = fallback.records;
-        source = "fallback_cache";
-        ldnCache = {
-          records,
-          source,
-          timestamp: now
-        };
-      }
-    } else {
-      // Force sync: fetch directly from Kobo Collect (skip backend cache)
-      const fetched = await fetchLdnRawRecords({ forceLiveKobo: true });
-      records = fetched.records;
-      source = fetched.source;
-      ldnCache = {
-        records,
-        source,
-        timestamp: now
-      };
-      
-      // Update local file with newly fetched raw records
-      try {
-        const newJson = {
-          count: records.length,
-          records: records
-        };
-        await fs.writeFile(ldnDataPath, JSON.stringify(newJson, null, 2), "utf-8");
-        console.log(`Updated local file public/ldn-data.json with ${records.length} records from direct sync`);
-      } catch (err: any) {
-        console.error("Failed to write updated direct sync records to local file:", err);
-      }
-      
-      console.log(`Force-cached ${records.length} raw LDN records from source: ${source}`);
-    }
-  }
+  const fetched = await fetchLdnRawRecords();
+  let records = fetched.records;
+  const source = fetched.source;
 
   // APPLY LOCAL OVERRIDES (Reconciliation)
   // 1. Filter out deleted records
