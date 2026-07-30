@@ -74,12 +74,43 @@ export default function DrylandsMapView({ records, activeId }: Props) {
 
     const parsedRecords = records
       .map((r) => {
-        const parts = (r.coordinates || "").trim().split(/\s+/);
-        const lat = parseFloat(parts[0]);
-        const lng = parseFloat(parts[1]);
+        let lat = typeof r.lat === "number" ? r.lat : parseFloat(r.lat);
+        let lng = typeof r.lng === "number" ? r.lng : parseFloat(r.lng);
+
+        if ((isNaN(lat) || isNaN(lng)) && r.coordinates) {
+          const parts = String(r.coordinates).trim().split(/[\s,]+/);
+          if (parts.length >= 2) {
+            lat = parseFloat(parts[0]);
+            lng = parseFloat(parts[1]);
+          }
+        }
+
+        if ((isNaN(lat) || isNaN(lng)) && r.raw_data) {
+          const raw = r.raw_data;
+          const rawLat = raw._5_Coordinates_latitude || raw["_5. Coordinates_latitude"];
+          const rawLng = raw._5_Coordinates_longitude || raw["_5. Coordinates_longitude"];
+          if (rawLat && rawLng) {
+            lat = parseFloat(rawLat);
+            lng = parseFloat(rawLng);
+          } else if (raw["5. Coordinates"]) {
+            const parts = String(raw["5. Coordinates"]).trim().split(/\s+/);
+            if (parts.length >= 2) {
+              lat = parseFloat(parts[0]);
+              lng = parseFloat(parts[1]);
+            }
+          }
+        }
+
+        // Swap if lat/lng are inverted
+        if (lat > 0 && lng < 0) {
+          const tmp = lat;
+          lat = lng;
+          lng = tmp;
+        }
+
         return { ...r, _parsedLat: lat, _parsedLng: lng };
       })
-      .filter((r) => !isNaN(r._parsedLat) && !isNaN(r._parsedLng));
+      .filter((r) => !isNaN(r._parsedLat) && !isNaN(r._parsedLng) && r._parsedLat >= -23.0 && r._parsedLat <= -15.0 && r._parsedLng >= 24.0 && r._parsedLng <= 34.0);
 
     const bounds = Leaflet.latLngBounds([]);
 

@@ -174,7 +174,8 @@
         "meta/rootUuid": "uuid:1f9d4603-3f56-452f-9ab6-a6e546692dd8",
         "_index": "1"
       },
-      "submission_time": "2026-05-05 13:52:27"
+      "submission_time": "2026-05-05 13:52:27",
+      "coordinates": "-20.558755 31.302023"
     },
     {
       "id": 743843427,
@@ -348,7 +349,8 @@
         "meta/rootUuid": "uuid:1d5d9a0e-aab4-496f-83ce-b8e762c80a34",
         "_index": "2"
       },
-      "submission_time": "2026-05-05 17:50:10"
+      "submission_time": "2026-05-05 17:50:10",
+      "coordinates": "-20.5588133 31.3019817"
     },
     {
       "id": 743850545,
@@ -522,7 +524,8 @@
         "meta/rootUuid": "uuid:c7489a46-3880-4d3b-b402-5a3123e5d6ee",
         "_index": "3"
       },
-      "submission_time": "2026-05-05 17:59:44"
+      "submission_time": "2026-05-05 17:59:44",
+      "coordinates": "-20.4993929 31.2978103"
     },
     {
       "id": 744416521,
@@ -696,7 +699,8 @@
         "meta/rootUuid": "uuid:0244f01b-493a-46f8-916b-33447b5e4534",
         "_index": "4"
       },
-      "submission_time": "2026-05-06 10:18:32"
+      "submission_time": "2026-05-06 10:18:32",
+      "coordinates": "-20.49951 31.29783"
     },
     {
       "id": 744484057,
@@ -1044,7 +1048,8 @@
         "meta/rootUuid": "uuid:5f04f372-564d-4ee7-9d76-def6d35162eb",
         "_index": "6"
       },
-      "submission_time": "2026-05-06 11:23:33"
+      "submission_time": "2026-05-06 11:23:33",
+      "coordinates": "-20.55664 31.288369"
     },
     {
       "id": 744516855,
@@ -1218,7 +1223,8 @@
         "meta/rootUuid": "uuid:5336f000-fc0d-44bf-b6d0-5c9044629a57",
         "_index": "7"
       },
-      "submission_time": "2026-05-06 11:30:57"
+      "submission_time": "2026-05-06 11:30:57",
+      "coordinates": "-20.246932 31.339937"
     },
     {
       "id": 744671560,
@@ -1392,7 +1398,8 @@
         "meta/rootUuid": "uuid:d4398dbf-2039-4275-8e7a-10c72637004a",
         "_index": "8"
       },
-      "submission_time": "2026-05-06 13:21:07"
+      "submission_time": "2026-05-06 13:21:07",
+      "coordinates": "-20.245032 31.33851"
     },
     {
       "id": 744672110,
@@ -1566,7 +1573,8 @@
         "meta/rootUuid": "uuid:00581795-3f81-4bda-b674-5293d8f443aa",
         "_index": "9"
       },
-      "submission_time": "2026-05-06 13:21:32"
+      "submission_time": "2026-05-06 13:21:32",
+      "coordinates": "-20.252972 31.358947"
     },
     {
       "id": 744672422,
@@ -1740,7 +1748,8 @@
         "meta/rootUuid": "uuid:e95ce622-acb1-45e1-a52d-6a990748bb6c",
         "_index": "10"
       },
-      "submission_time": "2026-05-06 13:21:45"
+      "submission_time": "2026-05-06 13:21:45",
+      "coordinates": "-20.261402 31.352695"
     },
     {
       "id": 744701366,
@@ -1914,7 +1923,8 @@
         "meta/rootUuid": "uuid:a30f0b22-5e8f-48d3-96a6-ac990e084879",
         "_index": "11"
       },
-      "submission_time": "2026-05-06 13:42:44"
+      "submission_time": "2026-05-06 13:42:44",
+      "coordinates": "-20.279072 31.370547"
     },
     {
       "id": 744902018,
@@ -2088,7 +2098,8 @@
         "meta/rootUuid": "uuid:ff10f593-70f6-44e8-8fe7-454ddd8f8b79",
         "_index": "12"
       },
-      "submission_time": "2026-05-06 16:34:02"
+      "submission_time": "2026-05-06 16:34:02",
+      "coordinates": "-20.475235 31.3410265"
     },
     {
       "id": 744902234,
@@ -2262,7 +2273,8 @@
         "meta/rootUuid": "uuid:d02daf1b-e771-445a-bb93-e0aec96b5802",
         "_index": "13"
       },
-      "submission_time": "2026-05-06 16:34:16"
+      "submission_time": "2026-05-06 16:34:16",
+      "coordinates": "-20.4450176 31.3869011"
     },
     {
       "id": 745422264,
@@ -2436,7 +2448,8 @@
         "meta/rootUuid": "uuid:26e42daa-3655-41d5-88de-aeb101dc4a66",
         "_index": "14"
       },
-      "submission_time": "2026-05-07 08:19:12"
+      "submission_time": "2026-05-07 08:19:12",
+      "coordinates": "-20.26012 31.381627"
     },
     {
       "id": 745883233,
@@ -2610,7 +2623,8 @@
         "meta/rootUuid": "uuid:a2125eb2-eaf7-4978-a0d9-965350bde1f3",
         "_index": "15"
       },
-      "submission_time": "2026-05-07 14:52:08"
+      "submission_time": "2026-05-07 14:52:08",
+      "coordinates": "-20.5175183 31.2821933"
     },
     {
       "id": 745883565,
@@ -2784,7 +2798,8 @@
         "meta/rootUuid": "uuid:938b7843-d16e-407d-ba2e-203e5cafc2ff",
         "_index": "16"
       },
-      "submission_time": "2026-05-07 14:52:23"
+      "submission_time": "2026-05-07 14:52:23",
+      "coordinates": "-20.54154 31.2718933"
     }
   ]
 }
