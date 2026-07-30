@@ -671,7 +671,7 @@ export default function InterventionsPage() {
 
       {/* Panel 3: Center Map Panel */}
       <div className="buims-map-panel">
-        <InterventionsMapView records={filteredRecords} activeId={activeId} />
+        <InterventionsMapView records={filteredRecords} activeId={activeId} onSelect={(id) => setActiveId(id)} />
       </div>
 
       {/* Right divider collapse toggle */}

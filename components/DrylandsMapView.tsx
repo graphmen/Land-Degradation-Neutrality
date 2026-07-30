@@ -13,9 +13,10 @@ import {
 interface Props {
   records: any[];
   activeId?: string | number | null;
+  onSelect?: (id: string | number) => void;
 }
 
-export default function DrylandsMapView({ records, activeId }: Props) {
+export default function DrylandsMapView({ records, activeId, onSelect }: Props) {
   const mapRef = useRef<any>(null);
   const clusterRef = useRef<any>(null);
   const leafletRef = useRef<any>(null);
@@ -177,6 +178,14 @@ export default function DrylandsMapView({ records, activeId }: Props) {
       `;
 
       marker.bindPopup(popupHtml, { maxWidth: 280 });
+
+      marker.on("click", () => {
+        const recordId = r._id || r.id;
+        if (onSelect && recordId != null) {
+          onSelect(recordId);
+        }
+      });
+
       cluster.addLayer(marker);
       bounds.extend([lat, lng]);
 

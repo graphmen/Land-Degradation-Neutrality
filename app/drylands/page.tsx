@@ -798,7 +798,7 @@ export default function DrylandsPage() {
 
       {/* Panel 3: Center Map Panel */}
       <div className="buims-map-panel">
-        <DrylandsMapView records={filteredRecords} activeId={activeId} />
+        <DrylandsMapView records={filteredRecords} activeId={activeId} onSelect={(id) => setActiveId(id)} />
       </div>
 
       {/* Right divider collapse toggle */}

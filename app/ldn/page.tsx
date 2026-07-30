@@ -577,7 +577,7 @@ export default function LdnPage() {
 
       {/* Panel 3: Center Map Panel */}
       <div className="buims-map-panel">
-        <MapView geojson={filteredGeojson} activeId={activeId} mode="ldn" />
+        <MapView geojson={filteredGeojson} activeId={activeId} onSelect={(id) => setActiveId(String(id))} mode="ldn" />
       </div>
 
       {/* Right divider collapse toggle */}
@@ -642,10 +642,21 @@ export default function LdnPage() {
                     </div>
                   </div>
 
+                  {props.photo_url || props.thumb_url ? (
+                    <div style={{ width: "100%", height: "130px", borderRadius: "8px", overflow: "hidden", marginBottom: "8px", background: "#0f172a" }}>
+                      <img src={`/api/media?url=${encodeURIComponent(props.photo_url || props.thumb_url)}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Field Photo" />
+                    </div>
+                  ) : null}
                   <div className="detail-item-list">
                     <div className="detail-item-row">
                       <span className="detail-item-label">
-                        <span className="detail-item-icon">🗺️</span> Monitored District
+                        <span className="detail-item-icon">🏷️</span> Survey CEID / ID
+                      </span>
+                      <span className="detail-item-value" style={{ fontWeight: 700, color: "#0284c7" }}>{props.ceid || props.samplid || props._id || "—"}</span>
+                    </div>
+                    <div className="detail-item-row">
+                      <span className="detail-item-label">
+                        <span className="detail-item-icon">🗺️</span> District Jurisdiction
                       </span>
                       <span className="detail-item-value">{props.dist || "—"}</span>
                     </div>
@@ -653,13 +664,13 @@ export default function LdnPage() {
                       <span className="detail-item-label">
                         <span className="detail-item-icon">📍</span> Electoral Ward
                       </span>
-                      <span className="detail-item-value">Ward {props.ward || "—"}</span>
+                      <span className="detail-item-value">{props.ward ? (String(props.ward).startsWith('Ward') ? props.ward : `Ward ${props.ward}`) : "—"}</span>
                     </div>
                     <div className="detail-item-row">
                       <span className="detail-item-label">
                         <span className="detail-item-icon">⚠️</span> Degradation Severity Level
                       </span>
-                      <span className="detail-item-value">{severity || "—"}</span>
+                      <span className="detail-item-value" style={{ fontWeight: 700, color: String(severity).toLowerCase().includes("high") || String(severity).toLowerCase().includes("severe") ? "#e11d48" : "#10b981" }}>{severity || "—"}</span>
                     </div>
                     <div className="detail-item-row">
                       <span className="detail-item-label">
@@ -667,17 +678,27 @@ export default function LdnPage() {
                       </span>
                       <span className="detail-item-value">{props.landus || "—"}</span>
                     </div>
+                    {props.veg_cover && (
+                      <div className="detail-item-row">
+                        <span className="detail-item-label">
+                          <span className="detail-item-icon">🌱</span> Vegetation Cover (%)
+                        </span>
+                        <span className="detail-item-value">{props.veg_cover}</span>
+                      </div>
+                    )}
+                    {props.erosion_signs && (
+                      <div className="detail-item-row">
+                        <span className="detail-item-label">
+                          <span className="detail-item-icon">🏜️</span> Erosion Signs / Notes
+                        </span>
+                        <span className="detail-item-value">{props.erosion_signs}</span>
+                      </div>
+                    )}
                     <div className="detail-item-row">
                       <span className="detail-item-label">
-                        <span className="detail-item-icon">🏡</span> Local Ward Name
+                        <span className="detail-item-icon">👷</span> Survey Observer / Team
                       </span>
-                      <span className="detail-item-value">{props.localname || "—"}</span>
-                    </div>
-                    <div className="detail-item-row">
-                      <span className="detail-item-label">
-                        <span className="detail-item-icon">👤</span> Field Surveyor
-                      </span>
-                      <span className="detail-item-value">{props.agent || "—"}</span>
+                      <span className="detail-item-value">{props.agent || props.team || "—"}</span>
                     </div>
                     <div className="detail-item-row">
                       <span className="detail-item-label">

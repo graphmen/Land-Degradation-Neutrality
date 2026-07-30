@@ -13,9 +13,10 @@ import {
 interface Props {
   records: any[];
   activeId?: string | number | null;
+  onSelect?: (id: string | number) => void;
 }
 
-export default function InterventionsMapView({ records, activeId }: Props) {
+export default function InterventionsMapView({ records, activeId, onSelect }: Props) {
   const mapRef = useRef<any>(null);
   const clusterRef = useRef<any>(null);
   const leafletRef = useRef<any>(null);
@@ -126,6 +127,13 @@ export default function InterventionsMapView({ records, activeId }: Props) {
       `;
 
       marker.bindPopup(popupHtml, { maxWidth: 280 });
+
+      marker.on("click", () => {
+        if (onSelect && r._id != null) {
+          onSelect(r._id);
+        }
+      });
+
       cluster.addLayer(marker);
       bounds.extend([lat, lng]);
 

@@ -20,10 +20,11 @@ interface Props {
     total: number;
   };
   activeId?: string | number | null;
+  onSelect?: (id: string | number) => void;
   mode?: "ldn" | "soil" | "mixed";
 }
 
-export default function MapView({ geojson, activeId, mode = "mixed" }: Props) {
+export default function MapView({ geojson, activeId, onSelect, mode = "mixed" }: Props) {
   const mapRef = useRef<any>(null);
   const clusterRef = useRef<any>(null);
   const leafletRef = useRef<any>(null);
@@ -169,6 +170,12 @@ export default function MapView({ geojson, activeId, mode = "mixed" }: Props) {
         `<div class="popup-title">${visual.icon} ${title}</div>${badgeHtml}${rowsHtml}`,
         { maxWidth: 280 }
       );
+
+      marker.on("click", () => {
+        if (onSelect && props._id != null) {
+          onSelect(props._id);
+        }
+      });
 
       cluster.addLayer(marker);
       bounds.extend([lat, lng]);

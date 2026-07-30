@@ -715,7 +715,7 @@ export default function SoilPage() {
 
       {/* Panel 3: Center Map Panel */}
       <div className="buims-map-panel">
-        <MapView geojson={geojson} activeId={activeId} />
+        <MapView geojson={geojson} activeId={activeId} onSelect={(id) => setActiveId(String(id))} />
       </div>
 
       {/* Right divider collapse toggle */}
@@ -794,6 +794,24 @@ export default function SoilPage() {
                         <span className="detail-item-icon">💧</span> Moisture Status
                       </span>
                       <span className="detail-item-value">{props._mapped_moist || "—"}</span>
+                    </div>
+                    <div className="detail-item-row">
+                      <span className="detail-item-label">
+                        <span className="detail-item-icon">📍</span> Ward / Administrative Area
+                      </span>
+                      <span className="detail-item-value">{props.ward ? (String(props.ward).startsWith('Ward') ? props.ward : `Ward ${props.ward}`) : "—"}</span>
+                    </div>
+                    <div className="detail-item-row">
+                      <span className="detail-item-label">
+                        <span className="detail-item-icon">👷</span> Survey Observer / Team
+                      </span>
+                      <span className="detail-item-value">{props.team || props.agent || "—"}</span>
+                    </div>
+                    <div className="detail-item-row">
+                      <span className="detail-item-label">
+                        <span className="detail-item-icon">🏷️</span> Sample ID / CEID
+                      </span>
+                      <span className="detail-item-value" style={{ fontWeight: 700, color: "#0284c7" }}>{props.ceid || props.samplid || props._id || "—"}</span>
                     </div>
                     <div className="detail-item-row">
                       <span className="detail-item-label">
