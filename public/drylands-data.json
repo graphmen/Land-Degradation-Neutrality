@@ -2,283 +2,409 @@
   "count": 6,
   "records": [
     {
-      "_id": 783565765,
-      "formhub/uuid": "6a14d1d7e24946e7b1185b99972c8da9",
-      "start": "2026-06-11T13:27:30.224+02:00",
-      "end": "2026-06-12T09:52:30.536+02:00",
-      "survey_date": "2026-06-11",
-      "rm_name": "Dambudzo Roki",
-      "dstct": "mudzi",
-      "ward": "2",
-      "gps_location": "-16.9868683 32.6696833 744.7000122070312 3.6",
-      "observe": "trcut",
-      "__version__": "v3UihREnkmdvcRhmKWs9Cd",
-      "meta/instanceID": "uuid:40fcd8d4-151d-4630-913a-ab9ba36b12eb",
-      "_xform_id_string": "aD8u6rhVBZitP2gnuRkUeF",
-      "_uuid": "40fcd8d4-151d-4630-913a-ab9ba36b12eb",
-      "meta/rootUuid": "uuid:40fcd8d4-151d-4630-913a-ab9ba36b12eb",
-      "_attachments": [],
-      "_status": "submitted_via_web",
-      "_geolocation": [
-        -16.9868683,
-        32.6696833
-      ],
-      "_submission_time": "2026-06-17T14:19:27",
-      "_validation_status": {},
-      "_submitted_by": "vegris2020",
-      "_supabase_photos": []
+      "id": 1,
+      "kobo_id": 783565765,
+      "uuid": "40fcd8d4-151d-4630-913a-ab9ba36b12eb",
+      "enumerator": null,
+      "province": null,
+      "district": null,
+      "ward": null,
+      "lat": -16.9868683,
+      "lng": 32.6696833,
+      "area_type": null,
+      "dominant_soil": null,
+      "dist_river_m": null,
+      "dist_wetland_m": null,
+      "dist_road_m": null,
+      "interventions": null,
+      "priority": null,
+      "veg_cover": null,
+      "raw_data": {
+        "_id": 783565765,
+        "end": "2026-06-12T09:52:30.536+02:00",
+        "ward": "2",
+        "_uuid": "40fcd8d4-151d-4630-913a-ab9ba36b12eb",
+        "dstct": "mudzi",
+        "start": "2026-06-11T13:27:30.224+02:00",
+        "_status": "submitted_via_web",
+        "observe": "trcut",
+        "rm_name": "Dambudzo Roki",
+        "__version__": "v3UihREnkmdvcRhmKWs9Cd",
+        "survey_date": "2026-06-11",
+        "_attachments": [],
+        "_geolocation": [
+          -16.9868683,
+          32.6696833
+        ],
+        "formhub/uuid": "6a14d1d7e24946e7b1185b99972c8da9",
+        "gps_location": "-16.9868683 32.6696833 744.7000122070312 3.6",
+        "_submitted_by": "vegris2020",
+        "meta/rootUuid": "uuid:40fcd8d4-151d-4630-913a-ab9ba36b12eb",
+        "meta/instanceID": "uuid:40fcd8d4-151d-4630-913a-ab9ba36b12eb",
+        "_submission_time": "2026-06-17T14:19:27",
+        "_supabase_photos": [],
+        "_xform_id_string": "aD8u6rhVBZitP2gnuRkUeF",
+        "_validation_status": {}
+      },
+      "submission_time": "2026-06-17T12:19:27+00:00",
+      "created_at": "2026-07-30T11:14:11.595296+00:00"
     },
     {
-      "_id": 824841795,
-      "formhub/uuid": "6a14d1d7e24946e7b1185b99972c8da9",
-      "start": "2026-06-27T11:41:46.748+02:00",
-      "end": "2026-07-29T14:15:35.449+02:00",
-      "survey_date": "2026-06-27",
-      "rm_name": "Dambudzo Roki",
-      "dstct": "mudzi",
-      "ward": "2",
-      "village": "Katena 2",
-      "gps_location": "-16.8867136 32.5624186 583.1999999999999 5.0",
-      "observe": "oth",
-      "other_obs": "Galley erosion",
-      "respo": "Locals",
-      "photo": "1782553476581.jpg",
-      "info": "Panodiwa kuti vanhu wawane ruzivo nekuchengetedza ivhh uye miti",
-      "__version__": "v3UihREnkmdvcRhmKWs9Cd",
-      "meta/instanceID": "uuid:6e83930a-3696-4576-b3b6-ed79246ab8ab",
-      "_xform_id_string": "aD8u6rhVBZitP2gnuRkUeF",
-      "_uuid": "6e83930a-3696-4576-b3b6-ed79246ab8ab",
-      "meta/rootUuid": "uuid:6e83930a-3696-4576-b3b6-ed79246ab8ab",
-      "_attachments": [
-        {
-          "download_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824841795/attachments/attEGDHgrPrjfCZrBmaqYELE/",
-          "mimetype": "image/jpeg",
-          "filename": "vegris2020/attachments/6a14d1d7e24946e7b1185b99972c8da9/6e83930a-3696-4576-b3b6-ed79246ab8ab/1782553476581.jpg",
-          "media_file_basename": "1782553476581.jpg",
-          "uid": "attEGDHgrPrjfCZrBmaqYELE",
-          "is_deleted": false,
-          "download_large_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824841795/attachments/attEGDHgrPrjfCZrBmaqYELE/large/",
-          "download_medium_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824841795/attachments/attEGDHgrPrjfCZrBmaqYELE/medium/",
-          "download_small_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824841795/attachments/attEGDHgrPrjfCZrBmaqYELE/small/",
-          "question_xpath": "photo"
-        }
-      ],
-      "_status": "submitted_via_web",
-      "_geolocation": [
-        -16.8867136,
-        32.5624186
-      ],
-      "_submission_time": "2026-07-29T12:18:47",
-      "_validation_status": {},
-      "_submitted_by": "vegris2020",
-      "_supabase_photos": [
-        {
-          "filename": "1782553476581.jpg",
-          "url": "https://pqfbcvxisrmtmhmuxbjk.supabase.co/storage/v1/object/public/survey-photos/drylands/824841795/1782553476581.jpg",
-          "size": 87904
-        }
-      ]
+      "id": 2,
+      "kobo_id": 824841795,
+      "uuid": "6e83930a-3696-4576-b3b6-ed79246ab8ab",
+      "enumerator": null,
+      "province": null,
+      "district": null,
+      "ward": null,
+      "lat": -16.8867136,
+      "lng": 32.5624186,
+      "area_type": null,
+      "dominant_soil": null,
+      "dist_river_m": null,
+      "dist_wetland_m": null,
+      "dist_road_m": null,
+      "interventions": null,
+      "priority": null,
+      "veg_cover": null,
+      "raw_data": {
+        "_id": 824841795,
+        "end": "2026-07-29T14:15:35.449+02:00",
+        "info": "Panodiwa kuti vanhu wawane ruzivo nekuchengetedza ivhh uye miti",
+        "ward": "2",
+        "_uuid": "6e83930a-3696-4576-b3b6-ed79246ab8ab",
+        "dstct": "mudzi",
+        "photo": "1782553476581.jpg",
+        "respo": "Locals",
+        "start": "2026-06-27T11:41:46.748+02:00",
+        "_status": "submitted_via_web",
+        "observe": "oth",
+        "rm_name": "Dambudzo Roki",
+        "village": "Katena 2",
+        "other_obs": "Galley erosion",
+        "__version__": "v3UihREnkmdvcRhmKWs9Cd",
+        "survey_date": "2026-06-27",
+        "_attachments": [
+          {
+            "uid": "attEGDHgrPrjfCZrBmaqYELE",
+            "filename": "vegris2020/attachments/6a14d1d7e24946e7b1185b99972c8da9/6e83930a-3696-4576-b3b6-ed79246ab8ab/1782553476581.jpg",
+            "mimetype": "image/jpeg",
+            "is_deleted": false,
+            "download_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824841795/attachments/attEGDHgrPrjfCZrBmaqYELE/",
+            "question_xpath": "photo",
+            "download_large_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824841795/attachments/attEGDHgrPrjfCZrBmaqYELE/large/",
+            "download_small_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824841795/attachments/attEGDHgrPrjfCZrBmaqYELE/small/",
+            "download_medium_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824841795/attachments/attEGDHgrPrjfCZrBmaqYELE/medium/",
+            "media_file_basename": "1782553476581.jpg"
+          }
+        ],
+        "_geolocation": [
+          -16.8867136,
+          32.5624186
+        ],
+        "formhub/uuid": "6a14d1d7e24946e7b1185b99972c8da9",
+        "gps_location": "-16.8867136 32.5624186 583.1999999999999 5.0",
+        "_submitted_by": "vegris2020",
+        "meta/rootUuid": "uuid:6e83930a-3696-4576-b3b6-ed79246ab8ab",
+        "meta/instanceID": "uuid:6e83930a-3696-4576-b3b6-ed79246ab8ab",
+        "_submission_time": "2026-07-29T12:18:47",
+        "_supabase_photos": [
+          {
+            "url": "https://pqfbcvxisrmtmhmuxbjk.supabase.co/storage/v1/object/public/survey-photos/drylands/824841795/1782553476581.jpg",
+            "size": 87904,
+            "filename": "1782553476581.jpg"
+          }
+        ],
+        "_xform_id_string": "aD8u6rhVBZitP2gnuRkUeF",
+        "_validation_status": {}
+      },
+      "submission_time": "2026-07-29T10:18:47+00:00",
+      "created_at": "2026-07-30T11:14:11.595296+00:00"
     },
     {
-      "_id": 824842052,
-      "formhub/uuid": "6a14d1d7e24946e7b1185b99972c8da9",
-      "start": "2026-06-27T11:46:02.607+02:00",
-      "end": "2026-07-29T14:15:35.492+02:00",
-      "survey_date": "2026-06-27",
-      "rm_name": "Dambudzo Roki",
-      "dstct": "mudzi",
-      "ward": "2",
-      "village": "Katena 2",
-      "gps_location": "-16.8866533 32.5621951 586.1 4.6",
-      "observe": "oth",
-      "other_obs": "Erosion",
-      "respo": "Locals",
-      "photo": "1782553695614.jpg",
-      "__version__": "v3UihREnkmdvcRhmKWs9Cd",
-      "meta/instanceID": "uuid:6001650d-c16e-43a9-b1ca-03922174bda6",
-      "_xform_id_string": "aD8u6rhVBZitP2gnuRkUeF",
-      "_uuid": "6001650d-c16e-43a9-b1ca-03922174bda6",
-      "meta/rootUuid": "uuid:6001650d-c16e-43a9-b1ca-03922174bda6",
-      "_attachments": [
-        {
-          "download_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842052/attachments/attLjwpC9UKfFVJ99FeoeFAo/",
-          "mimetype": "image/jpeg",
-          "filename": "vegris2020/attachments/6a14d1d7e24946e7b1185b99972c8da9/6001650d-c16e-43a9-b1ca-03922174bda6/1782553695614.jpg",
-          "media_file_basename": "1782553695614.jpg",
-          "uid": "attLjwpC9UKfFVJ99FeoeFAo",
-          "is_deleted": false,
-          "download_large_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842052/attachments/attLjwpC9UKfFVJ99FeoeFAo/large/",
-          "download_medium_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842052/attachments/attLjwpC9UKfFVJ99FeoeFAo/medium/",
-          "download_small_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842052/attachments/attLjwpC9UKfFVJ99FeoeFAo/small/",
-          "question_xpath": "photo"
-        }
-      ],
-      "_status": "submitted_via_web",
-      "_geolocation": [
-        -16.8866533,
-        32.5621951
-      ],
-      "_submission_time": "2026-07-29T12:18:58",
-      "_validation_status": {},
-      "_submitted_by": "vegris2020",
-      "_supabase_photos": [
-        {
-          "filename": "1782553695614.jpg",
-          "url": "https://pqfbcvxisrmtmhmuxbjk.supabase.co/storage/v1/object/public/survey-photos/drylands/824842052/1782553695614.jpg",
-          "size": 89530
-        }
-      ]
+      "id": 3,
+      "kobo_id": 824842052,
+      "uuid": "6001650d-c16e-43a9-b1ca-03922174bda6",
+      "enumerator": null,
+      "province": null,
+      "district": null,
+      "ward": null,
+      "lat": -16.8866533,
+      "lng": 32.5621951,
+      "area_type": null,
+      "dominant_soil": null,
+      "dist_river_m": null,
+      "dist_wetland_m": null,
+      "dist_road_m": null,
+      "interventions": null,
+      "priority": null,
+      "veg_cover": null,
+      "raw_data": {
+        "_id": 824842052,
+        "end": "2026-07-29T14:15:35.492+02:00",
+        "ward": "2",
+        "_uuid": "6001650d-c16e-43a9-b1ca-03922174bda6",
+        "dstct": "mudzi",
+        "photo": "1782553695614.jpg",
+        "respo": "Locals",
+        "start": "2026-06-27T11:46:02.607+02:00",
+        "_status": "submitted_via_web",
+        "observe": "oth",
+        "rm_name": "Dambudzo Roki",
+        "village": "Katena 2",
+        "other_obs": "Erosion",
+        "__version__": "v3UihREnkmdvcRhmKWs9Cd",
+        "survey_date": "2026-06-27",
+        "_attachments": [
+          {
+            "uid": "attLjwpC9UKfFVJ99FeoeFAo",
+            "filename": "vegris2020/attachments/6a14d1d7e24946e7b1185b99972c8da9/6001650d-c16e-43a9-b1ca-03922174bda6/1782553695614.jpg",
+            "mimetype": "image/jpeg",
+            "is_deleted": false,
+            "download_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842052/attachments/attLjwpC9UKfFVJ99FeoeFAo/",
+            "question_xpath": "photo",
+            "download_large_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842052/attachments/attLjwpC9UKfFVJ99FeoeFAo/large/",
+            "download_small_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842052/attachments/attLjwpC9UKfFVJ99FeoeFAo/small/",
+            "download_medium_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842052/attachments/attLjwpC9UKfFVJ99FeoeFAo/medium/",
+            "media_file_basename": "1782553695614.jpg"
+          }
+        ],
+        "_geolocation": [
+          -16.8866533,
+          32.5621951
+        ],
+        "formhub/uuid": "6a14d1d7e24946e7b1185b99972c8da9",
+        "gps_location": "-16.8866533 32.5621951 586.1 4.6",
+        "_submitted_by": "vegris2020",
+        "meta/rootUuid": "uuid:6001650d-c16e-43a9-b1ca-03922174bda6",
+        "meta/instanceID": "uuid:6001650d-c16e-43a9-b1ca-03922174bda6",
+        "_submission_time": "2026-07-29T12:18:58",
+        "_supabase_photos": [
+          {
+            "url": "https://pqfbcvxisrmtmhmuxbjk.supabase.co/storage/v1/object/public/survey-photos/drylands/824842052/1782553695614.jpg",
+            "size": 89530,
+            "filename": "1782553695614.jpg"
+          }
+        ],
+        "_xform_id_string": "aD8u6rhVBZitP2gnuRkUeF",
+        "_validation_status": {}
+      },
+      "submission_time": "2026-07-29T10:18:58+00:00",
+      "created_at": "2026-07-30T11:14:11.595296+00:00"
     },
     {
-      "_id": 824842333,
-      "formhub/uuid": "6a14d1d7e24946e7b1185b99972c8da9",
-      "start": "2026-06-27T11:49:20.689+02:00",
-      "end": "2026-07-29T14:15:35.524+02:00",
-      "survey_date": "2026-06-27",
-      "rm_name": "Dambudzo Roki",
-      "dstct": "mudzi",
-      "ward": "2",
-      "village": "Katena 2",
-      "gps_location": "-16.8876811 32.5623566 481.7 5.0",
-      "observe": "oth",
-      "other_obs": "Erosion",
-      "respo": "Locals",
-      "photo": "1782553837139.jpg",
-      "__version__": "v3UihREnkmdvcRhmKWs9Cd",
-      "meta/instanceID": "uuid:9f4c2dca-9de8-43f4-acd8-2244a060c98f",
-      "_xform_id_string": "aD8u6rhVBZitP2gnuRkUeF",
-      "_uuid": "9f4c2dca-9de8-43f4-acd8-2244a060c98f",
-      "meta/rootUuid": "uuid:9f4c2dca-9de8-43f4-acd8-2244a060c98f",
-      "_attachments": [
-        {
-          "download_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842333/attachments/attofZ8W7xtiyvk5pycKGJ2e/",
-          "mimetype": "image/jpeg",
-          "filename": "vegris2020/attachments/6a14d1d7e24946e7b1185b99972c8da9/9f4c2dca-9de8-43f4-acd8-2244a060c98f/1782553837139.jpg",
-          "media_file_basename": "1782553837139.jpg",
-          "uid": "attofZ8W7xtiyvk5pycKGJ2e",
-          "is_deleted": false,
-          "download_large_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842333/attachments/attofZ8W7xtiyvk5pycKGJ2e/large/",
-          "download_medium_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842333/attachments/attofZ8W7xtiyvk5pycKGJ2e/medium/",
-          "download_small_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842333/attachments/attofZ8W7xtiyvk5pycKGJ2e/small/",
-          "question_xpath": "photo"
-        }
-      ],
-      "_status": "submitted_via_web",
-      "_geolocation": [
-        -16.8876811,
-        32.5623566
-      ],
-      "_submission_time": "2026-07-29T12:19:13",
-      "_validation_status": {},
-      "_submitted_by": "vegris2020",
-      "_supabase_photos": [
-        {
-          "filename": "1782553837139.jpg",
-          "url": "https://pqfbcvxisrmtmhmuxbjk.supabase.co/storage/v1/object/public/survey-photos/drylands/824842333/1782553837139.jpg",
-          "size": 93662
-        }
-      ]
+      "id": 4,
+      "kobo_id": 824842333,
+      "uuid": "9f4c2dca-9de8-43f4-acd8-2244a060c98f",
+      "enumerator": null,
+      "province": null,
+      "district": null,
+      "ward": null,
+      "lat": -16.8876811,
+      "lng": 32.5623566,
+      "area_type": null,
+      "dominant_soil": null,
+      "dist_river_m": null,
+      "dist_wetland_m": null,
+      "dist_road_m": null,
+      "interventions": null,
+      "priority": null,
+      "veg_cover": null,
+      "raw_data": {
+        "_id": 824842333,
+        "end": "2026-07-29T14:15:35.524+02:00",
+        "ward": "2",
+        "_uuid": "9f4c2dca-9de8-43f4-acd8-2244a060c98f",
+        "dstct": "mudzi",
+        "photo": "1782553837139.jpg",
+        "respo": "Locals",
+        "start": "2026-06-27T11:49:20.689+02:00",
+        "_status": "submitted_via_web",
+        "observe": "oth",
+        "rm_name": "Dambudzo Roki",
+        "village": "Katena 2",
+        "other_obs": "Erosion",
+        "__version__": "v3UihREnkmdvcRhmKWs9Cd",
+        "survey_date": "2026-06-27",
+        "_attachments": [
+          {
+            "uid": "attofZ8W7xtiyvk5pycKGJ2e",
+            "filename": "vegris2020/attachments/6a14d1d7e24946e7b1185b99972c8da9/9f4c2dca-9de8-43f4-acd8-2244a060c98f/1782553837139.jpg",
+            "mimetype": "image/jpeg",
+            "is_deleted": false,
+            "download_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842333/attachments/attofZ8W7xtiyvk5pycKGJ2e/",
+            "question_xpath": "photo",
+            "download_large_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842333/attachments/attofZ8W7xtiyvk5pycKGJ2e/large/",
+            "download_small_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842333/attachments/attofZ8W7xtiyvk5pycKGJ2e/small/",
+            "download_medium_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842333/attachments/attofZ8W7xtiyvk5pycKGJ2e/medium/",
+            "media_file_basename": "1782553837139.jpg"
+          }
+        ],
+        "_geolocation": [
+          -16.8876811,
+          32.5623566
+        ],
+        "formhub/uuid": "6a14d1d7e24946e7b1185b99972c8da9",
+        "gps_location": "-16.8876811 32.5623566 481.7 5.0",
+        "_submitted_by": "vegris2020",
+        "meta/rootUuid": "uuid:9f4c2dca-9de8-43f4-acd8-2244a060c98f",
+        "meta/instanceID": "uuid:9f4c2dca-9de8-43f4-acd8-2244a060c98f",
+        "_submission_time": "2026-07-29T12:19:13",
+        "_supabase_photos": [
+          {
+            "url": "https://pqfbcvxisrmtmhmuxbjk.supabase.co/storage/v1/object/public/survey-photos/drylands/824842333/1782553837139.jpg",
+            "size": 93662,
+            "filename": "1782553837139.jpg"
+          }
+        ],
+        "_xform_id_string": "aD8u6rhVBZitP2gnuRkUeF",
+        "_validation_status": {}
+      },
+      "submission_time": "2026-07-29T10:19:13+00:00",
+      "created_at": "2026-07-30T11:14:11.595296+00:00"
     },
     {
-      "_id": 824842666,
-      "formhub/uuid": "6a14d1d7e24946e7b1185b99972c8da9",
-      "start": "2026-07-29T08:13:39.905+02:00",
-      "end": "2026-07-29T14:15:35.595+02:00",
-      "survey_date": "2026-07-29",
-      "rm_name": "Dambudzo Roki",
-      "dstct": "mudzi",
-      "ward": "2",
-      "village": "Katena 2",
-      "gps_location": "-16.8802 32.56852 636.8 2.9",
-      "observe": "oth",
-      "other_obs": "Erosion",
-      "respo": "Locals",
-      "photo": "1785306008988.jpg",
-      "info": "Erosion is get more in our communites so we need help to educate pple",
-      "__version__": "v3UihREnkmdvcRhmKWs9Cd",
-      "meta/instanceID": "uuid:c56ef871-6d73-458b-a7b4-e5768f57c22f",
-      "_xform_id_string": "aD8u6rhVBZitP2gnuRkUeF",
-      "_uuid": "c56ef871-6d73-458b-a7b4-e5768f57c22f",
-      "meta/rootUuid": "uuid:c56ef871-6d73-458b-a7b4-e5768f57c22f",
-      "_attachments": [
-        {
-          "download_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842666/attachments/attmzyMfQZBfbByNE4BjnJFM/",
-          "mimetype": "image/jpeg",
-          "filename": "vegris2020/attachments/6a14d1d7e24946e7b1185b99972c8da9/c56ef871-6d73-458b-a7b4-e5768f57c22f/1785306008988.jpg",
-          "media_file_basename": "1785306008988.jpg",
-          "uid": "attmzyMfQZBfbByNE4BjnJFM",
-          "is_deleted": false,
-          "download_large_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842666/attachments/attmzyMfQZBfbByNE4BjnJFM/large/",
-          "download_medium_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842666/attachments/attmzyMfQZBfbByNE4BjnJFM/medium/",
-          "download_small_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842666/attachments/attmzyMfQZBfbByNE4BjnJFM/small/",
-          "question_xpath": "photo"
-        }
-      ],
-      "_status": "submitted_via_web",
-      "_geolocation": [
-        -16.8802,
-        32.56852
-      ],
-      "_submission_time": "2026-07-29T12:19:30",
-      "_validation_status": {},
-      "_submitted_by": "vegris2020",
-      "_supabase_photos": [
-        {
-          "filename": "1785306008988.jpg",
-          "url": "https://pqfbcvxisrmtmhmuxbjk.supabase.co/storage/v1/object/public/survey-photos/drylands/824842666/1785306008988.jpg",
-          "size": 116283
-        }
-      ]
+      "id": 5,
+      "kobo_id": 824842666,
+      "uuid": "c56ef871-6d73-458b-a7b4-e5768f57c22f",
+      "enumerator": null,
+      "province": null,
+      "district": null,
+      "ward": null,
+      "lat": -16.8802,
+      "lng": 32.56852,
+      "area_type": null,
+      "dominant_soil": null,
+      "dist_river_m": null,
+      "dist_wetland_m": null,
+      "dist_road_m": null,
+      "interventions": null,
+      "priority": null,
+      "veg_cover": null,
+      "raw_data": {
+        "_id": 824842666,
+        "end": "2026-07-29T14:15:35.595+02:00",
+        "info": "Erosion is get more in our communites so we need help to educate pple",
+        "ward": "2",
+        "_uuid": "c56ef871-6d73-458b-a7b4-e5768f57c22f",
+        "dstct": "mudzi",
+        "photo": "1785306008988.jpg",
+        "respo": "Locals",
+        "start": "2026-07-29T08:13:39.905+02:00",
+        "_status": "submitted_via_web",
+        "observe": "oth",
+        "rm_name": "Dambudzo Roki",
+        "village": "Katena 2",
+        "other_obs": "Erosion",
+        "__version__": "v3UihREnkmdvcRhmKWs9Cd",
+        "survey_date": "2026-07-29",
+        "_attachments": [
+          {
+            "uid": "attmzyMfQZBfbByNE4BjnJFM",
+            "filename": "vegris2020/attachments/6a14d1d7e24946e7b1185b99972c8da9/c56ef871-6d73-458b-a7b4-e5768f57c22f/1785306008988.jpg",
+            "mimetype": "image/jpeg",
+            "is_deleted": false,
+            "download_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842666/attachments/attmzyMfQZBfbByNE4BjnJFM/",
+            "question_xpath": "photo",
+            "download_large_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842666/attachments/attmzyMfQZBfbByNE4BjnJFM/large/",
+            "download_small_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842666/attachments/attmzyMfQZBfbByNE4BjnJFM/small/",
+            "download_medium_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842666/attachments/attmzyMfQZBfbByNE4BjnJFM/medium/",
+            "media_file_basename": "1785306008988.jpg"
+          }
+        ],
+        "_geolocation": [
+          -16.8802,
+          32.56852
+        ],
+        "formhub/uuid": "6a14d1d7e24946e7b1185b99972c8da9",
+        "gps_location": "-16.8802 32.56852 636.8 2.9",
+        "_submitted_by": "vegris2020",
+        "meta/rootUuid": "uuid:c56ef871-6d73-458b-a7b4-e5768f57c22f",
+        "meta/instanceID": "uuid:c56ef871-6d73-458b-a7b4-e5768f57c22f",
+        "_submission_time": "2026-07-29T12:19:30",
+        "_supabase_photos": [
+          {
+            "url": "https://pqfbcvxisrmtmhmuxbjk.supabase.co/storage/v1/object/public/survey-photos/drylands/824842666/1785306008988.jpg",
+            "size": 116283,
+            "filename": "1785306008988.jpg"
+          }
+        ],
+        "_xform_id_string": "aD8u6rhVBZitP2gnuRkUeF",
+        "_validation_status": {}
+      },
+      "submission_time": "2026-07-29T10:19:30+00:00",
+      "created_at": "2026-07-30T11:14:11.595296+00:00"
     },
     {
-      "_id": 824842851,
-      "formhub/uuid": "6a14d1d7e24946e7b1185b99972c8da9",
-      "start": "2026-07-29T08:23:05.087+02:00",
-      "end": "2026-07-29T14:15:35.629+02:00",
-      "survey_date": "2026-07-29",
-      "rm_name": "Dambudzo Roki",
-      "dstct": "mudzi",
-      "ward": "2",
-      "village": "Katena 2",
-      "gps_location": "-16.8803783 32.5676033 633.5 4.1",
-      "observe": "oth",
-      "other_obs": "Erosion",
-      "respo": "Locals",
-      "photo": "1785306258916.jpg",
-      "__version__": "v3UihREnkmdvcRhmKWs9Cd",
-      "meta/instanceID": "uuid:bf93f9d9-754a-422b-9f1b-d2197401dec0",
-      "_xform_id_string": "aD8u6rhVBZitP2gnuRkUeF",
-      "_uuid": "bf93f9d9-754a-422b-9f1b-d2197401dec0",
-      "meta/rootUuid": "uuid:bf93f9d9-754a-422b-9f1b-d2197401dec0",
-      "_attachments": [
-        {
-          "download_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842851/attachments/attwaypzkcHLE4B7GbgtVD4C/",
-          "mimetype": "image/jpeg",
-          "filename": "vegris2020/attachments/6a14d1d7e24946e7b1185b99972c8da9/bf93f9d9-754a-422b-9f1b-d2197401dec0/1785306258916.jpg",
-          "media_file_basename": "1785306258916.jpg",
-          "uid": "attwaypzkcHLE4B7GbgtVD4C",
-          "is_deleted": false,
-          "download_large_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842851/attachments/attwaypzkcHLE4B7GbgtVD4C/large/",
-          "download_medium_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842851/attachments/attwaypzkcHLE4B7GbgtVD4C/medium/",
-          "download_small_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842851/attachments/attwaypzkcHLE4B7GbgtVD4C/small/",
-          "question_xpath": "photo"
-        }
-      ],
-      "_status": "submitted_via_web",
-      "_geolocation": [
-        -16.8803783,
-        32.5676033
-      ],
-      "_submission_time": "2026-07-29T12:19:41",
-      "_validation_status": {},
-      "_submitted_by": "vegris2020",
-      "_supabase_photos": [
-        {
-          "filename": "1785306258916.jpg",
-          "url": "https://pqfbcvxisrmtmhmuxbjk.supabase.co/storage/v1/object/public/survey-photos/drylands/824842851/1785306258916.jpg",
-          "size": 63782
-        }
-      ]
+      "id": 6,
+      "kobo_id": 824842851,
+      "uuid": "bf93f9d9-754a-422b-9f1b-d2197401dec0",
+      "enumerator": null,
+      "province": null,
+      "district": null,
+      "ward": null,
+      "lat": -16.8803783,
+      "lng": 32.5676033,
+      "area_type": null,
+      "dominant_soil": null,
+      "dist_river_m": null,
+      "dist_wetland_m": null,
+      "dist_road_m": null,
+      "interventions": null,
+      "priority": null,
+      "veg_cover": null,
+      "raw_data": {
+        "_id": 824842851,
+        "end": "2026-07-29T14:15:35.629+02:00",
+        "ward": "2",
+        "_uuid": "bf93f9d9-754a-422b-9f1b-d2197401dec0",
+        "dstct": "mudzi",
+        "photo": "1785306258916.jpg",
+        "respo": "Locals",
+        "start": "2026-07-29T08:23:05.087+02:00",
+        "_status": "submitted_via_web",
+        "observe": "oth",
+        "rm_name": "Dambudzo Roki",
+        "village": "Katena 2",
+        "other_obs": "Erosion",
+        "__version__": "v3UihREnkmdvcRhmKWs9Cd",
+        "survey_date": "2026-07-29",
+        "_attachments": [
+          {
+            "uid": "attwaypzkcHLE4B7GbgtVD4C",
+            "filename": "vegris2020/attachments/6a14d1d7e24946e7b1185b99972c8da9/bf93f9d9-754a-422b-9f1b-d2197401dec0/1785306258916.jpg",
+            "mimetype": "image/jpeg",
+            "is_deleted": false,
+            "download_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842851/attachments/attwaypzkcHLE4B7GbgtVD4C/",
+            "question_xpath": "photo",
+            "download_large_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842851/attachments/attwaypzkcHLE4B7GbgtVD4C/large/",
+            "download_small_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842851/attachments/attwaypzkcHLE4B7GbgtVD4C/small/",
+            "download_medium_url": "https://kf.kobotoolbox.org/api/v2/assets/aD8u6rhVBZitP2gnuRkUeF/data/824842851/attachments/attwaypzkcHLE4B7GbgtVD4C/medium/",
+            "media_file_basename": "1785306258916.jpg"
+          }
+        ],
+        "_geolocation": [
+          -16.8803783,
+          32.5676033
+        ],
+        "formhub/uuid": "6a14d1d7e24946e7b1185b99972c8da9",
+        "gps_location": "-16.8803783 32.5676033 633.5 4.1",
+        "_submitted_by": "vegris2020",
+        "meta/rootUuid": "uuid:bf93f9d9-754a-422b-9f1b-d2197401dec0",
+        "meta/instanceID": "uuid:bf93f9d9-754a-422b-9f1b-d2197401dec0",
+        "_submission_time": "2026-07-29T12:19:41",
+        "_supabase_photos": [
+          {
+            "url": "https://pqfbcvxisrmtmhmuxbjk.supabase.co/storage/v1/object/public/survey-photos/drylands/824842851/1785306258916.jpg",
+            "size": 63782,
+            "filename": "1785306258916.jpg"
+          }
+        ],
+        "_xform_id_string": "aD8u6rhVBZitP2gnuRkUeF",
+        "_validation_status": {}
+      },
+      "submission_time": "2026-07-29T10:19:41+00:00",
+      "created_at": "2026-07-30T11:14:11.595296+00:00"
     }
   ]
 }

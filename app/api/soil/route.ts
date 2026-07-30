@@ -90,7 +90,7 @@ async function fetchSoilRawRecords(options: { forceLiveKobo?: boolean } = {}): P
         'Accept-Profile': 'ldn'
       },
       cache: "no-store",
-      timeout: 15000
+      timeout: 3000
     });
     if (res.ok) {
       const data = await res.json();
@@ -108,7 +108,6 @@ async function fetchSoilRawRecords(options: { forceLiveKobo?: boolean } = {}): P
   return { records: fallback.records, source: "fallback" };
 }
 
-export const dynamic = "force-dynamic";
 export const revalidate = 0;
 export const fetchCache = "force-no-store";
 
