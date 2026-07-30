@@ -95,7 +95,7 @@ async function fetchSoilRawRecords(options: { forceLiveKobo?: boolean } = {}): P
         'Accept-Profile': 'ldn'
       },
       cache: "no-store",
-      timeout: 3000
+      timeout: 8000
     });
     if (!res.ok) {
       // Try querying public schema fallback
