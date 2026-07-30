@@ -260,6 +260,10 @@ export async function GET(req: Request) {
       deletions: mod.deletions.length,
       edits: Object.keys(mod.edits).length + Object.keys(mod.parentEdits).length
     }
+  }, {
+    headers: {
+      "Cache-Control": "no-store, no-cache, max-age=0, s-maxage=0, must-revalidate"
+    }
   });
 }
 
