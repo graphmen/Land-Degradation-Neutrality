@@ -99,19 +99,27 @@ export default function DrylandsMapView({ records, activeId }: Props) {
         icon: createPinIcon(Leaflet, visual),
       });
 
+      const photoUrl = r.photo_1_url || r.photo_2_url || r.photo_3_url;
+      const photoHtml = photoUrl
+        ? `<div style="width:100%; height:110px; border-radius:6px; overflow:hidden; margin-bottom:8px; background:#000;">
+             <img src="/api/media?url=${encodeURIComponent(photoUrl)}" style="width:100%; height:100%; object-fit:cover;" />
+           </div>`
+        : "";
+
       const popupHtml = `
         <div style="font-family: var(--font-body); padding: 2px;">
+          ${photoHtml}
           <div style="font-size: 13px; font-weight: 700; color: #122218; margin-bottom: 4px;">${visual.icon} ${r.village_location || "Unknown Village"}</div>
           <div style="display: flex; gap: 4px; margin-bottom: 8px; align-items: center;">
             <span class="site-badge" style="font-size: 8px; padding: 1px 6px; background: rgba(0, 102, 51, 0.08); color: #006633; border: 1px solid rgba(0, 102, 51, 0.15); border-radius: 10px;">
-              ${r.ward_name || "Ward"}
+              ${r.ward_name ? (String(r.ward_name).startsWith('Ward') ? r.ward_name : `Ward ${r.ward_name}`) : "Ward"}
             </span>
             <span class="site-badge" style="font-size: 8px; padding: 1px 6px; border-radius: 10px; font-weight: 700; border: 1px solid;
               ${badgeClass === "active-status" ? "background:#eafbf1; color:#15803d; border-color:#bbf7d0;" : ""}
               ${badgeClass === "warning-status" ? "background:#fffbeb; color:#b45309; border-color:#fef3c7;" : ""}
               ${badgeClass === "danger-status" ? "background:#fef2f2; color:#b91c1c; border-color:#fee2e2;" : ""}
             ">
-              Priority: ${r.priority_level || "Low"}
+              ${r.priority_level || "Low Priority"}
             </span>
           </div>
           <div style="font-size: 11px; margin-bottom: 3px; display: flex; justify-content: space-between;">
@@ -119,8 +127,12 @@ export default function DrylandsMapView({ records, activeId }: Props) {
             <strong style="color:#122218;">${r.enumerator_name || "Unknown"}</strong>
           </div>
           <div style="font-size: 11px; margin-bottom: 3px; display: flex; justify-content: space-between;">
+            <span style="color:#5a6e62;">Area Type:</span>
+            <span style="color:#122218; font-weight:600;">${r.area_type || "Land"}</span>
+          </div>
+          <div style="font-size: 11px; margin-bottom: 3px; display: flex; justify-content: space-between;">
             <span style="color:#5a6e62;">Vegetation:</span>
-            <span style="color:#122218; font-weight:500;">${r.vegetation_condition || "Unknown"}</span>
+            <span style="color:#122218; font-weight:500;">${r.vegetation_condition || "Unknown"} (${r.estimated_vegetation_cover ?? '—'}%)</span>
           </div>
           <div style="font-size: 11px; margin-bottom: 3px; display: flex; justify-content: space-between;">
             <span style="color:#5a6e62;">Soil Type:</span>

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
+import drylandsDataStatic from "@/public/drylands-data.json";
 
 const dataPath = path.join(process.cwd(), "public", "drylands-data.json");
 const modPath = path.join(process.cwd(), "public", "drylands-modifications.json");
@@ -11,11 +12,11 @@ async function loadData() {
   try {
     const raw = await fs.readFile(dataPath, "utf-8");
     const json = JSON.parse(raw);
-    return json.records || [];
+    if (json.records && json.records.length > 0) return json.records;
   } catch (err: any) {
-    console.error("Failed to load drylands data, using empty array:", err.message);
-    return [];
+    console.error("Failed to load drylands file, using static bundle:", err.message);
   }
+  return drylandsDataStatic.records || [];
 }
 
 async function loadModifications() {
