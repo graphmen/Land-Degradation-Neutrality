@@ -290,7 +290,7 @@ export default function LdnPage() {
     [filteredFeatures]
   );
 
-  const activeFeature = filteredFeatures.find((f: any) => f.properties._id === activeId);
+  const activeFeature = filteredFeatures.find((f: any) => String(f.properties._id) === String(activeId));
 
   const dashboardStats = useMemo(() => {
     if (!data) return null;
@@ -563,7 +563,7 @@ export default function LdnPage() {
               const ward = props.ward || "Unspecified Ward";
               const severity = props.sev || "Not Rated";
               const ceid = props.ceid || "—";
-              const isSelected = activeId === props._id;
+              const isSelected = String(activeId) === String(props._id);
               const status = getUnccdStatus(props);
 
               return (

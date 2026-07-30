@@ -315,7 +315,7 @@ export default function SoilPage() {
   const totalPages = Math.max(1, Math.ceil(filteredFeatures.length / itemsPerPage));
   const currentFeatures = filteredFeatures.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  const activeFeature = geojson.features.find((f: any) => f.properties._id === activeId);
+  const activeFeature = geojson.features.find((f: any) => String(f.properties._id) === String(activeId));
 
   const dashboardStats = useMemo(() => {
     if (!data) return null;
@@ -646,7 +646,7 @@ export default function SoilPage() {
               };
               
               const sampleName = formatLoc(props._mapped_loc || props.samloc);
-              const isSelected = activeId === props._id;
+              const isSelected = String(activeId) === String(props._id);
 
               const isHotspot = texture.toLowerCase().includes("sand") && moisture.includes("dry");
               const isBrightSpot = texture.toLowerCase().includes("loam") || texture.toLowerCase().includes("silt");
