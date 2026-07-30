@@ -123,9 +123,9 @@ export function createPinIcon(Leaflet: any, visual: MarkerVisual, active = false
         <div class="data-marker-pointer"></div>
       </div>
     `,
-    iconSize: [38, 46],
-    iconAnchor: [19, 46],
-    popupAnchor: [0, -42],
+    iconSize: [24, 30],
+    iconAnchor: [12, 30],
+    popupAnchor: [0, -28],
   });
 }
 

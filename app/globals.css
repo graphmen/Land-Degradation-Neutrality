@@ -829,9 +829,9 @@ html, body {
 
 .data-marker {
   position: relative;
-  width: 38px;
-  height: 46px;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35));
+  width: 24px;
+  height: 30px;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.32));
   transition: transform 0.2s ease;
 }
 
@@ -842,22 +842,22 @@ html, body {
 
 .data-marker-ring {
   position: absolute;
-  inset: 2px 2px 12px;
+  inset: 1px 1px 8px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.35);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
   pointer-events: none;
 }
 
 .data-marker-body {
   position: absolute;
   top: 0;
-  left: 3px;
-  width: 32px;
-  height: 32px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
   border-radius: 50% 50% 50% 4px;
   transform: rotate(-45deg);
   background: linear-gradient(145deg, var(--m-color), color-mix(in srgb, var(--m-color) 75%, #000));
-  border: 2.5px solid #fff;
+  border: 2px solid #fff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -866,7 +866,7 @@ html, body {
 
 .data-marker-icon {
   transform: rotate(45deg);
-  font-size: 13px;
+  font-size: 9px;
   line-height: 1;
   color: #fff;
   font-weight: 800;
@@ -880,9 +880,9 @@ html, body {
   width: 0;
   height: 0;
   transform: translateX(-50%);
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 10px solid var(--m-color);
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 7px solid var(--m-color);
   filter: brightness(0.85);
 }
 

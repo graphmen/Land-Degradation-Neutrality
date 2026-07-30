@@ -157,6 +157,54 @@ function buildDashboardData(records: any[]) {
   };
 }
 
+const SKIP_KEYS = new Set([
+  "_id", "id", "kobo_id", "dist", "ward", "sev", "landus", "agent", "team",
+  "ceid", "samplid", "photo_url", "thumb_url", "_submission_time",
+  "raw_data", "_geolocation", "_validation_status", "_submitted_by",
+  "lat", "lng", "latitude", "longitude"
+]);
+
+function AllFieldsAccordion({ props }: { props: Record<string, any> }) {
+  const [open, setOpen] = useState(false);
+  const entries = Object.entries(props).filter(
+    ([k, v]) => !SKIP_KEYS.has(k) && v != null && v !== "" && typeof v !== "object"
+  );
+  if (entries.length === 0) return null;
+  return (
+    <div style={{ border: "1px solid rgba(0,0,0,0.08)", borderRadius: 8, overflow: "hidden" }}>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "9px 12px", background: "rgba(0,0,0,0.03)", border: "none", cursor: "pointer",
+          fontSize: 11, fontWeight: 700, color: "var(--text-primary)", letterSpacing: 0.3,
+          textTransform: "uppercase"
+        }}
+      >
+        <span>📋 All Survey Data ({entries.length} fields)</span>
+        <span style={{ fontSize: 10, opacity: 0.6 }}>{open ? "▲ Hide" : "▼ Show"}</span>
+      </button>
+      {open && (
+        <div style={{ maxHeight: 320, overflowY: "auto", padding: "8px 0" }}>
+          {entries.map(([k, v]) => (
+            <div key={k} style={{
+              display: "flex", gap: 8, padding: "4px 12px", borderBottom: "1px solid rgba(0,0,0,0.04)",
+              alignItems: "flex-start"
+            }}>
+              <span style={{ flex: "0 0 45%", fontSize: 10, color: "var(--text-muted)", fontWeight: 600, wordBreak: "break-word", paddingTop: 1 }}>
+                {k}
+              </span>
+              <span style={{ flex: 1, fontSize: 10, color: "var(--text-primary)", wordBreak: "break-word" }}>
+                {String(v)}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function LdnPage() {
   const [viewMode, setViewMode] = useState<"spatial" | "dashboard">("spatial");
   const [data, setData] = useState<any>(null);
@@ -614,7 +662,7 @@ export default function LdnPage() {
 
         {/* Selected Site Details Section */}
         <div className="detail-section" style={{ flex: 1, overflowY: "auto" }}>
-          <div className="detail-section-title">LDN Command</div>
+          <div className="detail-section-title">Point Details</div>
           {activeFeature ? (
             (() => {
               const props = activeFeature.properties;
@@ -743,11 +791,17 @@ export default function LdnPage() {
                       </div>
                     );
                   })()}
+                  {/* All Raw Survey Fields — collapsible */}
+                  <AllFieldsAccordion props={props} />
                 </div>
               );
             })()
           ) : (
-            <div style={{ color: "var(--text-muted)", fontSize: 11 }}>No active LDN point selected</div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, padding: "32px 12px", textAlign: "center" }}>
+              <span style={{ fontSize: 36, lineHeight: 1 }}>📍</span>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)" }}>Click any map point</div>
+              <div style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.6 }}>Select a monitoring node on the map to view its full survey attributes, field photo, and all Kobo metadata here.</div>
+            </div>
           )}
         </div>
 
