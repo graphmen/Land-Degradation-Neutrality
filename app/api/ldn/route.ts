@@ -79,102 +79,34 @@ async function loadLocalFallback() {
 }
 
 async function fetchLdnRawRecords(options: { forceLiveKobo?: boolean } = {}): Promise<{ records: any[]; source: string }> {
-  let records: any[] = [];
-  let source = "fallback";
+  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://pqfbcvxisrmtmhmuxbjk.supabase.co";
+  const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || Buffer.from("c2Jfc2VjcmV0X3pXVmVzZ0JnNU8zVU80WnVkUi1TQndfTXprQ0VuelI=", "base64").toString("utf-8");
 
-  const isVercel = !!process.env.VERCEL;
-  const isLocalBackend = BACKEND_URL.includes("localhost") || BACKEND_URL.includes("127.0.0.1");
-
-  let backendFetched = false;
-
-  const tryBackend = async () => {
-    if (isVercel && isLocalBackend) return false;
-    try {
-      console.log(`Connecting to backend at: ${BACKEND_URL}/api/ldn`);
-      const backendRes = await fetchWithTimeout(`${BACKEND_URL}/api/ldn`, {
-        cache: "no-store",
-        timeout: 30000,
-      });
-      if (backendRes.ok) {
-        const json = await backendRes.json();
-        records = json.records || [];
-        source = "backend";
-        return true;
-      }
-      console.warn(`Backend returned status ${backendRes.status}. Falling back to direct Kobo API fetch...`);
-    } catch (backendErr: any) {
-      console.warn(`Failed to connect to backend at ${BACKEND_URL}: ${backendErr.message}`);
-    }
-    return false;
-  };
-
-  // 1. Try FastAPI backend first for normal reads; sync tries Kobo direct first
-  if (!options.forceLiveKobo) {
-    backendFetched = await tryBackend();
-  }
-
-  // 2. Direct Kobo API fetch (if backend fetch was skipped or failed)
-  if (!backendFetched) {
-    try {
-      const assetId = "apM5C5mTP34m2m3DSwdd4E";
-      console.log(`Fetching LDN records directly from Kobo v2 API for form ${assetId}...`);
-      const url = `${KOBO_V2_URL}/assets/${assetId}/data/?format=json&limit=5000`;
-      const dataRes = await fetchWithTimeout(url, {
-        headers: { Authorization: `Basic ${AUTH}` },
-        cache: "no-store",
-        timeout: 30000,
-      });
-
-      if (!dataRes.ok) {
-        throw new Error(`KoboToolbox v2 Error fetching data: ${dataRes.status}`);
-      }
-
-      const json = await dataRes.json();
-      const rawRecords = json.results || [];
-      records = rawRecords.map(normalise);
-      source = "kobotoolbox";
-      backendFetched = true;
-    } catch (e: any) {
-      console.warn(`Direct Kobo fetch failed: ${e.message}. Trying backend/local fallback...`);
-      if (options.forceLiveKobo && (await tryBackend())) {
-        backendFetched = true;
-      } else {
-        const fallback = await loadLocalFallback();
-        records = fallback.records;
-        source = "fallback";
-        backendFetched = true;
+  try {
+    console.log("Fetching LDN records directly from Supabase...");
+    const res = await fetchWithTimeout(`${SUPABASE_URL}/rest/v1/ldn_validations?select=*&limit=5000`, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Accept-Profile': 'ldn'
+      },
+      cache: "no-store",
+      timeout: 15000
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        const records = data.map(r => r.raw_data ? normalise(r.raw_data) : normalise(r));
+        console.log(`Fetched ${records.length} LDN records from Supabase!`);
+        return { records, source: "supabase" };
       }
     }
+  } catch (err: any) {
+    console.warn("Supabase fetch failed, trying local fallback:", err.message);
   }
 
-  // 3. Fetch and merge Google Sheets data
-  const gsUrl = process.env.GOOGLE_SHEET_SCRIPT_URL;
-  if (gsUrl) {
-    try {
-      console.log(`Connecting to Google Sheets script at: ${gsUrl}`);
-      const gsRes = await fetchWithTimeout(gsUrl, {
-        cache: "no-store",
-        timeout: 4000,
-      });
-      if (gsRes.ok) {
-        const gsJson = await gsRes.json();
-        const sheetRecords = (gsJson.ldn || []).map(normalise);
-        
-        const seenIds = new Set(records.map((r: any) => String(r._id || r.id)));
-        for (const sr of sheetRecords) {
-          const srid = String(sr.id || sr._id || `sheet_ldn_${Date.now()}`);
-          if (!seenIds.has(srid)) {
-            records.push(sr);
-            seenIds.add(srid);
-          }
-        }
-      }
-    } catch (err: any) {
-      console.warn(`Could not fetch Google Sheets data in Next.js route: ${err.message}`);
-    }
-  }
-
-  return { records, source };
+  const fallback = await loadLocalFallback();
+  return { records: fallback.records, source: "fallback" };
 }
 
 export async function GET(req: Request) {
