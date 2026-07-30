@@ -761,13 +761,32 @@ export default function SoilPage() {
 
               return (
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {/* Header */}
                   <div>
                     <div className="detail-site-name">{name}</div>
+                    <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 6 }}>
+                      {props._mapped_dist || props.dist || "Unknown District"}
+                    </div>
                     <span className={`site-badge ${getBadgeClass(props._mapped_tex)}`}>
-                      {props._mapped_tex || "Unknown"}
+                      {props._mapped_tex || "Unknown"} Texture
                     </span>
                   </div>
 
+                  {/* Field Photo — point-specific */}
+                  {(props.photo_url || props.thumb_url) ? (
+                    <div style={{ width: "100%", height: "160px", borderRadius: "10px", overflow: "hidden", background: "#0f172a", flexShrink: 0 }}>
+                      <img
+                        src={`/api/media?url=${encodeURIComponent(props.photo_url || props.thumb_url)}`}
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        alt="Field Photo"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                      />
+                    </div>
+                  ) : (
+                    <div style={{ width: "100%", height: "80px", borderRadius: "10px", background: "rgba(0,0,0,0.04)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, color: "var(--text-muted)", fontSize: 11 }}>
+                      <span>📷</span> No field photo for this point
+                    </div>
+                  )}
                   <div className="detail-item-list">
                     <div className="detail-item-row">
                       <span className="detail-item-label">
@@ -852,106 +871,15 @@ export default function SoilPage() {
                       </div>
                     )}
                   </div>
-
-                  {/* Soil Organic Carbon (SOC) Baseline Alignment Card */}
-                  {(() => {
-                    const texture = String(props._mapped_tex || "").toLowerCase();
-                    const moisture = String(props._mapped_moist || "").toLowerCase();
-                    const depth = parseFloat(props._mapped_dep || "0");
-                    
-                    let landCoverType = "Cropland";
-                    let targetSOC = 38.9;
-                    
-                    if (moisture.includes("wet") || moisture.includes("saturated")) {
-                      landCoverType = "Wetland";
-                      targetSOC = 52.2;
-                    } else if (texture.includes("forest") || props._mapped_loc?.toLowerCase().includes("forest")) {
-                      landCoverType = "Forest";
-                      targetSOC = 42.3;
-                    } else if (texture.includes("sand") && moisture.includes("dry")) {
-                      landCoverType = "Shrubland/Grassland (Degraded)";
-                      targetSOC = 38.6;
-                    }
-                    
-                    // Calculate estimated SOC based on depth, moisture, and texture
-                    let estimatedSOC = 15;
-                    estimatedSOC += depth > 25 ? 12 : depth > 10 ? 7 : 3;
-                    estimatedSOC += moisture.includes("wet") ? 15 : moisture.includes("moist") ? 10 : 2;
-                    estimatedSOC += (texture.includes("loam") || texture.includes("silt")) ? 15 : texture.includes("clay") ? 10 : 3;
-                    
-                    const isMeetingTarget = estimatedSOC >= targetSOC;
-                    const diff = (estimatedSOC - targetSOC).toFixed(1);
-                    
-                    return (
-                      <div className="detail-explanation-card" style={{ borderLeftColor: isMeetingTarget ? "var(--accent-blue)" : "var(--accent-rose)", background: "rgba(255,255,255,0.4)", marginBottom: 12 }}>
-                        <div className="detail-explanation-title" style={{ color: isMeetingTarget ? "var(--accent-blue)" : "var(--accent-amber)" }}>
-                          <span>💎</span> Soil Organic Carbon (SOC) Status
-                        </div>
-                        <div style={{ fontSize: 11, color: "var(--text-primary)", fontWeight: 700, marginBottom: 6 }}>
-                          Land Cover: <span style={{ color: "var(--text-muted)", fontWeight: 500 }}>{landCoverType}</span>
-                        </div>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 6, marginBottom: 8 }}>
-                          <div style={{ padding: "4px 6px", background: "rgba(0,0,0,0.02)", borderRadius: 4, textAlign: "center" }}>
-                            <div style={{ fontSize: 7, color: "var(--text-muted)", textTransform: "uppercase" }}>UNCCD Target</div>
-                            <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text-primary)" }}>{targetSOC} t/ha</div>
-                          </div>
-                          <div style={{ padding: "4px 6px", background: "rgba(0,0,0,0.02)", borderRadius: 4, textAlign: "center" }}>
-                            <div style={{ fontSize: 7, color: "var(--text-muted)", textTransform: "uppercase" }}>Estimated SOC</div>
-                            <div style={{ fontSize: 10, fontWeight: 700, color: isMeetingTarget ? "var(--accent-blue)" : "var(--accent-rose)" }}>{estimatedSOC} t/ha</div>
-                          </div>
-                          <div style={{ padding: "4px 6px", background: "rgba(0,0,0,0.02)", borderRadius: 4, textAlign: "center" }}>
-                            <div style={{ fontSize: 7, color: "var(--text-muted)", textTransform: "uppercase" }}>Lab Measured</div>
-                            <div style={{ fontSize: 10, fontWeight: 700, color: props.organic_carbon !== undefined && props.organic_carbon !== null ? "var(--accent-green)" : "var(--text-muted)" }}>
-                              {props.organic_carbon !== undefined && props.organic_carbon !== null ? `${props.organic_carbon}%` : "N/A"}
-                            </div>
-                          </div>
-                        </div>
-                        <div style={{ fontSize: 10, color: "var(--text-muted)", lineHeight: 1.4 }}>
-                          {isMeetingTarget ? (
-                            <span>✅ <strong>Target Met</strong> (+{diff} t/ha). This sample aligns with the 2045 carbon neutrality targets. Maintain current soil conservation works.</span>
-                          ) : (
-                            <span>⚠️ <strong>Target Deficit</strong> ({diff} t/ha). Deficit detected. Inoculation with organic matter, agro-forestry, and reduced tillage recommended to restore carbon sinks.</span>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })()}
-
-                  {/* Soil Texture Guidelines Card */}
-                  <div className="detail-explanation-card">
-                    <div className="detail-explanation-title">
-                      <span>📖</span> Texture Suitability Reference
-                    </div>
-                    <div style={{ color: "var(--text-muted)", fontSize: 10, lineHeight: 1.4 }}>
-                      {(() => {
-                        const tex = (props._mapped_tex || "").toLowerCase();
-                        let matchedKey = "";
-                        if (tex.includes("clay")) matchedKey = "Clay";
-                        else if (tex.includes("loam")) matchedKey = "Loam";
-                        else if (tex.includes("sand")) matchedKey = "Sand";
-                        else if (tex.includes("silt")) matchedKey = "Silt";
-
-                        if (matchedKey) {
-                          const info = SOIL_TEXTURE_GUIDE[matchedKey];
-                          return (
-                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                              <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>{info.icon} {matchedKey} Properties:</div>
-                              <div>• <strong>Physical:</strong> {info.physical}</div>
-                              <div>• <strong>Water Retention:</strong> {info.retention}</div>
-                              <div>• <strong>Agricultural Impact:</strong> {info.impact}</div>
-                              <div>• <strong>Erosion Risks:</strong> {info.erosion}</div>
-                            </div>
-                          );
-                        }
-                        return "🧪 Unknown/Mixed: Dynamic soil matrix. Refer to local sample parameters for land management decisions.";
-                      })()}
-                    </div>
-                  </div>
                 </div>
               );
             })()
           ) : (
-            <div style={{ color: "var(--text-muted)", fontSize: 11 }}>No soil core selected</div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, padding: "32px 12px", textAlign: "center" }}>
+              <span style={{ fontSize: 36, lineHeight: 1 }}>📍</span>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)" }}>Click any map point</div>
+              <div style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.6 }}>Select a soil core node on the map to view its full survey attributes, field photo, and all Kobo metadata here.</div>
+            </div>
           )}
         </div>
 
