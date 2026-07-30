@@ -38,15 +38,42 @@ function normalise(r: any) {
 }
 
 function extractGeo(r: any): [number, number] | null {
-  const g = r._geolocation;
-  if (Array.isArray(g) && g.length >= 2 && g[0] != null) return [+g[0], +g[1]];
-  for (const k of ["GPS", "gps", "location", "geopoint"]) {
-    const v = r[k];
-    if (typeof v === "string") {
-      const p = v.trim().split(/\s+/);
-      if (p.length >= 2 && !isNaN(+p[0]) && !isNaN(+p[1])) return [+p[0], +p[1]];
+  let lat = r.lat ?? r.latitude;
+  let lng = r.lng ?? r.lon ?? r.longitude;
+
+  if (lat == null || lng == null) {
+    const g = r._geolocation;
+    if (Array.isArray(g) && g.length >= 2 && g[0] != null) {
+      lat = g[0];
+      lng = g[1];
+    } else {
+      const raw = (r.raw_data && typeof r.raw_data === "object") ? r.raw_data : {};
+      const pt = raw["geninfo/GPS"] || raw["g1/gps"] || raw["sampl/poin"] || raw["GPS"] || raw["location"] || raw["geopoint"] || r.GPS || r.gps || r.location;
+      if (typeof pt === "string") {
+        const p = pt.trim().split(/\s+/);
+        if (p.length >= 2) {
+          lat = p[0];
+          lng = p[1];
+        }
+      }
     }
   }
+
+  if (lat == null || lng == null || isNaN(+lat) || isNaN(+lng)) return null;
+
+  let nLat = +lat;
+  let nLng = +lng;
+
+  if (nLat > 0 && nLng < 0) {
+    const tmp = nLat;
+    nLat = nLng;
+    nLng = tmp;
+  }
+
+  if (nLat >= -23.0 && nLat <= -15.0 && nLng >= 24.0 && nLng <= 34.0) {
+    return [nLat, nLng];
+  }
+
   return null;
 }
 
@@ -69,19 +96,48 @@ function buildDashboardData(records: any[]) {
   const landUses = new Set<string>();
 
   for (const r of records) {
-    if (r.landus) {
-      landuseCnt[r.landus] = (landuseCnt[r.landus] || 0) + 1;
-      landUses.add(r.landus);
+    const landus = r.landus || r.land_use || r.land_cover || r["ldi/tree"] || r["ldi/land_cover"];
+    const dist = r.dist || r.district || r["geninfo/dist"];
+    const sev = r.sev || r.severity || r["ldi/sev"];
+
+    if (landus) {
+      landuseCnt[landus] = (landuseCnt[landus] || 0) + 1;
+      landUses.add(landus);
     }
-    if (r.dist) districtCnt[r.dist] = (districtCnt[r.dist] || 0) + 1;
-    if (r.sev) severityCnt[r.sev] = (severityCnt[r.sev] || 0) + 1;
+    if (dist) districtCnt[dist] = (districtCnt[dist] || 0) + 1;
+    if (sev) severityCnt[sev] = (severityCnt[sev] || 0) + 1;
 
     const geo = extractGeo(r);
     if (geo) {
-      const props: any = { _id: r._id };
-      for (const [k, v] of Object.entries(r))
-        if (!k.startsWith("_") && !k.includes("/") && !HIDDEN.has(k)) props[k] = v;
-      features.push({ type: "Feature", geometry: { type: "Point", coordinates: [geo[1], geo[0]] }, properties: props });
+      const props: any = { _id: r._id || r.id || r.kobo_id };
+
+      if (r.raw_data && typeof r.raw_data === "object") {
+        for (const [k, v] of Object.entries(r.raw_data)) {
+          if (v != null && v !== "" && !HIDDEN.has(k)) {
+            props[k] = v;
+            if (k.includes("/") && !k.startsWith("_")) {
+              const short = k.split("/").pop()!;
+              if (!(short in props)) props[short] = v;
+            }
+          }
+        }
+      }
+
+      for (const [k, v] of Object.entries(r)) {
+        if (v != null && v !== "" && !k.startsWith("_") && k !== "raw_data" && !HIDDEN.has(k)) {
+          props[k] = v;
+        }
+      }
+
+      props.dist = dist || props.dist;
+      props.landus = landus || props.landus;
+      props.sev = sev || props.sev;
+
+      features.push({
+        type: "Feature",
+        geometry: { type: "Point", coordinates: [geo[1], geo[0]] },
+        properties: props
+      });
     }
   }
 

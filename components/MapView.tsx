@@ -126,24 +126,43 @@ export default function MapView({ geojson, activeId, mode = "mixed" }: Props) {
 
       let rowsHtml = "";
       if (isSoil) {
-        const mTex = props._mapped_tex || props.tex;
-        const mDep = props._mapped_dep || props.dep;
-        const mDist = props._mapped_dist || props.dist;
-        const mLoc = props._mapped_loc || props.samloc;
+        const mTex = props._mapped_tex || props.tex || props.texture;
+        const mDep = props._mapped_dep || props.dep || props.depth_cm || props.depth;
+        const mDist = props._mapped_dist || props.dist || props.district;
+        const mWard = props.ward;
+        const mTeam = props.team;
+        const mLoc = props._mapped_loc || props.samloc || props.sample_position;
         const mMoist = props._mapped_moist || props.moisture;
-        const mCol = props._mapped_col || props.col;
+        const mCol = props._mapped_col || props.col || props.munsell_color;
+        const mCeid = props.ceid;
 
-        if (mLoc) rowsHtml += `<div class="popup-row"><span class="popup-key">Location</span><span class="popup-val" style="color:#fbbf24">${mLoc}</span></div>`;
+        if (mLoc) rowsHtml += `<div class="popup-row"><span class="popup-key">Position/Site</span><span class="popup-val" style="color:#fbbf24">${mLoc}</span></div>`;
         if (mDist) rowsHtml += `<div class="popup-row"><span class="popup-key">District</span><span class="popup-val">${mDist}</span></div>`;
+        if (mWard) rowsHtml += `<div class="popup-row"><span class="popup-key">Ward</span><span class="popup-val">${mWard}</span></div>`;
+        if (mTeam) rowsHtml += `<div class="popup-row"><span class="popup-key">Team</span><span class="popup-val">${mTeam}</span></div>`;
+        if (mCeid) rowsHtml += `<div class="popup-row"><span class="popup-key">CEID</span><span class="popup-val">${mCeid}</span></div>`;
         if (mTex) rowsHtml += `<div class="popup-row"><span class="popup-key">Texture</span><span class="popup-val">${mTex}</span></div>`;
         if (mDep) rowsHtml += `<div class="popup-row"><span class="popup-key">Depth</span><span class="popup-val">${mDep} cm</span></div>`;
         if (mMoist) rowsHtml += `<div class="popup-row"><span class="popup-key">Moisture</span><span class="popup-val">${mMoist}</span></div>`;
         if (mCol) rowsHtml += `<div class="popup-row"><span class="popup-key">Color</span><span class="popup-val">${mCol}</span></div>`;
       } else {
-        rowsHtml += `<div class="popup-row"><span class="popup-key">District</span><span class="popup-val">${props.dist || "—"}</span></div>`;
-        rowsHtml += `<div class="popup-row"><span class="popup-key">Ward</span><span class="popup-val">${props.ward || "—"}</span></div>`;
-        rowsHtml += `<div class="popup-row"><span class="popup-key">Landuse</span><span class="popup-val">${props.landus || "—"}</span></div>`;
-        rowsHtml += `<div class="popup-row"><span class="popup-key">Severity</span><span class="popup-val" style="color:#fb7185">${props.sev || "—"}</span></div>`;
+        const mDist = props.dist || props.district;
+        const mWard = props.ward;
+        const mTeam = props.team;
+        const mCeid = props.ceid;
+        const mLanduse = props.landus || props.land_use || props.land_cover || props["ldi/tree"];
+        const mSev = props.sev || props.severity || props["ldi/sev"];
+        const mVeg = props.veg_cover || props["ldi/veg_cov"];
+        const mErosion = props.erosion_signs || props.oth;
+
+        if (mDist) rowsHtml += `<div class="popup-row"><span class="popup-key">District</span><span class="popup-val">${mDist}</span></div>`;
+        if (mWard) rowsHtml += `<div class="popup-row"><span class="popup-key">Ward</span><span class="popup-val">${mWard}</span></div>`;
+        if (mTeam) rowsHtml += `<div class="popup-row"><span class="popup-key">Survey Team</span><span class="popup-val">${mTeam}</span></div>`;
+        if (mCeid) rowsHtml += `<div class="popup-row"><span class="popup-key">CEID</span><span class="popup-val">${mCeid}</span></div>`;
+        if (mLanduse) rowsHtml += `<div class="popup-row"><span class="popup-key">Land Cover/Use</span><span class="popup-val">${mLanduse}</span></div>`;
+        if (mSev) rowsHtml += `<div class="popup-row"><span class="popup-key">Degradation Severity</span><span class="popup-val" style="color:#fb7185">${mSev}</span></div>`;
+        if (mVeg) rowsHtml += `<div class="popup-row"><span class="popup-key">Veg Cover</span><span class="popup-val">${mVeg}</span></div>`;
+        if (mErosion) rowsHtml += `<div class="popup-row"><span class="popup-key">Erosion/Notes</span><span class="popup-val">${mErosion}</span></div>`;
       }
 
       marker.bindPopup(

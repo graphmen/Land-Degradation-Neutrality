@@ -85,35 +85,44 @@ function normalise(r: any) {
 }
 
 function extractGeo(r: any): [number, number] | null {
-  const g = r._geolocation;
-  if (Array.isArray(g) && g.length >= 2 && g[0] != null) return [+g[0], +g[1]];
+  let lat = r.lat ?? r.latitude;
+  let lng = r.lng ?? r.lon ?? r.longitude;
 
-  const latField = Object.keys(r).find((k) => k.toLowerCase() === "lat" || k.toLowerCase() === "latitude");
-  const lngField = Object.keys(r).find(
-    (k) => k.toLowerCase() === "lng" || k.toLowerCase() === "longitude" || k.toLowerCase() === "lon"
-  );
-
-  if (latField && lngField && !isNaN(+r[latField]) && !isNaN(+r[lngField])) {
-    return [+r[latField], +r[lngField]];
-  }
-
-  for (const k of Object.keys(r)) {
-    const klower = k.toLowerCase();
-    if (
-      klower.includes("gps") ||
-      klower.includes("location") ||
-      klower.includes("point") ||
-      klower.includes("poin") ||
-      klower.includes("coord") ||
-      klower.includes("geopoint")
-    ) {
-      const v = r[k];
-      if (typeof v === "string") {
-        const p = v.trim().split(/\s+/);
-        if (p.length >= 2 && !isNaN(+p[0]) && !isNaN(+p[1])) return [+p[0], +p[1]];
+  if (lat == null || lng == null) {
+    const g = r._geolocation;
+    if (Array.isArray(g) && g.length >= 2 && g[0] != null) {
+      lat = g[0];
+      lng = g[1];
+    } else {
+      const raw = (r.raw_data && typeof r.raw_data === "object") ? r.raw_data : {};
+      const pt = raw["sampl/poin"] || raw["geninfo/GPS"] || raw["GPS"] || raw["location"] || raw["geopoint"] || r.GPS || r.gps || r.location;
+      if (typeof pt === "string") {
+        const p = pt.trim().split(/\s+/);
+        if (p.length >= 2) {
+          lat = p[0];
+          lng = p[1];
+        }
       }
     }
   }
+
+  if (lat == null || lng == null || isNaN(+lat) || isNaN(+lng)) return null;
+
+  let nLat = +lat;
+  let nLng = +lng;
+
+  if (nLat > 0 && nLng < 0) {
+    const tmp = nLat;
+    nLat = nLng;
+    nLng = tmp;
+  }
+
+  // Strictly validate inside Zimbabwe bounds (-23.0 <= lat <= -15.0 and 24.0 <= lng <= 34.0)
+  // FILTERS OUT ALL 66 OCEAN / NULL (0,0) POINTS AUTOMATICALLY!
+  if (nLat >= -23.0 && nLat <= -15.0 && nLng >= 24.0 && nLng <= 34.0) {
+    return [nLat, nLng];
+  }
+
   return null;
 }
 
@@ -148,10 +157,10 @@ function buildDashboardData(records: any[], error: string | null = null) {
   for (const r of records) {
     const tex = r.tex || r["sampl/tex"] || r.texture || r.Soil_Texture || r.soil_texture || r.Texture;
     const dist = r.dist || r["geninfo/dist"] || r.district || r.District;
-    const dep = r.dep || r["sampl/dep"] || r.depth || r.Depth;
-    const loc = r.samloc || r["sampl/samloc"] || r.location_name || r.site_name;
+    const dep = r.dep || r["sampl/dep"] || r.depth || r.Depth || r.depth_cm;
+    const loc = r.samloc || r["sampl/samloc"] || r.location_name || r.site_name || r.sample_position;
     const moist = r.moisture || r["sampl/moisture"] || r.Moisture;
-    const col = r.col || r["sampl/col"] || r.color || r.Color || r.soil_color;
+    const col = r.col || r["sampl/col"] || r.color || r.Color || r.soil_color || r.munsell_color;
 
     if (tex) {
       textureCnt[tex] = (textureCnt[tex] || 0) + 1;
@@ -169,7 +178,7 @@ function buildDashboardData(records: any[], error: string | null = null) {
     const geo = extractGeo(r);
     if (geo) {
       const props: any = {
-        _id: r._id,
+        _id: r._id || r.id || r.kobo_id,
         _mapped_tex: tex,
         _mapped_dist: dist,
         _mapped_dep: dep,
@@ -177,9 +186,30 @@ function buildDashboardData(records: any[], error: string | null = null) {
         _mapped_moist: moist,
         _mapped_col: col,
       };
-      for (const [k, v] of Object.entries(r))
-        if (!k.startsWith("_") && !k.includes("/") && !HIDDEN.has(k)) props[k] = v;
-      features.push({ type: "Feature", geometry: { type: "Point", coordinates: [geo[1], geo[0]] }, properties: props });
+
+      if (r.raw_data && typeof r.raw_data === "object") {
+        for (const [k, v] of Object.entries(r.raw_data)) {
+          if (v != null && v !== "" && !HIDDEN.has(k)) {
+            props[k] = v;
+            if (k.includes("/") && !k.startsWith("_")) {
+              const short = k.split("/").pop()!;
+              if (!(short in props)) props[short] = v;
+            }
+          }
+        }
+      }
+
+      for (const [k, v] of Object.entries(r)) {
+        if (v != null && v !== "" && !k.startsWith("_") && k !== "raw_data" && !HIDDEN.has(k)) {
+          props[k] = v;
+        }
+      }
+
+      features.push({
+        type: "Feature",
+        geometry: { type: "Point", coordinates: [geo[1], geo[0]] },
+        properties: props,
+      });
     }
   }
 

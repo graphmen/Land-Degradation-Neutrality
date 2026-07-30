@@ -56,3 +56,5 @@ tsconfig.tsbuildinfo
 # Auto-generated derived data (re-generated from Excel at sync time)
 public/soil-organic-carbon.json
 
+
+.vercel
