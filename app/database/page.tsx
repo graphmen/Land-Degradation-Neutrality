@@ -28,13 +28,37 @@ import { downloadFile, convertToCSV, convertToGeoJSON, convertToKML } from "@/li
 // Helper to strip prefixes
 function normalise(r: any) {
   const out: any = {};
-  for (const [k, v] of Object.entries(r)) {
-    out[k] = v;
-    if (k.includes("/") && !k.startsWith("_")) {
-      const s = k.split("/").pop()!;
-      if (!(s in out)) out[s] = v;
+
+  if (r && r.raw_data && typeof r.raw_data === "object") {
+    for (const [k, v] of Object.entries(r.raw_data)) {
+      if (v != null && v !== "") {
+        out[k] = v;
+        if (k.includes("/") && !k.startsWith("_")) {
+          const s = k.split("/").pop()!;
+          if (!(s in out)) out[s] = v;
+        }
+      }
     }
   }
+
+  for (const [k, v] of Object.entries(r)) {
+    if (v != null && v !== "" && k !== "raw_data") {
+      out[k] = v;
+      if (k.includes("/") && !k.startsWith("_")) {
+        const s = k.split("/").pop()!;
+        if (!(s in out)) out[s] = v;
+      }
+    }
+  }
+
+  out.dist = out.dist || out.district || out["geninfo/dist"] || out.District || out._mapped_dist;
+  out.ward = out.ward || out["geninfo/ward"] || out.ward_name || out.ward_number;
+  out.landus = out.landus || out.land_use || out.land_cover || out["ldi/tree"] || out["ldi/land_cover"];
+  out.sev = out.sev || out.severity || out["ldi/sev"];
+  out.agent = out.agent || out.team || out["geninfo/team"] || out.enumerator_name;
+  out.ceid = out.ceid || out.samplid || out["sampl/samplid"] || out.id || out._id;
+  out._submission_time = out._submission_time || out.submission_time || out.created_at || out.today;
+
   return out;
 }
 
