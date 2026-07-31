@@ -880,11 +880,12 @@ export default function LdnPage() {
             </div>
           </div>
 
-          {/* Recharts Graphs Grid */}
+          {/* Top Row: Degradation Severity Distribution (Left) & Land Cover (LULC) Classification (Right) */}
           <div style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
-            gap: "20px"
+            gap: "20px",
+            marginBottom: "20px"
           }}>
             {/* Chart 1: Severity Distribution */}
             <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "20px", boxShadow: "var(--shadow-sm)" }}>
@@ -940,26 +941,49 @@ export default function LdnPage() {
                 <div style={{ height: "260px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: "11px" }}>No data to display</div>
               )}
             </div>
+          </div>
 
-            {/* Chart 3: District Monitoring */}
-            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "20px", boxShadow: "var(--shadow-sm)" }}>
-              <h3 style={{ fontSize: "12px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                Monitoring Activity by District
-              </h3>
-              {dashboardStats?.districtData && dashboardStats.districtData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={260}>
-                  <BarChart data={dashboardStats.districtData} margin={{ top: 10, right: 10, left: -25, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                    <XAxis dataKey="name" tick={{ fontSize: 9 }} interval={0} />
-                    <YAxis tick={{ fontSize: 9 }} />
-                    <Tooltip formatter={(value) => [`${value} Records`, "Count"]} />
-                    <Bar dataKey="value" name="Records" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <div style={{ height: "260px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: "11px" }}>No data to display</div>
-              )}
+          {/* Full-Width Bottom Section: Monitoring Activity by District */}
+          <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "24px", boxShadow: "var(--shadow-sm)", width: "100%" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <div>
+                <h3 style={{ fontSize: "13px", fontWeight: 800, color: "var(--text-primary)", margin: 0, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                  Monitoring Activity & Telemetry Records by District
+                </h3>
+                <p style={{ fontSize: "11px", color: "var(--text-muted)", margin: "4px 0 0 0" }}>
+                  Total field survey nodes collected and monitored across all reporting districts
+                </p>
+              </div>
+              <span style={{ fontSize: "11px", fontWeight: 700, padding: "4px 12px", background: "rgba(59, 130, 246, 0.1)", color: "#1d4ed8", borderRadius: "12px", border: "1px solid rgba(59, 130, 246, 0.2)" }}>
+                {dashboardStats?.districtData?.length || 0} Active Districts
+              </span>
             </div>
+            {dashboardStats?.districtData && dashboardStats.districtData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={360}>
+                <BarChart data={dashboardStats.districtData} margin={{ top: 15, right: 20, left: 0, bottom: 70 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fontSize: 10, fill: "#475569" }}
+                    angle={-45}
+                    textAnchor="end"
+                    interval={0}
+                    height={80}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 10, fill: "#475569" }}
+                    label={{ value: "Survey Records", angle: -90, position: "insideLeft", fontSize: 10, fill: "#64748b" }}
+                  />
+                  <Tooltip
+                    contentStyle={{ background: "#0f172a", borderRadius: "8px", border: "none", color: "#fff", fontSize: "11px" }}
+                    formatter={(value) => [`${value} Records`, "Survey Count"]}
+                  />
+                  <Bar dataKey="value" name="Records" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div style={{ height: "300px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: "11px" }}>No data to display</div>
+            )}
           </div>
         </div>
       )}
