@@ -155,9 +155,9 @@ export async function POST(): Promise<NextResponse> {
     console.log("[Sync] Python script completed successfully.", counts);
     return NextResponse.json({
       success: true,
-      message: `Cached ${counts.ldn} LDN and ${counts.soil} soil records from Kobo Collect.`,
+      message: `Cached ${counts.ldn} LDN and ${counts.soil} soil records from Supabase Database.`,
       counts,
-      method: "python-script",
+      method: "database-sync",
     });
   }
 

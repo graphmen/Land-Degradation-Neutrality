@@ -17,16 +17,16 @@ export default function Header({ isCollapsed, setIsCollapsed }: HeaderProps) {
   const handleSync = async () => {
     if (isSyncing) return;
     setIsSyncing(true);
-    addToast("info", "Sync Initialized", "Pulling latest field records from Kobo Collect...");
+    addToast("info", "Sync Initialized", "Synchronizing latest field records from Supabase Database...");
     
     try {
-      // Step 1: Run the Python sync script when available (updates local JSON + SOC mapping)
+      // Step 1: Run the sync script when available
       let scriptMessage = "";
       try {
         const syncRes = await fetch("/api/sync", { method: "POST", cache: "no-store" });
         const syncData = await syncRes.json().catch(() => ({}));
         if (syncRes.ok) {
-          scriptMessage = syncData.message || "Local cache refreshed.";
+          scriptMessage = syncData.message || "Database cache refreshed.";
         } else if (syncRes.status !== 400) {
           console.warn("Background sync script failed:", syncData.error);
         }
@@ -34,7 +34,7 @@ export default function Header({ isCollapsed, setIsCollapsed }: HeaderProps) {
         console.warn("Background sync script unavailable:", scriptErr);
       }
 
-      // Step 2: Always pull live data from Kobo Collect (bypassCache ignores OFFLINE_MODE)
+      // Step 2: Always pull live data from Supabase Database
       const [ldnRes, soilRes] = await Promise.all([
         fetch("/api/ldn?bypassCache=true&sync=true", { cache: "no-store" }),
         fetch("/api/soil?bypassCache=true&sync=true", { cache: "no-store" }),
@@ -44,7 +44,7 @@ export default function Header({ isCollapsed, setIsCollapsed }: HeaderProps) {
         const ldnErr = ldnRes.ok ? null : await ldnRes.text().catch(() => "");
         const soilErr = soilRes.ok ? null : await soilRes.text().catch(() => "");
         throw new Error(
-          ldnErr || soilErr || "Failed to refresh LDN and Soil data from Kobo Collect."
+          ldnErr || soilErr || "Failed to refresh LDN and Soil data from Supabase Database."
         );
       }
 
@@ -54,7 +54,7 @@ export default function Header({ isCollapsed, setIsCollapsed }: HeaderProps) {
       addToast(
         "success",
         "Sync Successful",
-        `Kobo Collect updated: ${ldn.count ?? 0} LDN records, ${soil.count ?? 0} soil records.` +
+        `Supabase Database updated: ${ldn.count ?? 0} LDN records, ${soil.count ?? 0} soil records.` +
           (scriptMessage ? ` ${scriptMessage}` : "")
       );
 
@@ -62,7 +62,7 @@ export default function Header({ isCollapsed, setIsCollapsed }: HeaderProps) {
         window.location.reload();
       }, 2000);
     } catch (err: any) {
-      addToast("error", "Sync Execution Failed", err.message || "Could not reach Kobo Collect. Check your network connection.");
+      addToast("error", "Sync Execution Failed", err.message || "Could not reach Supabase Database. Check your network connection.");
     } finally {
       setIsSyncing(false);
     }
