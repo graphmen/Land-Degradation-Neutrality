@@ -772,7 +772,7 @@ export default function SoilPage() {
                     </span>
                   </div>
 
-                  {/* Field Photo — point-specific */}
+                  {/* Field Photo (only rendered if point actually has a photo) */}
                   {(props.photo_url || props.thumb_url) ? (
                     <div style={{ width: "100%", height: "160px", borderRadius: "10px", overflow: "hidden", background: "#0f172a", flexShrink: 0 }}>
                       <img
@@ -782,11 +782,7 @@ export default function SoilPage() {
                         onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                       />
                     </div>
-                  ) : (
-                    <div style={{ width: "100%", height: "80px", borderRadius: "10px", background: "rgba(0,0,0,0.04)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, color: "var(--text-muted)", fontSize: 11 }}>
-                      <span>📷</span> No field photo for this point
-                    </div>
-                  )}
+                  ) : null}
                   <div className="detail-item-list">
                     <div className="detail-item-row">
                       <span className="detail-item-label">

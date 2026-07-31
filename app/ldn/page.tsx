@@ -722,11 +722,7 @@ export default function LdnPage() {
                         onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                       />
                     </div>
-                  ) : (
-                    <div style={{ width: "100%", height: "90px", borderRadius: "10px", background: "rgba(0,0,0,0.04)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, color: "var(--text-muted)", fontSize: 11 }}>
-                      <span>📷</span> No field photo for this point
-                    </div>
-                  )}
+                  ) : null}
 
                   {/* Key attributes */}
                   <div className="detail-item-list">

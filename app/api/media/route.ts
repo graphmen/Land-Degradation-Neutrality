@@ -14,17 +14,19 @@ export async function GET(request: NextRequest) {
     return new NextResponse("Missing url parameter", { status: 400 });
   }
 
-  // Security check: Only allow kf.kobotoolbox.org or kc.kobotoolbox.org URLs
-  if (!mediaUrl.includes("kobotoolbox.org")) {
-    return new NextResponse("Invalid media host", { status: 403 });
+  // Security check: Only allow http/https media URLs
+  if (!mediaUrl.startsWith("http://") && !mediaUrl.startsWith("https://")) {
+    return new NextResponse("Invalid media URL", { status: 400 });
+  }
+
+  const isKobo = mediaUrl.includes("kobotoolbox.org");
+  const headers: Record<string, string> = {};
+  if (isKobo) {
+    headers["Authorization"] = `Basic ${AUTH}`;
   }
 
   try {
-    const res = await fetch(mediaUrl, {
-      headers: {
-        Authorization: `Basic ${AUTH}`,
-      },
-    });
+    const res = await fetch(mediaUrl, { headers });
 
     if (!res.ok) {
       return new NextResponse(`Failed to fetch media from upstream: ${res.status}`, { status: res.status });
