@@ -33,7 +33,7 @@ export default function MapView({ geojson, activeId, onSelect, mode = "mixed" }:
   const hasFitBoundsRef = useRef(false);
   const skipNextFocusRef = useRef(false);
   const [mapReady, setMapReady] = useState(false);
-  const [isLegendCollapsed, setIsLegendCollapsed] = useState(false);
+  const [isLegendCollapsed, setIsLegendCollapsed] = useState(true);
 
   const legendItems: LegendItem[] =
     mode === "ldn" ? LDN_LEGEND : mode === "soil" ? SOIL_LEGEND : LDN_SOIL_LEGEND;

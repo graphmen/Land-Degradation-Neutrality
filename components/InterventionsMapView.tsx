@@ -23,7 +23,7 @@ export default function InterventionsMapView({ records, activeId, onSelect }: Pr
   const containerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<Record<string, any>>({});
   const [mapReady, setMapReady] = useState(false);
-  const [isLegendCollapsed, setIsLegendCollapsed] = useState(false);
+  const [isLegendCollapsed, setIsLegendCollapsed] = useState(true);
 
   useEffect(() => {
     if (typeof window === "undefined" || !containerRef.current || mapRef.current) return;
