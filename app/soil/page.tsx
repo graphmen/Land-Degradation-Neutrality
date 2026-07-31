@@ -878,49 +878,6 @@ export default function SoilPage() {
             </div>
           )}
         </div>
-
-        {/* Soil Texture breakdown */}
-        {geojson.total > 0 && charts.by_texture.length > 0 && (
-          <div className="detail-section">
-            <div className="detail-section-title">Soil Texture Profile</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {charts.by_texture.map((item: any, idx: number) => {
-                const total = geojson.total;
-                const percent = total > 0 ? (item.value / total) * 100 : 0;
-                return (
-                  <div key={idx} style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10 }}>
-                      <span style={{ color: "var(--text-primary)" }}>{item.name}</span>
-                      <span style={{ fontWeight: 700, color: "var(--accent-amber)" }}>
-                        {item.value} ({percent.toFixed(0)}%)
-                      </span>
-                    </div>
-                    <div style={{ height: 4, background: "rgba(255,255,255,0.03)", borderRadius: 2, overflow: "hidden" }}>
-                      <div
-                        style={{
-                          height: "100%",
-                          width: `${percent}%`,
-                          background: "linear-gradient(90deg, #d97706, #fbbf24)",
-                          borderRadius: 2,
-                        }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-
-
-        {/* Action Panel */}
-        <div className="detail-section">
-          <div className="detail-section-title">System Actions</div>
-          <button className="action-btn-danger" onClick={() => alert("Action restricted: administrator access required")}>
-            Archive Soil Core Record
-          </button>
-        </div>
       </div>
       </div>
       ) : (
