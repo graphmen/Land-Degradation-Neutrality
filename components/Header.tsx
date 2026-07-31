@@ -17,7 +17,7 @@ export default function Header({ isCollapsed, setIsCollapsed }: HeaderProps) {
   const handleSync = async () => {
     if (isSyncing) return;
     setIsSyncing(true);
-    addToast("info", "Sync Initialized", "Synchronizing latest field records from Supabase Database...");
+    addToast("info", "Sync Initialized", "Synchronizing latest field records from Central Database...");
     
     try {
       // Step 1: Run the sync script when available
@@ -34,7 +34,7 @@ export default function Header({ isCollapsed, setIsCollapsed }: HeaderProps) {
         console.warn("Background sync script unavailable:", scriptErr);
       }
 
-      // Step 2: Always pull live data from Supabase Database
+      // Step 2: Always pull live data from Central Database
       const [ldnRes, soilRes] = await Promise.all([
         fetch("/api/ldn?bypassCache=true&sync=true", { cache: "no-store" }),
         fetch("/api/soil?bypassCache=true&sync=true", { cache: "no-store" }),
@@ -44,7 +44,7 @@ export default function Header({ isCollapsed, setIsCollapsed }: HeaderProps) {
         const ldnErr = ldnRes.ok ? null : await ldnRes.text().catch(() => "");
         const soilErr = soilRes.ok ? null : await soilRes.text().catch(() => "");
         throw new Error(
-          ldnErr || soilErr || "Failed to refresh LDN and Soil data from Supabase Database."
+          ldnErr || soilErr || "Failed to refresh LDN and Soil data from Central Database."
         );
       }
 
@@ -54,7 +54,7 @@ export default function Header({ isCollapsed, setIsCollapsed }: HeaderProps) {
       addToast(
         "success",
         "Sync Successful",
-        `Supabase Database updated: ${ldn.count ?? 0} LDN records, ${soil.count ?? 0} soil records.` +
+        `Database synchronized: ${ldn.count ?? 0} LDN records, ${soil.count ?? 0} soil records.` +
           (scriptMessage ? ` ${scriptMessage}` : "")
       );
 
@@ -62,7 +62,7 @@ export default function Header({ isCollapsed, setIsCollapsed }: HeaderProps) {
         window.location.reload();
       }, 2000);
     } catch (err: any) {
-      addToast("error", "Sync Execution Failed", err.message || "Could not reach Supabase Database. Check your network connection.");
+      addToast("error", "Sync Execution Failed", err.message || "Could not reach Central Database. Check your network connection.");
     } finally {
       setIsSyncing(false);
     }

@@ -785,7 +785,7 @@ export default function LdnPage() {
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, padding: "32px 12px", textAlign: "center" }}>
               <span style={{ fontSize: 36, lineHeight: 1 }}>📍</span>
               <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)" }}>Click any map point</div>
-              <div style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.6 }}>Select a monitoring node on the map to view its full survey attributes, field photo, and all Kobo metadata here.</div>
+              <div style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.6 }}>Select a monitoring node on the map to view its full survey attributes, field photo, and all field metadata here.</div>
             </div>
           )}
         </div>
