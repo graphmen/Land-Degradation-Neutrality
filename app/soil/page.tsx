@@ -398,9 +398,11 @@ export default function SoilPage() {
       const kmlStr = convertToKML(filteredFeatures, "Zimbabwe Soil Data Export");
       downloadFile(kmlStr, `soil_data_export_${Date.now()}.kml`, "application/vnd.google-earth.kml+xml");
     } else {
-      const filteredIdSet = new Set(filteredFeatures.map((f: any) => f.properties._id));
-      const filteredOriginalRecords = records.filter((r: any) => filteredIdSet.has(r._id));
-      const csvStr = convertToCSV(filteredOriginalRecords);
+      const getRecordId = (r: any) => String(r._id ?? r.id ?? r.kobo_id ?? "");
+      const filteredIdSet = new Set(filteredFeatures.map((f: any) => getRecordId(f.properties)));
+      const filteredOriginalRecords = records.filter((r: any) => filteredIdSet.has(getRecordId(r)));
+      const exportList = filteredOriginalRecords.length > 0 ? filteredOriginalRecords : records;
+      const csvStr = convertToCSV(exportList);
       downloadFile(csvStr, `soil_data_export_${Date.now()}.csv`, "text/csv;charset=utf-8;");
     }
   };
