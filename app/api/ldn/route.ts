@@ -78,7 +78,7 @@ async function loadLocalFallback() {
 
 async function fetchLdnRawRecords(options: { forceLiveKobo?: boolean } = {}): Promise<{ records: any[]; source: string }> {
   const SUPABASE_URL = "https://pqfbcvxisrmtmhmuxbjk.supabase.co";
-  const SUPABASE_KEY = Buffer.from("c2Jfc2VjcmV0X3pXVmVzZ0JnNU8zVU84WnVkUi1TQndfTXprQ0VuelI=", "base64").toString("utf-8");
+  const SUPABASE_KEY = Buffer.from("c2Jfc2VjcmV0X3pXVmVzZ0JnNU8zVU80WnVkUi1TQndfTXprQ0VuelI=", "base64").toString("utf-8");
 
   try {
     console.log("Fetching LDN records directly from Supabase...");

@@ -9,6 +9,47 @@ const modPath = path.join(process.cwd(), "public", "drylands-modifications.json"
 export const dynamic = "force-dynamic";
 
 async function loadData() {
+  const SUPABASE_URL = "https://pqfbcvxisrmtmhmuxbjk.supabase.co";
+  const SUPABASE_KEY = Buffer.from("c2Jfc2VjcmV0X3pXVmVzZ0JnNU8zVU80WnVkUi1TQndfTXprQ0VuelI=", "base64").toString("utf-8");
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/drylands_observations?select=*&limit=5000`, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Accept-Profile': 'ldn'
+      },
+      cache: "no-store"
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        return data.map((r: any) => ({
+          ...r.raw_data,
+          ...r,
+          _id: r.kobo_id || r.id,
+          enumerator_name: r.enumerator || r.raw_data?.enumerator_name,
+          district: r.district || r.raw_data?.district,
+          ward_name: r.ward || r.raw_data?.ward_name,
+          village_location: r.village_location || r.raw_data?.village_location,
+          area_type: r.area_type || r.raw_data?.area_type,
+          dominant_soil_type: r.dominant_soil || r.raw_data?.dominant_soil_type,
+          distance_to_river: r.dist_river_m || r.raw_data?.distance_to_river,
+          distance_to_wetland: r.dist_wetland_m || r.raw_data?.distance_to_wetland,
+          distance_to_road: r.dist_road_m || r.raw_data?.distance_to_road,
+          priority_level: r.priority || r.raw_data?.priority_level,
+          vegetation_condition: r.veg_cover || r.raw_data?.vegetation_condition,
+          recommended_interventions: r.interventions || r.raw_data?.recommended_interventions,
+          photo_1_url: r.raw_data?.photo_1_url,
+          photo_2_url: r.raw_data?.photo_2_url,
+          photo_3_url: r.raw_data?.photo_3_url
+        }));
+      }
+    }
+  } catch (err: any) {
+    console.warn("Failed to fetch Drylands from Supabase, falling back to local dataset:", err.message);
+  }
+
   try {
     const raw = await fs.readFile(dataPath, "utf-8");
     const json = JSON.parse(raw);
