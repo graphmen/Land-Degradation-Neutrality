@@ -48,29 +48,62 @@ export function convertToKML(features: any[], title: string = "Exported Telemetr
   return kml;
 }
 
-export function convertToCSV(records: any[]) {
-  if (records.length === 0) return "";
+const SYSTEM_EXCLUDE_KEYS = new Set([
+  "start",
+  "end",
+  "today",
+  "deviceid",
+  "__version__",
+  "uuid",
+  "_uuid",
+  "_attachments",
+  "_status",
+  "_geolocation",
+  "_submission_time",
+  "_validation_status",
+  "_submitted_by",
+  "_supabase_photos",
+  "_xform_id_string",
+  "formhub/uuid",
+  "meta/instanceID",
+  "meta/rootUuid",
+  "meta/deprecatedID",
+  "raw_data",
+  "_localStatus",
+  "_mapped_dist",
+  "_mapped_tex",
+  "_mapped_moist",
+  "_mapped_loc",
+  "_mapped_col",
+  "kobo_id",
+  "parent_kobo_id",
+  "parent_submission"
+]);
 
-  // Identify all normalized/short keys across all records to omit them.
-  // A key 'k' is considered a normalized short key if there is a corresponding
-  // nested key in the same record that has a slash and ends with '/' + k.
-  // E.g., if record has 'geninfo/dist', then 'dist' is normalized and should be omitted.
-  const allExcludedKeys = new Set<string>();
-  for (const r of records) {
-    const keys = Object.keys(r);
-    for (const k of keys) {
-      if (k.includes("/") && !k.startsWith("_")) {
-        const short = k.split("/").pop()!;
-        allExcludedKeys.add(short);
-      }
+function shouldOmitCsvKey(k: string, record: any): boolean {
+  if (SYSTEM_EXCLUDE_KEYS.has(k)) return true;
+  if (k.startsWith("meta/") || k.startsWith("formhub/")) return true;
+  if (k.startsWith("_") && k !== "_id") return true;
+
+  // If a key contains a slash (e.g. geninfo/dist or sampl/tex), check if clean counterpart exists
+  if (k.includes("/") && !k.startsWith("_")) {
+    const short = k.split("/").pop()!;
+    if (record[short] !== undefined || record[short.toLowerCase()] !== undefined) {
+      return true;
     }
   }
+  return false;
+}
 
-  // Get all unique keys across all records that are not in the excluded set
+export function convertToCSV(records: any[]) {
+  if (!records || records.length === 0) return "";
+
+  // Identify clean keys across all records
   const allKeysSet = new Set<string>();
   for (const r of records) {
+    if (!r || typeof r !== "object") continue;
     for (const k of Object.keys(r)) {
-      if (!allExcludedKeys.has(k)) {
+      if (!shouldOmitCsvKey(k, r)) {
         allKeysSet.add(k);
       }
     }
