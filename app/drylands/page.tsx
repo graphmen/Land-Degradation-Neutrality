@@ -247,9 +247,16 @@ export default function DrylandsPage() {
       const res = await fetch("/api/drylands", { cache: "no-store" });
       if (res.ok) {
         const json = await res.json();
-        setRecords(json.records || []);
-        if (json.records?.length > 0) {
-          setActiveId(json.records[0]._id);
+        const recs = json.records || [];
+        setRecords(recs);
+        const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+        const urlId = params?.get("id");
+        if (urlId) {
+          const matched = recs.find((r: any) => String(r._id) === String(urlId) || String(r.id) === String(urlId) || String(r.kobo_id) === String(urlId));
+          if (matched) setActiveId(matched._id);
+          else if (recs.length > 0) setActiveId(recs[0]._id);
+        } else if (recs.length > 0) {
+          setActiveId(recs[0]._id);
         }
       }
     } catch (e) {

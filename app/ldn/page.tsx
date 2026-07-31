@@ -259,7 +259,11 @@ export default function LdnPage() {
       .then((records) => {
         const parsed = buildDashboardData(records);
         setData(parsed);
-        if (parsed.geojson.features.length > 0) {
+        const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+        const urlId = params?.get("id");
+        if (urlId) {
+          setActiveId(String(urlId));
+        } else if (parsed.geojson.features.length > 0) {
           setActiveId(parsed.geojson.features[0].properties._id);
         }
       })

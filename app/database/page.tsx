@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
 import { 
   Search, 
@@ -129,6 +130,7 @@ const SOIL_TEXTURE_LIST = [
 ];
 
 export default function DatabaseExplorer() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<"ldn" | "soil" | "drylands">("ldn");
   
   // Data states
@@ -170,6 +172,7 @@ export default function DatabaseExplorer() {
     district: true,
     ward: true,
     agent: true,
+    landcover: true,
     landus: true,
     sev: true,
     tex: true,
@@ -1232,13 +1235,14 @@ export default function DatabaseExplorer() {
                     Toggle Columns
                   </div>
                   {Object.keys(visibleColumns).map(col => {
-                    if (activeTab === "ldn" && ["tex", "moisture", "dep", "village", "priority", "vegetation", "soil_type", "lab_number", "organic_carbon"].includes(col)) return null;
-                    if (activeTab === "soil" && ["landus", "sev", "village", "priority", "vegetation", "soil_type"].includes(col)) return null;
-                    if (activeTab === "drylands" && ["landus", "sev", "tex", "moisture", "dep", "lab_number", "organic_carbon"].includes(col)) return null;
+                    if (activeTab === "ldn" && ["agent", "tex", "moisture", "dep", "village", "priority", "vegetation", "soil_type", "lab_number", "organic_carbon"].includes(col)) return null;
+                    if (activeTab === "soil" && ["landcover", "landus", "sev", "village", "priority", "vegetation", "soil_type"].includes(col)) return null;
+                    if (activeTab === "drylands" && ["landcover", "landus", "sev", "tex", "moisture", "dep", "lab_number", "organic_carbon"].includes(col)) return null;
                     
                     const label = col === "idx" ? "Index Row"
                       : col === "submission_time" ? "Submission Date" 
-                      : col === "landus" ? "LULC Cover"
+                      : col === "landcover" ? "Land Cover"
+                      : col === "landus" ? "Land Use"
                       : col === "sev" ? "Severity"
                       : col === "tex" ? "Texture"
                       : col === "dep" ? "Depth"
@@ -1367,11 +1371,12 @@ export default function DatabaseExplorer() {
                       </th>
                     )}
                     {visibleColumns.ward && <th style={{ padding: "6px 8px", color: "var(--text-muted)", fontWeight: 700 }}>Ward</th>}
-                    {visibleColumns.agent && <th style={{ padding: "6px 8px", color: "var(--text-muted)", fontWeight: 700 }}>Observer Agent</th>}
+                    {activeTab !== "ldn" && visibleColumns.agent && <th style={{ padding: "6px 8px", color: "var(--text-muted)", fontWeight: 700 }}>Observer Agent</th>}
                     
                     {activeTab === "ldn" ? (
                       <>
-                        {visibleColumns.landus && <th style={{ padding: "6px 8px", color: "var(--text-muted)", fontWeight: 700 }}>LULC Cover</th>}
+                        {visibleColumns.landcover && <th style={{ padding: "6px 8px", color: "var(--text-muted)", fontWeight: 700 }}>Land Cover</th>}
+                        {visibleColumns.landus && <th style={{ padding: "6px 8px", color: "var(--text-muted)", fontWeight: 700 }}>Land Use</th>}
                         {visibleColumns.sev && (
                           <th 
                             onClick={() => handleSort("sev")}
@@ -1497,11 +1502,12 @@ export default function DatabaseExplorer() {
                           {visibleColumns.submission_time && <td style={{ padding: "6px 8px" }}>{dateStr}</td>}
                           {visibleColumns.district && <td style={{ padding: "6px 8px", fontWeight: 600 }}>{dist}</td>}
                           {visibleColumns.ward && <td style={{ padding: "6px 8px" }}>{ward.startsWith("Ward") ? ward : `Ward ${ward}`}</td>}
-                          {visibleColumns.agent && <td style={{ padding: "6px 8px" }}>{agent}</td>}
+                          {activeTab !== "ldn" && visibleColumns.agent && <td style={{ padding: "6px 8px" }}>{agent}</td>}
 
                           {activeTab === "ldn" ? (
                             <>
-                              {visibleColumns.landus && <td style={{ padding: "6px 8px" }}>{r.landus || "—"}</td>}
+                              {visibleColumns.landcover && <td style={{ padding: "6px 8px", fontWeight: 600 }}>{r.land_cover || r['poidet/landcov'] || r.landcov || "—"}</td>}
+                              {visibleColumns.landus && <td style={{ padding: "6px 8px" }}>{r.land_use || r.landus || r['poidet/landus'] || r['ldi/tree'] || "—"}</td>}
                               {visibleColumns.sev && <td style={{ padding: "6px 8px" }}>{getSeverityOrMoistureBadge(r)}</td>}
                             </>
                           ) : activeTab === "soil" ? (
@@ -1529,13 +1535,16 @@ export default function DatabaseExplorer() {
                           
                           {visibleColumns.actions && (
                             <td style={{ padding: "6px 8px", textAlign: "center" }}>
-                              <div style={{ display: "flex", gap: "2px", justifyContent: "center" }}>
+                              <div style={{ display: "flex", gap: "6px", justifyContent: "center" }}>
                                 <button
-                                  onClick={() => setInspectRecord(r)}
-                                  style={{ background: "none", border: "none", color: "var(--accent-blue)", cursor: "pointer", padding: "2px" }}
-                                  title="Inspect full JSON"
+                                  onClick={() => {
+                                    const targetPage = activeTab === "ldn" ? "/ldn" : activeTab === "soil" ? "/soil" : "/drylands";
+                                    router.push(`${targetPage}?id=${rid}`);
+                                  }}
+                                  style={{ background: "none", border: "none", color: "#0284c7", cursor: "pointer", padding: "2px" }}
+                                  title="Inspect on Map"
                                 >
-                                  <Info size={12} />
+                                  <MapPin size={12} />
                                 </button>
                                 <button
                                   onClick={() => openEditModal(r)}
@@ -1648,6 +1657,28 @@ export default function DatabaseExplorer() {
             {selectedRows.size} selected
           </span>
           <div style={{ width: "1px", height: "14px", background: "rgba(255,255,255,0.2)" }} />
+
+          {/* Inspect on Map button */}
+          <button
+            onClick={() => {
+              if (selectedRows.size === 0) return;
+              const firstId = Array.from(selectedRows)[0];
+              const targetPage = activeTab === "ldn" ? "/ldn" : activeTab === "soil" ? "/soil" : "/drylands";
+              router.push(`${targetPage}?id=${firstId}`);
+            }}
+            style={{
+              background: "#0284c7", border: "none", color: "#ffffff",
+              padding: "4px 12px", borderRadius: "15px", fontSize: "10px", fontWeight: 700,
+              cursor: "pointer", display: "flex", alignItems: "center", gap: "4px"
+            }}
+            className="bulk-btn"
+            title="Inspect selected record on interactive map"
+          >
+            <MapPin size={11} /> Inspect on Map
+          </button>
+          
+          <div style={{ width: "1px", height: "14px", background: "rgba(255,255,255,0.2)" }} />
+
           <button
             onClick={() => handleBulkExport("csv")}
             style={{
