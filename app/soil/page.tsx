@@ -969,11 +969,12 @@ export default function SoilPage() {
             </div>
           </div>
 
-          {/* Recharts Graphs Grid */}
+          {/* Top Row: Texture Profile Distribution (Left) & Measured Organic Carbon Ranges (Right) */}
           <div style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
-            gap: "20px"
+            gap: "20px",
+            marginBottom: "20px"
           }}>
             {/* Chart 1: Texture Profile */}
             <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "20px", boxShadow: "var(--shadow-sm)" }}>
@@ -1006,27 +1007,7 @@ export default function SoilPage() {
               )}
             </div>
 
-            {/* Chart 2: Average core depth by district */}
-            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "20px", boxShadow: "var(--shadow-sm)" }}>
-              <h3 style={{ fontSize: "12px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                Average Soil Core Depth by District
-              </h3>
-              {dashboardStats?.districtData && dashboardStats.districtData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={260}>
-                  <BarChart data={dashboardStats.districtData} margin={{ top: 10, right: 10, left: -25, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                    <XAxis dataKey="name" tick={{ fontSize: 9 }} interval={0} />
-                    <YAxis tick={{ fontSize: 9 }} label={{ value: "cm", angle: -90, position: "insideLeft", fontSize: 9 }} />
-                    <Tooltip formatter={(value) => [`${value} cm`, "Average Depth"]} />
-                    <Bar dataKey="avgDepth" name="Average Depth" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <div style={{ height: "260px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: "11px" }}>No data to display</div>
-              )}
-            </div>
-
-            {/* Chart 3: Measured Organic Carbon % distribution ranges */}
+            {/* Chart 2: Measured Organic Carbon % distribution ranges */}
             <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "20px", boxShadow: "var(--shadow-sm)" }}>
               <h3 style={{ fontSize: "12px", fontWeight: 800, color: "var(--text-primary)", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Measured Organic Carbon (%) Ranges
@@ -1051,6 +1032,49 @@ export default function SoilPage() {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Full-Width Bottom Section: Average Soil Core Depth by District */}
+          <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "24px", boxShadow: "var(--shadow-sm)", width: "100%" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <div>
+                <h3 style={{ fontSize: "13px", fontWeight: 800, color: "var(--text-primary)", margin: 0, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                  Average Soil Core Depth by District (cm)
+                </h3>
+                <p style={{ fontSize: "11px", color: "var(--text-muted)", margin: "4px 0 0 0" }}>
+                  Comparative soil sampling depth baseline across all active districts
+                </p>
+              </div>
+              <span style={{ fontSize: "11px", fontWeight: 700, padding: "4px 12px", background: "rgba(245, 158, 11, 0.1)", color: "#b45309", borderRadius: "12px", border: "1px solid rgba(245, 158, 11, 0.2)" }}>
+                {dashboardStats?.districtData?.length || 0} Active Districts
+              </span>
+            </div>
+            {dashboardStats?.districtData && dashboardStats.districtData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={360}>
+                <BarChart data={dashboardStats.districtData} margin={{ top: 15, right: 20, left: 0, bottom: 70 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fontSize: 10, fill: "#475569" }}
+                    angle={-45}
+                    textAnchor="end"
+                    interval={0}
+                    height={80}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 10, fill: "#475569" }}
+                    label={{ value: "Depth (cm)", angle: -90, position: "insideLeft", fontSize: 10, fill: "#64748b" }}
+                  />
+                  <Tooltip
+                    contentStyle={{ background: "#0f172a", borderRadius: "8px", border: "none", color: "#fff", fontSize: "11px" }}
+                    formatter={(value) => [`${value} cm`, "Average Core Depth"]}
+                  />
+                  <Bar dataKey="avgDepth" name="Average Depth" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div style={{ height: "300px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: "11px" }}>No data to display</div>
+            )}
           </div>
         </div>
       )}
