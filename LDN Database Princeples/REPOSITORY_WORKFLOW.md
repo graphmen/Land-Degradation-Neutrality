@@ -1,6 +1,6 @@
 # Repository workflow — keep the workspace safe
 
-After the **OAU folder was lost once**, treat Git as the safety net. Use this rhythm on every working day and after each **~60-minute annex / planning session**.
+After the **OAU folder was lost once**, treat Git as the safety net. Use this rhythm on every working day and after each **~60-minute block** — see **[BLOCK_DISCIPLINE_60MIN.md](./BLOCK_DISCIPLINE_60MIN.md)** (study-first; one outcome per block; no rush commits).
 
 ---
 
