@@ -12,6 +12,8 @@ Outputs (gitignored): `exports/steering-docx/*.docx`
 |-----------------|-----------|
 | R1_STEERING_SIGN_OFF_PACK | Facilitation + §9 sign-off |
 | STEERING_S1_S2_DECISION_PACK | Code lists + Supabase A+B |
+| STEERING_S5_REPORTING_PERIOD_ONE_PAGER | Active cycle S5 |
+| STUDY_SO1_NATIONAL_RASTER_DELIVERY | GeoTIFF drop guide |
 | STEERING_GIS_SO1_DECISION_PACK | Q1/Q2 + S10–S12 |
 | STEERING_Q2_CEID_WORKSHOP_ONE_PAGER | GIS 15 min CEID segment |
 | CEID_UNMATCHED_STUDY | 54 unmatched taxonomy |
