@@ -80,12 +80,12 @@ Run in order; store output under `exports/{reporting_period}/` (gitignored; EMA 
 | Step | Job | Pass criteria | ☐ |
 |------|-----|---------------|---|
 | F1 | `EXP-META` | All corpus rows have custodian + vintage | |
-| F2 | `EXP-SO1-FIELD` | Column list = Annex E §E.5 | 🔶 `GET /api/export/so1-field?eligibility=all` |
+| F2 | `EXP-SO1-FIELD` | Column list = Annex E §E.5 | ✅ dry-run [`reporting-desk-dry-run.json`](../public/reporting-desk-dry-run.json) |
 | F3 | `EXP-SO1-LC` | km² totals reconcile with GIS | |
 | F4 | `EXP-SO1-LPD` | Classes match national LPD legend | |
 | F5 | `EXP-SO1-SOC` | Depth 0–30 cm documented | |
-| F6 | `EXP-SO1-STATUS` | % degraded matches 1OAO logic | |
-| F7 | Package hash logged | Reporting desk handoff log | |
+| F6 | `EXP-SO1-STATUS` | % degraded matches 1OAO logic | 🔶 LD zonal **8.86%** degraded (not 1OAO) · [`EXP_SO1_STATUS.md`](./design/EXP_SO1_STATUS.md) |
+| F7 | Package hash logged | Reporting desk handoff log | ✅ SHA-256 in [`reporting-desk-dry-run.json`](../public/reporting-desk-dry-run.json) |
 
 ---
 

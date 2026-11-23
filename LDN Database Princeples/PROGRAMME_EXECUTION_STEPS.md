@@ -73,15 +73,15 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 | Step | Action | Done |
 |------|--------|------|
-| 4.1 | Export jobs `EXP-SO1-*` (Annex E); SO1-1 matrix design | [`SO1_LC_TRANSITION_MATRIX.md`](./design/SO1_LC_TRANSITION_MATRIX.md) · [`EXP_SO1_FIELD.md`](./design/EXP_SO1_FIELD.md) stub | 🔶 FIELD stub |
-| 4.2 | SO1 rehearsal checklist (Nov 2026 target) | [`REPORTING_DESK_CHECKLIST.md`](./REPORTING_DESK_CHECKLIST.md) | ✅ draft |
+| 4.1 | Export jobs `EXP-SO1-*` (Annex E); SO1-1 matrix design | FIELD + STATUS stubs · dry-run JSON | 🔶 FIELD+STATUS |
+| 4.2 | SO1 rehearsal checklist (Nov 2026 target) | [`REPORTING_DESK_CHECKLIST.md`](./REPORTING_DESK_CHECKLIST.md) · §F dry-run | 🔶 F2/F6/F7 |
 | 5.1 | Lock snapshot + PRAIS package | | ⬜ |
 
 ---
 
 **Autonomous mode:** [`AUTONOMOUS_EXECUTION.md`](./AUTONOMOUS_EXECUTION.md) — no “continue” required.
 
-**Next automatic block:** Reporting desk §F2 dry-run · `EXP-SO1-STATUS` stub · apply `004`/`005`/`003` on Supabase.
+**Next automatic block:** `EXP-META` / corpus manifest stub · `EXP-SO1-LC` table export when rasters · Supabase migrations apply.
 
 **Block reviews:** [Study twinning](./BLOCK_REVIEW_2026-11-23_study-peer-twinning.md) · [Discipline](./BLOCK_DISCIPLINE_60MIN.md)
 

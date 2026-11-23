@@ -1,0 +1,30 @@
+{
+  "source_layer": "LDN-NAT-ALL",
+  "shapefile": "important files\\LDN shapefiles\\Combined ldn shapefiles.shp",
+  "polygon_count": 254873,
+  "area_unit": null,
+  "area_unit_steering": "EMA Q1 \u2014 assumed hectares until signed",
+  "area_total": 39072096.9252,
+  "by_ld_class": [
+    {
+      "ld_class": "Degraded",
+      "polygon_count": 72434,
+      "area_sum": 3461199.3516,
+      "area_percent": 8.8585
+    },
+    {
+      "ld_class": "Improved",
+      "polygon_count": 93319,
+      "area_sum": 12470846.8917,
+      "area_percent": 31.9175
+    },
+    {
+      "ld_class": "Stable",
+      "polygon_count": 89120,
+      "area_sum": 23140050.6819,
+      "area_percent": 59.224
+    }
+  ],
+  "so14_note": "National LD classes support narrative QA; SDG 15.3.1 proportion requires 1OAO on LC+LPD+SOC.",
+  "generated_by": "scripts/aggregate_ldn_nat_status.py"
+}
