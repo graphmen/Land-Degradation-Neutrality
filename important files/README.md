@@ -18,6 +18,7 @@
 | `sbc.zip` | ~139 KB | **1,367** SBC points (Lat/Long) + UTM subsets | Intervention / conservation spatial | Land restoration, erosion control |
 | `invasivespecies.zip` | ~125 KB | **2,035** invasive points (+ species splits) | Pressure / threat layer | SO1-2 context; degradation drivers |
 | `illegalminingshapefiles.zip` | ~56 KB | **769** panning points (+ UTM) | Pressure / threat layer | SO2 exposure; land degradation pressure |
+| *(pending)* **LC national stack** | TBD | GeoTIFF **t₀/t₁** UNCCD 7-class (EMA or Trends.Earth) | `LC-NAT-STACK` | **SO1-1** transition matrix — see [`LC-NAT-STACK_IMPORT_PLAN.md`](../LDN%20Database%20Princeples/corpus/metadata/LC-NAT-STACK_IMPORT_PLAN.md) |
 
 ---
 

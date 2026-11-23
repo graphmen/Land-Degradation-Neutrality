@@ -1,0 +1,48 @@
+# Partial — complete after steering T1 + EMA GIS delivers rasters
+layer_id: LC-NAT-STACK
+title: National land cover stack (baseline t₀ + reporting t₁)
+abstract: >
+  Paired national UNCCD 7-class land cover surfaces for SO1-1 transition matrix.
+  Source may be EMA national LC or Trends.Earth export — steering decision T1.
+custodian: Environmental Management Agency
+contact: ""  # GIS lead / LDN reporting officer
+
+vintage: ""  # set per band (e.g. 2015 baseline, 2021/2023 reporting)
+source_file: ""  # important files/ or Trends.Earth download path
+dataset_version: 0
+imported_at: ""
+imported_by: ""
+
+geometry_type: Raster
+feature_count: null  # national extent cells / tiles TBD
+crs: EPSG:4326  # storage default; retain native CRS in lineage
+original_crs: ""  # e.g. UTM 35S/36S if delivered projected
+
+licence: government_internal
+sensitivity: national_only
+lineage: Pending — Trends.Earth default vs EMA harmonized national legend
+
+so_uses:
+  - SO1-1
+data_tier: tier1_default  # until national replaces Trends.Earth
+reporting_period: 2020-2023
+baseline_period_id: 2015-baseline  # confirm T3
+confidence: low  # until T1–T4 signed and QA complete
+
+raster_bands:
+  - id: LC-T0
+    role: baseline_unccd_class
+    target_year: 2015  # workshop may adjust T3
+    legend: unccd_7_class
+  - id: LC-T1
+    role: reporting_unccd_class
+    target_year: null  # reporting epoch end
+    legend: unccd_7_class
+
+national_to_unccd_map: reference-code-lists.v0.9.json / ldn_land_cover_national
+
+prais_alternative_dataset:
+  title: ""
+  source_link_or_doi: ""
+  author_publisher: Environmental Management Agency
+  bibliographic_citation: ""

@@ -55,7 +55,7 @@ Historical Kobo subclasses on legacy records are harmonised on **read** via ETL 
 
 | Tier | Source (corpus) | Role in SO1-1 |
 |------|-----------------|---------------|
-| **Primary** | National LC raster/stack **t₀** and **t₁** (Trends.Earth default or Zimbabwe national LC) | Zonal tabulation → km² matrix |
+| **Primary** | [`LC-NAT-STACK`](../corpus/metadata/LC-NAT-STACK_IMPORT_PLAN.md) **t₀** and **t₁** (Trends.Earth default or Zimbabwe national LC) | Zonal tabulation → km² matrix |
 | **QA** | FIELD-LDN + REF-SITES | Spot-check discordant cells; workshop minutes |
 | **Context** | PRESS-* layers | Narrative for degradation drivers, not matrix cells |
 

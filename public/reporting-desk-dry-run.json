@@ -1,11 +1,11 @@
 {
-  "dry_run_at": "2026-11-23T08:59:31.700Z",
+  "dry_run_at": "2026-11-23T09:13:15.275Z",
   "reporting_period": "2020-2023",
   "section_F": {
     "F1_EXP_META": {
       "pass": true,
-      "layer_count": 10,
-      "hash_csv": "b8c31ff25f4bf7081673626adf3838d7cbbd82e0f4bc4b006112a6555f378f75",
+      "layer_count": 11,
+      "hash_csv": "a638a309f09c535c870f15fe04bd89ef126dc38f73f51b7f6668bd9bbb678a36",
       "missing": []
     },
     "F3_EXP_SO1_LC": {
@@ -13,7 +13,7 @@
       "status": "template_only",
       "row_count": 49,
       "note": "Template only until LC rasters registered",
-      "hash_csv": "f3121c07b10e1035320414225e5fff2ce8225bcddd007b9f1ae038fe3b936eb3"
+      "hash_csv": "435bf033c187307ecc6eb022d1f92838fed40a59ce9155be73908ca66827bc5f"
     },
     "F4_EXP_SO1_LPD": {
       "pass": false,
@@ -57,9 +57,9 @@
     },
     "F7_REPORTING_BUNDLE": {
       "pass": true,
-      "bundle_id": "BUNDLE-2026-11-23T08-59-31-645Z",
-      "root_dir": "C:\\Users\\ndebelem.ZINGSERVER1\\Desktop\\2026\\OAU\\exports\\2020-2023\\BUNDLE-2026-11-23T08-59-31-645Z",
-      "manifest_sha256": "fcbf58b41891c7f41f871d77a11e699ec0111f4ba0553ac0ea120b57ddfa349f",
+      "bundle_id": "BUNDLE-2026-11-23T09-13-15-211Z",
+      "root_dir": "C:\\Users\\ndebelem.ZINGSERVER1\\Desktop\\2026\\OAU\\exports\\2020-2023\\BUNDLE-2026-11-23T09-13-15-211Z",
+      "manifest_sha256": "52ca1e7a279fcabb7ca317548c6efb1e13f7d6815a0c75d28da1dd5bb9407838",
       "package_count": 7
     }
   },

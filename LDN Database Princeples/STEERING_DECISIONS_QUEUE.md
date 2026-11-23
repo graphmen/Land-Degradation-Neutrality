@@ -13,6 +13,7 @@
 | **S7** | Peer twins (Botswana + Panama?) | [`STEERING_PEER_TWINNING_RECOMMENDATION.md`](./STEERING_PEER_TWINNING_RECOMMENDATION.md) | Study narrative |
 | **S8** | Pressure load = Lat/Long only | [`PRESSURE_LAYERS_QC.md`](./corpus/metadata/PRESSURE_LAYERS_QC.md) | `003` import |
 | **S9** | Projects geog 47 vs UTM 65 | [`INTERVENTION_SPATIAL_QC.md`](./corpus/metadata/INTERVENTION_SPATIAL_QC.md) | INT-PROJECTS load |
+| **S10** | LC raster authority + delivery (**T1–T4**) | [`LC-NAT-STACK_IMPORT_PLAN.md`](./corpus/metadata/LC-NAT-STACK_IMPORT_PLAN.md) · [`SO1_LC_TRANSITION_MATRIX.md`](./design/SO1_LC_TRANSITION_MATRIX.md) | F3 / `EXP-SO1-LC` km² |
 
 ## Ready for meeting
 

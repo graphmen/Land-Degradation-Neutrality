@@ -56,7 +56,7 @@ export function buildExpSo1LcTemplate(opts?: {
         baseline_period_id: DEFAULT_BASELINE_PERIOD_ID,
         reporting_period,
         data_tier: "tier1_default",
-        source_layer_id: "LC-NAT-STACK-TBD",
+        source_layer_id: "LC-NAT-STACK",
         confidence: "low",
       });
     }
@@ -79,7 +79,10 @@ export function buildExpSo1LcTemplate(opts?: {
       baseline_period_id: DEFAULT_BASELINE_PERIOD_ID,
       generated_at,
       methods:
-        "Populate area_km2 from national LC zonal stats when rasters registered in Annex C.",
+        "Populate area_km2 from national LC zonal stats when LC-NAT-STACK loaded.",
+      import_plan:
+        "LDN Database Princeples/corpus/metadata/LC-NAT-STACK_IMPORT_PLAN.md",
+      steering_decision: "S10",
       row_count: rows.length,
     },
   };

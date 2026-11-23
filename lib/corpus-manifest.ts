@@ -62,6 +62,23 @@ export function buildCorpusManifest(): CorpusLayerRow[] {
 
   return [
     {
+      layer_id: "LC-NAT-STACK",
+      title: "National land cover stack (t₀/t₁)",
+      custodian: "Environmental Management Agency",
+      vintage: "pending_T1",
+      geometry_type: "Raster",
+      feature_count: null,
+      crs: "EPSG:4326",
+      data_tier: "tier1_default",
+      so_uses: ["SO1-1"],
+      import_status: "awaiting_delivery",
+      confidence: "low",
+      doc_path:
+        "LDN Database Princeples/corpus/metadata/LC-NAT-STACK_IMPORT_PLAN.md",
+      abstract:
+        "Paired UNCCD 7-class surfaces for transition matrix; steering T1–T4 before load.",
+    },
+    {
       layer_id: "LDN-NAT-ALL",
       title: "Combined LDN validation polygons",
       custodian: "Environmental Management Agency",
