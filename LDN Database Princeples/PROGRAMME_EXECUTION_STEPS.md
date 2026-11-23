@@ -63,7 +63,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 | Step | Action |
 |------|--------|
-| 3.1 | iOS build + TestFlight / internal testing |
+| 3.1 | iOS build + TestFlight / internal testing | [`MOBILE_API_DEPLOY.md`](./MOBILE_API_DEPLOY.md) · `VITE_API_BASE_URL` | 🔶 doc |
 | 3.2 | Align severity/land-cover labels to Annex F | 🔶 codes + **land use** list (`ldn_land_use_type`) |
 | 3.3 | Validator ↔ national polygon `Id` join (after GIS workshop) |
 
@@ -81,7 +81,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 **Autonomous mode:** [`AUTONOMOUS_EXECUTION.md`](./AUTONOMOUS_EXECUTION.md) — no “continue” required.
 
-**Next automatic block:** `EXP-SO1-LPD` / `EXP-SO1-SOC` templates · mobile production API URL · Supabase migrations apply.
+**Next automatic block:** Full §F export `write=1` bundle script · Supabase migrations apply · R1 steering pack.
 
 **Block reviews:** [Study twinning](./BLOCK_REVIEW_2026-11-23_study-peer-twinning.md) · [Discipline](./BLOCK_DISCIPLINE_60MIN.md)
 

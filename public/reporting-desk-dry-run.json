@@ -1,5 +1,5 @@
 {
-  "dry_run_at": "2026-11-23T08:24:56.947Z",
+  "dry_run_at": "2026-11-23T08:27:14.523Z",
   "reporting_period": "2020-2023",
   "section_F": {
     "F1_EXP_META": {
@@ -14,6 +14,21 @@
       "row_count": 49,
       "note": "Template only until LC rasters registered",
       "hash_csv": "f3121c07b10e1035320414225e5fff2ce8225bcddd007b9f1ae038fe3b936eb3"
+    },
+    "F4_EXP_SO1_LPD": {
+      "pass": false,
+      "status": "template_only",
+      "row_count": 4,
+      "hash_csv": "c66620157a6196123d3c3f1b2e9ce19f44b9ab88adffe363bcda748b326d8808"
+    },
+    "F5_EXP_SO1_SOC": {
+      "pass": true,
+      "status": "template_only",
+      "tier2_total": 632,
+      "tier2_depth_0_30": 632,
+      "tier2_with_soc_value": 0,
+      "depth_0_30_complete": true,
+      "hash_csv": "43e8f6c2fffe2d9926efe6b1fdc08e3a35313405f3aa16dfdc7aee43aed59390"
     },
     "F2_EXP_SO1_FIELD": {
       "pass": true,

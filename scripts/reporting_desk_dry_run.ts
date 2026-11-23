@@ -4,6 +4,8 @@ import path from "path";
 import { buildExpMetaPackage } from "../lib/exp-meta-export";
 import { buildExpSo1FieldPackage } from "../lib/exp-so1-field-export";
 import { buildExpSo1LcTemplate } from "../lib/exp-so1-lc-export";
+import { buildExpSo1LpdTemplate } from "../lib/exp-so1-lpd-export";
+import { buildExpSo1SocPackage } from "../lib/exp-so1-soc-export";
 import { buildExpSo1StatusPackage } from "../lib/exp-so1-status-export";
 
 async function sha256(text: string) {
@@ -15,6 +17,8 @@ async function main() {
   const field = await buildExpSo1FieldPackage({ eligibility: "all" });
   const status = await buildExpSo1StatusPackage();
   const lc = buildExpSo1LcTemplate();
+  const lpd = buildExpSo1LpdTemplate();
+  const soc = await buildExpSo1SocPackage();
   const period = status.reporting_period ?? "unassigned";
 
   const report = {
@@ -33,6 +37,21 @@ async function main() {
         row_count: lc.rows.length,
         note: "Template only until LC rasters registered",
         hash_csv: await sha256(lc.csv),
+      },
+      F4_EXP_SO1_LPD: {
+        pass: false,
+        status: lpd.status,
+        row_count: lpd.rows.length,
+        hash_csv: await sha256(lpd.csv),
+      },
+      F5_EXP_SO1_SOC: {
+        pass: soc.stats.tier2_depth_0_30 > 0,
+        status: soc.status,
+        tier2_total: soc.stats.tier2_total,
+        tier2_depth_0_30: soc.stats.tier2_depth_0_30,
+        tier2_with_soc_value: soc.stats.tier2_with_soc_value,
+        depth_0_30_complete: soc.metadata.depth_0_30_documented,
+        hash_csv: await sha256(soc.csv.tier2),
       },
       F2_EXP_SO1_FIELD: {
         pass: field.ldn.length > 0 && field.soil.length > 0,
