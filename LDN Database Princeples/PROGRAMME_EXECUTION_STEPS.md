@@ -81,7 +81,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 **Autonomous mode:** [`AUTONOMOUS_EXECUTION.md`](./AUTONOMOUS_EXECUTION.md) — no “continue” required.
 
-**Next automatic block:** Apply Supabase after **S2** · R2 shell (post-R1) · Android UAT build.
+**Next automatic block:** R1 steering meeting · Supabase **S2** apply · field lock workflow pilot (verify API).
 
 **Block reviews:** [Study twinning](./BLOCK_REVIEW_2026-11-23_study-peer-twinning.md) · [Discipline](./BLOCK_DISCIPLINE_60MIN.md)
 

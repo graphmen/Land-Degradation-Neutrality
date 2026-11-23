@@ -68,7 +68,7 @@ Use this at **national overview / reporting desk** — not as a dashboard widget
 | E1 | No `submitted` records in export folders | `verification_status = locked` only | |
 | E2 | `verification_log` complete for all locked rows | Audit sample 10 UUIDs | |
 | E3 | `code_list_version` on every locked field row | Mobile + API | |
-| E4 | Photos manifest matches locked UUIDs | `EXP-PHOTOS` | |
+| E4 | Photos manifest matches locked UUIDs | `EXP-PHOTOS` | 🔶 legacy Kobo manifest · `GET /api/export/photos` |
 | E5 | Counterbalancing polygons (if used) registered | Reporting layer (future) | |
 
 ---

@@ -9,6 +9,7 @@ import {
 } from "@/lib/exp-so1-field-export";
 import { buildExpSo1LcTemplate } from "@/lib/exp-so1-lc-export";
 import { buildExpSo1LpdTemplate } from "@/lib/exp-so1-lpd-export";
+import { buildExpPhotosPackage } from "@/lib/exp-photos-export";
 import { buildExpSo1SocPackage } from "@/lib/exp-so1-soc-export";
 import { buildExpSo1StatusPackage, writeExpSo1StatusToDisk } from "@/lib/exp-so1-status-export";
 
@@ -60,7 +61,7 @@ export async function buildAndWriteReportingBundle(opts?: {
   const rehearsal = opts?.rehearsal ?? true;
   const eligibility: EligibilityMode = opts?.eligibility ?? (rehearsal ? "all" : "locked");
 
-  const [meta, field, status, soc] = await Promise.all([
+  const [meta, field, status, soc, photos] = await Promise.all([
     buildExpMetaPackage({ reporting_period: opts?.reporting_period }),
     buildExpSo1FieldPackage({
       reporting_period: opts?.reporting_period,
@@ -68,6 +69,7 @@ export async function buildAndWriteReportingBundle(opts?: {
     }),
     buildExpSo1StatusPackage({ reporting_period: opts?.reporting_period }),
     buildExpSo1SocPackage({ reporting_period: opts?.reporting_period }),
+    buildExpPhotosPackage({ reporting_period: opts?.reporting_period }),
   ]);
 
   const lc = buildExpSo1LcTemplate({ reporting_period: opts?.reporting_period });
@@ -131,6 +133,15 @@ export async function buildAndWriteReportingBundle(opts?: {
     soc.metadata
   );
   packages.EXP_SO1_SOC = { path: socOut.dir, sha256: socOut.hash };
+
+  const photosOut = await writeCsvBundle(
+    root_dir,
+    "EXP-PHOTOS",
+    "photo_manifest.csv",
+    photos.csv,
+    photos.metadata
+  );
+  packages.EXP_PHOTOS = { path: photosOut.dir, sha256: photosOut.hash };
 
   const manifest = {
     bundle_id,

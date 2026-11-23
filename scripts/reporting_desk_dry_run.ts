@@ -7,6 +7,7 @@ import { buildExpSo1LcTemplate } from "../lib/exp-so1-lc-export";
 import { buildExpSo1LpdTemplate } from "../lib/exp-so1-lpd-export";
 import { buildExpSo1SocPackage } from "../lib/exp-so1-soc-export";
 import { buildAndWriteReportingBundle } from "../lib/exp-reporting-bundle";
+import { buildExpPhotosPackage } from "../lib/exp-photos-export";
 import { buildExpSo1StatusPackage } from "../lib/exp-so1-status-export";
 
 async function sha256(text: string) {
@@ -20,6 +21,7 @@ async function main() {
   const lc = buildExpSo1LcTemplate();
   const lpd = buildExpSo1LpdTemplate();
   const soc = await buildExpSo1SocPackage();
+  const photos = await buildExpPhotosPackage();
   const period = status.reporting_period ?? "unassigned";
   const bundle = await buildAndWriteReportingBundle({ rehearsal: true });
   const manifestRaw = await fs.readFile(bundle.manifest_path, "utf-8");
@@ -70,6 +72,12 @@ async function main() {
         area_unit_confirmed: status.summary.area_unit != null,
         hash_csv: await sha256(status.csv),
         one_ao_ready: status.metadata.one_ao_ready === true,
+      },
+      E4_EXP_PHOTOS: {
+        pass: photos.stats.manifest_rows > 0,
+        manifest_rows: photos.stats.manifest_rows,
+        ldn_with_photos: photos.stats.rows_with_attachment,
+        hash_csv: await sha256(photos.csv),
       },
       F7_REPORTING_BUNDLE: {
         pass: true,

@@ -16,6 +16,7 @@ import {
   getLdnSeverityLabel,
   getLdnSeverityOptions,
 } from "../lib/code-lists";
+import { lookupNationalUnitByCeid } from "../lib/national-unit-lookup";
 
 interface LdnFormProps {
   onSuccess: (message: string) => void;
@@ -78,6 +79,7 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
   const [team, setTeam] = useState("");
   const [gps, setGps] = useState(""); // "lat lng alt acc"
   const [ceid, setCeid] = useState("");
+  const [ceidHint, setCeidHint] = useState<string | null>(null);
   const [landcov, setLandcov] = useState("");
   const [landus, setLandus] = useState("");
   const [useSpec, setUseSpec] = useState("");
@@ -350,7 +352,25 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
 
           <div className="form-group">
             <label className="form-label">Collect Earth Point ID *</label>
-            <input type="text" className="form-input" placeholder="e.g. CE_9104" value={ceid} onChange={(e) => setCeid(e.target.value)} />
+            <input
+              type="text"
+              className="form-input"
+              placeholder="e.g. 11268_17236"
+              value={ceid}
+              onChange={(e) => {
+                setCeid(e.target.value);
+                setCeidHint(null);
+              }}
+              onBlur={async () => {
+                const hint = await lookupNationalUnitByCeid(ceid);
+                setCeidHint(hint?.message ?? null);
+              }}
+            />
+            {ceidHint && (
+              <p className="card-desc" style={{ marginTop: 6, fontSize: "0.85rem" }}>
+                {ceidHint}
+              </p>
+            )}
           </div>
 
           <div className="form-group">
