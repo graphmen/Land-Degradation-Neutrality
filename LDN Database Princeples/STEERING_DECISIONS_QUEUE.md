@@ -15,6 +15,7 @@
 | **S9** | Projects geog 47 vs UTM 65 | [`INTERVENTION_SPATIAL_QC.md`](./corpus/metadata/INTERVENTION_SPATIAL_QC.md) | INT-PROJECTS load |
 | **S10** | LC raster authority + delivery (**T1–T4**) | [`LC-NAT-STACK_IMPORT_PLAN.md`](./corpus/metadata/LC-NAT-STACK_IMPORT_PLAN.md) · [`SO1_LC_TRANSITION_MATRIX.md`](./design/SO1_LC_TRANSITION_MATRIX.md) | F3 / `EXP-SO1-LC` km² |
 | **S11** | LPD national source + legend (**L1–L4**) | [`LPD-NAT-RASTER_IMPORT_PLAN.md`](./corpus/metadata/LPD-NAT-RASTER_IMPORT_PLAN.md) | F4 / `EXP-SO1-LPD` |
+| **S12** | SOC Tier-1 surface + Tier-2 lab policy (**O1–O4**) | [`SOC-NAT-SURFACE_IMPORT_PLAN.md`](./corpus/metadata/SOC-NAT-SURFACE_IMPORT_PLAN.md) | F5 / `EXP-SO1-SOC` |
 
 ## Ready for meeting
 

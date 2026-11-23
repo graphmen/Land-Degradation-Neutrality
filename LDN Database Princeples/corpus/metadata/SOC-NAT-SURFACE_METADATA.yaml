@@ -1,0 +1,44 @@
+# Partial — complete after steering S12 + national SOC delivery
+layer_id: SOC-NAT-SURFACE
+title: National soil organic carbon surface (0–30 cm)
+abstract: >
+  Tier-1 national SOC stock or concentration surface for SO1-3,
+  complementary to FIELD-SOIL Tier-2 cores (632 samples).
+custodian: Environmental Management Agency
+contact: ""
+
+vintage: ""
+source_file: ""
+dataset_version: 0
+imported_at: ""
+imported_by: ""
+
+geometry_type: Raster
+feature_count: null
+crs: EPSG:4326
+original_crs: ""
+
+licence: government_internal
+sensitivity: national_only
+lineage: Pending — Trends.Earth SOC default vs EMA national pedology / lab upscaling
+
+so_uses:
+  - SO1-3
+data_tier: tier1_default
+reporting_period: 2020-2023
+baseline_period_id: 2015-baseline
+confidence: low
+
+depth_policy:
+  reporting_depth_cm: 30
+  depth_range: "0-30"
+
+tiering:
+  tier1: SOC-NAT-SURFACE
+  tier2: FIELD-SOIL
+
+prais_alternative_dataset:
+  title: ""
+  source_link_or_doi: ""
+  author_publisher: Environmental Management Agency
+  bibliographic_citation: ""

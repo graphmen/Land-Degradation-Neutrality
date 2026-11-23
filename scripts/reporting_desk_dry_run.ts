@@ -58,6 +58,22 @@ async function main() {
   }
   const f4Pass =
     lpd.status !== "template_only" && lpdKm2Populated === lpd.rows.length;
+  const socLayer = meta.layers.find((l) => l.layer_id === "SOC-NAT-SURFACE");
+  const tier1Stock = soc.tier1_national.stock_tonnes;
+  const tier1Area = soc.tier1_national.area_km2;
+  const tier1Populated =
+    tier1Stock != null || tier1Area != null;
+  const s12Required: string[] = [];
+  if (!socLayer) s12Required.push("SOC-NAT-SURFACE missing from EXP-META");
+  if (socLayer?.import_status === "awaiting_delivery") {
+    s12Required.push("S12: deliver national SOC surface to important files/");
+  }
+  s12Required.push("S12: steering sign Tier-1 SOC source (Trends.Earth vs EMA)");
+  if (!tier1Populated) {
+    s12Required.push("S12: populate tier1_national stock or area metric");
+  }
+  const f5Tier2Pass = soc.stats.tier2_depth_0_30 > 0;
+  const f5FullPass = f5Tier2Pass && tier1Populated;
   const steering_blockers = [
     "LDN-NAT-ALL Area unit (Q1)",
     "1OAO national LC+LPD+SOC run pending",
@@ -103,12 +119,18 @@ async function main() {
         hash_csv: await sha256(lpd.csv),
       },
       F5_EXP_SO1_SOC: {
-        pass: soc.stats.tier2_depth_0_30 > 0,
+        pass: f5FullPass,
+        tier2_pass: f5Tier2Pass,
         status: soc.status,
+        tier1_source_layer_id: soc.tier1_national.source_layer_id,
+        tier1_national_populated: tier1Populated,
         tier2_total: soc.stats.tier2_total,
         tier2_depth_0_30: soc.stats.tier2_depth_0_30,
         tier2_with_soc_value: soc.stats.tier2_with_soc_value,
         depth_0_30_complete: soc.metadata.depth_0_30_documented,
+        note: f5FullPass
+          ? "Tier-1 + Tier-2 ready"
+          : "Tier-2 partial; Tier-1 awaits S12",
         hash_csv: await sha256(soc.csv.tier2),
       },
       F2_EXP_SO1_FIELD: {
@@ -160,6 +182,16 @@ async function main() {
         required_for_pass: s11Required,
         import_plan:
           "LDN Database Princeples/corpus/metadata/LPD-NAT-RASTER_IMPORT_PLAN.md",
+      },
+      s12_f5: {
+        corpus_registered: socLayer != null,
+        import_status: socLayer?.import_status ?? "missing",
+        tier1_national_populated: tier1Populated,
+        tier2_depth_0_30: soc.stats.tier2_depth_0_30,
+        pass: f5FullPass,
+        required_for_pass: s12Required,
+        import_plan:
+          "LDN Database Princeples/corpus/metadata/SOC-NAT-SURFACE_IMPORT_PLAN.md",
       },
     },
   };

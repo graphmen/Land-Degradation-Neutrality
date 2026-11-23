@@ -90,7 +90,7 @@ export async function buildExpSo1SocPackage(opts?: {
     tier2_with_soc > 0 ? "tier2_partial" : "template_only";
 
   const tier1_national = {
-    source_layer_id: "SOC-NAT-SURFACE-TBD",
+    source_layer_id: "SOC-NAT-SURFACE",
     data_tier: "tier1_default",
     depth_range: "0-30",
     area_km2: null,
@@ -124,7 +124,11 @@ export async function buildExpSo1SocPackage(opts?: {
       reporting_period,
       generated_at,
       methods:
-        "Tier-2: soil cores with depth_cm; link lab SOC when available. Tier-1: national SOC surface raster TBD.",
+        "Tier-2: soil cores with depth_cm; link lab SOC when available. Tier-1: national SOC surface when SOC-NAT-SURFACE loaded.",
+      import_plan:
+        "LDN Database Princeples/corpus/metadata/SOC-NAT-SURFACE_IMPORT_PLAN.md",
+      steering_decision: "S12",
+      tier1_source_layer_id: tier1_national.source_layer_id,
       depth_0_30_documented: tier2_depth_0_30 === tier2_samples.length,
     },
   };

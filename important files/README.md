@@ -20,6 +20,7 @@
 | `illegalminingshapefiles.zip` | ~56 KB | **769** panning points (+ UTM) | Pressure / threat layer | SO2 exposure; land degradation pressure |
 | *(pending)* **LC national stack** | TBD | GeoTIFF **t₀/t₁** UNCCD 7-class (EMA or Trends.Earth) | `LC-NAT-STACK` | **SO1-1** transition matrix — see [`LC-NAT-STACK_IMPORT_PLAN.md`](../LDN%20Database%20Princeples/corpus/metadata/LC-NAT-STACK_IMPORT_PLAN.md) |
 | *(pending)* **LPD national raster** | TBD | LPD class surface (Trends.Earth or EMA VI) | `LPD-NAT-RASTER` | **SO1-2** — [`LPD-NAT-RASTER_IMPORT_PLAN.md`](../LDN%20Database%20Princeples/corpus/metadata/LPD-NAT-RASTER_IMPORT_PLAN.md) |
+| *(pending)* **SOC national surface** | TBD | SOC 0–30 cm raster or stock table | `SOC-NAT-SURFACE` | **SO1-3** — [`SOC-NAT-SURFACE_IMPORT_PLAN.md`](../LDN%20Database%20Princeples/corpus/metadata/SOC-NAT-SURFACE_IMPORT_PLAN.md) |
 
 ---
 

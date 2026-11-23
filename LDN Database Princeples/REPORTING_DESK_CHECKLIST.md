@@ -26,6 +26,7 @@ Use this at **national overview / reporting desk** — not as a dashboard widget
 |---|-------|--------------|------|---|
 | B0 | National LC stack **t₀/t₁** | LC-NAT-STACK | Steering **S10** (T1–T4); rasters in `important files/` | |
 | B0b | National LPD surface | LPD-NAT-RASTER | Steering **S11** (L1–L4) | |
+| B0c | National SOC surface **0–30 cm** | SOC-NAT-SURFACE | Steering **S12** + FIELD-SOIL Tier-2 | |
 | B1 | Combined LDN units (254k) | LDN-NAT-ALL | EMA Q1 Area unit + Q2 CEID join answered | |
 | B2 | Field LDN (locked count ≥ policy min) | FIELD-LDN | Verification workspace | |
 | B3 | Soil Tier-2 samples (locked) | FIELD-SOIL | Lab SOC linkage where claimed | |
@@ -82,11 +83,11 @@ Run in order; store output under `exports/{reporting_period}/` (gitignored; EMA 
 
 | Step | Job | Pass criteria | ☐ |
 |------|-----|---------------|---|
-| F1 | `EXP-META` | All corpus rows have custodian + vintage | ✅ `GET /api/export/meta` · **12** layers |
+| F1 | `EXP-META` | All corpus rows have custodian + vintage | ✅ `GET /api/export/meta` · **13** layers |
 | F2 | `EXP-SO1-FIELD` | Column list = Annex E §E.5 | ✅ dry-run [`reporting-desk-dry-run.json`](../public/reporting-desk-dry-run.json) |
 | F3 | `EXP-SO1-LC` | **S10** gates + km² reconcile with GIS (see below) | 🔶 7×7 template · `source_layer_id: LC-NAT-STACK` · `GET /api/export/so1-lc` |
 | F4 | `EXP-SO1-LPD` | **S11** + km²/% populated (`LPD-NAT-RASTER`) | 🔶 4-class template · `GET /api/export/so1-lpd` · dry-run `gates.s11_f4` |
-| F5 | `EXP-SO1-SOC` | Depth 0–30 cm documented | 🔶 632 Tier-2 rows · `GET /api/export/so1-soc` |
+| F5 | `EXP-SO1-SOC` | **S12** Tier-1 + Tier-2 depth 0–30 | 🔶 Tier-2 partial · dry-run `gates.s12_f5` · `GET /api/export/so1-soc` |
 | F6 | `EXP-SO1-STATUS` | % degraded matches 1OAO logic | 🔶 LD zonal **8.86%** degraded (not 1OAO) · [`EXP_SO1_STATUS.md`](./design/EXP_SO1_STATUS.md) |
 | F7 | Package hash logged | Reporting desk handoff log | ✅ `npm run reporting:bundle` · manifest in `exports/` |
 

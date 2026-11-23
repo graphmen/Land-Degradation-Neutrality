@@ -1,11 +1,11 @@
 {
-  "dry_run_at": "2026-11-23T09:45:38.796Z",
+  "dry_run_at": "2026-11-23T09:49:15.502Z",
   "reporting_period": "2020-2023",
   "section_F": {
     "F1_EXP_META": {
       "pass": true,
-      "layer_count": 12,
-      "hash_csv": "16467c365d00c1539b4e30e82effabb7d901de8795447aabdaf4fcbab7b12d66",
+      "layer_count": 13,
+      "hash_csv": "65cf0a551114f71b0f4c2b375a0bbc577519ac0ab653ab744a752072c191128d",
       "missing": []
     },
     "F3_EXP_SO1_LC": {
@@ -27,12 +27,16 @@
       "hash_csv": "4cdf49f01fad28d6180a8592cebd9f1debfc2fffcb17290884091b8a4928627a"
     },
     "F5_EXP_SO1_SOC": {
-      "pass": true,
+      "pass": false,
+      "tier2_pass": true,
       "status": "template_only",
+      "tier1_source_layer_id": "SOC-NAT-SURFACE",
+      "tier1_national_populated": false,
       "tier2_total": 632,
       "tier2_depth_0_30": 632,
       "tier2_with_soc_value": 0,
       "depth_0_30_complete": true,
+      "note": "Tier-2 partial; Tier-1 awaits S12",
       "hash_csv": "43e8f6c2fffe2d9926efe6b1fdc08e3a35313405f3aa16dfdc7aee43aed59390"
     },
     "F2_EXP_SO1_FIELD": {
@@ -62,9 +66,9 @@
     },
     "F7_REPORTING_BUNDLE": {
       "pass": true,
-      "bundle_id": "BUNDLE-2026-11-23T09-45-38-744Z",
-      "root_dir": "C:\\Users\\ndebelem.ZINGSERVER1\\Desktop\\2026\\OAU\\exports\\2020-2023\\BUNDLE-2026-11-23T09-45-38-744Z",
-      "manifest_sha256": "8e0b18ba827c78e906edc44a3a051c8b8d254b2dece662ff6803612d0a87f158",
+      "bundle_id": "BUNDLE-2026-11-23T09-49-15-440Z",
+      "root_dir": "C:\\Users\\ndebelem.ZINGSERVER1\\Desktop\\2026\\OAU\\exports\\2020-2023\\BUNDLE-2026-11-23T09-49-15-440Z",
+      "manifest_sha256": "22406b0ebfb32ad4d175691443af6752649ebf0dd71a6526a4ae642edd3cfd3c",
       "package_count": 7
     }
   },
@@ -100,6 +104,19 @@
         "S11: populate area_km2 (0/4 classes)"
       ],
       "import_plan": "LDN Database Princeples/corpus/metadata/LPD-NAT-RASTER_IMPORT_PLAN.md"
+    },
+    "s12_f5": {
+      "corpus_registered": true,
+      "import_status": "awaiting_delivery",
+      "tier1_national_populated": false,
+      "tier2_depth_0_30": 632,
+      "pass": false,
+      "required_for_pass": [
+        "S12: deliver national SOC surface to important files/",
+        "S12: steering sign Tier-1 SOC source (Trends.Earth vs EMA)",
+        "S12: populate tier1_national stock or area metric"
+      ],
+      "import_plan": "LDN Database Princeples/corpus/metadata/SOC-NAT-SURFACE_IMPORT_PLAN.md"
     }
   }
 }

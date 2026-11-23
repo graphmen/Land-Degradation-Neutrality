@@ -95,6 +95,23 @@ export function buildCorpusManifest(): CorpusLayerRow[] {
       abstract: "LPD class zonal summary; steering S11 before PRAIS SO1-2.",
     },
     {
+      layer_id: "SOC-NAT-SURFACE",
+      title: "National SOC surface (0–30 cm)",
+      custodian: "Environmental Management Agency",
+      vintage: "pending_S12",
+      geometry_type: "Raster",
+      feature_count: null,
+      crs: "EPSG:4326",
+      data_tier: "tier1_default",
+      so_uses: ["SO1-3"],
+      import_status: "awaiting_delivery",
+      confidence: "low",
+      doc_path:
+        "LDN Database Princeples/corpus/metadata/SOC-NAT-SURFACE_IMPORT_PLAN.md",
+      abstract:
+        "Tier-1 SOC national layer; Tier-2 FIELD-SOIL cores complement SO1-3.",
+    },
+    {
       layer_id: "LDN-NAT-ALL",
       title: "Combined LDN validation polygons",
       custodian: "Environmental Management Agency",

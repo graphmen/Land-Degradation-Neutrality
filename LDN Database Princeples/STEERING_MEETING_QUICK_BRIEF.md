@@ -28,6 +28,7 @@
 | S7 | Peer twins (Botswana + Panama?) |
 | S10 | LC raster source (F3) |
 | S11 | LPD national source (F4) |
+| S12 | SOC Tier-1 surface (F5) |
 
 ## Live demo (optional, 5 min)
 
