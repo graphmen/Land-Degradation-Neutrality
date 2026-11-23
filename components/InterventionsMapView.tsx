@@ -93,12 +93,19 @@ export default function InterventionsMapView({ records, activeId, onSelect }: Pr
         icon: createPinIcon(Leaflet, visual),
       });
 
+      const budgetText =
+        typeof r.budget === "string" && r.budget.trim()
+          ? r.budget.split(" / ")[0]
+          : r.budget != null
+            ? String(r.budget)
+            : "—";
+
       const popupHtml = `
         <div style="font-family: var(--font-body); padding: 2px;">
-          <div style="font-size: 13px; font-weight: 700; color: #122218; margin-bottom: 4px;">${visual.icon} ${r.name}</div>
+          <div style="font-size: 13px; font-weight: 700; color: #122218; margin-bottom: 4px;">${visual.icon} ${r.name || "Intervention"}</div>
           <div style="display: flex; gap: 4px; margin-bottom: 8px; align-items: center;">
             <span class="site-badge" style="font-size: 8px; padding: 1px 6px; background: rgba(0, 102, 51, 0.08); color: #006633; border: 1px solid rgba(0, 102, 51, 0.15); border-radius: 10px;">
-              ${r.category}
+              ${r.category || "Restoration"}
             </span>
             <span class="site-badge" style="font-size: 8px; padding: 1px 6px; border-radius: 10px; font-weight: 700; border: 1px solid;
               ${badgeClass === "active-status" ? "background:#eafbf1; color:#15803d; border-color:#bbf7d0;" : ""}
@@ -110,19 +117,19 @@ export default function InterventionsMapView({ records, activeId, onSelect }: Pr
           </div>
           <div style="font-size: 11px; margin-bottom: 3px; display: flex; justify-content: space-between;">
             <span style="color:#5a6e62;">Organisation:</span>
-            <strong style="color:#122218;">${r.org}</strong>
+            <strong style="color:#122218;">${r.org || "EMA"}</strong>
           </div>
           <div style="font-size: 11px; margin-bottom: 3px; display: flex; justify-content: space-between;">
             <span style="color:#5a6e62;">Admin Area:</span>
-            <span style="color:#122218; font-weight:500;">${r.admin_area} (${r.admin_level})</span>
+            <span style="color:#122218; font-weight:500;">${r.admin_area || "—"}${r.admin_level ? ` (${r.admin_level})` : ""}</span>
           </div>
           <div style="font-size: 11px; margin-bottom: 3px; display: flex; justify-content: space-between;">
             <span style="color:#5a6e62;">Size:</span>
-            <span style="color:#122218; font-weight:500;">${r.size}</span>
+            <span style="color:#122218; font-weight:500;">${r.size || "—"}</span>
           </div>
           <div style="font-size: 11px; margin-bottom: 3px; display: flex; justify-content: space-between;">
             <span style="color:#5a6e62;">Budget:</span>
-            <span style="color:#006633; font-weight:700;">${r.budget.split(" / ")[0]}</span>
+            <span style="color:#006633; font-weight:700;">${budgetText}</span>
           </div>
         </div>
       `;
