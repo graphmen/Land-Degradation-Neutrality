@@ -1,6 +1,6 @@
 # Steering meeting — 30-minute quick brief
 
-**Attach:** [`R1_STEERING_SIGN_OFF_PACK.md`](./R1_STEERING_SIGN_OFF_PACK.md) · [`STEERING_GIS_SO1_DECISION_PACK.md`](./STEERING_GIS_SO1_DECISION_PACK.md) · [`STEERING_DECISIONS_QUEUE.md`](./STEERING_DECISIONS_QUEUE.md)
+**Attach:** [`R1_STEERING_SIGN_OFF_PACK.md`](./R1_STEERING_SIGN_OFF_PACK.md) · [`STEERING_S1_S2_DECISION_PACK.md`](./STEERING_S1_S2_DECISION_PACK.md) · [`STEERING_GIS_SO1_DECISION_PACK.md`](./STEERING_GIS_SO1_DECISION_PACK.md) · [`STEERING_DECISIONS_QUEUE.md`](./STEERING_DECISIONS_QUEUE.md)
 
 ## What we built (since reframe)
 
@@ -38,7 +38,8 @@
 4. `GET /api/status` → `locked_ldn_exports: 3` (pilot)  
 5. `GET /api/national-overview` → R2 landing JSON (rehearsal)  
 6. `GET /api/evidence/registry?prais_eligible=true` → locked pilot rows  
-7. `GET /api/verify/queues?queue=locked` → verification workspace preview
+7. `GET /api/verify/queues?queue=locked` → verification workspace preview  
+8. `GET /api/config/s2-preflight` → S2 Phase A+B file hashes (DBA minutes)
 
 ## Word pack (optional)
 

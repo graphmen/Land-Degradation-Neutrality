@@ -11,7 +11,10 @@ Outputs (gitignored): `exports/steering-docx/*.docx`
 | Source markdown | Word file |
 |-----------------|-----------|
 | R1_STEERING_SIGN_OFF_PACK | Facilitation + §9 sign-off |
+| STEERING_S1_S2_DECISION_PACK | Code lists + Supabase A+B |
 | STEERING_GIS_SO1_DECISION_PACK | Q1/Q2 + S10–S12 |
+| S2_APPLY_PREFLIGHT | Local preflight (`backend/`) |
+| SUPABASE_S2_STEERING_RUNBOOK | DBA phased apply |
 | STEERING_MEETING_QUICK_BRIEF | 30 min brief |
 | STEERING_DECISIONS_QUEUE | S1–S12 |
 | EMA_STEERING_ONE_PAGER | Summary |

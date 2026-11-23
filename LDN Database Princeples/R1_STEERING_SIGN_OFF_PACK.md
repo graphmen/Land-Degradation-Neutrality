@@ -11,7 +11,8 @@
 |------|--------|--------|
 | 0–10 | Why not extend OAU dashboard | Agree corpus-first story |
 | 10–18 | Peer twins → modules (Study) — [`R1_PEER_TWINNING_IA_MAP.md`](./R1_PEER_TWINNING_IA_MAP.md); confirm **S7** | Twins confirmed |
-| 18–25 | GIS segment — **Q1/Q2** + **S10–S12** [`STEERING_GIS_SO1_DECISION_PACK.md`](./STEERING_GIS_SO1_DECISION_PACK.md) | Raster + polygon gates noted |
+| 15–25 | **S1/S2** — code lists + Supabase A+B [`STEERING_S1_S2_DECISION_PACK.md`](./STEERING_S1_S2_DECISION_PACK.md) | DBA go / defer; preflight sha256 |
+| 25–32 | GIS segment — **Q1/Q2** + **S10–S12** [`STEERING_GIS_SO1_DECISION_PACK.md`](./STEERING_GIS_SO1_DECISION_PACK.md) | Raster + polygon gates noted |
 | 25–35 | Walk modules §3–§7 (Evidence, Verification, Layers, Reporting desk) | Names approved |
 | 35–50 | RBAC §2 — district vs national vs reporting officer | Role list confirmed |
 | 50–58 | Route cutover §8 — what retires | Redirect plan accepted |
@@ -43,6 +44,7 @@
 - **3-row lock pilot** + `GET /api/status` (`locked_ldn_exports`)
 - **LC path** registered: `LC-NAT-STACK` (SO1-1 await **S10**)
 - **Pressure staging:** `GET /api/pressure-layers` (2804 Lat/Long — R1 layers spec, not legacy map)
+- **S2 preflight:** `GET /api/config/s2-preflight` (`phase_ab_ready`; see [`R1_API_DEMO_SCRIPT.md`](./R1_API_DEMO_SCRIPT.md))
 
 **Do not demo:** Legacy home dashboard as “the product.”
 

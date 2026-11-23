@@ -14,6 +14,7 @@ PRINCIPLES = ROOT / "LDN Database Princeples"
 
 PACK: list[tuple[str, str]] = [
     ("R1_STEERING_SIGN_OFF_PACK.md", "R1_STEERING_SIGN_OFF_PACK.docx"),
+    ("STEERING_S1_S2_DECISION_PACK.md", "STEERING_S1_S2_DECISION_PACK.docx"),
     ("STEERING_GIS_SO1_DECISION_PACK.md", "STEERING_GIS_SO1_DECISION_PACK.docx"),
     ("STEERING_MEETING_QUICK_BRIEF.md", "STEERING_MEETING_QUICK_BRIEF.docx"),
     ("STEERING_DECISIONS_QUEUE.md", "STEERING_DECISIONS_QUEUE.docx"),
@@ -24,29 +25,43 @@ PACK: list[tuple[str, str]] = [
     ("corpus/CORPUS_QC_LINEAGE.md", "CORPUS_QC_LINEAGE.docx"),
 ]
 
+BACKEND_PACK: list[tuple[str, str]] = [
+    ("S2_APPLY_PREFLIGHT.md", "S2_APPLY_PREFLIGHT.docx"),
+    ("SUPABASE_S2_STEERING_RUNBOOK.md", "SUPABASE_S2_STEERING_RUNBOOK.docx"),
+]
+
 OUT_DIR = ROOT / "exports" / "steering-docx"
+
+
+def convert_one(md: Path, out: Path, label: str) -> bool:
+    if not md.exists():
+        print(f"SKIP missing: {md}")
+        return False
+    try:
+        convert_md_to_docx(str(md), str(out))
+        return True
+    except PermissionError:
+        alt = out.with_name(out.stem + "_new.docx")
+        convert_md_to_docx(str(md), str(alt))
+        print(f"Wrote alternate (locked): {alt}")
+        return True
+    except Exception as e:
+        print(f"FAIL {label}: {e}")
+        return False
 
 
 def main() -> int:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    backend = ROOT / "backend"
     ok = 0
+    total = len(PACK) + len(BACKEND_PACK)
     for md_name, docx_name in PACK:
-        md = PRINCIPLES / md_name
-        if not md.exists():
-            print(f"SKIP missing: {md}")
-            continue
-        out = OUT_DIR / docx_name
-        try:
-            convert_md_to_docx(str(md), str(out))
+        if convert_one(PRINCIPLES / md_name, OUT_DIR / docx_name, md_name):
             ok += 1
-        except PermissionError:
-            alt = OUT_DIR / docx_name.replace(".docx", "_new.docx")
-            convert_md_to_docx(str(md), str(alt))
-            print(f"Wrote alternate (locked): {alt}")
+    for md_name, docx_name in BACKEND_PACK:
+        if convert_one(backend / md_name, OUT_DIR / docx_name, md_name):
             ok += 1
-        except Exception as e:
-            print(f"FAIL {md_name}: {e}")
-    print(f"\n{ok}/{len(PACK)} documents in {OUT_DIR} (gitignored)")
+    print(f"\n{ok}/{total} documents in {OUT_DIR} (gitignored)")
     return 0 if ok else 1
 
 

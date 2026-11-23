@@ -81,7 +81,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 **Autonomous mode:** [`AUTONOMOUS_EXECUTION.md`](./AUTONOMOUS_EXECUTION.md) — no “continue” required.
 
-**Next automatic block:** **R1 steering meeting** (DOCX + API demo) · Supabase **S2** · EMA GeoTIFF drop (S10–S12).
+**Next automatic block:** Facilitate **R1** (§9 + S1/S2/GIS packs, `npm run export:steering-docx`) · DBA **S2** after S1 · EMA GeoTIFF drop (S10–S12).
 
 **Session summary:** [`PROGRAMME_SESSION_SUMMARY_2026-11-23.md`](./PROGRAMME_SESSION_SUMMARY_2026-11-23.md)
 
