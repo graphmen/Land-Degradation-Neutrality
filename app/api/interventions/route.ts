@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
+import emaProjectsStaging from "@/public/ema-projects-import.json";
 
 const dataPath = path.join(process.cwd(), "public", "interventions-data.json");
 const modPath = path.join(process.cwd(), "public", "interventions-modifications.json");
@@ -68,8 +69,11 @@ async function syncLocalDataFile(mod: any) {
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const includeEma = searchParams.get("includeEma") === "true";
+
     const records = await loadData();
     const mod = await loadModifications();
 
@@ -96,9 +100,21 @@ export async function GET() {
       }
     }
 
+    if (includeEma) {
+      const staging = (emaProjectsStaging as { records?: unknown[] }).records || [];
+      const demoIds = new Set(reconciled.map((r: { _id?: unknown }) => String(r._id)));
+      for (const row of staging) {
+        const id = String((row as { _id?: unknown })._id);
+        if (!demoIds.has(id)) {
+          reconciled.push({ ...(row as object), _source: "ema_staging" });
+        }
+      }
+    }
+
     return NextResponse.json({
       count: reconciled.length,
       records: reconciled,
+      includeEma: includeEma,
       modificationsCount: {
         additions: mod.additions.length,
         deletions: mod.deletions.length,

@@ -32,7 +32,6 @@ const PROVINCE_DISTRICTS: Record<string, string[]> = {
 
 const LOCATIONS = getSoilSampleLocationOptions().map((o) => ({ val: o.code, label: o.label }));
 const MOISTURE_LEVELS = getSoilMoistureOptions();
-const TEXTURES = getSoilTextureOptions().map((o) => o.label);
 
 export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editingDraftId, onClearEdit }: SoilFormProps) {
   const [step, setStep] = useState(1);
@@ -335,7 +334,9 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
               <label className="form-label" style={{ fontSize: "10px" }}>Soil Texture *</label>
               <select className="form-input form-select" value={tex} onChange={(e) => setTex(e.target.value)}>
                 <option value="">-- Select Texture --</option>
-                {TEXTURES.map(t => <option key={t} value={t}>{t}</option>)}
+                {getSoilTextureOptions().map((t) => (
+                  <option key={t.code} value={t.code}>{t.label}</option>
+                ))}
               </select>
             </div>
 
