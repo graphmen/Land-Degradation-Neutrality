@@ -10,6 +10,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 |------|--------|----------|------|
 | R0 | International LDN benchmark | Blueprint + [`INTERNATIONAL_COUNTRY_DOSSIERS.md`](./INTERNATIONAL_COUNTRY_DOSSIERS.md) (11 countries) | 🔶 v0.1 |
 | R0b | National data corpus register | [`NATIONAL_DATA_CORPUS.md`](./NATIONAL_DATA_CORPUS.md) | ✅ living |
+| R0c | Peer twinning + differentiator (Study) | [`STEERING_PEER_TWINNING_RECOMMENDATION.md`](./STEERING_PEER_TWINNING_RECOMMENDATION.md) · [one-pager](./ZIMBABWE_DIFFERENTIATOR_STEERING_ONE_PAGER.md) | 🔶 confirm twins |
 | R1 | EMA UX / information architecture sign-off | Wireframes + gov brand | ⬜ |
 | R2 | New government web shell (replace OAU chrome) | Module map §4 in blueprint | ⬜ |
 | R3 | Cutover: Evidence registry default landing | Retire “telemetry dashboard” copy | ⬜ |
@@ -76,6 +77,8 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 ---
 
-**Next automatic block:** Run **`backend/APPLY_MIGRATIONS.md`** · **3.1** iOS/Capacitor · production `VITE_API_BASE_URL` on mobile builds.
+**Next automatic block:** **R1 Design** — `R1_INFORMATION_ARCHITECTURE.md` (no code). Then steering tick on twins (R0c).
+
+**Block reviews:** [Study twinning](./BLOCK_REVIEW_2026-11-23_study-peer-twinning.md) · [Discipline](./BLOCK_DISCIPLINE_60MIN.md)
 
 **Block reviews:** [ETL](./BLOCK_REVIEW_2026-11-23_phase1-etl.md) · [Mobile/imports](./BLOCK_REVIEW_2026-11-23_phase1-mobile-and-imports.md) · [Mobile codes](./BLOCK_REVIEW_2026-11-23_phase3-mobile-codes.md)
