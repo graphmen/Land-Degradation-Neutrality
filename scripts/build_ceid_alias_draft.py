@@ -19,18 +19,45 @@ def main() -> int:
     details = {d["ceid"]: d for d in report.get("unmatched_details") or []}
     unmatched = report.get("unmatched_ceids") or []
 
+    existing_by_ceid: dict[str, dict] = {}
+    if OUT.exists():
+        try:
+            prev = json.loads(OUT.read_text(encoding="utf-8"))
+            for e in prev.get("entries") or []:
+                if e.get("ceid"):
+                    existing_by_ceid[str(e["ceid"])] = e
+        except json.JSONDecodeError:
+            pass
+
+    def stats(entries: list[dict]) -> dict:
+        resolved = sum(
+            1 for e in entries if e.get("resolution") == "approved" and e.get("shapefile_id")
+        )
+        retired = sum(1 for e in entries if e.get("resolution") == "retired")
+        pending = sum(1 for e in entries if e.get("resolution") in (None, "pending_ema"))
+        return {
+            "total": len(entries),
+            "resolved": resolved,
+            "retired": retired,
+            "pending_ema": pending,
+        }
+
     entries = []
     for ceid in unmatched:
         meta = details.get(ceid, {})
+        prior = existing_by_ceid.get(ceid)
+        if prior and prior.get("resolution") in ("approved", "retired"):
+            entries.append(prior)
+            continue
         entries.append(
             {
                 "ceid": ceid,
-                "category": meta.get("category", "unknown"),
-                "shapefile_id": None,
-                "resolution": "pending_ema",
-                "notes": None,
-                "approved_by": None,
-                "approved_at": None,
+                "category": meta.get("category", prior.get("category") if prior else "unknown"),
+                "shapefile_id": prior.get("shapefile_id") if prior else None,
+                "resolution": prior.get("resolution", "pending_ema") if prior else "pending_ema",
+                "notes": prior.get("notes") if prior else None,
+                "approved_by": prior.get("approved_by") if prior else None,
+                "approved_at": prior.get("approved_at") if prior else None,
             }
         )
 
@@ -42,14 +69,13 @@ def main() -> int:
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "steering_gate": "Q2",
         "entries": entries,
-        "statistics": {
-            "total": len(entries),
-            "resolved": 0,
-            "pending_ema": len(entries),
-        },
+        "statistics": stats(entries),
     }
+    if doc["statistics"]["resolved"] > 0:
+        doc["status"] = "partial_ema_review"
     OUT.write_text(json.dumps(doc, indent=2), encoding="utf-8")
-    print(f"Wrote {OUT} ({len(entries)} pending aliases)")
+    st = doc["statistics"]
+    print(f"Wrote {OUT} — total {st['total']}, resolved {st['resolved']}, pending {st['pending_ema']}")
     return 0
 
 

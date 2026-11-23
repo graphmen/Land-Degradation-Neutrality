@@ -57,7 +57,7 @@
 
 | Quarter | Activity | Output |
 |---------|----------|--------|
-| Q1 | Desk exchange: Botswana grid methodology + Panama platform governance | Minutes in repo |
+| Q1 | Desk exchange: Botswana grid methodology + Panama platform governance | Minutes in repo · CEID study: [`STUDY_CEID_GRID_PEER_BENCHMARK.md`](./STUDY_CEID_GRID_PEER_BENCHMARK.md) |
 | Q2 | EMA workshop: legend harmonization (Colombia-style, Zimbabwe data) | Signed code list v1.0 |
 | Q3 | Pilot: one district **basin report** (Panama-style) from ZW corpus | PDF template for steering |
 | Q4 | SO1 rehearsal: 1OAO status engine (Thailand reference) | Dry-run export package |
