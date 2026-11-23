@@ -1,0 +1,29 @@
+# Programme annexes — index and session log
+
+All annexes support the **national LDN database** (Deliverable A) and **collection tools** (Deliverable B). Each annex is developed in **~60-minute blocks**, then **committed and pushed** (see [REPOSITORY_WORKFLOW.md](./REPOSITORY_WORKFLOW.md)).
+
+| Annex | File | Version | Status | SO / programme focus |
+|-------|------|---------|--------|----------------------|
+| **A** | [ANNEX_A_FIELD_MAPPING.md](./ANNEX_A_FIELD_MAPPING.md) | 0.2 | Draft — EMA sign-off pending | SO1 LDN + Soil (Kobo) |
+| **B** | [ANNEX_B_DRYLANDS_FIELD_MAPPING.md](./ANNEX_B_DRYLANDS_FIELD_MAPPING.md) | 0.1 | Draft — this session | ILUP drylands / GEF programme |
+| **C** | [ANNEX_C_SPATIAL_LAYERS_REGISTER.md](./ANNEX_C_SPATIAL_LAYERS_REGISTER.md) | 0.1 | Draft — this session | National LDN polygons + EMA layers |
+| **D** | [ANNEX_D_INTERVENTIONS_REGISTER.md](./ANNEX_D_INTERVENTIONS_REGISTER.md) | 0.1 | Draft — this session | Restoration / SO4 / counterbalancing evidence |
+
+---
+
+## Session log
+
+| Date | Duration | Outcome | Git |
+|------|----------|---------|-----|
+| 2026-11-23 | ~60 min | Annex A (LDN + Soil) | In commit `3a44813` |
+| 2026-11-23 | ~60 min | Guide v0.3, Work Plan, EMA `important files/`, Word `.docx` | In commit `3a44813` |
+| 2026-11-23 | ~60 min | Annexes B, C, D + workflow + index | *(this commit)* |
+
+---
+
+## Next sessions (planned)
+
+1. **Annex B v0.2** — EMA review; align `erosion_severity` codes (Mild vs Low); full Supabase column parity.  
+2. **Annex C v0.2** — PostGIS table names; join rules CEID ↔ `Id` polygon.  
+3. **Annex D v0.2** — Import spec from `projects.zip` / `ema_projects_*.zip`.  
+4. **Annex E (future)** — Verification workflow states + PRAIS export field list.

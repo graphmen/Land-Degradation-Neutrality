@@ -181,8 +181,9 @@ Assuming start **November 2026**; adjust after steering approval.
 | D1 | Project Development Guide | Word + Markdown | Programme charter |
 | D2 | Work Plan (this document) | Word + Markdown | Planning |
 | D3 | Annex A — field mapping | Markdown | SO1 field tier |
-| D4 | Annex B — drylands mapping | Markdown (TBD) | ILUP |
+| D4 | Annex B — drylands mapping | Markdown | ILUP |
 | D5 | Annex C — EMA spatial register | Markdown | Metadata / ISO-style |
+| D6 | Annex D — interventions register | Markdown | SO4 / restoration |
 | D6 | Code list registry | DB + export | UNCCD legend, LPD |
 | D7 | National LDN database (production) | PostGIS | Deliverable A |
 | D8 | Mobile + Kobo collection | APK + XLSForm | Deliverable B |
@@ -222,10 +223,13 @@ Full checklist duplicated in Project Guide §14.
 | Session | Focus | Output |
 |---------|-------|--------|
 | **Done** | Annex A LDN + Soil | [ANNEX_A_FIELD_MAPPING.md](./ANNEX_A_FIELD_MAPPING.md) |
-| **Next 1** | Annex B Drylands + ILUP Excel | Field map draft |
-| **Next 2** | EMA `LDN shapefiles` attribute dictionary | Annex C update |
-| **Next 3** | Code list workshop (land cover + severity) | `v0.9` code list for steering |
-| **Next 4** | ETL fix + existing sites import spec | Dev ticket + SQL sketch |
+| **Done** | Annex B Drylands ILUP | [ANNEX_B_DRYLANDS_FIELD_MAPPING.md](./ANNEX_B_DRYLANDS_FIELD_MAPPING.md) |
+| **Done** | Annex C spatial register + LDN DBF | [ANNEX_C_SPATIAL_LAYERS_REGISTER.md](./ANNEX_C_SPATIAL_LAYERS_REGISTER.md) |
+| **Done** | Annex D interventions | [ANNEX_D_INTERVENTIONS_REGISTER.md](./ANNEX_D_INTERVENTIONS_REGISTER.md) |
+| **Next 1** | Unpack `projects.zip` / invasives — extend Annex C §C.5 | Layer attributes |
+| **Next 2** | Code list workshop (land cover + severity) | `v0.9` code list for steering |
+| **Next 3** | ETL fix + existing sites import spec | Dev ticket + SQL sketch |
+| **Next 4** | Annex E — verification + PRAIS export fields | Draft |
 
 ---
 

@@ -15,7 +15,12 @@ This folder holds official UNCCD / Zimbabwe workshop materials used to align the
 |----------|----------|------------------------|
 | Project Development Guide | [`ZIMBABWE_LDN_PROJECT_GUIDE.md`](./ZIMBABWE_LDN_PROJECT_GUIDE.md) | `ZIMBABWE_LDN_PROJECT_GUIDE.docx` |
 | Work Plan | [`ZIMBABWE_LDN_WORK_PLAN.md`](./ZIMBABWE_LDN_WORK_PLAN.md) | `ZIMBABWE_LDN_WORK_PLAN.docx` |
-| Annex A — field mapping | [`ANNEX_A_FIELD_MAPPING.md`](./ANNEX_A_FIELD_MAPPING.md) | (bundled with guide pack) |
+| All annexes (index) | [`ANNEX_INDEX.md`](./ANNEX_INDEX.md) | — |
+| Annex A — LDN + Soil | [`ANNEX_A_FIELD_MAPPING.md`](./ANNEX_A_FIELD_MAPPING.md) | guide pack |
+| Annex B — Drylands | [`ANNEX_B_DRYLANDS_FIELD_MAPPING.md`](./ANNEX_B_DRYLANDS_FIELD_MAPPING.md) | guide pack |
+| Annex C — Spatial layers | [`ANNEX_C_SPATIAL_LAYERS_REGISTER.md`](./ANNEX_C_SPATIAL_LAYERS_REGISTER.md) | guide pack |
+| Annex D — Interventions | [`ANNEX_D_INTERVENTIONS_REGISTER.md`](./ANNEX_D_INTERVENTIONS_REGISTER.md) | guide pack |
+| Git safety rhythm | [`REPOSITORY_WORKFLOW.md`](./REPOSITORY_WORKFLOW.md) | — |
 
 EMA national spatial datasets: [`../important files/README.md`](../important%20files/README.md)
 

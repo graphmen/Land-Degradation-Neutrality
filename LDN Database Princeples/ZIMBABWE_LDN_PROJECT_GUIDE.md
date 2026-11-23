@@ -1,7 +1,7 @@
 # Zimbabwe LDN National Platform — Project Development Guide
 
 **Audience:** EMA technical teams, GIS/reporting officers, database administrators, and mobile field-app developers.  
-**Status:** Draft v0.3 — for EMA steering review before implementation sprints.  
+**Status:** Draft v0.4 — for EMA steering review before implementation sprints.  
 **Formats:** Markdown (source of truth in repo) + **Word** (`.docx`) for official circulation.  
 **Companion:** [ZIMBABWE_LDN_WORK_PLAN.md](./ZIMBABWE_LDN_WORK_PLAN.md)  
 **Aligned with:** UNCCD 2018–2030 Strategic Framework, SDG Indicator **15.3.1**, GPG Version 2 + **2025 Addendum**, Zimbabwe UNCCD Training & Validation Workshop (Sept 2026, Harare).
@@ -301,26 +301,26 @@ Maintain versioned code lists (DB table + JSON export for Kobo):
 
 ---
 
-## 10. Annex A — Field mapping (LDN + Soil)
+## 10. Programme annexes (field + spatial + interventions)
 
-**Working session completed (draft v0.2):** full tables, code lists from live data, and ingestion rules are in **[ANNEX_A_FIELD_MAPPING.md](./ANNEX_A_FIELD_MAPPING.md)**.
+Master index: **[ANNEX_INDEX.md](./ANNEX_INDEX.md)** · Commit after each session: **[REPOSITORY_WORKFLOW.md](./REPOSITORY_WORKFLOW.md)**
 
-Summary for steering review:
+| Annex | Title | File | Status |
+|-------|-------|------|--------|
+| A | LDN + Soil field mapping | [ANNEX_A_FIELD_MAPPING.md](./ANNEX_A_FIELD_MAPPING.md) | v0.2 draft |
+| B | ILUP Drylands field mapping | [ANNEX_B_DRYLANDS_FIELD_MAPPING.md](./ANNEX_B_DRYLANDS_FIELD_MAPPING.md) | v0.1 draft |
+| C | National spatial layers register | [ANNEX_C_SPATIAL_LAYERS_REGISTER.md](./ANNEX_C_SPATIAL_LAYERS_REGISTER.md) | v0.1 draft |
+| D | Interventions / restoration register | [ANNEX_D_INTERVENTIONS_REGISTER.md](./ANNEX_D_INTERVENTIONS_REGISTER.md) | v0.1 draft |
 
-| Area | Outcome |
-|------|---------|
-| LDN | All `geninfo` / `poidet` / `ldi` fields mapped to `ldn_field_assessment` + Supabase `ldn_validations` |
-| Soil | Repeat `sampl` mapped to `soil_sample_parent` / `soil_sample_point` + lab SOC merge fields |
-| SO1-1 | National `landcov` → UNCCD 7-class (+ retain national subclass) |
-| SO1-2 | `veg_cov`, `signs_ero`, `sev` → field verification / hotspot heuristics (not national LPD raster) |
-| SO1-3 | Depth 0–30 cm, texture, moisture, lab `organic_carbon` via CEID join |
-| Blockers | Empty LDN denormalized columns in JSON; mobile vs Kobo label mismatch; ETL `land_use` bug |
+**Annex A summary (steering):** LDN + Soil Kobo → `ldn_validations` / `soil_samples`; SO1-1/2/3 links; ETL blockers documented in §A.1.
 
-Next: EMA sign-off checklist in Annex A § A.7, then Phase 1 code lists in DB.
+**Annex B–D (this wave):** Drylands 58-question ILUP map; EMA LDN polygons (`Stable` / `Improved` / `Degraded`); interventions path from demo JSON → EMA `projects.zip`.
+
+**Next annex (future):** Verification workflow + PRAIS export field list (Annex E).
 
 ---
 
-## 11. Annex B — Key official references
+## 11. Key official references
 
 - GPG SDG 15.3.1 Version 2 + **2025 Addendum** (in this folder: `GPG_Addendum.pdf`)
 - UNCCD reporting manual (PRAIS4): https://prais4-reporting-manual.unccd.int/
@@ -329,9 +329,10 @@ Next: EMA sign-off checklist in Annex A § A.7, then Phase 1 code lists in DB.
 
 ---
 
-## 12. Annex C — EMA national spatial assets (`important files/`)
+## 12. EMA national spatial assets (`important files/`) — summary
 
-EMA provided reference layers for the national database programme. They are stored at repository root in **`important files/`** with a full register in [`important files/README.md`](../important%20files/README.md).
+Full attribute dictionary and ingest metadata: **[ANNEX_C_SPATIAL_LAYERS_REGISTER.md](./ANNEX_C_SPATIAL_LAYERS_REGISTER.md)**.  
+Folder register: [`important files/README.md`](../important%20files/README.md).
 
 | Asset | Role in national LDN database |
 |-------|-------------------------------|
@@ -352,7 +353,7 @@ Use before marking a phase complete or exporting data for PRAIS rehearsal.
 
 | Area | Check |
 |------|--------|
-| **Schema** | Field entities match Annex A; drylands annex pending |
+| **Schema** | Field entities match Annexes A + B; spatial Annex C signed by GIS |
 | **Periods** | `reporting_period` and baseline documented in config |
 | **Land cover** | National classes map to UNCCD 7-class or approved exception on record |
 | **SOC** | Depth 0–30 cm for Tier 2 soil samples; lab linkage via CEID where claimed |
@@ -384,6 +385,7 @@ Delivery is iterative: **~60-minute working sessions** produce annexes and specs
 | 0.1 | 2026-11-23 | EMA / LDN project team (draft) | Initial synthesis from workshop materials + current OAU codebase |
 | 0.2 | 2026-11-23 | EMA / LDN project team (draft) | Annex A field mapping completed (see `ANNEX_A_FIELD_MAPPING.md`) |
 | 0.3 | 2026-11-23 | EMA / LDN project team (draft) | Compliance principles, EMA spatial annex, work plan, Word editions |
+| 0.4 | 2026-11-23 | EMA / LDN project team (draft) | Annexes B–D, annex index, repository workflow |
 
 **Approval signatures:** *(pending)*  
 National Reporting Officer: _______________  
