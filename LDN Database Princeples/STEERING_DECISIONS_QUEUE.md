@@ -20,7 +20,7 @@
 ## Ready for meeting
 
 - Export rehearsal: `npm run reporting:bundle`
-- Dry-run: `npm run reporting:dry-run` · `GET /api/config/reporting-dry-run` (`locked_field_rows: 3` pilot)
+- Dry-run: `npm run reporting:dry-run` · `GET /api/config/reporting-dry-run` · `gates.lock_policy` · `GET /api/config/verification-lock-policy`
 - S1/S2 pack: `STEERING_S1_S2_DECISION_PACK.md` · S2 runbook · `npm run s2:preflight`
 - Q2 CEID: `STEERING_Q2_CEID_WORKSHOP_ONE_PAGER.md` · `npm run export:ceid-worksheet` · `GET /api/config/ceid-aliases`
 - SO1 rasters: `STUDY_SO1_NATIONAL_RASTER_DELIVERY.md` · S5: `STEERING_S5_REPORTING_PERIOD_ONE_PAGER.md`

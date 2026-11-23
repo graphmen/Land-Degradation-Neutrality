@@ -35,7 +35,8 @@ npm run r1:smoke
 | 20–22 | Reporting period | [`STEERING_S5_REPORTING_PERIOD_ONE_PAGER.md`](./STEERING_S5_REPORTING_PERIOD_ONE_PAGER.md) | **S5** |
 | 22–32 | GIS | Q1/Q2; raster study [`STUDY_SO1_NATIONAL_RASTER_DELIVERY.md`](./STUDY_SO1_NATIONAL_RASTER_DELIVERY.md); CEID workshop | **S3, S4, S10–S12** |
 | 32–44 | **Live API** | Run [`R1_API_DEMO_SCRIPT.md`](./R1_API_DEMO_SCRIPT.md) steps **1–7, 10–11** (skip pressure/interventions if time) | — |
-| 44–52 | IA wireframes | Evidence, verification queues, reporting desk — names only | **S6** |
+| 42–46 | Lock policy | [`design/VERIFICATION_LOCK_POLICY_V1.md`](./design/VERIFICATION_LOCK_POLICY_V1.md) — minimum locked counts | Policy tick |
+| 46–52 | IA wireframes | Evidence, verification queues, reporting desk — names only | **S6** |
 | 52–58 | Cutover + RBAC | §8 redirects; district vs national roles | — |
 | 58–65 | §9 sign | Go / no-go **R2** government shell | **R1** |
 

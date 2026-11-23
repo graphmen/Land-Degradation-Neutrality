@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-23T12:27:09.572962+00:00",
+  "generated_at": "2026-11-23T19:11:20.576333+00:00",
   "field_drylands": {
     "count": 16,
     "imported_at": "2026-11-23T12:14:28Z",
@@ -42,6 +42,37 @@
   },
   "reporting_gates": {
     "locked_field_rows": 3,
+    "lock_policy": {
+      "status": "draft_pending_ema_sign_off",
+      "counts": {
+        "ldn": 3,
+        "soil": 0,
+        "drylands": 0
+      },
+      "checks": [
+        {
+          "key": "ldn",
+          "locked": 3,
+          "minimum": null,
+          "met": null
+        },
+        {
+          "key": "soil",
+          "locked": 0,
+          "minimum": null,
+          "met": null
+        },
+        {
+          "key": "drylands",
+          "locked": 0,
+          "minimum": null,
+          "met": null
+        }
+      ],
+      "pass": null,
+      "mode": "pilot_rehearsal",
+      "doc": "LDN Database Princeples/design/VERIFICATION_LOCK_POLICY_V1.md"
+    },
     "steering_blockers": [
       "LDN-NAT-ALL Area unit (Q1)",
       "1OAO national LC+LPD+SOC run pending",

@@ -2,7 +2,7 @@
 
 **Platform:** National LDN Data Platform (not OAU dashboard reskin)  
 **Discipline:** ~60 min blocks · `BLOCK_REVIEW_*.md` · push to `main`  
-**Latest `main`:** through national overview field evidence (`2738b5b` session)
+**Latest `main`:** lock policy gate + R1 facilitation pack (`1883451+` session)
 
 ---
 

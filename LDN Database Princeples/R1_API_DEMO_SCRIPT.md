@@ -17,7 +17,8 @@
 | 8 | `GET /api/pressure-layers?theme=invasive` | `count` only if sensitive (national role) |
 | 9 | `GET /api/interventions?includeEma=true&includeSbc=true` | National programme points (auth) |
 | 10 | `GET /api/config/s2-preflight` | S2 Phase A+B files ready (after `npm run s2:preflight`) |
-| 11 | `GET /api/config/reporting-dry-run` | §F gates F1–F5 + `locked_field_rows` (after `npm run reporting:dry-run`) |
+| 11 | `GET /api/config/reporting-dry-run` | §F gates; `gates.lock_policy` (3 LDN locked, pilot mode) |
+| 11b | `GET /api/config/verification-lock-policy` | Draft minimums — null until steering signs |
 | 12 | `GET /api/export/meta` | EXP-META rehearsal |
 
 **Word attach:** `npm run export:steering-docx`

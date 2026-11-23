@@ -24,6 +24,7 @@
 | **S3** | LDN-NAT-ALL Area unit **Q1** | Unit: ________ | |
 | **S4** | CEID ↔ `Id` **Q2** | Rule: ________ | |
 | **S5** | Reporting period | Period: ________ | |
+| **—** | Lock policy minimums (LDN / soil / drylands): ________ | | [`VERIFICATION_LOCK_POLICY_V1.md`](./design/VERIFICATION_LOCK_POLICY_V1.md) |
 | **S6** | R1 module map | | |
 | **S7** | Peer twins | Twins: ________ | |
 | **S8** | Pressure Lat/Long policy | | |
