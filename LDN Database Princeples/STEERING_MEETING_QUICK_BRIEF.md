@@ -46,6 +46,10 @@
 
 `npm run export:steering-docx` → `exports/steering-docx/` ([`STEERING_DOCX_EXPORT.md`](./STEERING_DOCX_EXPORT.md))
 
+## Chair timeline
+
+[`R1_CHAIR_RUN_OF_SHOW.md`](./R1_CHAIR_RUN_OF_SHOW.md)
+
 ## DBA pack (S2)
 
 [`backend/SUPABASE_S2_STEERING_RUNBOOK.md`](../backend/SUPABASE_S2_STEERING_RUNBOOK.md) · `VERIFY_MIGRATIONS.sql` · `node scripts/verify_supabase_schema.mjs --checklist-only`

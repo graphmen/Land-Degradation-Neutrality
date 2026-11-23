@@ -1,7 +1,8 @@
 # R1 steering sign-off pack (facilitation)
 
 **Purpose:** Single meeting artefact for **step R1** · **Blocks:** government web shell (R2)  
-**Read first:** [`R1_INFORMATION_ARCHITECTURE.md`](./R1_INFORMATION_ARCHITECTURE.md)
+**Read first:** [`R1_INFORMATION_ARCHITECTURE.md`](./R1_INFORMATION_ARCHITECTURE.md)  
+**Chair script:** [`R1_CHAIR_RUN_OF_SHOW.md`](./R1_CHAIR_RUN_OF_SHOW.md)
 
 ---
 
