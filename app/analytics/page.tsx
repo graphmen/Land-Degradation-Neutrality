@@ -406,8 +406,16 @@ export default function AnalyticsPage() {
               <table className="gov-table" style={{ tableLayout: "fixed", minWidth: 880 }}>
                 <thead>
                   <tr>
-                    <th style={{ width: 165, background: "#eef4f0", borderRight: "2px solid #cbd7cf" }}>
-                      Baseline t₀ ↓ \ Reporting t₁ →
+                    <th
+                      style={{
+                        width: 160,
+                        background: "#eef4f0",
+                        borderRight: "2px solid #cbd7cf",
+                        whiteSpace: "normal",
+                        lineHeight: 1.25,
+                      }}
+                    >
+                      Baseline t₀ ↓ / t₁ →
                     </th>
                     {UNCCD_CLASSES.map((c) => (
                       <th key={c.code} style={{ textAlign: "center", padding: "10px 6px" }}>
