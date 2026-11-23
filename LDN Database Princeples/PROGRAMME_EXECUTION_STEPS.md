@@ -12,8 +12,8 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 | R0b | National data corpus register | [`NATIONAL_DATA_CORPUS.md`](./NATIONAL_DATA_CORPUS.md) | ✅ living |
 | R0c | Peer twinning + differentiator (Study) | [`STEERING_PEER_TWINNING_RECOMMENDATION.md`](./STEERING_PEER_TWINNING_RECOMMENDATION.md) · [`R1_PEER_TWINNING_IA_MAP.md`](./R1_PEER_TWINNING_IA_MAP.md) · [one-pager](./ZIMBABWE_DIFFERENTIATOR_STEERING_ONE_PAGER.md) | 🔶 confirm **S7** at R1 |
 | R1 | EMA UX / information architecture sign-off | [`R1_STEERING_SIGN_OFF_PACK.md`](./R1_STEERING_SIGN_OFF_PACK.md) · [`R1_API_DEMO_SCRIPT.md`](./R1_API_DEMO_SCRIPT.md) · design: reporting desk + verification workspace | 🔶 ready for meeting |
-| R2 | New government web shell (replace OAU chrome) | Module map §4 in blueprint | ⬜ |
-| R3 | Cutover: Evidence registry default landing | Retire “telemetry dashboard” copy | ⬜ |
+| R2 | New government web shell (replace OAU chrome) | Module map §4 in blueprint (`/national-overview`, `/evidence/registry`, `/verification`, `/layers`, `/analytics`, `/reporting-desk`, `/admin`) | ✅ |
+| R3 | Cutover: National overview default landing + legacy transition banner | Retire “telemetry dashboard” copy | ✅ |
 
 **Rule:** No more cosmetic patches on the old dashboard until **R1** is signed. Backend/mobile work continues.
 

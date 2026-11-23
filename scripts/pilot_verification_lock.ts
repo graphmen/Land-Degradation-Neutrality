@@ -115,7 +115,7 @@ async function main() {
 
   const countArg = process.argv.find((a) => a.startsWith("--count="));
   const count = countArg ? parseInt(countArg.split("=")[1], 10) : 3;
-  const records = (ldnData as { records: { kobo_id?: string; id?: string }[] }).records;
+  const records = (ldnData as unknown as { records: { kobo_id?: string; id?: string | number }[] }).records;
   const ids = records
     .slice(0, count)
     .map((r) => String(r.kobo_id ?? r.id))

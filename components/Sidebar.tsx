@@ -20,6 +20,15 @@ export default function Sidebar({ isCollapsed }: SidebarProps) {
   return (
     <nav className={`global-sidebar ${isCollapsed ? "collapsed" : ""}`}>
       <div className="sidebar-menu">
+        {/* National LDN Platform (Phase R2) */}
+        <div className="sidebar-section">
+          {!isCollapsed && <div className="sidebar-section-title">EMA Platform (R2)</div>}
+          <Link href="/national-overview" className="nav-item" title="National LDN Platform (R2)">
+            <span className="nav-icon">🏛️</span>
+            {!isCollapsed && <span className="nav-label">National Overview (R2)</span>}
+          </Link>
+        </div>
+
         {/* Operations Section */}
         <div className="sidebar-section">
           {!isCollapsed && <div className="sidebar-section-title">Operations</div>}

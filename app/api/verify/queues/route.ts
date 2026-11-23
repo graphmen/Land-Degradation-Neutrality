@@ -27,7 +27,7 @@ export async function GET(req: Request): Promise<NextResponse> {
   const queue = searchParams.get("queue") ?? undefined;
   if (queue && !VALID_QUEUES.has(queue)) {
     return NextResponse.json(
-      { error: "Invalid queue", valid: [...VALID_QUEUES] },
+      { error: "Invalid queue", valid: Array.from(VALID_QUEUES) },
       { status: 400 }
     );
   }

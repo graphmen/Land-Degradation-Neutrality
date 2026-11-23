@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import "./globals.css";
+import "./gov-platform.css";
 
 export const metadata: Metadata = {
   title: "Zimbabwe LDN - Environmental Intelligence Platform",

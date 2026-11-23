@@ -42,7 +42,7 @@ async function loadJson<T>(rel: string): Promise<T | null> {
 export async function buildR1Readiness(): Promise<R1ReadinessPackage> {
   const qc = await loadJson<{
     generated_at?: string;
-    field_ldn?: { ceid_match_rate?: number };
+    field_ldn?: { ceid_match_rate?: number; records_with_ceid?: number };
     field_drylands?: { count?: number };
     reporting_gates?: { locked_field_rows?: number };
   }>("public/qc-programme-summary.json");
