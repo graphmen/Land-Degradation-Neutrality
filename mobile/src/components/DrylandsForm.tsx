@@ -3,7 +3,12 @@ import { MapPin, Save, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react
 import { Geolocation } from "@capacitor/geolocation";
 import { saveDrylandsDraft, getDrylandsDraft } from "../lib/db";
 import type { DrylandsDraft } from "../lib/db";
-import { getDrylandsErosionSeverityOptions } from "../lib/code-lists";
+import {
+  CODE_LIST_VERSION,
+  getDrylandsErosionSeverityCode,
+  getDrylandsErosionSeverityLabel,
+  getDrylandsErosionSeverityOptions,
+} from "../lib/code-lists";
 
 interface DrylandsFormProps {
   onSuccess: (message: string) => void;
@@ -19,7 +24,7 @@ const SOIL_TYPES = ["Jecha (Sandy)", "Red sandy clay", "Very sandy infertile soi
 const AREA_TYPES = ["Arable", "Grazing", "Wetland", "Forest/Woodland", "Other"];
 const LAND_COVERS = ["Cropland", "Grassland", "Woodland", "Bare Land", "Wetland Vegetation"];
 const EROSION_TYPES = ["Sheet", "Rill", "Gully"];
-const EROSION_SEVERITIES = ["None", ...getDrylandsErosionSeverityOptions()];
+const EROSION_SEVERITIES = getDrylandsErosionSeverityOptions();
 const WATER_SOURCES = ["Borehole", "River", "Wetland", "Stream", "Seasonal water point", "Other"];
 const WATER_QUALITIES = ["Clear", "Slightly Turbid", "Highly Silted"];
 const CLIMATE_INDICATORS = ["Prolonged dry spells", "Failed crops", "Drying wetlands", "Reduced stream flow", "Other"];
@@ -127,7 +132,9 @@ export default function DrylandsForm({ onSuccess, onError, onNavigateToQueue, ed
           setCurrentLandCoverOther(draft.current_land_cover_other || "");
           setSoilErosionPresent(draft.soil_erosion_present || "No");
           setTypeOfErosion(draft.type_of_erosion || []);
-          setErosionSeverity(draft.erosion_severity || EROSION_SEVERITIES[0]);
+          setErosionSeverity(
+            getDrylandsErosionSeverityLabel(draft.erosion_severity || EROSION_SEVERITIES[0])
+          );
           setGullyDimensions(draft.gully_dimensions || "");
           setErosionExpanding(draft.erosion_expanding || "No");
           setAssetsThreatened(draft.assets_threatened || []);
@@ -260,7 +267,8 @@ export default function DrylandsForm({ onSuccess, onError, onNavigateToQueue, ed
       current_land_cover_other: currentLandCoverOther,
       soil_erosion_present: soilErosionPresent,
       type_of_erosion: typeOfErosion,
-      erosion_severity: erosionSeverity,
+      erosion_severity: getDrylandsErosionSeverityCode(erosionSeverity),
+      code_list_version: CODE_LIST_VERSION,
       gully_dimensions: gullyDimensions,
       erosion_expanding: erosionExpanding,
       assets_threatened: assetsThreatened,

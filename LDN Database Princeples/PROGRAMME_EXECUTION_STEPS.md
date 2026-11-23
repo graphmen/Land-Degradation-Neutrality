@@ -24,7 +24,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 |------|--------|--------|------|
 | 1.1 | Import monitoring sites XLS | `public/reference-monitoring-sites.json` | ✅ this session |
 | 1.2 | API governance fields on reads | `lib/compliance-metadata.ts` + `/api/*` | ✅ this session |
-| 1.3 | Code list v1.0 in database | `backend/migrations/001_reference_code_lists.sql` | 🔶 SQL drafted (not applied) |
+| 1.3 | Code list v1.0 in database | `001_reference_code_lists.sql` + `001_reference_code_lists_seed.sql` | 🔶 ready to apply |
 | 1.4 | Fix LDN denormalized ETL | `land_cover` / `land_use` in cache | ✅ 150/150 |
 | 1.5 | Drylands erosion `Mild` → `low` on import | API read + Excel import | ✅ |
 | 1.6 | Mobile forms use `reference-code-lists` | All three main forms (bundled JSON) | ✅ |
@@ -47,7 +47,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 | Step | Action |
 |------|--------|
 | 3.1 | iOS build + TestFlight / internal testing |
-| 3.2 | Align severity/land-cover labels to Annex F |
+| 3.2 | Align severity/land-cover labels to Annex F | 🔶 codes on save (LDN, drylands, soil moisture) |
 | 3.3 | Validator ↔ national polygon `Id` join (after GIS workshop) |
 
 ---
@@ -62,6 +62,6 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 ---
 
-**Next automatic block:** **2.1** PostGIS LDN units stub · interventions API read staging · EMA one-pager for step 0.7.
+**Next automatic block:** Supabase **001/002** apply · **2.1** polygon load after EMA · **3.1** iOS · LDN **land use** code list.
 
-**Block reviews:** [ETL](./BLOCK_REVIEW_2026-11-23_phase1-etl.md) · [Mobile/imports](./BLOCK_REVIEW_2026-11-23_phase1-mobile-and-imports.md)
+**Block reviews:** [ETL](./BLOCK_REVIEW_2026-11-23_phase1-etl.md) · [Mobile/imports](./BLOCK_REVIEW_2026-11-23_phase1-mobile-and-imports.md) · [Mobile codes](./BLOCK_REVIEW_2026-11-23_phase3-mobile-codes.md)

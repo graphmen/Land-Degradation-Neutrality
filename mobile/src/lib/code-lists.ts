@@ -5,32 +5,68 @@ import codeLists from "../../public/reference-code-lists.v0.9.json";
 
 export const CODE_LIST_VERSION = codeLists.version;
 
-type ListEntry = { code: string; label: string; legacy_codes?: string[]; legacy_labels?: string[] };
+type ListEntry = {
+  code: string;
+  label: string;
+  legacy_codes?: string[];
+  legacy_labels?: string[];
+};
 
 function valuesOf(key: string): ListEntry[] {
   const lists = (codeLists as { lists: Record<string, { values: ListEntry[] }> }).lists;
   return lists[key]?.values ?? [];
 }
 
+function findInList(key: string, codeOrLabel: string): ListEntry | undefined {
+  if (!codeOrLabel) return undefined;
+  const needle = codeOrLabel.trim().toLowerCase();
+  return valuesOf(key).find(
+    (v) =>
+      v.code.toLowerCase() === needle ||
+      v.label.toLowerCase() === needle ||
+      v.legacy_codes?.some((c) => c.toLowerCase() === needle) ||
+      v.legacy_labels?.some((l) => l.toLowerCase() === needle)
+  );
+}
+
 export function getLdnSeverityOptions(): string[] {
   return valuesOf("ldn_severity").map((v) => v.label);
 }
 
-export function getLdnSeverityCode(label: string): string {
-  const found = valuesOf("ldn_severity").find((v) => v.label === label);
-  return found?.code ?? label.toLowerCase();
+export function getLdnSeverityCode(value: string): string {
+  return findInList("ldn_severity", value)?.code ?? value.toLowerCase();
+}
+
+export function getLdnSeverityLabel(value: string): string {
+  return findInList("ldn_severity", value)?.label ?? value;
 }
 
 export function getLdnLandCoverOptions(): { code: string; label: string }[] {
   return valuesOf("ldn_land_cover_mobile_labels");
 }
 
+export function getLdnLandCoverCode(value: string): string {
+  return findInList("ldn_land_cover_mobile_labels", value)?.code ?? value;
+}
+
+export function getLdnLandCoverLabel(value: string): string {
+  return findInList("ldn_land_cover_mobile_labels", value)?.label ?? value;
+}
+
 export function getSoilTextureOptions(): { code: string; label: string }[] {
   return valuesOf("soil_texture");
 }
 
-export function getSoilMoistureOptions(): string[] {
-  return valuesOf("soil_moisture").map((v) => v.label);
+export function getSoilMoistureOptions(): { code: string; label: string }[] {
+  return valuesOf("soil_moisture");
+}
+
+export function getSoilMoistureCode(value: string): string {
+  return findInList("soil_moisture", value)?.code ?? value.toLowerCase();
+}
+
+export function getSoilMoistureLabel(value: string): string {
+  return findInList("soil_moisture", value)?.label ?? value;
 }
 
 export function getSoilSampleLocationOptions(): { code: string; label: string }[] {
@@ -39,4 +75,12 @@ export function getSoilSampleLocationOptions(): { code: string; label: string }[
 
 export function getDrylandsErosionSeverityOptions(): string[] {
   return valuesOf("drylands_erosion_severity").map((v) => v.label);
+}
+
+export function getDrylandsErosionSeverityCode(value: string): string {
+  return findInList("drylands_erosion_severity", value)?.code ?? value.toLowerCase();
+}
+
+export function getDrylandsErosionSeverityLabel(value: string): string {
+  return findInList("drylands_erosion_severity", value)?.label ?? value;
 }

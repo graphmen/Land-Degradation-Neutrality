@@ -28,6 +28,7 @@
     "drylands_erosion_severity": {
       "description": "ILUP drylands — map Mild to Low for national consistency",
       "values": [
+        { "code": "none", "label": "None", "legacy_labels": ["None"] },
         { "code": "low", "label": "Low", "legacy_labels": ["Low", "Mild"] },
         { "code": "moderate", "label": "Moderate", "legacy_labels": ["Moderate"] },
         { "code": "severe", "label": "Severe", "legacy_labels": ["Severe"] }

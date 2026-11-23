@@ -20,6 +20,7 @@ export interface LdnDraft {
   sev: string;
   oth?: string;
   im?: string; // base64 photo
+  code_list_version?: string;
   synced: boolean;
   createdAt: number;
 }
@@ -41,6 +42,7 @@ export interface SoilDraft {
   Team: string;
   ceid: string;
   cores: SoilCoreDraft[]; // repeatable list of cores
+  code_list_version?: string;
   synced: boolean;
   createdAt: number;
 }
@@ -105,6 +107,7 @@ export interface DrylandsDraft {
   photo_2?: string; // base64
   photo_3?: string; // base64
   additional_notes?: string;
+  code_list_version?: string;
   synced: boolean;
   createdAt: number;
 }

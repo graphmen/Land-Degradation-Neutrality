@@ -4,6 +4,9 @@ import { Geolocation } from "@capacitor/geolocation";
 import { saveSoilDraft, getSoilDraft } from "../lib/db";
 import type { SoilDraft, SoilCoreDraft } from "../lib/db";
 import {
+  CODE_LIST_VERSION,
+  getSoilMoistureCode,
+  getSoilMoistureLabel,
   getSoilMoistureOptions,
   getSoilSampleLocationOptions,
   getSoilTextureOptions,
@@ -142,9 +145,9 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
       samloc,
       poin: coreGps,
       dep: Number(dep),
-      moisture,
+      moisture: moisture ? getSoilMoistureCode(moisture) : "",
       col,
-      tex
+      tex,
     };
 
     setCores(prev => [...prev, newCore]);
@@ -186,6 +189,7 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
       Team: team,
       ceid,
       cores,
+      code_list_version: CODE_LIST_VERSION,
       synced: false,
       createdAt: Date.now()
     };
@@ -281,7 +285,7 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
                     <div style={{ fontSize: "11px", color: "var(--text-muted)", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
                       <div>Depth: <strong>{c.dep} cm</strong></div>
                       <div>Texture: <strong>{c.tex}</strong></div>
-                      <div>Moisture: <strong>{c.moisture || "—"}</strong></div>
+                      <div>Moisture: <strong>{c.moisture ? getSoilMoistureLabel(c.moisture) : "—"}</strong></div>
                       <div>Color: <strong>{c.col || "—"}</strong></div>
                     </div>
                   </div>
@@ -326,7 +330,9 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
               <label className="form-label" style={{ fontSize: "10px" }}>Moisture Status</label>
               <select className="form-input form-select" value={moisture} onChange={(e) => setMoisture(e.target.value)}>
                 <option value="">-- Select Moisture --</option>
-                {MOISTURE_LEVELS.map(m => <option key={m} value={m}>{m}</option>)}
+                {MOISTURE_LEVELS.map((m) => (
+                  <option key={m.code} value={m.code}>{m.label}</option>
+                ))}
               </select>
             </div>
 

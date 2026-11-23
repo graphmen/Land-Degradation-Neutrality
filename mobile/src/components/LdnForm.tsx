@@ -4,7 +4,15 @@ import { Geolocation } from "@capacitor/geolocation";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import { saveLdnDraft, getLdnDraft } from "../lib/db";
 import type { LdnDraft } from "../lib/db";
-import { getLdnLandCoverOptions, getLdnSeverityOptions } from "../lib/code-lists";
+import {
+  CODE_LIST_VERSION,
+  getLdnLandCoverCode,
+  getLdnLandCoverLabel,
+  getLdnLandCoverOptions,
+  getLdnSeverityCode,
+  getLdnSeverityLabel,
+  getLdnSeverityOptions,
+} from "../lib/code-lists";
 
 interface LdnFormProps {
   onSuccess: (message: string) => void;
@@ -97,7 +105,7 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
           setTeam(draft.Team || "");
           setGps(draft.GPS || "");
           setCeid(draft.ceid || "");
-          setLandcov(draft.landcov || "");
+          setLandcov(getLdnLandCoverLabel(draft.landcov || ""));
           setLandus(draft.landus || "");
           setUseSpec(draft.use_spec || "");
           setLndmat(draft.lndmat || "");
@@ -105,7 +113,7 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
           setVegCov(draft.veg_cov || "");
           setSignsEro(draft.signs_ero || []);
           setTree(draft.tree || []);
-          setSev(draft.sev || "");
+          setSev(getLdnSeverityLabel(draft.sev || ""));
           setOth(draft.oth || "");
           setIm(draft.im || "");
           
@@ -254,7 +262,7 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
       Team: team,
       GPS: gps,
       ceid,
-      landcov,
+      landcov: getLdnLandCoverCode(landcov),
       landus,
       use_spec: landus === "Other" ? useSpec : undefined,
       lndmat,
@@ -262,9 +270,10 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
       veg_cov: vegCov,
       signs_ero: signsEro,
       tree: signsEro.includes("trecut") ? tree : undefined,
-      sev,
+      sev: getLdnSeverityCode(sev),
       oth,
       im: im || undefined,
+      code_list_version: CODE_LIST_VERSION,
       synced: false,
       createdAt: Date.now()
     };
