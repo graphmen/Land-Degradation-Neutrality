@@ -15,6 +15,7 @@ const R2_PREFIXES = [
   "/layers",
   "/analytics",
   "/admin",
+  "/drylands",
 ];
 
 function isR2Route(pathname: string | null): boolean {

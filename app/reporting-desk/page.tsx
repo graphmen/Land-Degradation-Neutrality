@@ -7,10 +7,13 @@ import {
   CheckCircle2,
   ClipboardCheck,
   Download,
+  ListChecks,
   Lock,
   RefreshCw,
   ShieldAlert,
+  ShieldCheck,
 } from "lucide-react";
+import { useGovPlatform } from "@/components/GovPlatformContext";
 
 type DryRunPayload = {
   dry_run_at?: string;
@@ -59,9 +62,12 @@ const EXPORT_JOBS = [
 ];
 
 export default function ReportingDeskPage() {
+  const { period, role, permissions } = useGovPlatform();
   const [dryRun, setDryRun] = useState<DryRunPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [attestationNote, setAttestationNote] = useState("");
+  const [attestedAt, setAttestedAt] = useState<string | null>(null);
 
   const loadDryRun = async () => {
     setLoading(true);
@@ -100,9 +106,90 @@ export default function ReportingDeskPage() {
   const gatesList = Object.entries(dryRun.section_F ?? {});
   const lockPolicy = dryRun.gates?.lock_policy;
   const blockers = dryRun.gates?.steering_blockers ?? [];
+  const f1Pass = dryRun.section_F?.F1_EXP_META?.pass === true;
+  const f2Pass = dryRun.section_F?.F2_EXP_SO1_FIELD?.pass === true;
+  const f7Hash = dryRun.section_F?.F7_REPORTING_BUNDLE?.manifest_sha256 ?? "—";
+
+  const gpgSections = [
+    {
+      code: "A",
+      title: "Governance (before numbers)",
+      status: "partial",
+      items: [
+        "A1: Reporting officer RACI defined in steering pack",
+        `A2: Active reporting period tagged (${period} · baseline t0_end_2015)`,
+        "A3: Annex F code list v0.9-draft ready for v1.0 sign-off (S1)",
+        "A5: LC raster authority (S10) pending steering confirmation",
+      ],
+    },
+    {
+      code: "B",
+      title: "National Corpus Ready (Deliverable A)",
+      status: "partial",
+      items: [
+        "B0–B0c: LC/LPD/SOC national GeoTIFFs awaiting S10–S12 drop",
+        "B1: LDN-NAT-ALL (254,873 polygons) plan + QC ready (Q1/Q2 pending)",
+        `B2: Field LDN locked count = ${dryRun.gates?.locked_field_rows ?? 0} (pilot)`,
+        "B3–B7: Soil (632), Drylands (16), EMA projects (47), SBC (1,367), Pressures (2,804), REF-SITES (28)",
+      ],
+    },
+    {
+      code: "C",
+      title: "PRAIS 4 SO1 Table Map",
+      status: "ready",
+      items: [
+        "SO1-1 Land Cover → EXP-SO1-LC (7-class UNCCD matrix)",
+        "SO1-2 Productivity → EXP-SO1-LPD (4-class LPD summary)",
+        "SO1-3 SOC → EXP-SO1-SOC (Tier-1 surface + 632 Tier-2 cores)",
+        "SO1-4 Status → EXP-SO1-STATUS + Annex II Metadata (EXP-META)",
+      ],
+    },
+    {
+      code: "D",
+      title: "UNCCD GPG v2 Method Compliance",
+      status: "partial",
+      items: [
+        "D1: Baseline period end 2015 (t0_end_2015) tagged on exports",
+        "D2: One-Out-All-Out (1OAO) logic flagged interim until S10–S12",
+        "D3–D4: 7-class UNCCD land cover legend + 49-cell transition matrix",
+        "D5–D6: Data Tier (Tier 1/2/3) & Confidence labelled on all 13 corpus rows",
+      ],
+    },
+    {
+      code: "E",
+      title: "Internal Verification Gate",
+      status: f2Pass ? "ready" : "partial",
+      items: [
+        "E1: PRAIS-eligible filter enforces verification_status = locked only",
+        "E2: Audit trail recorded via verification_log on every transition",
+        "E3: code_list_version stamped on mobile + API records",
+        "E4: Field photo manifest (EXP-PHOTOS · 147 rows) linked",
+      ],
+    },
+    {
+      code: "F & G",
+      title: "Export Dry-Run & PRAIS Handoff",
+      status: f1Pass && f2Pass ? "partial" : "blocked",
+      items: [
+        `F1/F2/F6/F7: Rehearsal packages passing (Manifest SHA-256: ${f7Hash.slice(0, 14)}…)`,
+        "F3–F5: Blocked on S10–S12 national raster delivery",
+        "G1–G4: Target PRAIS 4 submission November 2026; freeze locked snapshot before upload",
+      ],
+    },
+  ];
 
   return (
     <>
+      {!permissions.canAccessReportingDesk && (
+        <div className="gov-alert gov-alert-amber">
+          <Lock size={16} style={{ flexShrink: 0, marginTop: 2 }} />
+          <span>
+            <strong>RBAC Read-Only Notice ({role}):</strong> Reporting Desk export attestation is
+            restricted to the <strong>National Reporting Officer</strong> (R1 §5). Switch role in
+            the top header to test officer permissions.
+          </span>
+        </div>
+      )}
       <div className="gov-page-header">
         <div>
           <h1 className="gov-page-title">Reporting Desk — UNCCD PRAIS SO1 Rehearsal</h1>
@@ -271,6 +358,94 @@ export default function ReportingDeskPage() {
             </a>
           ))}
         </div>
+      </div>
+
+      {/* UNCCD GPG v2 & PRAIS 4 Checklist (Sections A–G) */}
+      <div className="gov-card">
+        <div className="gov-card-header">
+          <div className="gov-card-title">
+            <ListChecks size={17} /> UNCCD GPG v2 / PRAIS 4 Compliance Checklist (Sections A–G)
+          </div>
+          <span className="gov-badge gov-badge-blue">Baseline: end 2015 · Cycle: {period}</span>
+        </div>
+
+        <div className="gov-grid-2">
+          {gpgSections.map((sec) => (
+            <div key={sec.code} className="gov-card" style={{ background: "#f9fbfa", padding: 14 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 8,
+                }}
+              >
+                <strong style={{ fontSize: 13 }}>
+                  Section {sec.code} — {sec.title}
+                </strong>
+                <span
+                  className={`gov-badge ${
+                    sec.status === "ready"
+                      ? "gov-badge-green"
+                      : sec.status === "partial"
+                        ? "gov-badge-amber"
+                        : "gov-badge-red"
+                  }`}
+                >
+                  {sec.status === "ready" ? "READY" : "IN PROGRESS"}
+                </span>
+              </div>
+              <ul style={{ margin: "0 0 0 16px", padding: 0, fontSize: 12, color: "#3d5246", lineHeight: 1.55 }}>
+                {sec.items.map((it, idx) => (
+                  <li key={idx}>{it}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Officer Rehearsal Handoff Attestation */}
+      <div className="gov-card">
+        <div className="gov-card-header">
+          <div className="gov-card-title">
+            <ShieldCheck size={17} /> PRAIS Rehearsal Handoff Attestation
+          </div>
+          <span className="gov-mono" style={{ color: "#556b5e" }}>
+            Bundle SHA-256: {f7Hash.slice(0, 18)}…
+          </span>
+        </div>
+
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+          <input
+            type="text"
+            className="gov-input"
+            style={{ flex: "1 1 280px" }}
+            placeholder="Attestation note (e.g. Verified F1/F2 rehearsal hashes for EMA steering)…"
+            value={attestationNote}
+            onChange={(e) => setAttestationNote(e.target.value)}
+            disabled={!permissions.canApproveOrLock}
+          />
+          <button
+            type="button"
+            className="gov-btn gov-btn-primary"
+            disabled={!permissions.canApproveOrLock || !attestationNote.trim()}
+            onClick={() => setAttestedAt(new Date().toISOString())}
+          >
+            Record Rehearsal Attestation
+          </button>
+        </div>
+
+        {attestedAt && (
+          <div className="gov-alert gov-alert-green" style={{ marginTop: 10 }}>
+            <CheckCircle2 size={15} />
+            <span>
+              Rehearsal attested by <strong>{role}</strong> at{" "}
+              {new Date(attestedAt).toLocaleString()} for period <strong>{period}</strong> — “
+              {attestationNote}”
+            </span>
+          </div>
+        )}
       </div>
     </>
   );

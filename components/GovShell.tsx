@@ -15,7 +15,15 @@ import {
   PanelLeftOpen,
   ArrowUpRight,
   Sprout,
+  Shield,
 } from "lucide-react";
+import {
+  EMA_ROLE_META,
+  GovPlatformProvider,
+  useGovPlatform,
+  type EmaRole,
+  type ReportingPeriodOption,
+} from "./GovPlatformContext";
 
 const PRIMARY_NAV = [
   {
@@ -44,6 +52,11 @@ const PRIMARY_NAV = [
     icon: BarChart3,
   },
   {
+    href: "/drylands",
+    label: "Drylands (ILUP)",
+    icon: Sprout,
+  },
+  {
     href: "/reporting-desk",
     label: "Reporting Desk",
     icon: FileCheck2,
@@ -56,13 +69,13 @@ const PRIMARY_NAV = [
 ];
 
 const LEGACY_LINKS = [
-  { href: "/drylands", label: "Drylands (ILUP)" },
   { href: "/database", label: "Legacy Explorer" },
 ];
 
-export default function GovShell({ children }: { children: React.ReactNode }) {
+function GovShellInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const { period, setPeriod, role, setRole } = useGovPlatform();
 
   const isActive = (href: string) =>
     pathname === href || pathname?.startsWith(`${href}/`);
@@ -93,11 +106,58 @@ export default function GovShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <div className="gov-header-right">
-          <span className="gov-period-pill" title="Active UNCCD PRAIS reporting period">
+          <label className="gov-period-pill" title="Active UNCCD PRAIS reporting period">
             <span className="gov-period-dot" />
-            Period: 2020-2023
-          </span>
-          <span className="gov-phase-tag">R2 Gov Shell</span>
+            <span>Period:</span>
+            <select
+              value={period}
+              onChange={(e) => setPeriod(e.target.value as ReportingPeriodOption)}
+              aria-label="Reporting period"
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "#ffffff",
+                fontWeight: 700,
+                fontSize: 12,
+                outline: "none",
+                cursor: "pointer",
+              }}
+            >
+              <option value="2020-2023" style={{ color: "#102117" }}>
+                2020-2023 (PRAIS 4 Active)
+              </option>
+              <option value="2000-2015" style={{ color: "#102117" }}>
+                2000-2015 (UNCCD Baseline)
+              </option>
+              <option value="2022-2025" style={{ color: "#102117" }}>
+                2022-2025 (Next Cycle)
+              </option>
+            </select>
+          </label>
+
+          <label className="gov-period-pill" title="Active EMA RBAC Role (R1 §2)">
+            <Shield size={12} color="#fde68a" />
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value as EmaRole)}
+              aria-label="Active EMA RBAC role"
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "#fde68a",
+                fontWeight: 700,
+                fontSize: 12,
+                outline: "none",
+                cursor: "pointer",
+              }}
+            >
+              {(Object.keys(EMA_ROLE_META) as EmaRole[]).map((key) => (
+                <option key={key} value={key} style={{ color: "#102117" }}>
+                  {EMA_ROLE_META[key].label}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
       </header>
 
@@ -133,11 +193,7 @@ export default function GovShell({ children }: { children: React.ReactNode }) {
                 className="gov-nav-link"
                 title={item.label}
               >
-                {item.href === "/drylands" ? (
-                  <Sprout size={16} style={{ flexShrink: 0 }} />
-                ) : (
-                  <ArrowUpRight size={16} style={{ flexShrink: 0 }} />
-                )}
+                <ArrowUpRight size={16} style={{ flexShrink: 0 }} />
                 <span className="gov-nav-text">{item.label}</span>
               </Link>
             ))}
@@ -145,7 +201,7 @@ export default function GovShell({ children }: { children: React.ReactNode }) {
 
           <div className="gov-sidebar-footer">
             <div className="gov-sidebar-footer-text">
-              <div>Corpus-first governance</div>
+              <div>UNCCD GPG v2 · PRAIS 4</div>
               <div>Annex F code lists v0.9-draft</div>
             </div>
           </div>
@@ -158,8 +214,18 @@ export default function GovShell({ children }: { children: React.ReactNode }) {
 
       <footer className="gov-footer">
         <span>© {new Date().getFullYear()} Environmental Management Agency (EMA), Zimbabwe</span>
-        <span>Phase R2 · Evidence-first architecture · PRAIS rehearsal ready</span>
+        <span>
+          Role: {EMA_ROLE_META[role].label} · Period: {period} · Baseline: t0_end_2015
+        </span>
       </footer>
     </div>
+  );
+}
+
+export default function GovShell({ children }: { children: React.ReactNode }) {
+  return (
+    <GovPlatformProvider>
+      <GovShellInner>{children}</GovShellInner>
+    </GovPlatformProvider>
   );
 }

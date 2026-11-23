@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import type { CorpusLayerRow } from "@/lib/corpus-manifest";
 import type { GovMapPoint } from "@/components/GovPointMap";
+import { useGovPlatform } from "@/components/GovPlatformContext";
 
 const GovPointMap = dynamic(() => import("@/components/GovPointMap"), { ssr: false });
 
@@ -37,6 +38,7 @@ const STATUS_CLASS: Record<string, string> = {
 };
 
 export default function NationalLayersPage() {
+  const { role, permissions } = useGovPlatform();
   const [data, setData] = useState<CorpusLayersPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,13 +49,45 @@ export default function NationalLayersPage() {
   const [selected, setSelected] = useState<CorpusLayerRow | null>(null);
 
   const [showMap, setShowMap] = useState(false);
-  const [mapTheme, setMapTheme] = useState<"invasive" | "illegal_mining">("invasive");
+  const [mapTheme, setMapTheme] = useState<"ref_sites" | "invasive" | "illegal_mining">("ref_sites");
   const [mapPoints, setMapPoints] = useState<GovMapPoint[]>([]);
   const [mapLoading, setMapLoading] = useState(false);
 
-  const loadStagingMap = async (theme: "invasive" | "illegal_mining") => {
+  const loadStagingMap = async (theme: "ref_sites" | "invasive" | "illegal_mining") => {
     setMapLoading(true);
     try {
+      if (theme === "ref_sites") {
+        const res = await fetch("/api/reference/monitoring-sites", { cache: "no-store" });
+        if (!res.ok) return;
+        const json = (await res.json()) as {
+          records?: Array<{
+            id?: number;
+            site_name?: string;
+            district?: string;
+            lat?: number;
+            lng?: number;
+          }>;
+        };
+        setMapPoints(
+          (json.records ?? [])
+            .filter((r) => typeof r.lat === "number" && typeof r.lng === "number")
+            .map((r, i) => ({
+              id: String(r.id ?? i),
+              lat: r.lat as number,
+              lng: r.lng as number,
+              title: r.site_name ?? `Site ${r.id}`,
+              subtitle: `REF-SITES · ${r.district ?? "Zimbabwe"}`,
+              color: "#146c38",
+            }))
+        );
+        return;
+      }
+
+      if (theme === "illegal_mining" && !permissions.canViewRestrictedLayers) {
+        setMapPoints([]);
+        return;
+      }
+
       const res = await fetch(`/api/pressure-layers?theme=${theme}`, { cache: "no-store" });
       if (!res.ok) return;
       const json = (await res.json()) as {
@@ -89,7 +123,8 @@ export default function NationalLayersPage() {
     if (showMap) {
       loadStagingMap(mapTheme);
     }
-  }, [showMap, mapTheme]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showMap, mapTheme, permissions.canViewRestrictedLayers]);
 
   const loadLayers = async () => {
     setLoading(true);
@@ -168,9 +203,18 @@ export default function NationalLayersPage() {
         <div className="gov-card">
           <div className="gov-card-header">
             <div className="gov-card-title">
-              <MapPin size={16} /> Staging Layer Spatial Preview (sample up to 400 pts)
+              <MapPin size={16} /> Governed Spatial Layer Preview
             </div>
-            <div style={{ display: "flex", gap: 8 }}>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <button
+                type="button"
+                className={`gov-btn gov-btn-sm ${
+                  mapTheme === "ref_sites" ? "gov-btn-primary" : ""
+                }`}
+                onClick={() => setMapTheme("ref_sites")}
+              >
+                REF-SITES (28)
+              </button>
               <button
                 type="button"
                 className={`gov-btn gov-btn-sm ${
@@ -186,13 +230,27 @@ export default function NationalLayersPage() {
                   mapTheme === "illegal_mining" ? "gov-btn-danger" : ""
                 }`}
                 onClick={() => setMapTheme("illegal_mining")}
+                disabled={!permissions.canViewRestrictedLayers}
+                title={
+                  permissions.canViewRestrictedLayers
+                    ? "View restricted illegal mining layer"
+                    : "Restricted to National Reporting Officer & GIS Lead"
+                }
               >
                 <Lock size={12} /> PRESS-MINING (Restricted)
               </button>
             </div>
           </div>
-          {mapLoading ? (
-            <div className="gov-metric-sub">Loading staging coordinates…</div>
+          {mapTheme === "illegal_mining" && !permissions.canViewRestrictedLayers ? (
+            <div className="gov-alert gov-alert-red">
+              <Lock size={16} />
+              <span>
+                <strong>RBAC Restricted ({role}):</strong> PRESS-MINING is restricted to National
+                Reporting Officer, GIS Lead, and ICT/DBA roles per R1 §5.
+              </span>
+            </div>
+          ) : mapLoading ? (
+            <div className="gov-metric-sub">Loading coordinates…</div>
           ) : (
             <GovPointMap points={mapPoints} height={360} />
           )}

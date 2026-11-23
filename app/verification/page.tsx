@@ -2,9 +2,11 @@
 
 import React, { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import {
   AlertTriangle,
+  Camera,
   CheckCircle2,
   FileSpreadsheet,
   History,
@@ -15,6 +17,17 @@ import {
 } from "lucide-react";
 import type { EvidenceRegistryRow } from "@/lib/evidence-registry";
 import type { VerificationQueuesPackage } from "@/lib/verification-queues";
+import { useGovPlatform } from "@/components/GovPlatformContext";
+
+const GovPointMap = dynamic(() => import("@/components/GovPointMap"), { ssr: false });
+
+type PhotoManifestRow = {
+  submission_id?: string | number;
+  uuid?: string;
+  download_url?: string | null;
+  filename?: string | null;
+  source?: string;
+};
 
 const ALLOWED_NEXT: Record<string, string[]> = {
   draft: ["submitted"],
@@ -40,10 +53,12 @@ type AuditEntry = {
 function VerificationWorkspaceInner() {
   const searchParams = useSearchParams();
   const initialQueue = searchParams.get("queue") ?? "submitted";
+  const { period, role, permissions } = useGovPlatform();
 
   const [activeQueue, setActiveQueue] = useState(initialQueue);
   const [districtFilter, setDistrictFilter] = useState("");
   const [data, setData] = useState<VerificationQueuesPackage | null>(null);
+  const [photoRows, setPhotoRows] = useState<PhotoManifestRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,10 +70,26 @@ function VerificationWorkspaceInner() {
   const [toStatus, setToStatus] = useState("");
   const [actor, setActor] = useState("ema_verifier");
   const [actorRole, setActorRole] = useState("national_reporting_officer");
-  const [reportingPeriod, setReportingPeriod] = useState("2020-2023");
+  const [reportingPeriod, setReportingPeriod] = useState<string>(period);
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [txMessage, setTxMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+
+  useEffect(() => {
+    setActorRole(role);
+    setReportingPeriod(period);
+  }, [role, period]);
+
+  useEffect(() => {
+    fetch("/api/export/photos", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((json) => {
+        if (json?.rows && Array.isArray(json.rows)) {
+          setPhotoRows(json.rows as PhotoManifestRow[]);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const loadQueue = async (queueName: string) => {
     setLoading(true);
@@ -81,13 +112,22 @@ function VerificationWorkspaceInner() {
     loadQueue(activeQueue);
   }, [activeQueue]);
 
+  const getAllowedForRole = (currentStatus: string): string[] => {
+    const base = ALLOWED_NEXT[currentStatus] ?? [];
+    if (permissions.canApproveOrLock) return base;
+    if (permissions.canVerifyDistrict) {
+      return base.filter((st) => st === "district_review" || st === "rejected" || st === "submitted");
+    }
+    return [];
+  };
+
   const openDrawer = async (row: EvidenceRegistryRow) => {
     setSelected(row);
     setTxMessage(null);
     setComment("");
-    const nextOptions = ALLOWED_NEXT[row.verification_status] ?? [];
+    const nextOptions = getAllowedForRole(row.verification_status);
     setToStatus(nextOptions[0] ?? "");
-    setReportingPeriod(row.reporting_period ?? "2020-2023");
+    setReportingPeriod(row.reporting_period ?? period);
 
     setAuditLoading(true);
     try {
@@ -366,18 +406,93 @@ function VerificationWorkspaceInner() {
                 </div>
               </div>
 
+              {/* GPS Location Preview */}
+              {selected.lat != null && selected.lng != null && (
+                <div>
+                  <div className="gov-kv-label" style={{ marginBottom: 6 }}>
+                    Field GPS Verification Pin
+                  </div>
+                  <GovPointMap
+                    height={190}
+                    points={[
+                      {
+                        id: selected.record_id,
+                        lat: selected.lat,
+                        lng: selected.lng,
+                        title: `${selected.evidence_type.toUpperCase()} · ${selected.record_id}`,
+                        subtitle: `${selected.district ?? "Unknown"}${
+                          selected.ceid ? ` · CEID ${selected.ceid}` : ""
+                        }`,
+                        color: selected.prais_eligible ? "#146c38" : "#175cd3",
+                      },
+                    ]}
+                  />
+                </div>
+              )}
+
+              {/* Field Photos / Attachments */}
+              <div>
+                <div className="gov-kv-label" style={{ marginBottom: 6 }}>
+                  <Camera size={12} style={{ verticalAlign: "middle", marginRight: 4 }} />
+                  Field Evidence Photos (EXP-PHOTOS)
+                </div>
+                {(() => {
+                  const matches = photoRows.filter(
+                    (p) =>
+                      String(p.submission_id ?? "") === String(selected.record_id) ||
+                      (selected.uuid && p.uuid === selected.uuid)
+                  );
+                  if (matches.length === 0) {
+                    return (
+                      <div className="gov-metric-sub">
+                        No photo attachments indexed for this record.
+                      </div>
+                    );
+                  }
+                  return (
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                      {matches.map((m, idx) =>
+                        m.download_url ? (
+                          <a
+                            key={idx}
+                            href={m.download_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="gov-btn gov-btn-sm"
+                          >
+                            <Camera size={12} /> Photo #{idx + 1}
+                          </a>
+                        ) : (
+                          <span key={idx} className="gov-badge gov-badge-slate">
+                            <Camera size={11} /> {m.filename ?? m.source ?? "Archived photo"}
+                          </span>
+                        )
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+
               {/* State Transition Form */}
               <div className="gov-card" style={{ padding: 14, background: "#f8fbf9" }}>
                 <div className="gov-card-title" style={{ marginBottom: 10 }}>
-                  <Send size={15} /> State Transition (Annex E)
+                  <Send size={15} /> State Transition (Annex E · Role: {role})
                 </div>
 
-                {(ALLOWED_NEXT[selected.verification_status] ?? []).length === 0 ? (
+                {selected.verification_status === "locked" ? (
                   <div className="gov-alert gov-alert-green">
                     <Lock size={15} />
                     <span>
-                      This record is <strong>{selected.verification_status}</strong> and immutable for
-                      PRAIS export.
+                      This record is <strong>locked</strong> and immutable for PRAIS export.
+                    </span>
+                  </div>
+                ) : getAllowedForRole(selected.verification_status).length === 0 ? (
+                  <div className="gov-alert gov-alert-amber">
+                    <Lock size={15} />
+                    <span>
+                      Active role (<strong>{role}</strong>) cannot transition records from{" "}
+                      <strong>{selected.verification_status}</strong>. Switch role in the top bar
+                      to National Reporting Officer to approve or lock.
                     </span>
                   </div>
                 ) : (
@@ -390,7 +505,7 @@ function VerificationWorkspaceInner() {
                         value={toStatus}
                         onChange={(e) => setToStatus(e.target.value)}
                       >
-                        {(ALLOWED_NEXT[selected.verification_status] ?? []).map((st) => (
+                        {getAllowedForRole(selected.verification_status).map((st) => (
                           <option key={st} value={st}>
                             {selected.verification_status} → {st}
                           </option>
