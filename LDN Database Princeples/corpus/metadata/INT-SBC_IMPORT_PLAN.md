@@ -19,4 +19,6 @@ Restoration / bright-spot context (SO4); overlap analysis with LDN-NAT-ALL degra
 
 ## Status
 
-⬜ Metadata row only — load in Phase 2 after EMA confirms attribute dictionary.
+🔶 **Staging JSON** — `npm run import:sbc-staging` → `public/intervention-sbc-staging.json`  
+🔶 API — `GET /api/interventions?includeSbc=true` (opt-in; 1367 points)  
+⬜ PostGIS `intervention_spatial` after attribute dictionary sign-off.

@@ -19,7 +19,7 @@ Give GIS leads and verifiers **governed access** to national analytics layers li
 | Nav label | `layer_id`(s) | Primary SO use | Data today (Nov 2026) |
 |-----------|---------------|----------------|------------------------|
 | **LDN units** | LDN-NAT-ALL | SO1-4 context, CEID join | Plan + QC; not PostGIS |
-| **Interventions & programmes** | INT-PROJECTS, INT-SBC | SO4 | Projects **staging** 47; SBC plan only |
+| **Interventions & programmes** | INT-PROJECTS, INT-SBC | SO4 | Projects **47** · SBC **1367** (`includeEma` / `includeSbc`) |
 | **Pressures** | PRESS-INVASIVE, PRESS-MINING | SO1-2 / SO2 narrative | **Staging** 2804 pts · `GET /api/pressure-layers` |
 | **Monitoring network** | REF-SITES | Operations QA | `reference-monitoring-sites.json` |
 | **SO1 national inputs** | LC / LPD / SOC stacks | F3–F5 | Await delivery (S10–S12) |

@@ -179,7 +179,7 @@ export function buildCorpusManifest(): CorpusLayerRow[] {
       crs: "EPSG:4326",
       data_tier: "tier2_national",
       so_uses: ["Restoration", "SO4"],
-      import_status: "qc_only",
+      import_status: "staging_json",
       confidence: "medium",
       doc_path: "LDN Database Princeples/corpus/metadata/INT-SBC_IMPORT_PLAN.md",
     },

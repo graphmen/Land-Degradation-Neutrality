@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 import emaProjectsStaging from "@/public/ema-projects-import.json";
+import sbcStaging from "@/public/intervention-sbc-staging.json";
 
 const dataPath = path.join(process.cwd(), "public", "interventions-data.json");
 const modPath = path.join(process.cwd(), "public", "interventions-modifications.json");
@@ -73,6 +74,7 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const includeEma = searchParams.get("includeEma") === "true";
+    const includeSbc = searchParams.get("includeSbc") === "true";
 
     const records = await loadData();
     const mod = await loadModifications();
@@ -100,13 +102,26 @@ export async function GET(req: Request) {
       }
     }
 
+    const demoIds = new Set(reconciled.map((r: { _id?: unknown }) => String(r._id)));
+
     if (includeEma) {
       const staging = (emaProjectsStaging as { records?: unknown[] }).records || [];
-      const demoIds = new Set(reconciled.map((r: { _id?: unknown }) => String(r._id)));
       for (const row of staging) {
         const id = String((row as { _id?: unknown })._id);
         if (!demoIds.has(id)) {
           reconciled.push({ ...(row as object), _source: "ema_staging" });
+          demoIds.add(id);
+        }
+      }
+    }
+
+    if (includeSbc) {
+      const sbc = (sbcStaging as { records?: unknown[] }).records || [];
+      for (const row of sbc) {
+        const id = String((row as { _id?: unknown })._id);
+        if (!demoIds.has(id)) {
+          reconciled.push({ ...(row as object), _source: "sbc_staging" });
+          demoIds.add(id);
         }
       }
     }
@@ -115,6 +130,7 @@ export async function GET(req: Request) {
       count: reconciled.length,
       records: reconciled,
       includeEma: includeEma,
+      includeSbc: includeSbc,
       modificationsCount: {
         additions: mod.additions.length,
         deletions: mod.deletions.length,
