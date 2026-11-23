@@ -1,13 +1,15 @@
 # Apply Supabase migrations (Steps 1.3 and 2.1)
 
-Run in the **Supabase SQL editor** (project linked to this repo) in order:
+Run in the **Supabase SQL editor** in order (**steering runbook:** [`SUPABASE_S2_STEERING_RUNBOOK.md`](./SUPABASE_S2_STEERING_RUNBOOK.md)):
 
-1. `backend/migrations/001_reference_code_lists.sql`
-2. `backend/migrations/001_reference_code_lists_seed.sql` (regenerate with `node scripts/generate_code_list_seed_sql.js` after JSON changes)
-3. `backend/migrations/002_national_ldn_units.sql`
-4. `backend/migrations/004_field_governance.sql` (reporting periods + field table columns)
-5. `backend/migrations/005_verification_log.sql` (audit trail)
-6. `backend/migrations/003_pressure_layers.sql` (after EMA access policy sign-off)
+| Phase | When | Files |
+|-------|------|--------|
+| **A** | After **S1** | `001_reference_code_lists.sql` → `001_reference_code_lists_seed.sql` |
+| **B** | Same session as A | `004_field_governance.sql` → `005_verification_log.sql` |
+| **C** | After **S8** | `003_pressure_layers.sql` |
+| **D** | After **S3–S4** | `002_national_ldn_units.sql` + ogr2ogr |
+
+Regenerate seed after JSON changes: `node scripts/generate_code_list_seed_sql.js`
 
 Verify:
 

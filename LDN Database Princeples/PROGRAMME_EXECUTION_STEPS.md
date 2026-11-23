@@ -74,8 +74,8 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 | Step | Action | Done |
 |------|--------|------|
 | 4.1 | Export jobs `EXP-SO1-*` (Annex E); SO1-1 matrix design | FIELD · STATUS · META · LC template | 🔶 stubs |
-| 4.2 | SO1 rehearsal checklist (Nov 2026 target) | [`REPORTING_DESK_CHECKLIST.md`](./REPORTING_DESK_CHECKLIST.md) · §F dry-run | 🔶 F2/F6/F7 |
-| 5.1 | Lock snapshot + PRAIS package | | ⬜ |
+| 4.2 | SO1 rehearsal checklist (Nov 2026 target) | [`REPORTING_DESK_CHECKLIST.md`](./REPORTING_DESK_CHECKLIST.md) · §F dry-run | 🔶 F2/F6/F7; **3 locked pilot** |
+| 5.1 | Lock snapshot + PRAIS package | [`pilot/VERIFICATION_LOCK_PILOT.md`](./pilot/VERIFICATION_LOCK_PILOT.md) | 🔶 pilot only |
 
 ---
 

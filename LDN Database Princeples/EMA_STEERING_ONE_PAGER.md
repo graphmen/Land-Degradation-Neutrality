@@ -18,10 +18,11 @@
 | National platform docs + corpus register | Living ([`STEERING_DECISIONS_QUEUE.md`](./STEERING_DECISIONS_QUEUE.md)) |
 | LDN-NAT-ALL QC | 254k polygons; CEID join 93/147 interim |
 | Verification API | P1+P2 (`/api/verify/*`, migration `005`) |
-| Export rehearsal §F | META, FIELD, STATUS, LC/LPD/SOC templates; bundle script |
-| Reporting dry-run | `public/reporting-desk-dry-run.json` |
-| Mobile | Submit → national API; [`MOBILE_API_DEPLOY.md`](./MOBILE_API_DEPLOY.md) |
-| **Not started** | R1 UI, PostGIS load, locked field exports |
+| Export rehearsal §F | META, FIELD, STATUS, LC/LPD/SOC templates; bundle + photos |
+| Reporting dry-run | `public/reporting-desk-dry-run.json` — **3 pilot locked** LDN rows |
+| Mobile | Android UAT; CEID hint + validator API |
+| **Not started** | R1 UI (R2 shell), PostGIS load, production-scale lock |
+| **S2 ready** | [`SUPABASE_S2_STEERING_RUNBOOK.md`](../backend/SUPABASE_S2_STEERING_RUNBOOK.md) Phase A+B |
 
 ---
 

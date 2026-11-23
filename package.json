@@ -9,7 +9,9 @@
     "reporting:dry-run": "npx --yes tsx scripts/reporting_desk_dry_run.ts",
     "reporting:bundle": "npx --yes tsx scripts/export_reporting_bundle.ts",
     "pilot:lock": "npx --yes tsx scripts/pilot_verification_lock.ts",
-    "sync:mobile-codes": "node scripts/sync_mobile_code_lists.mjs"
+    "sync:mobile-codes": "node scripts/sync_mobile_code_lists.mjs",
+    "verify:supabase": "node scripts/verify_supabase_schema.mjs",
+    "verify:supabase:checklist": "node scripts/verify_supabase_schema.mjs --checklist-only"
   },
   "dependencies": {
     "framer-motion": "^11.2.10",

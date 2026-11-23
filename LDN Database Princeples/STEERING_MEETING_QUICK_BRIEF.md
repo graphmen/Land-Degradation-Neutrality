@@ -9,6 +9,7 @@
 - **Export rehearsal** §F (bundle with manifest hashes)
 - **Mobile** Android UAT + CEID national LD hint
 - **Validator API** (`/api/validator/ceid`)
+- **Verification pilot** — 3 LDN rows `locked` (local mod ledger; `npm run pilot:lock`)
 
 ## What we are not shipping yet
 
@@ -20,7 +21,7 @@
 | # | Decision |
 |---|----------|
 | S1 | Code lists v1.0 |
-| S2 | Apply DB migrations |
+| S2 | Apply DB migrations (**Phase A+B** runbook) |
 | S3–S4 | Area unit + CEID join |
 | S5 | Reporting period |
 | S6 | R1 module map sign-off |
@@ -29,4 +30,9 @@
 
 1. `GET /api/validator/ceid?ceid=11268_17236`  
 2. `GET /api/export/meta`  
-3. Mobile CEID blur (APK on tablet)
+3. Mobile CEID blur (APK on tablet)  
+4. `GET /api/status` → `locked_ldn_exports: 3` (pilot)
+
+## DBA pack (S2)
+
+[`backend/SUPABASE_S2_STEERING_RUNBOOK.md`](../backend/SUPABASE_S2_STEERING_RUNBOOK.md) · `VERIFY_MIGRATIONS.sql` · `node scripts/verify_supabase_schema.mjs --checklist-only`
