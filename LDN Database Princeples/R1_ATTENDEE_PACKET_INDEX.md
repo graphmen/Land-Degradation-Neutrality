@@ -51,6 +51,7 @@ npm run r1:smoke
 | `/api/evidence/summary` | Verification histogram |
 | `/api/config/reporting-dry-run` | §F + lock policy |
 | `/api/config/s2-preflight` | DBA Phase A+B |
+| `/api/config/r1-readiness` | ICT artefact checklist |
 
 **Do not demo** legacy dashboard home as the product.
 

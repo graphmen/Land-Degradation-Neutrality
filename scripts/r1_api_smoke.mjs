@@ -25,6 +25,7 @@ async function resolveBase() {
 }
 
 const CHECKS = [
+  { path: "/api/config/r1-readiness", key: "ready_for_facilitation" },
   { path: "/api/status", key: "programme" },
   { path: "/api/national-overview", key: "field_evidence" },
   { path: "/api/qc/summary", key: "field_ldn" },

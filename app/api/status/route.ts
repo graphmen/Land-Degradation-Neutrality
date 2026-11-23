@@ -61,6 +61,7 @@ export async function GET(): Promise<NextResponse> {
         "/api/config/reporting-dry-run",
         "/api/config/ceid-aliases",
         "/api/config/verification-lock-policy",
+        "/api/config/r1-readiness",
       ],
     },
     environment: {
