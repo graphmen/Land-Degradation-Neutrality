@@ -9,7 +9,8 @@
 | 2 | `GET /api/national-overview` | R2 landing JSON — corpus health, SO1 %, backlog |
 | 3 | `GET /api/qc/summary` | 254k polygons, 2804 pressure staging, CEID 93/147 |
 | 4 | `GET /api/corpus-layers` | 13 layers; `staging_json` pressure/SBC/projects |
-| 5 | `GET /api/validator/ceid?ceid=11268_17236` | Mobile CEID hint backend |
+| 5 | `GET /api/validator/ceid?ceid=11268_17236` | Mobile CEID hint (grid match) |
+| 5b | `GET /api/validator/ceid?ceid=ZC2` | Legacy token → `pending_ema` (alias register) |
 | 6 | `GET /api/evidence/registry?prais_eligible=true` | Locked rows only (3) |
 | 7 | `GET /api/verify/queues?queue=locked` | Verification workspace preview |
 | 8 | `GET /api/pressure-layers?theme=invasive` | `count` only if sensitive (national role) |

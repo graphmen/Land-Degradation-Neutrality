@@ -1,0 +1,501 @@
+{
+  "version": "0.1",
+  "status": "draft_pending_ema",
+  "default_join_rule": "second_segment",
+  "generated_from": "public/qc-ceid-join-report.json",
+  "generated_at": "2026-11-23T10:32:15.903267+00:00",
+  "steering_gate": "Q2",
+  "entries": [
+    {
+      "ceid": "HP1",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "Muchawona",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "PLR4",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZC10",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZC11",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZC15",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZC16",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZC17",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZC18",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZC19",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZC2",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZC21",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZC22",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZC23",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZC24",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZC25",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZC26",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZC28",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZC29",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZC4",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZC7",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZC9",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZE1",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZE12",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZE13",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZE14",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZE15",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZE16",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZE2",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZE24",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZE26",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZE27",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZE3",
+      "category": "legacy_zc_ze_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZW23",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZW5",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "ZW7",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "Zw1",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "Zw11",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "Zw12",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "Zw13",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "Zw17",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "Zw19",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "Zw2",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "Zw20",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "Zw21",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "Zw24",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "Zw26",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "Zw27",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "Zw28",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "Zw3",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "Zw4",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "Zw6",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "Zw8",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    },
+    {
+      "ceid": "Zw9",
+      "category": "named_or_short_token",
+      "shapefile_id": null,
+      "resolution": "pending_ema",
+      "notes": null,
+      "approved_by": null,
+      "approved_at": null
+    }
+  ],
+  "statistics": {
+    "total": 54,
+    "resolved": 0,
+    "pending_ema": 54
+  }
+}

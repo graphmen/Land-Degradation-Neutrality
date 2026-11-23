@@ -12,6 +12,9 @@
   "rule": "second_segment",
   "shapefile_id": "17236",
   "match": true,
+  "match_via": "join_rule",
+  "alias_status": null,
+  "alias_category": null,
   "national_unit": {
     "ld_class": "Stable",
     "polygon_count": 6,
@@ -19,6 +22,12 @@
   }
 }
 ```
+
+## Response (legacy pending alias)
+
+`GET /api/validator/ceid?ceid=ZC2` → `match: false`, `alias_status: pending_ema`, `alias_category: legacy_zc_ze_token`
+
+**Register:** `GET /api/config/ceid-aliases` · Design: [`CEID_ALIAS_REGISTER.md`](../design/CEID_ALIAS_REGISTER.md)
 
 ## Mobile
 

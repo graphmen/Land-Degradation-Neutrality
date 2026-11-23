@@ -36,7 +36,7 @@ Botswana’s Collect Earth workflow assumes **stable plot IDs on a national grid
 **Steering choice (proposed):**
 
 1. **Freeze** `second_segment` for all `^\d+_\d+` CEIDs (S4 partial).  
-2. **Publish** `reference-ceid-aliases.v1.json` for ZC/ZE/named sites (Study → Design → seed in Phase A extension).  
+2. **Publish** `reference-ceid-aliases.v0.1.json` for ZC/ZE/named sites — see [`design/CEID_ALIAS_REGISTER.md`](../../design/CEID_ALIAS_REGISTER.md) · `npm run build:ceid-aliases`.  
 3. **Do not** block S2 Phase A+B on alias table — aliases block **PostGIS 002 load** and **validator certainty**, not code lists.
 
 ---

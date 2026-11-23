@@ -19,6 +19,7 @@
     "import:sbc-staging": "python scripts/import_sbc_staging.py",
     "export:steering-docx": "python scripts/export_steering_docx.py",
     "qc:ceid": "python scripts/ceid_join_qc.py",
+    "build:ceid-aliases": "python scripts/build_ceid_alias_draft.py",
     "qc:summary": "python scripts/qc_programme_summary.py",
     "qc:refresh": "python scripts/pressure_layer_qc.py && python scripts/intervention_spatial_qc.py && python scripts/national_raster_qc.py && npm run qc:summary"
   },
