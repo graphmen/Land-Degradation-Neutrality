@@ -60,6 +60,7 @@ npm run qc:refresh
 npm run export:steering-docx
 npm run export:ceid-worksheet
 npm run dev
+npm run r1:smoke
 ```
 
 Walkthrough: [`R1_API_DEMO_SCRIPT.md`](./R1_API_DEMO_SCRIPT.md)

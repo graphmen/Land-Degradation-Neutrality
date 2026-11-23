@@ -13,6 +13,8 @@ npm run qc:refresh
 npm run export:steering-docx
 npm run export:ceid-worksheet
 npm run dev
+# separate terminal after dev is up:
+npm run r1:smoke
 ```
 
 | At table | Path |

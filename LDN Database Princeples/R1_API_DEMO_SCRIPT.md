@@ -1,6 +1,6 @@
 # R1 steering — live API demo script (~12 min)
 
-**Prereq:** `npm run dev` (or production host) · national HTTPS for mobile tablet optional  
+**Prereq:** `npm run dev` (or production host) · `npm run r1:smoke` (preflight) · national HTTPS for mobile tablet optional  
 **No demo:** legacy home dashboard as “the product”
 
 | # | Call | Speak to |
