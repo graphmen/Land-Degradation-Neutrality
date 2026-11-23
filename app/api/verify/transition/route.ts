@@ -8,6 +8,7 @@ import {
   buildTransitionPatch,
   VerificationTransitionError,
 } from "@/lib/verification-transitions";
+import { appendVerificationLog } from "@/lib/verification-log";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,7 @@ type Body = {
   from_status: VerificationStatus;
   to_status: VerificationStatus;
   actor: string;
+  actor_role?: string | null;
   comment?: string;
   reporting_period?: string | null;
 };
@@ -59,6 +61,23 @@ export async function POST(req: Request) {
 
     await patchLocalRecord(body.entity, String(body.record_id), patch);
 
+    const logEntry = await appendVerificationLog({
+      record_type: body.entity,
+      record_id: String(body.record_id),
+      from_status: body.from_status,
+      to_status: body.to_status,
+      actor_id: body.actor,
+      actor_role: body.actor_role ?? null,
+      reporting_period: patch.reporting_period ?? null,
+      note: body.comment ?? null,
+      metadata: {
+        district_note: patch.district_note,
+        national_note: patch.national_note,
+        rejection_reason: patch.rejection_reason,
+        verification_comment: patch.verification_comment,
+      },
+    });
+
     const governance = enrichComplianceFields({
       _id: body.record_id,
       ...patch,
@@ -69,6 +88,7 @@ export async function POST(req: Request) {
       record_id: body.record_id,
       entity: body.entity,
       governance,
+      audit: { id: logEntry.id, created_at: logEntry.created_at },
     });
   } catch (e: unknown) {
     if (e instanceof VerificationTransitionError) {

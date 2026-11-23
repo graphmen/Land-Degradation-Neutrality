@@ -1,0 +1,161 @@
+{
+  "packages": [
+    {
+      "layer_id": "INT-SBC",
+      "archive": "important files\\sbc.zip",
+      "layers": [
+        {
+          "features": 1367,
+          "fields": [
+            "lat",
+            "lon",
+            "ALTITUDE",
+            "SBCID",
+            "Ward",
+            "pid",
+            "did",
+            "Village",
+            "Chief",
+            "Site_Num",
+            "River_name",
+            "Land_use_c",
+            "Soil_type",
+            "Biodiversi",
+            "Major_Spec",
+            "Fence_mate",
+            "Cumulative",
+            "Crops_in_g",
+            "Distance_f",
+            "Other_prob",
+            "Action_Tak",
+            "F22",
+            "F23",
+            "F24",
+            "F25",
+            "F26"
+          ],
+          "layer": "SBC_LatLong.zip/SBC_LatLong.shp"
+        },
+        {
+          "features": 156,
+          "fields": [
+            "X",
+            "Y",
+            "ALTITUDE",
+            "SBCID",
+            "Ward",
+            "pid",
+            "did",
+            "Village",
+            "Chief",
+            "Site_Num",
+            "River_name",
+            "Land_use_c",
+            "Soil_type",
+            "Biodiversi",
+            "Major_Spec",
+            "Fence_mate",
+            "Cumulative",
+            "Crops_in_g",
+            "Distance_f",
+            "Other_prob",
+            "Action_Tak",
+            "F22",
+            "F23",
+            "F24",
+            "F25"
+          ],
+          "layer": "SBC_UTM35.zip/SBC_UTM35.shp"
+        },
+        {
+          "features": 293,
+          "fields": [
+            "X",
+            "Y",
+            "ALTITUDE",
+            "SBCID",
+            "Ward",
+            "pid",
+            "did",
+            "Village",
+            "Chief",
+            "Site_Num",
+            "River_name",
+            "Land_use_c",
+            "Soil_type",
+            "Biodiversi",
+            "Major_Spec",
+            "Fence_mate",
+            "Cumulative",
+            "Crops_in_g",
+            "Distance_f",
+            "Other_prob",
+            "Action_Tak",
+            "F22",
+            "F23"
+          ],
+          "layer": "SBC_UTM36.zip/SBC_UTM36.shp"
+        }
+      ],
+      "recommended_authoritative_layer": "SBC_LatLong.zip/SBC_LatLong.shp",
+      "authoritative_feature_count": 1367,
+      "feature_total_all_layers": 1816
+    },
+    {
+      "layer_id": "INT-PROJECTS",
+      "archive": "important files\\projects.zip",
+      "layers": [
+        {
+          "features": 47,
+          "fields": [
+            "lat",
+            "lon",
+            "ward",
+            "village",
+            "year_estab",
+            "activty",
+            "funding_pa",
+            "Role_of_em",
+            "F9",
+            "F10",
+            "Name"
+          ],
+          "layer": "ema_projects_combined_geog.zip/ema_projects_combined_geog.shp"
+        },
+        {
+          "features": 65,
+          "fields": [
+            "x",
+            "y",
+            "ward",
+            "village",
+            "year_estab",
+            "size",
+            "activty",
+            "funding_pa",
+            "role"
+          ],
+          "layer": "ema_projects_utm_35.zip/ema_projects_utm_35.shp"
+        },
+        {
+          "features": 65,
+          "fields": [
+            "x",
+            "y",
+            "ward",
+            "village",
+            "year_estab",
+            "size",
+            "activty",
+            "funding_pa",
+            "role"
+          ],
+          "layer": "ema_projects_utm_36.zip/ema_projects_utm_36.shp"
+        }
+      ],
+      "recommended_authoritative_layer": "ema_projects_combined_geog.zip/ema_projects_combined_geog.shp",
+      "authoritative_feature_count": 47,
+      "feature_total_all_layers": 177
+    }
+  ]
+}

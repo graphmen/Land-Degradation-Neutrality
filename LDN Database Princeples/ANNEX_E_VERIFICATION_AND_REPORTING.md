@@ -103,7 +103,7 @@ Each export job produces a **folder** with data + **ISO-style metadata** (`metad
 | Phase | Deliverable |
 |-------|-------------|
 | Phase 1 | Add `verification_status`, `reporting_period`, `data_tier` to API (nullable, backward compatible) | ✅ app + `004` SQL (apply pending) · [`design/GOVERNANCE_API_P1.md`](./design/GOVERNANCE_API_P1.md) |
-| Phase 2 | `verification_log` table; retire un-audited JSON edits for reporting entities |
+| Phase 2 | `verification_log` table; retire un-audited JSON edits for reporting entities | ✅ `005` + JSON/API audit · [`GOVERNANCE_API_P2.md`](./design/GOVERNANCE_API_P2.md) |
 | Phase 3 | District/national review UI + role-based transitions |
 | Phase 4 | Export jobs `EXP-*` + dry-run checklist (WP5.1) |
 | Phase 5 | Lock snapshot + gap report SO2–SO5 |

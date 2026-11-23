@@ -6,7 +6,8 @@ Run in the **Supabase SQL editor** (project linked to this repo) in order:
 2. `backend/migrations/001_reference_code_lists_seed.sql` (regenerate with `node scripts/generate_code_list_seed_sql.js` after JSON changes)
 3. `backend/migrations/002_national_ldn_units.sql`
 4. `backend/migrations/004_field_governance.sql` (reporting periods + field table columns)
-5. `backend/migrations/003_pressure_layers.sql` (after EMA access policy sign-off)
+5. `backend/migrations/005_verification_log.sql` (audit trail)
+6. `backend/migrations/003_pressure_layers.sql` (after EMA access policy sign-off)
 
 Verify:
 

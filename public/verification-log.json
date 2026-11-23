@@ -1,0 +1,5 @@
+{
+  "schema_version": 1,
+  "description": "Append-only verification transitions (mirror of ldn.verification_log until DB applied)",
+  "entries": []
+}

@@ -52,7 +52,7 @@ Lock example (requires `reporting_period`):
 
 Reject requires `comment`. Transitions enforced in [`lib/verification-transitions.ts`](../../lib/verification-transitions.ts).
 
-**Phase 2:** `verification_log` table + Supabase row updates + Verification workspace (R1).
+**Phase 2:** [`GOVERNANCE_API_P2.md`](./GOVERNANCE_API_P2.md) — audit log + `GET /api/verify/log`. Verification workspace (R1) is Phase 3.
 
 ## Apply DB
 

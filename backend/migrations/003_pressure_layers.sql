@@ -21,17 +21,4 @@ CREATE INDEX IF NOT EXISTS idx_pressure_layers_geom ON ldn.pressure_layers USING
 
 COMMENT ON TABLE ldn.pressure_layers IS 'EMA pressure layers — mining, invasives, etc.; see corpus/metadata/*_IMPORT_PLAN.md';
 
--- verification_log stub (Verification workspace)
-CREATE TABLE IF NOT EXISTS ldn.verification_log (
-  id bigserial PRIMARY KEY,
-  record_type text NOT NULL,
-  record_id text NOT NULL,
-  from_status text,
-  to_status text NOT NULL,
-  actor_id text,
-  actor_role text,
-  note text,
-  created_at timestamptz NOT NULL DEFAULT now()
-);
-
-CREATE INDEX IF NOT EXISTS idx_verification_log_record ON ldn.verification_log (record_type, record_id);
+-- Verification audit: apply `005_verification_log.sql` (not bundled here to avoid schema drift).

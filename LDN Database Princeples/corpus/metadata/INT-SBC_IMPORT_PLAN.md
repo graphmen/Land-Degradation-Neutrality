@@ -4,10 +4,11 @@
 
 ## Source
 
-`important files/sbc.zip` — primary `SBC_LatLong` (~1,367 points WGS 84); UTM subsets for field teams.
+`important files/sbc.zip` — **1,367** `SBC_LatLong` points confirmed ([`INTERVENTION_SPATIAL_QC.md`](./INTERVENTION_SPATIAL_QC.md)).
 
 ## Pre-load
 
+- [x] Nested zip inventory + fields (`intervention_spatial_qc.py`)  
 - Deduplicate against existing `intervention_spatial` by coordinates + name hash  
 - Map attributes to Annex C (when dictionary extended)  
 - Sensitivity: public map vs authenticated only
