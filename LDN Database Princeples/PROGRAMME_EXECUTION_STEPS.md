@@ -14,7 +14,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 | 0.4 | Interventions register | D v0.2 | ✅ |
 | 0.5 | Verification + PRAIS exports | E v0.1 | ✅ |
 | 0.6 | Code lists v0.9 draft | F + `reference-code-lists.v0.9.json` | ✅ this session |
-| 0.7 | EMA steering sign-off on 0.1–0.6 | Minutes | ⬜ |
+| 0.7 | EMA steering sign-off on 0.1–0.6 | [`EMA_STEERING_ONE_PAGER.md`](./EMA_STEERING_ONE_PAGER.md) | 🔶 ready for meeting |
 
 ---
 
@@ -35,7 +35,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 | Step | Action | Done |
 |------|--------|------|
-| 2.1 | PostGIS `national_ldn_units` from combined shapefile | ⬜ |
+| 2.1 | PostGIS `national_ldn_units` from combined shapefile | 🔶 `002_national_ldn_units.sql` + ogr2ogr notes |
 | 2.2 | Import `intervention_spatial` (47 EMA projects) | ✅ staging `ema-projects-import.json` |
 | 2.3 | Mobile sync → DB first; JSON cache second |
 | 2.4 | `verification_log` + review UI (district / national) |
