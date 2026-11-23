@@ -11,7 +11,9 @@
     "pilot:lock": "npx --yes tsx scripts/pilot_verification_lock.ts",
     "sync:mobile-codes": "node scripts/sync_mobile_code_lists.mjs",
     "verify:supabase": "node scripts/verify_supabase_schema.mjs",
-    "verify:supabase:checklist": "node scripts/verify_supabase_schema.mjs --checklist-only"
+    "verify:supabase:checklist": "node scripts/verify_supabase_schema.mjs --checklist-only",
+    "qc:rasters": "python scripts/national_raster_qc.py",
+    "qc:rasters:checklist": "python scripts/national_raster_qc.py --checklist-only"
   },
   "dependencies": {
     "framer-motion": "^11.2.10",

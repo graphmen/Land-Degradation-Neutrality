@@ -1,0 +1,42 @@
+{
+  "qc_at": "2026-11-23T09:50:37.172427+00:00",
+  "important_dir": "important files",
+  "gdalinfo_available": false,
+  "layers": [
+    {
+      "layer_id": "LC-NAT-STACK",
+      "steering": "S10",
+      "f_step": "F3",
+      "files_found": 0,
+      "expected_min_files": 2,
+      "delivery_ready": false,
+      "files": [],
+      "import_plan": "LDN Database Princeples/corpus/metadata/LC-NAT-STACK_IMPORT_PLAN.md"
+    },
+    {
+      "layer_id": "LPD-NAT-RASTER",
+      "steering": "S11",
+      "f_step": "F4",
+      "files_found": 0,
+      "expected_min_files": 1,
+      "delivery_ready": false,
+      "files": [],
+      "import_plan": "LDN Database Princeples/corpus/metadata/LPD-NAT-RASTER_IMPORT_PLAN.md"
+    },
+    {
+      "layer_id": "SOC-NAT-SURFACE",
+      "steering": "S12",
+      "f_step": "F5",
+      "files_found": 0,
+      "expected_min_files": 1,
+      "delivery_ready": false,
+      "files": [],
+      "import_plan": "LDN Database Princeples/corpus/metadata/SOC-NAT-SURFACE_IMPORT_PLAN.md"
+    }
+  ],
+  "steering_blockers": [
+    "S10: LC t0/t1 GeoTIFF not delivered",
+    "S11: LPD raster not delivered",
+    "S12: SOC surface not delivered"
+  ]
+}

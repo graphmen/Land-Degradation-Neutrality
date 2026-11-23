@@ -11,10 +11,11 @@
 |------|--------|--------|
 | 0–10 | Why not extend OAU dashboard | Agree corpus-first story |
 | 10–18 | Peer twins → modules (Study) — [`R1_PEER_TWINNING_IA_MAP.md`](./R1_PEER_TWINNING_IA_MAP.md); confirm **S7** | Twins confirmed |
-| 18–30 | Walk modules §3–§7 (Evidence, Verification, Layers, Reporting desk) | Names approved |
-| 30–45 | RBAC §2 — district vs national vs reporting officer | Role list confirmed |
-| 45–55 | Route cutover §8 — what retires | Redirect plan accepted |
-| 55–60 | Sign §9 checklist below | **Go / no-go R2** |
+| 18–25 | GIS segment — **Q1/Q2** + **S10–S12** [`STEERING_GIS_SO1_DECISION_PACK.md`](./STEERING_GIS_SO1_DECISION_PACK.md) | Raster + polygon gates noted |
+| 25–35 | Walk modules §3–§7 (Evidence, Verification, Layers, Reporting desk) | Names approved |
+| 35–50 | RBAC §2 — district vs national vs reporting officer | Role list confirmed |
+| 50–58 | Route cutover §8 — what retires | Redirect plan accepted |
+| 58–65 | Sign §9 checklist below | **Go / no-go R2** |
 
 ---
 
@@ -48,7 +49,7 @@
 
 ## Linked steering decisions
 
-Before or with R1, resolve **S1, S5, S6, S7, S10** in [`STEERING_DECISIONS_QUEUE.md`](./STEERING_DECISIONS_QUEUE.md).
+Before or with R1, resolve **S1, S3–S4, S5, S6, S7, S10–S12** in [`STEERING_DECISIONS_QUEUE.md`](./STEERING_DECISIONS_QUEUE.md). GIS slide: [`STEERING_GIS_SO1_DECISION_PACK.md`](./STEERING_GIS_SO1_DECISION_PACK.md).
 
 **Peer narrative (study):** [`R1_PEER_TWINNING_IA_MAP.md`](./R1_PEER_TWINNING_IA_MAP.md) · [`ZIMBABWE_DIFFERENTIATOR_STEERING_ONE_PAGER.md`](./ZIMBABWE_DIFFERENTIATOR_STEERING_ONE_PAGER.md)
 
