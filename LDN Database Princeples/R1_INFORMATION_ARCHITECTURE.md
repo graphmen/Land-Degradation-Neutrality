@@ -51,6 +51,8 @@ EMA National LDN Platform
 └── Administration
 ```
 
+**National layers detail (design):** [`design/R1_NATIONAL_LAYERS_MODULE.md`](./design/R1_NATIONAL_LAYERS_MODULE.md) — catalogue, APIs, RBAC; pressures use staging **`/api/pressure-layers`** until S8.
+
 ---
 
 ## 4. Wireframe — National overview (landing)

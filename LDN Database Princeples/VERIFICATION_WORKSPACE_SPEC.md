@@ -23,7 +23,7 @@ District and national officers review **field evidence** before records become *
 - Photos / attachments  
 - Audit trail (who changed status, when, note)  
 - **Link:** national unit (`ldn_unit_id`) when join exists  
-- **Link:** overlapping pressure layers (mining/invasive) optional flags
+- **Link:** overlapping pressure layers (mining/invasive) optional flags — see [`design/R1_NATIONAL_LAYERS_MODULE.md`](./design/R1_NATIONAL_LAYERS_MODULE.md) §6
 
 ## Actions
 

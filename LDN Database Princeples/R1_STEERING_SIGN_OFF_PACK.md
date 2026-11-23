@@ -42,6 +42,7 @@
 - Mobile submit → `/api/submit/*` (production URL: [`MOBILE_API_DEPLOY.md`](./MOBILE_API_DEPLOY.md))
 - **3-row lock pilot** + `GET /api/status` (`locked_ldn_exports`)
 - **LC path** registered: `LC-NAT-STACK` (SO1-1 await **S10**)
+- **Pressure staging:** `GET /api/pressure-layers` (2804 Lat/Long — R1 layers spec, not legacy map)
 
 **Do not demo:** Legacy home dashboard as “the product.”
 
