@@ -6,7 +6,6 @@ import Link from "next/link";
 import {
   AlertTriangle,
   CheckCircle2,
-  Columns2,
   Download,
   Info,
   Layers,
@@ -103,7 +102,7 @@ const STATUS_CLASS: Record<string, string> = {
   not_started: "gov-badge-slate",
 };
 
-type ViewMode = "split" | "map" | "table";
+type ViewMode = "map" | "table";
 type TableTab = "catalogue" | "features";
 
 export default function NationalLayersPage() {
@@ -113,7 +112,7 @@ export default function NationalLayersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [viewMode, setViewMode] = useState<ViewMode>("split");
+  const [viewMode, setViewMode] = useState<ViewMode>("map");
   const [tableTab, setTableTab] = useState<TableTab>("catalogue");
   const [statusFilter, setStatusFilter] = useState("");
   const [tierFilter, setTierFilter] = useState("");
@@ -358,7 +357,7 @@ export default function NationalLayersPage() {
     if (!match) return;
     if (match.restricted && !permissions.canViewRestrictedLayers) return;
     setActiveOverlays((prev) => ({ ...prev, [match.key]: true }));
-    if (viewMode === "table") setViewMode("split");
+    setViewMode("map");
   };
 
   const degradedPct = so1Status?.summary?.degraded_area_percent ?? 8.86;
@@ -381,44 +380,25 @@ export default function NationalLayersPage() {
           </p>
         </div>
         <div className="gov-page-actions">
-          <div
-            style={{
-              display: "inline-flex",
-              background: "#e9efeb",
-              padding: 3,
-              borderRadius: 8,
-              gap: 3,
-            }}
+          <button
+            type="button"
+            className="gov-btn gov-btn-primary"
+            onClick={() => setViewMode((v) => (v === "map" ? "table" : "map"))}
           >
-            <button
-              type="button"
-              className={`gov-btn gov-btn-sm ${viewMode === "split" ? "gov-btn-primary" : ""}`}
-              style={{ border: "none" }}
-              onClick={() => setViewMode("split")}
-            >
-              <Columns2 size={13} /> Split
-            </button>
-            <button
-              type="button"
-              className={`gov-btn gov-btn-sm ${viewMode === "map" ? "gov-btn-primary" : ""}`}
-              style={{ border: "none" }}
-              onClick={() => setViewMode("map")}
-            >
-              <MapIcon size={13} /> Map
-            </button>
-            <button
-              type="button"
-              className={`gov-btn gov-btn-sm ${viewMode === "table" ? "gov-btn-primary" : ""}`}
-              style={{ border: "none" }}
-              onClick={() => setViewMode("table")}
-            >
-              <Table2 size={13} /> Table
-            </button>
-          </div>
+            {viewMode === "map" ? (
+              <>
+                <Table2 size={15} /> Switch to Tabular View
+              </>
+            ) : (
+              <>
+                <MapIcon size={15} /> Switch to Spatial Map
+              </>
+            )}
+          </button>
           <button type="button" className="gov-btn" onClick={loadCore} disabled={loading}>
             <RefreshCw size={14} /> Refresh
           </button>
-          <a href="/api/corpus-layers?format=csv" className="gov-btn gov-btn-primary">
+          <a href="/api/corpus-layers?format=csv" className="gov-btn">
             <Download size={14} /> Export CSV
           </a>
         </div>
@@ -466,17 +446,10 @@ export default function NationalLayersPage() {
 
       {error && <div className="gov-alert gov-alert-red">{error}</div>}
 
-      {/* Main Spatial + Tabular Workspace */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: viewMode === "split" ? "minmax(0, 1.15fr) minmax(0, 1fr)" : "1fr",
-          gap: 18,
-          alignItems: "start",
-        }}
-      >
-        {/* SPATIAL MAP PANEL */}
-        {viewMode !== "table" && (
+      {/* Full-Width Spatial OR Tabular Workspace */}
+      <div>
+        {/* SPATIAL MAP PANEL (Full Width) */}
+        {viewMode === "map" && (
           <div className="gov-card" style={{ padding: 16 }}>
             <div className="gov-card-header" style={{ marginBottom: 10 }}>
               <div>
@@ -485,11 +458,21 @@ export default function NationalLayersPage() {
                 </div>
                 <div className="gov-metric-sub">
                   Toggle layers to compare degradation drivers, restoration bright spots, and field QA.
+                  Use the top-right map switcher for Google Hybrid, Satellite, Streets, Terrain, or Esri.
                 </div>
               </div>
-              <span className="gov-badge gov-badge-green">
-                {combinedPoints.length.toLocaleString()} plotted
-              </span>
+              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <span className="gov-badge gov-badge-green">
+                  {combinedPoints.length.toLocaleString()} plotted
+                </span>
+                <button
+                  type="button"
+                  className="gov-btn gov-btn-sm"
+                  onClick={() => setViewMode("table")}
+                >
+                  <Table2 size={13} /> Open Table View
+                </button>
+              </div>
             </div>
 
             {/* Interactive Multi-Layer Toggle Chips */}
@@ -563,8 +546,7 @@ export default function NationalLayersPage() {
             <div style={{ position: "relative" }}>
               <GovPointMap
                 points={combinedPoints}
-                height={viewMode === "map" ? 560 : 470}
-                showBasemapSwitcher
+                height={620}
                 legend={activeLegend}
               />
               {mapLoading && (
@@ -589,9 +571,9 @@ export default function NationalLayersPage() {
           </div>
         )}
 
-        {/* TABULAR EXPLORER PANEL */}
-        {viewMode !== "map" && (
-          <div className="gov-card" style={{ padding: 16 }}>
+        {/* TABULAR EXPLORER PANEL (Full Width) */}
+        {viewMode === "table" && (
+          <div className="gov-card" style={{ padding: 18 }}>
             <div
               style={{
                 display: "flex",
@@ -623,11 +605,20 @@ export default function NationalLayersPage() {
                 </button>
               </div>
 
-              {data?.validation.pass && (
-                <span className="gov-badge gov-badge-green">
-                  <ShieldCheck size={12} /> F1 Annex II Valid
-                </span>
-              )}
+              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                {data?.validation.pass && (
+                  <span className="gov-badge gov-badge-green">
+                    <ShieldCheck size={12} /> F1 Annex II Valid
+                  </span>
+                )}
+                <button
+                  type="button"
+                  className="gov-btn gov-btn-sm gov-btn-primary"
+                  onClick={() => setViewMode("map")}
+                >
+                  <MapIcon size={13} /> Back to Spatial Map
+                </button>
+              </div>
             </div>
 
             {/* Search & Filters */}
@@ -693,7 +684,7 @@ export default function NationalLayersPage() {
 
             {/* TAB 1: CORPUS LAYER REGISTER */}
             {tableTab === "catalogue" && (
-              <div className="gov-table-wrap" style={{ maxHeight: viewMode === "split" ? 440 : 620, overflowY: "auto" }}>
+              <div className="gov-table-wrap">
                 <table className="gov-table">
                   <thead>
                     <tr>
@@ -782,7 +773,7 @@ export default function NationalLayersPage() {
 
             {/* TAB 2: ACTIVE SPATIAL FEATURES */}
             {tableTab === "features" && (
-              <div className="gov-table-wrap" style={{ maxHeight: viewMode === "split" ? 440 : 620, overflowY: "auto" }}>
+              <div className="gov-table-wrap">
                 <table className="gov-table">
                   <thead>
                     <tr>
