@@ -11,7 +11,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 | R0 | International LDN benchmark | Blueprint + [`INTERNATIONAL_COUNTRY_DOSSIERS.md`](./INTERNATIONAL_COUNTRY_DOSSIERS.md) (11 countries) | 🔶 v0.1 |
 | R0b | National data corpus register | [`NATIONAL_DATA_CORPUS.md`](./NATIONAL_DATA_CORPUS.md) | ✅ living |
 | R0c | Peer twinning + differentiator (Study) | [`STEERING_PEER_TWINNING_RECOMMENDATION.md`](./STEERING_PEER_TWINNING_RECOMMENDATION.md) · [`R1_PEER_TWINNING_IA_MAP.md`](./R1_PEER_TWINNING_IA_MAP.md) · [one-pager](./ZIMBABWE_DIFFERENTIATOR_STEERING_ONE_PAGER.md) | 🔶 confirm **S7** at R1 |
-| R1 | EMA UX / information architecture sign-off | [`R1_INFORMATION_ARCHITECTURE.md`](./R1_INFORMATION_ARCHITECTURE.md) · [`R1_STEERING_SIGN_OFF_PACK.md`](./R1_STEERING_SIGN_OFF_PACK.md) | 🔶 pack ready |
+| R1 | EMA UX / information architecture sign-off | [`R1_STEERING_SIGN_OFF_PACK.md`](./R1_STEERING_SIGN_OFF_PACK.md) · [`R1_API_DEMO_SCRIPT.md`](./R1_API_DEMO_SCRIPT.md) · API previews | 🔶 ready for meeting |
 | R2 | New government web shell (replace OAU chrome) | Module map §4 in blueprint | ⬜ |
 | R3 | Cutover: Evidence registry default landing | Retire “telemetry dashboard” copy | ⬜ |
 
@@ -53,7 +53,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 | 2.1 | PostGIS `national_ldn_units` from combined shapefile | 🔶 `002` + [LDN-NAT-ALL plan](./corpus/metadata/LDN-NAT-ALL_IMPORT_PLAN.md); CEID QA **93/147** ([`CEID_JOIN_QC.md`](./corpus/metadata/CEID_JOIN_QC.md)) |
 | 2.1b | Corpus metadata register | [`corpus/CORPUS_METADATA_REGISTER.md`](./corpus/CORPUS_METADATA_REGISTER.md) | ✅ |
 | 2.5 | Pressure layers schema stub | `003` + [`import_pressure_layers.py`](../scripts/import_pressure_layers.py) → staging **2804** pts | 🔶 staging + `/api/pressure-layers` |
-| 2.2 | Import `intervention_spatial` (47 EMA projects) | ✅ staging JSON; shapefile QC **47** geog ([`INTERVENTION_SPATIAL_QC.md`](./corpus/metadata/INTERVENTION_SPATIAL_QC.md)) |
+| 2.2 | Import `intervention_spatial` (47 EMA projects) | ✅ staging JSON; SBC **1364** staging ([`import_sbc_staging.py`](../scripts/import_sbc_staging.py)) |
 | 2.3 | Mobile sync → DB first; JSON cache second | 🔶 `/api/submit/*` + queue → localhost/vercel |
 | 2.4 | `verification_log` + review UI (district / national) | P1 ✅ [`GOVERNANCE_API_P1.md`](./design/GOVERNANCE_API_P1.md) · P2 audit ✅ [`GOVERNANCE_API_P2.md`](./design/GOVERNANCE_API_P2.md) · UI after R1 |
 
@@ -81,7 +81,9 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 **Autonomous mode:** [`AUTONOMOUS_EXECUTION.md`](./AUTONOMOUS_EXECUTION.md) — no “continue” required.
 
-**Next automatic block:** R1 steering meeting · Supabase **S2** apply · field lock workflow pilot (verify API).
+**Next automatic block:** **R1 steering meeting** (DOCX + API demo) · Supabase **S2** · EMA GeoTIFF drop (S10–S12).
+
+**Session summary:** [`PROGRAMME_SESSION_SUMMARY_2026-11-23.md`](./PROGRAMME_SESSION_SUMMARY_2026-11-23.md)
 
 **Block reviews:** [Study twinning](./BLOCK_REVIEW_2026-11-23_study-peer-twinning.md) · [Discipline](./BLOCK_DISCIPLINE_60MIN.md)
 

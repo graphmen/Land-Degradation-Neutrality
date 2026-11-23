@@ -16,5 +16,8 @@ Outputs (gitignored): `exports/steering-docx/*.docx`
 | STEERING_DECISIONS_QUEUE | S1–S12 |
 | EMA_STEERING_ONE_PAGER | Summary |
 | ZIMBABWE_DIFFERENTIATOR_STEERING_ONE_PAGER | Ministerial one-pager |
+| R1_API_DEMO_SCRIPT | Live API walkthrough |
+| PROGRAMME_SESSION_SUMMARY_2026-11-23 | Day summary for leadership |
+| corpus/CORPUS_QC_LINEAGE | QC script index |
 
 Converter: root [`convert_to_docx.py`](../convert_to_docx.py).

@@ -18,19 +18,23 @@
 | National platform docs + corpus register | Living ([`STEERING_DECISIONS_QUEUE.md`](./STEERING_DECISIONS_QUEUE.md)) |
 | LDN-NAT-ALL QC | 254k polygons; CEID join 93/147 interim |
 | Verification API | P1+P2 (`/api/verify/*`, migration `005`) |
-| Export rehearsal §F | META, FIELD, STATUS, LC/LPD/SOC templates; bundle + photos |
-| Reporting dry-run | `public/reporting-desk-dry-run.json` — **3 pilot locked** LDN rows |
-| Mobile | Android UAT; CEID hint + validator API |
-| **Not started** | R1 UI (R2 shell), PostGIS load, production-scale lock |
+| Export rehearsal §F | META (**13** layers), FIELD, STATUS, LC/LPD/SOC templates; bundle + photos |
+| Reporting dry-run | Gates s10_f3 / s11_f4 / s12_f5 · **3 pilot locked** LDN |
+| Staging spatial | Pressure **2804** · SBC **1364** · projects **47** (API opt-in) |
+| R2 API preview | `/api/national-overview`, `/api/evidence/registry`, `/api/verify/queues` (no chrome) |
+| Mobile | Android UAT; iOS study [`mobile/UAT_IOS.md`](../mobile/UAT_IOS.md) |
+| **Not started** | R2 government shell, PostGIS load, production-scale lock |
 | **S2 ready** | [`SUPABASE_S2_STEERING_RUNBOOK.md`](../backend/SUPABASE_S2_STEERING_RUNBOOK.md) Phase A+B |
 
 ---
 
 ## Decisions requested
 
-See **S1–S9** in [`STEERING_DECISIONS_QUEUE.md`](./STEERING_DECISIONS_QUEUE.md). Minimum for next sprint:
+See **S1–S12** in [`STEERING_DECISIONS_QUEUE.md`](./STEERING_DECISIONS_QUEUE.md). Minimum for next sprint:
 
-1. **S1** code lists · **S2** migrations · **S3–S4** GIS join · **S5** reporting period · **S6** R1 IA sign-off.
+1. **S1** code lists · **S2** migrations · **S3–S4** GIS · **S5** period · **S6** R1 sign-off · **S7** twins · **S8** pressure PostGIS · **S10–S12** SO1 rasters.
+
+**Demo:** [`R1_API_DEMO_SCRIPT.md`](./R1_API_DEMO_SCRIPT.md)
 
 ---
 
