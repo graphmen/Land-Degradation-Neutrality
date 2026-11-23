@@ -6,6 +6,7 @@ import { buildExpSo1FieldPackage } from "../lib/exp-so1-field-export";
 import { buildExpSo1LcTemplate } from "../lib/exp-so1-lc-export";
 import { buildExpSo1LpdTemplate } from "../lib/exp-so1-lpd-export";
 import { buildExpSo1SocPackage } from "../lib/exp-so1-soc-export";
+import { buildAndWriteReportingBundle } from "../lib/exp-reporting-bundle";
 import { buildExpSo1StatusPackage } from "../lib/exp-so1-status-export";
 
 async function sha256(text: string) {
@@ -20,6 +21,9 @@ async function main() {
   const lpd = buildExpSo1LpdTemplate();
   const soc = await buildExpSo1SocPackage();
   const period = status.reporting_period ?? "unassigned";
+  const bundle = await buildAndWriteReportingBundle({ rehearsal: true });
+  const manifestRaw = await fs.readFile(bundle.manifest_path, "utf-8");
+  const manifestHash = await sha256(manifestRaw);
 
   const report = {
     dry_run_at: new Date().toISOString(),
@@ -66,6 +70,13 @@ async function main() {
         area_unit_confirmed: status.summary.area_unit != null,
         hash_csv: await sha256(status.csv),
         one_ao_ready: status.metadata.one_ao_ready === true,
+      },
+      F7_REPORTING_BUNDLE: {
+        pass: true,
+        bundle_id: bundle.bundle_id,
+        root_dir: bundle.root_dir,
+        manifest_sha256: manifestHash,
+        package_count: Object.keys(bundle.packages).length,
       },
     },
     gates: {

@@ -15,23 +15,21 @@
 
 | Area | Status |
 |------|--------|
-| Programme guide + work plan | v0.5–0.6 Word/Markdown |
-| Annexes A–F + spatial register C | Draft complete |
-| Verification + export package | Annex E |
-| Code lists | v0.9 draft (`/api/reference/code-lists`) |
-| LDN cache ETL | 150/150 `land_cover` populated |
-| Monitoring sites | 28 points imported |
-| EMA projects (staging) | 47 points (`ema-projects-import.json`) |
-| Mobile forms | LDN / Soil / Drylands use national code lists |
+| National platform docs + corpus register | Living ([`STEERING_DECISIONS_QUEUE.md`](./STEERING_DECISIONS_QUEUE.md)) |
+| LDN-NAT-ALL QC | 254k polygons; CEID join 93/147 interim |
+| Verification API | P1+P2 (`/api/verify/*`, migration `005`) |
+| Export rehearsal §F | META, FIELD, STATUS, LC/LPD/SOC templates; bundle script |
+| Reporting dry-run | `public/reporting-desk-dry-run.json` |
+| Mobile | Submit → national API; [`MOBILE_API_DEPLOY.md`](./MOBILE_API_DEPLOY.md) |
+| **Not started** | R1 UI, PostGIS load, locked field exports |
 
 ---
 
 ## Decisions requested
 
-1. Approve Annex F severity + land cover labels.  
-2. Confirm CEID ↔ polygon `Id` join (GIS).  
-3. Approve applying `001_reference_code_lists.sql` on Supabase.  
-4. Replace demo interventions with EMA import on go-live.
+See **S1–S9** in [`STEERING_DECISIONS_QUEUE.md`](./STEERING_DECISIONS_QUEUE.md). Minimum for next sprint:
+
+1. **S1** code lists · **S2** migrations · **S3–S4** GIS join · **S5** reporting period · **S6** R1 IA sign-off.
 
 ---
 

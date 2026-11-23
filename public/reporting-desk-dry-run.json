@@ -1,5 +1,5 @@
 {
-  "dry_run_at": "2026-11-23T08:27:14.523Z",
+  "dry_run_at": "2026-11-23T08:31:14.842Z",
   "reporting_period": "2020-2023",
   "section_F": {
     "F1_EXP_META": {
@@ -48,6 +48,13 @@
       "area_unit_confirmed": false,
       "hash_csv": "31bc0c85448d1c4c230cc77fad35a3286417f13ab6a79d052bfa3083bf7c893e",
       "one_ao_ready": false
+    },
+    "F7_REPORTING_BUNDLE": {
+      "pass": true,
+      "bundle_id": "BUNDLE-2026-11-23T08-31-14-815Z",
+      "root_dir": "C:\\Users\\ndebelem.ZINGSERVER1\\Desktop\\2026\\OAU\\exports\\2020-2023\\BUNDLE-2026-11-23T08-31-14-815Z",
+      "manifest_sha256": "3ca0f02eee37bb86d8ab78d73cb43f9c1cdb6df3abbb430ff0a535c386edda11",
+      "package_count": 6
     }
   },
   "gates": {

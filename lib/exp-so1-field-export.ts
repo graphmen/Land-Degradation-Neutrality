@@ -145,9 +145,13 @@ export async function writeExpSo1FieldToDisk(
   baseDir?: string
 ): Promise<string> {
   const period = pkg.reporting_period ?? "unassigned";
+  const exportRoot = baseDir
+    ? path.isAbsolute(baseDir)
+      ? baseDir
+      : path.join(process.cwd(), baseDir)
+    : path.join(process.cwd(), "exports");
   const outDir = path.join(
-    process.cwd(),
-    baseDir ?? "exports",
+    exportRoot,
     period,
     "EXP-SO1-FIELD",
     pkg.generated_at.replace(/[:.]/g, "-")

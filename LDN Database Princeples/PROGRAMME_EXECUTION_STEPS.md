@@ -29,7 +29,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 | 0.4 | Interventions register | D v0.2 | ✅ |
 | 0.5 | Verification + PRAIS exports | E v0.1 | ✅ |
 | 0.6 | Code lists v0.9 draft | F + `reference-code-lists.v0.9.json` | ✅ this session |
-| 0.7 | EMA steering sign-off on 0.1–0.6 | [`EMA_STEERING_ONE_PAGER.md`](./EMA_STEERING_ONE_PAGER.md) | 🔶 ready for meeting |
+| 0.7 | EMA steering sign-off on 0.1–0.6 | [`EMA_STEERING_ONE_PAGER.md`](./EMA_STEERING_ONE_PAGER.md) · [`STEERING_DECISIONS_QUEUE.md`](./STEERING_DECISIONS_QUEUE.md) | 🔶 ready for meeting |
 
 ---
 
@@ -81,7 +81,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 **Autonomous mode:** [`AUTONOMOUS_EXECUTION.md`](./AUTONOMOUS_EXECUTION.md) — no “continue” required.
 
-**Next automatic block:** Full §F export `write=1` bundle script · Supabase migrations apply · R1 steering pack.
+**Next automatic block:** R1 sign-off facilitation doc · Supabase apply runbook test · iOS build (3.1).
 
 **Block reviews:** [Study twinning](./BLOCK_REVIEW_2026-11-23_study-peer-twinning.md) · [Discipline](./BLOCK_DISCIPLINE_60MIN.md)
 
