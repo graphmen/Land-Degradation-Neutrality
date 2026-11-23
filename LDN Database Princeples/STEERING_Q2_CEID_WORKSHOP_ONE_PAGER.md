@@ -53,7 +53,7 @@ Writes `exports/steering-docx/CEID_ALIAS_WORKSHOP.csv` — GIS fills `shapefile_
 1. `npm run import:ceid-aliases` — merges filled CSV into JSON (or edit JSON directly)  
 2. `npm run qc:ceid` · `npm run build:ceid-aliases` — preserves approved/retired rows  
 3. Document match rate in minutes  
+4. Sign **Q2** in [`STEERING_DECISIONS_QUEUE.md`](./STEERING_DECISIONS_QUEUE.md)  
+5. Unblock **LDN-NAT-ALL** load plan §3
 
 **Peer narrative (S7):** [`STUDY_CEID_GRID_PEER_BENCHMARK.md`](./STUDY_CEID_GRID_PEER_BENCHMARK.md)
-3. Sign **Q2** in [`STEERING_DECISIONS_QUEUE.md`](./STEERING_DECISIONS_QUEUE.md)  
-4. Unblock **LDN-NAT-ALL** load plan §3

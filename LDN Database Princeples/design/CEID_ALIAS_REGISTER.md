@@ -62,7 +62,7 @@ Extension table `ceid_alias` (migration **006** — not drafted until Q2 signed)
 2. EMA fills `shapefile_id` + `resolution: approved` for each row or marks `retired`.  
 3. Workshop return: `npm run import:ceid-aliases` (CSV → JSON).  
 4. `npm run build:ceid-aliases` adds new unmatched **without wiping** approved/retired rows.  
-4. Re-run `npm run qc:ceid` to confirm improved match rate.
+5. Re-run `npm run qc:ceid` to confirm improved match rate.
 
 ---
 
