@@ -43,25 +43,75 @@ function rowId(r: Record<string, unknown>): string {
   return String(r.kobo_id ?? r.id ?? r._id ?? "");
 }
 
+function extractCoords(r: Record<string, unknown>): { lat: number | null; lng: number | null } {
+  const latDirect = pickNum(r.lat);
+  const lngDirect = pickNum(r.lng);
+  if (latDirect != null && lngDirect != null) return { lat: latDirect, lng: lngDirect };
+
+  const geo = r._geolocation;
+  if (Array.isArray(geo) && geo.length >= 2) {
+    const la = pickNum(geo[0]);
+    const ln = pickNum(geo[1]);
+    if (la != null && ln != null) return { lat: la, lng: ln };
+  }
+
+  // Soil nested sampl/poin format: "-20.525 31.012 771.0 5.0"
+  if (Array.isArray(r.sampl) && r.sampl.length > 0) {
+    const first = r.sampl[0] as Record<string, unknown>;
+    const poin = pickStr(first?.["sampl/poin"] ?? first?.poin);
+    if (poin) {
+      const parts = poin.trim().split(/\s+/);
+      if (parts.length >= 2) {
+        const la = pickNum(parts[0]);
+        const ln = pickNum(parts[1]);
+        if (la != null && ln != null) return { lat: la, lng: ln };
+      }
+    }
+  }
+
+  return { lat: null, lng: null };
+}
+
 function toRow(
   r: Record<string, unknown>,
   evidence_type: EvidenceType
 ): EvidenceRegistryRow {
   const status = pickStr(r.verification_status) ?? "submitted";
+  const { lat, lng } = extractCoords(r);
+  const district =
+    pickStr(r.district) ??
+    pickStr(r["geninfo/dist"]) ??
+    pickStr(r.dist) ??
+    pickStr(r.District) ??
+    null;
+  const ward =
+    pickStr(r.ward) ??
+    pickStr(r["geninfo/ward"]) ??
+    pickStr(r.ward_name) ??
+    pickStr(r.ward_number) ??
+    null;
+  const ceid =
+    pickStr(r.ceid) ??
+    pickStr(r["geninfo/ceid"]) ??
+    null;
+
   return {
     evidence_type,
     record_id: rowId(r),
-    uuid: pickStr(r.uuid),
-    district: pickStr(r.district),
-    ward: pickStr(r.ward),
-    ceid: evidence_type === "ldn" ? pickStr(r.ceid) : null,
+    uuid: pickStr(r.uuid) ?? pickStr(r._uuid),
+    district,
+    ward,
+    ceid,
     collected_at:
       pickStr(r.submission_time) ??
+      pickStr(r._submission_time) ??
+      pickStr(r["geninfo/measurement_date"]) ??
+      pickStr(r.date_of_observation) ??
       pickStr(r.end) ??
       pickStr(r.measurement_date) ??
       null,
-    lat: pickNum(r.lat),
-    lng: pickNum(r.lng),
+    lat,
+    lng,
     data_tier: pickStr(r.data_tier),
     verification_status: status,
     code_list_version: pickStr(r.code_list_version),
