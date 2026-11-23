@@ -954,9 +954,14 @@ export default function DatabaseExplorer() {
 
       {/* Header section (Compact) */}
       <div className="explorer-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
-        <h2 style={{ fontFamily: "var(--font-title)", fontWeight: 800, fontSize: "18px", color: "var(--text-primary)", margin: 0, display: "flex", alignItems: "center", gap: "6px" }}>
-          <Database size={20} style={{ color: "var(--accent-green)" }} /> Database Explorer
-        </h2>
+        <div>
+          <h2 style={{ fontFamily: "var(--font-title)", fontWeight: 800, fontSize: "18px", color: "var(--text-primary)", margin: 0, display: "flex", alignItems: "center", gap: "6px" }}>
+            <Database size={20} style={{ color: "var(--accent-green)" }} /> Database Explorer
+          </h2>
+          <p style={{ margin: "4px 0 0", fontSize: "11px", color: "var(--text-muted)", maxWidth: "28rem" }}>
+            New field data: <strong>EMA mobile</strong> → <code>/api/submit/*</code>. Use legacy sync only for historical Kobo backfill.
+          </p>
+        </div>
         
         {/* Top Actions */}
         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
@@ -990,7 +995,7 @@ export default function DatabaseExplorer() {
             className="sidebar-export-btn"
             style={{ padding: "6px 12px", fontSize: "11px", gap: "4px", display: "flex", alignItems: "center", background: "#ffffff", border: "1px solid var(--border-color)", color: "var(--text-green)", cursor: "pointer", borderRadius: "var(--radius-md)" }}
           >
-            <RefreshCw size={11} className={loading ? "animate-spin" : ""} /> {loading ? "Syncing..." : "Sync Database"}
+            <RefreshCw size={11} className={loading ? "animate-spin" : ""} /> {loading ? "Syncing..." : "Legacy Kobo backfill"}
           </button>
         </div>
       </div>

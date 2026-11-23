@@ -179,7 +179,7 @@ export default function InterventionsPage() {
   const load = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/interventions", { cache: "no-store" });
+      const res = await fetch("/api/interventions?includeEma=true", { cache: "no-store" });
       if (res.ok) {
         const json = await res.json();
         setRecords(json.records || []);

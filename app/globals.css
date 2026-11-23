@@ -2483,6 +2483,121 @@ html, body {
   }
 }
 
+.programme-transform-panel {
+  margin: 0 0 1.5rem;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, #043016 0%, #0a4d2e 55%, #0f3d28 100%);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #f4faf6;
+  box-shadow: 0 12px 40px rgba(4, 48, 22, 0.25);
+}
+
+.programme-transform-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.programme-transform-title {
+  font-family: var(--font-title);
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.programme-transform-lead {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  max-width: 52rem;
+  opacity: 0.95;
+}
+
+.programme-transform-lead code {
+  font-size: 0.8rem;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+
+.programme-transform-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.programme-transform-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.programme-stat-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+}
+
+.programme-stat-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+}
+
+.programme-stat-value {
+  font-family: var(--font-title);
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0.2rem 0;
+}
+
+.programme-stat-detail {
+  font-size: 0.72rem;
+  opacity: 0.8;
+  line-height: 1.35;
+}
+
+.programme-transform-checklist {
+  font-size: 0.82rem;
+  line-height: 1.65;
+  margin: 0 0 1rem 1.1rem;
+  opacity: 0.92;
+}
+
+.programme-transform-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.programme-transform-links a {
+  color: #b8f5d0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.programme-inline-spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
 
 
 

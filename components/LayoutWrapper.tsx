@@ -44,7 +44,9 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
       {/* Slim Footer */}
       <footer className="global-footer">
         <span>© {new Date().getFullYear()} Environmental Management Agency (EMA), Zimbabwe. All rights reserved.</span>
-        <span style={{ marginLeft: "auto", color: "var(--accent-gold)", fontWeight: 700 }}>GEF 7 Drylands DSL IP & UNCCD Alignment</span>
+        <span style={{ marginLeft: "auto", fontWeight: 600, opacity: 0.9 }}>
+          National LDN programme · Mobile-first collection · Code lists v0.9-draft
+        </span>
       </footer>
     </div>
   );

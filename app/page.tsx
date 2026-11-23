@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import ProgrammeTransformPanel from "@/components/ProgrammeTransformPanel";
 
 const LDN_TARGETS_BASE = [
   {
@@ -141,7 +142,7 @@ export default function Home() {
         const [ldnRes, soilRes, intRes, dryRes] = await Promise.all([
           fetch("/api/ldn", { cache: "no-store" }).then((r) => r.json()).catch(() => ({ count: 0, records: [] })),
           fetch("/api/soil", { cache: "no-store" }).then((r) => r.json()).catch(() => ({ count: 0, records: [] })),
-          fetch("/api/interventions", { cache: "no-store" }).then((r) => r.json()).catch(() => ({ count: 0, records: [] })),
+          fetch("/api/interventions?includeEma=true", { cache: "no-store" }).then((r) => r.json()).catch(() => ({ count: 0, records: [] })),
           fetch("/api/drylands", { cache: "no-store" }).then((r) => r.json()).catch(() => ({ count: 0, records: [] })),
         ]);
 
@@ -249,6 +250,8 @@ export default function Home() {
           </p>
         </div>
       </div>
+
+      <ProgrammeTransformPanel />
 
       {loading ? (
         <div style={{ height: "200px", display: "flex", alignItems: "center", justifyContent: "center" }}>
