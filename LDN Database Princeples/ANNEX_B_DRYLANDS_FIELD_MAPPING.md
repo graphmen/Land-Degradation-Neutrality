@@ -34,7 +34,7 @@ Drylands observations support **drylands / ILUP programme** planning and evidenc
 
 **District inference (Excel only):** `infer_district()` uses ward-number heuristics for Chivi, Gutu, Chipinge, etc. — **must be replaced** with governed `admin_units` lookup in Phase 1.
 
-**Live cache:** `public/drylands-data.json` — **16 records** at last export (mobile + legacy Excel rows).
+**Live cache:** `public/drylands-data.json` — **16 records** at last export (mobile + legacy Excel rows). **Re-import:** `npm run import:drylands` (Excel in `data/imports/` or project root).
 
 ---
 

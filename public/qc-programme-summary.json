@@ -1,5 +1,10 @@
 {
-  "generated_at": "2026-11-23T12:25:24.994746+00:00",
+  "generated_at": "2026-11-23T12:27:09.572962+00:00",
+  "field_drylands": {
+    "count": 16,
+    "imported_at": "2026-11-23T12:14:28Z",
+    "source": "ilup_excel"
+  },
   "field_ldn": {
     "records_with_ceid": 150,
     "unique_ceids": 147,

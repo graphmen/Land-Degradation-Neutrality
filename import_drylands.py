@@ -6,18 +6,27 @@ from datetime import datetime
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Prefer the simple name; fall back to any ILUP_for_Drylands*.xlsx in the project root
+# Prefer the simple name; fall back to any ILUP_for_Drylands*.xlsx in project root or data/imports/
 def find_ilup_excel():
-    preferred = os.path.join(script_dir, "ILUP_for_Drylands.xlsx")
-    if os.path.exists(preferred):
-        return preferred
-    matches = sorted(glob.glob(os.path.join(script_dir, "ILUP_for_Drylands*.xlsx")))
+    search_dirs = [
+        script_dir,
+        os.path.join(script_dir, "data", "imports"),
+    ]
+    preferred_names = ["ILUP_for_Drylands.xlsx"]
+    for directory in search_dirs:
+        for name in preferred_names:
+            preferred = os.path.join(directory, name)
+            if os.path.exists(preferred):
+                return preferred
+    matches = []
+    for directory in search_dirs:
+        matches.extend(glob.glob(os.path.join(directory, "ILUP_for_Drylands*.xlsx")))
+    matches = sorted(set(matches))
     if matches:
-        print(f"  Using: {os.path.basename(matches[-1])}")
-        return matches[-1]
+        chosen = matches[-1]
+        print(f"  Using: {os.path.basename(chosen)}")
+        return chosen
     return None
-
-EXCEL_FILE = find_ilup_excel()
 OUTPUT_FILE = os.path.join(script_dir, "public", "drylands-data.json")
 
 # District lookup by ward number (from field knowledge)
@@ -34,12 +43,14 @@ def infer_district(ward_name, village_location=""):
     w = str(ward_name or "").strip()
     v = str(village_location or "").lower()
     # Extract ward number
+    last_clean = ""
     for token in w.split():
         clean = token.replace("Ward", "").replace("ward", "").strip()
+        last_clean = clean
         if clean.isdigit() and clean in WARD_DISTRICT_MAP:
             return WARD_DISTRICT_MAP[clean]
-    if clean.isdigit():
-        return WARD_DISTRICT_MAP.get(clean, "Chivi")
+    if last_clean.isdigit():
+        return WARD_DISTRICT_MAP.get(last_clean, "Chivi")
     # Fallback by village keywords
     if "musikavanhu" in v or "chipinge" in v: return "Chipinge"
     if "gutu" in v: return "Gutu"
@@ -162,13 +173,28 @@ def import_ilup_records(ws):
 
     return records
 
+def normalize_record_ids(record: dict) -> dict:
+    rid = record.get("_id") or record.get("kobo_id") or record.get("id")
+    if rid is not None:
+        record["_id"] = rid
+    coords = record.get("coordinates")
+    if (not coords or not str(coords).strip()) and record.get("lat") is not None and record.get("lng") is not None:
+        record["coordinates"] = f"{record['lat']} {record['lng']} 0 0"
+    return record
+
+
 def main():
-    if not os.path.exists(EXCEL_FILE):
-        print(f"ERROR: Excel file not found: {EXCEL_FILE}")
+    excel_file = find_ilup_excel()
+    if not excel_file or not os.path.exists(excel_file):
+        print(
+            f"ERROR: Excel file not found. Place ILUP_for_Drylands.xlsx in:\n"
+            f"  - {script_dir}\n"
+            f"  - {os.path.join(script_dir, 'data', 'imports')}"
+        )
         return
 
-    print(f"Loading: {EXCEL_FILE}")
-    wb = openpyxl.load_workbook(EXCEL_FILE, data_only=True)
+    print(f"Loading: {excel_file}")
+    wb = openpyxl.load_workbook(excel_file, data_only=True)
     ws = wb.active
     print(f"Found {ws.max_row - 1} data rows in sheet '{ws.title}'")
 
@@ -181,18 +207,27 @@ def main():
     if os.path.exists(OUTPUT_FILE):
         with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
             existing_data = json.load(f)
-            existing_records = existing_data.get("records", [])
+            existing_records = [normalize_record_ids(dict(r)) for r in existing_data.get("records", [])]
         print(f"Existing records in drylands-data.json: {len(existing_records)}")
     
     # Merge: keep manually-added records (those NOT from ILUP), add ILUP records
     ilup_ids = {str(r["_id"]) for r in ilup_records}
-    manual_records = [r for r in existing_records if str(r.get("_id", "")) not in ilup_ids and r.get("_source") != "ilup_excel"]
+    manual_records = [
+        normalize_record_ids(dict(r))
+        for r in existing_records
+        if str(r.get("_id", r.get("id", ""))) not in ilup_ids and r.get("_source") != "ilup_excel"
+    ]
     print(f"Preserving {len(manual_records)} manually-added records.")
 
     combined = ilup_records + manual_records
     combined.sort(key=lambda r: str(r.get("_submission_time", "")), reverse=True)
 
-    output = {"count": len(combined), "records": combined}
+    output = {
+        "count": len(combined),
+        "source": "ilup_excel",
+        "imported_at": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "records": combined,
+    }
     os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2, default=str)

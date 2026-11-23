@@ -15,6 +15,7 @@
 | Interventions QC | `intervention_spatial_qc.py` | `qc-intervention-spatial-report.json` | S9 |
 | EMA projects | `import_ema_projects.py` | `ema-projects-import.json` | INT-PROJECTS |
 | SBC staging | `import_sbc_staging.py` | `intervention-sbc-staging.json` | INT-SBC |
+| Drylands ILUP | `import_drylands.py` · `npm run import:drylands` | `drylands-data.json` | FIELD-DRYILUP |
 | SO1 rasters (pending) | `national_raster_qc.py` | `qc-national-rasters-report.json` | **S10–S12** |
 | LC stack (wrapper) | `lc_stack_qc.py` | → national_raster QC | S10 |
 | Reporting §F | `reporting_desk_dry_run.ts` | `reporting-desk-dry-run.json` | F1–F7 |

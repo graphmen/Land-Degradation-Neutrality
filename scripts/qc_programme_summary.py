@@ -28,6 +28,7 @@ def main() -> int:
     ema_projects = load("ema-projects-import.json") or {}
     dry_run = load("reporting-desk-dry-run.json") or {}
     aliases = load("reference-ceid-aliases.v0.1.json") or {}
+    drylands = load("drylands-data.json") or {}
 
     pressure_pkgs = {
         p.get("layer_id"): p.get("feature_total")
@@ -40,6 +41,11 @@ def main() -> int:
 
     summary = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        "field_drylands": {
+            "count": drylands.get("count"),
+            "imported_at": drylands.get("imported_at"),
+            "source": drylands.get("source"),
+        },
         "field_ldn": {
             "records_with_ceid": ceid.get("field_records_with_ceid"),
             "unique_ceids": ceid.get("unique_ceids"),

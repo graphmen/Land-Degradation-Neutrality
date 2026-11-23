@@ -17,6 +17,7 @@
     "qc:rasters:checklist": "python scripts/national_raster_qc.py --checklist-only",
     "import:pressure-staging": "python scripts/import_pressure_layers.py",
     "import:sbc-staging": "python scripts/import_sbc_staging.py",
+    "import:drylands": "python import_drylands.py",
     "export:steering-docx": "python scripts/export_steering_docx.py",
     "export:ceid-worksheet": "python scripts/export_ceid_alias_worksheet.py",
     "qc:ceid": "python scripts/ceid_join_qc.py",
