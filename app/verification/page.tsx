@@ -57,6 +57,8 @@ function VerificationWorkspaceInner() {
 
   const [activeQueue, setActiveQueue] = useState(initialQueue);
   const [districtFilter, setDistrictFilter] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
   const [data, setData] = useState<VerificationQueuesPackage | null>(null);
   const [photoRows, setPhotoRows] = useState<PhotoManifestRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -103,7 +105,7 @@ function VerificationWorkspaceInner() {
     setError(null);
     try {
       const res = await fetch(
-        `/api/verify/queues?queue=${encodeURIComponent(queueName)}&limit=100`,
+        `/api/verify/queues?queue=${encodeURIComponent(queueName)}&limit=2000`,
         { cache: "no-store" }
       );
       if (!res.ok) throw new Error(`Verification queues API returned ${res.status}`);
@@ -218,6 +220,20 @@ function VerificationWorkspaceInner() {
     return list.filter((r) => r.district === districtFilter);
   }, [data, districtFilter]);
 
+  const totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const pageStart = (safePage - 1) * pageSize;
+  const pageRows = useMemo(
+    () => rows.slice(pageStart, pageStart + pageSize),
+    [rows, pageStart, pageSize]
+  );
+
+  // Reset page & selection when switching queues or district
+  useEffect(() => {
+    setPage(1);
+    setSelectedKeys(new Set());
+  }, [activeQueue, districtFilter, pageSize]);
+
   // Clear selection when switching queues
   useEffect(() => {
     setSelectedKeys(new Set());
@@ -246,10 +262,12 @@ function VerificationWorkspaceInner() {
   };
 
   const toggleSelectAll = () => {
-    if (selectedKeys.size === rows.length && rows.length > 0) {
+    const allSelected =
+      pageRows.length > 0 && pageRows.every((r) => selectedKeys.has(rowKey(r)));
+    if (allSelected) {
       setSelectedKeys(new Set());
     } else {
-      setSelectedKeys(new Set(rows.map(rowKey)));
+      setSelectedKeys(new Set(pageRows.map(rowKey)));
     }
   };
 
@@ -403,22 +421,39 @@ function VerificationWorkspaceInner() {
           <strong style={{ fontSize: 14 }}>
             Queue: <span style={{ textTransform: "capitalize" }}>{activeQueue}</span>
           </strong>
-          <span className="gov-badge gov-badge-slate">{rows.length} shown</span>
+          <span className="gov-badge gov-badge-slate">
+            {rows.length === 0
+              ? "0 records"
+              : `Showing ${pageStart + 1}–${Math.min(pageStart + pageSize, rows.length)} of ${rows.length}`}
+          </span>
         </div>
 
-        <select
-          className="gov-select"
-          value={districtFilter}
-          onChange={(e) => setDistrictFilter(e.target.value)}
-          aria-label="Filter queue by district"
-        >
-          <option value="">All districts</option>
-          {districts.map((d) => (
-            <option key={d} value={d}>
-              {d}
-            </option>
-          ))}
-        </select>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <select
+            className="gov-select"
+            value={pageSize}
+            onChange={(e) => setPageSize(Number(e.target.value))}
+            aria-label="Rows per page"
+          >
+            <option value={25}>25 / page</option>
+            <option value={50}>50 / page</option>
+            <option value={100}>100 / page</option>
+          </select>
+
+          <select
+            className="gov-select"
+            value={districtFilter}
+            onChange={(e) => setDistrictFilter(e.target.value)}
+            aria-label="Filter queue by district"
+          >
+            <option value="">All districts</option>
+            {districts.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Batch Verification Action Bar */}
@@ -521,9 +556,12 @@ function VerificationWorkspaceInner() {
               <th style={{ width: 36 }}>
                 <input
                   type="checkbox"
-                  checked={rows.length > 0 && selectedKeys.size === rows.length}
+                  checked={
+                    pageRows.length > 0 &&
+                    pageRows.every((r) => selectedKeys.has(rowKey(r)))
+                  }
                   onChange={toggleSelectAll}
-                  aria-label="Select all visible records"
+                  aria-label="Select all records on this page"
                 />
               </th>
               <th>Record ID</th>
@@ -550,7 +588,7 @@ function VerificationWorkspaceInner() {
                 </td>
               </tr>
             ) : (
-              rows.map((row) => (
+              pageRows.map((row) => (
                 <tr key={`${row.evidence_type}-${row.record_id}`}>
                   <td>
                     <input
@@ -591,6 +629,61 @@ function VerificationWorkspaceInner() {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Bar */}
+      {rows.length > pageSize && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "8px 14px",
+            background: "#ffffff",
+            border: "1px solid #d9e2dc",
+            borderRadius: 8,
+            fontSize: 12,
+          }}
+        >
+          <span style={{ color: "#4f6457" }}>
+            Page <strong>{safePage}</strong> of <strong>{totalPages}</strong> ({rows.length} total
+            records)
+          </span>
+          <div style={{ display: "flex", gap: 6 }}>
+            <button
+              type="button"
+              className="gov-btn gov-btn-sm"
+              disabled={safePage <= 1}
+              onClick={() => setPage(1)}
+            >
+              First
+            </button>
+            <button
+              type="button"
+              className="gov-btn gov-btn-sm"
+              disabled={safePage <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+            >
+              Previous
+            </button>
+            <button
+              type="button"
+              className="gov-btn gov-btn-sm"
+              disabled={safePage >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            >
+              Next
+            </button>
+            <button
+              type="button"
+              className="gov-btn gov-btn-sm"
+              disabled={safePage >= totalPages}
+              onClick={() => setPage(totalPages)}
+            >
+              Last
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Record Review & Transition Drawer */}
       {selected && (

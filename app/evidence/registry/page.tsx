@@ -39,6 +39,8 @@ function EvidenceRegistryInner() {
   const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [praisOnly, setPraisOnly] = useState(initialPrais);
   const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
   const [data, setData] = useState<EvidenceRegistryPackage | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +51,7 @@ function EvidenceRegistryInner() {
     setError(null);
     try {
       const params = new URLSearchParams();
-      params.set("limit", "500");
+      params.set("limit", "2000");
       if (typeFilter) params.set("type", typeFilter);
       if (statusFilter) params.set("verification_status", statusFilter);
       if (praisOnly) params.set("prais_eligible", "true");
@@ -84,6 +86,18 @@ function EvidenceRegistryInner() {
         (r.ceid ?? "").toLowerCase().includes(q)
     );
   }, [data, searchTerm]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [typeFilter, statusFilter, praisOnly, searchTerm, pageSize]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredRows.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const pageStart = (safePage - 1) * pageSize;
+  const pageRows = useMemo(
+    () => filteredRows.slice(pageStart, pageStart + pageSize),
+    [filteredRows, pageStart, pageSize]
+  );
 
   return (
     <>
@@ -243,7 +257,7 @@ function EvidenceRegistryInner() {
                 </td>
               </tr>
             ) : (
-              filteredRows.slice(0, 200).map((row) => (
+              pageRows.map((row) => (
                 <tr key={`${row.evidence_type}-${row.record_id}`}>
                   <td className="gov-mono">{row.record_id}</td>
                   <td>
@@ -297,9 +311,55 @@ function EvidenceRegistryInner() {
         </table>
       </div>
 
-      {filteredRows.length > 200 && (
-        <div className="gov-metric-sub">
-          Showing first 200 of {filteredRows.length} matching records. Use search or filters to narrow.
+      {filteredRows.length > 0 && (
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 10,
+            padding: "8px 14px",
+            background: "#ffffff",
+            border: "1px solid #d9e2dc",
+            borderRadius: 8,
+            fontSize: 12,
+          }}
+        >
+          <span style={{ color: "#4f6457" }}>
+            Showing <strong>{pageStart + 1}</strong>–
+            <strong>{Math.min(pageStart + pageSize, filteredRows.length)}</strong> of{" "}
+            <strong>{filteredRows.length}</strong> records (Page {safePage} of {totalPages})
+          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <select
+              className="gov-select"
+              style={{ fontSize: 12, padding: "4px 8px" }}
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+              aria-label="Rows per page"
+            >
+              <option value={25}>25 / page</option>
+              <option value={50}>50 / page</option>
+              <option value={100}>100 / page</option>
+            </select>
+            <button
+              type="button"
+              className="gov-btn gov-btn-sm"
+              disabled={safePage <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+            >
+              Previous
+            </button>
+            <button
+              type="button"
+              className="gov-btn gov-btn-sm"
+              disabled={safePage >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
 

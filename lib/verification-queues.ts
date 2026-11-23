@@ -68,7 +68,7 @@ export async function buildVerificationQueues(opts?: {
   queue?: string;
   limit?: number;
 }): Promise<VerificationQueuesPackage> {
-  const limit = Math.min(opts?.limit ?? 100, 500);
+  const limit = Math.min(opts?.limit ?? 100, 2000);
   const { totals, total } = await countByStatus();
 
   const queues = QUEUE_DEFINITIONS.map((q) => ({
