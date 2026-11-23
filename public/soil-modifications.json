@@ -1,0 +1,118 @@
+{
+  "additions": [],
+  "deletions": [],
+  "edits": {
+    "756835481": {
+      "soc_percent": 0.91,
+      "lab_number": "N0148",
+      "lab_sample_ref": "11622_16622 CHIMANIMANI",
+      "soc_source": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "data_tier": "tier2_national"
+    },
+    "756835494": {
+      "soc_percent": 0.74,
+      "lab_number": "N0149",
+      "lab_sample_ref": "11646_16610 BUHERA",
+      "soc_source": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "data_tier": "tier2_national"
+    },
+    "760619868": {
+      "soc_percent": 1.83,
+      "lab_number": "N0152",
+      "lab_sample_ref": "11676_16768 MASVINGO",
+      "soc_source": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "data_tier": "tier2_national"
+    },
+    "758556376": {
+      "soc_percent": 1.63,
+      "lab_number": "N0157",
+      "lab_sample_ref": "11664_16630 BIKITA",
+      "soc_source": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "data_tier": "tier2_national"
+    },
+    "756838387": {
+      "soc_percent": 1.14,
+      "lab_number": "N0159",
+      "lab_sample_ref": "11641_16656 BUHERA",
+      "soc_source": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "data_tier": "tier2_national"
+    },
+    "760356888": {
+      "soc_percent": 1.15,
+      "lab_number": "N0160",
+      "lab_sample_ref": "11750_16636 MASVINGO",
+      "soc_source": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "data_tier": "tier2_national"
+    },
+    "760347854": {
+      "soc_percent": 1.32,
+      "lab_number": "N0161",
+      "lab_sample_ref": "11718_16700 MASVINGO",
+      "soc_source": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "data_tier": "tier2_national"
+    },
+    "760347850": {
+      "soc_percent": 0.33,
+      "lab_number": "N0163",
+      "lab_sample_ref": "11716_16702 MASVINGO",
+      "soc_source": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "data_tier": "tier2_national"
+    },
+    "756836480": {
+      "soc_percent": 2.61,
+      "lab_number": "N0164",
+      "lab_sample_ref": "11618_16658 BUHERA",
+      "soc_source": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "data_tier": "tier2_national"
+    },
+    "760347842": {
+      "soc_percent": 1.35,
+      "lab_number": "N0165",
+      "lab_sample_ref": "11714_16706 MASVINGO",
+      "soc_source": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "data_tier": "tier2_national"
+    },
+    "760355621": {
+      "soc_percent": 0.88,
+      "lab_number": "N0167",
+      "lab_sample_ref": "11752_16634 MASVINGO",
+      "soc_source": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "data_tier": "tier2_national"
+    },
+    "760619877": {
+      "soc_percent": 1.57,
+      "lab_number": "N0171",
+      "lab_sample_ref": "11674_16774 MASVINGO",
+      "soc_source": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "data_tier": "tier2_national"
+    },
+    "760619884": {
+      "soc_percent": 0.18,
+      "lab_number": "N0170",
+      "lab_sample_ref": "11672_16782 MASVINGO",
+      "soc_source": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "data_tier": "tier2_national"
+    },
+    "760200888": {
+      "soc_percent": 1.18,
+      "lab_number": "N0172",
+      "lab_sample_ref": "11714_16686 MASVINGO",
+      "soc_source": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "data_tier": "tier2_national"
+    },
+    "756836468": {
+      "soc_percent": 0.36,
+      "lab_number": "N0174",
+      "lab_sample_ref": "1650_16620 BIKITA",
+      "soc_source": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "data_tier": "tier2_national"
+    },
+    "759703147": {
+      "soc_percent": 1.25,
+      "lab_number": "N0176",
+      "lab_sample_ref": "11686_16748 MASVINGO",
+      "soc_source": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "data_tier": "tier2_national"
+    }
+  }
+}

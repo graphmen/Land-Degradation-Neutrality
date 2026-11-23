@@ -18,6 +18,8 @@
     "import:pressure-staging": "python scripts/import_pressure_layers.py",
     "import:sbc-staging": "python scripts/import_sbc_staging.py",
     "import:drylands": "python import_drylands.py",
+    "import:lab-soc": "python scripts/import_lab_soc.py",
+    "so1:compute": "python scripts/compute_so1_zonal_1oao.py",
     "export:steering-docx": "python scripts/export_steering_docx.py",
     "export:ceid-worksheet": "python scripts/export_ceid_alias_worksheet.py",
     "r1:smoke": "node scripts/r1_api_smoke.mjs",

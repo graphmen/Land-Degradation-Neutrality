@@ -1,0 +1,17 @@
+{
+  "computed_at": "2026-11-23T23:24:42.338465+00:00",
+  "status": "awaiting_rasters",
+  "reporting_period": "2020-2023",
+  "one_ao_ready": false,
+  "rasters_present": {
+    "lc_t0": false,
+    "lc_t1": false,
+    "lpd": false,
+    "soc": false
+  },
+  "note": "Drop lc-national-t0.tif, lc-national-t1.tif, lpd-national.tif, and soc-national-0-30.tif into 'important files/' or pass --trends-earth <summary.json>.",
+  "lc_transitions": [],
+  "lpd_classes": [],
+  "soc_tier1": null,
+  "one_ao": null
+}

@@ -75,6 +75,13 @@ function VerificationWorkspaceInner() {
   const [submitting, setSubmitting] = useState(false);
   const [txMessage, setTxMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
 
+  // Bulk Verification Selection state
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
+  const [bulkToStatus, setBulkToStatus] = useState("");
+  const [bulkNote, setBulkNote] = useState("");
+  const [bulkSubmitting, setBulkSubmitting] = useState(false);
+  const [bulkFeedback, setBulkFeedback] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+
   useEffect(() => {
     setActorRole(role);
     setReportingPeriod(period);
@@ -211,6 +218,91 @@ function VerificationWorkspaceInner() {
     return list.filter((r) => r.district === districtFilter);
   }, [data, districtFilter]);
 
+  // Clear selection when switching queues
+  useEffect(() => {
+    setSelectedKeys(new Set());
+    setBulkFeedback(null);
+    const statusForQueue =
+      activeQueue === "district"
+        ? "district_review"
+        : activeQueue === "national"
+          ? "national_review"
+          : activeQueue;
+    const opts = getAllowedForRole(statusForQueue);
+    setBulkToStatus(opts[0] ?? "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeQueue, role]);
+
+  const rowKey = (r: EvidenceRegistryRow) => `${r.evidence_type}::${r.record_id}`;
+
+  const toggleRowSelect = (r: EvidenceRegistryRow) => {
+    const k = rowKey(r);
+    setSelectedKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(k)) next.delete(k);
+      else next.add(k);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedKeys.size === rows.length && rows.length > 0) {
+      setSelectedKeys(new Set());
+    } else {
+      setSelectedKeys(new Set(rows.map(rowKey)));
+    }
+  };
+
+  const handleBulkTransition = async () => {
+    if (selectedKeys.size === 0 || !bulkToStatus) return;
+    setBulkSubmitting(true);
+    setBulkFeedback(null);
+    try {
+      const chosen = rows.filter((r) => selectedKeys.has(rowKey(r)));
+      const res = await fetch("/api/verify/bulk-transition", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          records: chosen.map((r) => ({
+            entity: r.evidence_type,
+            record_id: r.record_id,
+            from_status: r.verification_status,
+          })),
+          to_status: bulkToStatus,
+          actor: actor.trim() || "ema_verifier",
+          actor_role: role,
+          comment: bulkNote.trim() || undefined,
+          reporting_period: bulkToStatus === "locked" ? period : undefined,
+        }),
+      });
+      const json = (await res.json()) as {
+        success?: boolean;
+        processed?: number;
+        failed?: number;
+        error?: string;
+      };
+      if (!res.ok || !json.success) {
+        throw new Error(json.error ?? `Batch transition failed (${res.status})`);
+      }
+      setBulkFeedback({
+        type: "ok",
+        text: `Batch verified ${json.processed} record(s) → ${bulkToStatus}${
+          json.failed ? ` (${json.failed} skipped)` : ""
+        }.`,
+      });
+      setSelectedKeys(new Set());
+      setBulkNote("");
+      await loadQueue(activeQueue);
+    } catch (err: unknown) {
+      setBulkFeedback({
+        type: "err",
+        text: err instanceof Error ? err.message : "Batch transition error",
+      });
+    } finally {
+      setBulkSubmitting(false);
+    }
+  };
+
   return (
     <>
       <div className="gov-page-header">
@@ -329,11 +421,111 @@ function VerificationWorkspaceInner() {
         </select>
       </div>
 
+      {/* Batch Verification Action Bar */}
+      {selectedKeys.size > 0 && (
+        <div
+          className="gov-card"
+          style={{
+            padding: "10px 14px",
+            background: "#eef8f2",
+            borderColor: "#005a2b",
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          <strong style={{ fontSize: 13, color: "#0b2615" }}>
+            {selectedKeys.size} selected
+          </strong>
+
+          {bulkToStatus ? (
+            <>
+              <select
+                className="gov-select"
+                style={{ fontSize: 12 }}
+                value={bulkToStatus}
+                onChange={(e) => setBulkToStatus(e.target.value)}
+              >
+                {getAllowedForRole(
+                  activeQueue === "district"
+                    ? "district_review"
+                    : activeQueue === "national"
+                      ? "national_review"
+                      : activeQueue
+                ).map((st) => (
+                  <option key={st} value={st}>
+                    Transition → {st}
+                  </option>
+                ))}
+              </select>
+
+              <input
+                type="text"
+                className="gov-input"
+                style={{ flex: "1 1 200px", fontSize: 12 }}
+                placeholder={
+                  bulkToStatus === "rejected"
+                    ? "Rejection reason (required)…"
+                    : "Batch review note (logged per record)…"
+                }
+                value={bulkNote}
+                onChange={(e) => setBulkNote(e.target.value)}
+              />
+
+              <button
+                type="button"
+                className={`gov-btn gov-btn-sm ${
+                  bulkToStatus === "rejected" ? "gov-btn-danger" : "gov-btn-primary"
+                }`}
+                disabled={bulkSubmitting || (bulkToStatus === "rejected" && !bulkNote.trim())}
+                onClick={handleBulkTransition}
+              >
+                {bulkSubmitting
+                  ? "Processing batch…"
+                  : `Confirm Batch → ${bulkToStatus}`}
+              </button>
+            </>
+          ) : (
+            <span style={{ fontSize: 12, color: "#556b5e" }}>
+              Active role ({role}) is read-only for this queue.
+            </span>
+          )}
+
+          <button
+            type="button"
+            className="gov-btn gov-btn-sm"
+            onClick={() => setSelectedKeys(new Set())}
+          >
+            Clear
+          </button>
+        </div>
+      )}
+
+      {bulkFeedback && (
+        <div
+          className={`gov-alert ${
+            bulkFeedback.type === "ok" ? "gov-alert-green" : "gov-alert-red"
+          }`}
+        >
+          {bulkFeedback.type === "ok" ? <CheckCircle2 size={15} /> : <AlertTriangle size={15} />}
+          <span>{bulkFeedback.text}</span>
+        </div>
+      )}
+
       {/* Worklist Table */}
       <div className="gov-table-wrap">
         <table className="gov-table">
           <thead>
             <tr>
+              <th style={{ width: 36 }}>
+                <input
+                  type="checkbox"
+                  checked={rows.length > 0 && selectedKeys.size === rows.length}
+                  onChange={toggleSelectAll}
+                  aria-label="Select all visible records"
+                />
+              </th>
               <th>Record ID</th>
               <th>Type</th>
               <th>District / Ward</th>
@@ -347,19 +539,27 @@ function VerificationWorkspaceInner() {
           <tbody>
             {loading && !data ? (
               <tr>
-                <td colSpan={8} style={{ textAlign: "center", padding: 28, color: "#5b7063" }}>
+                <td colSpan={9} style={{ textAlign: "center", padding: 28, color: "#5b7063" }}>
                   Loading queue…
                 </td>
               </tr>
             ) : rows.length === 0 ? (
               <tr>
-                <td colSpan={8} style={{ textAlign: "center", padding: 28, color: "#5b7063" }}>
+                <td colSpan={9} style={{ textAlign: "center", padding: 28, color: "#5b7063" }}>
                   No records in the <strong>{activeQueue}</strong> queue.
                 </td>
               </tr>
             ) : (
               rows.map((row) => (
                 <tr key={`${row.evidence_type}-${row.record_id}`}>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={selectedKeys.has(rowKey(row))}
+                      onChange={() => toggleRowSelect(row)}
+                      aria-label={`Select record ${row.record_id}`}
+                    />
+                  </td>
                   <td className="gov-mono">{row.record_id}</td>
                   <td>
                     <span className="gov-badge gov-badge-slate" style={{ textTransform: "uppercase" }}>

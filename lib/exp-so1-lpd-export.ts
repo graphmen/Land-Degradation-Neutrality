@@ -4,6 +4,7 @@
 
 import { DEFAULT_BASELINE_PERIOD_ID } from "@/lib/compliance-metadata";
 import reportingConfig from "@/public/reporting-period-config.json";
+import so1Computed from "@/public/so1-zonal-computed.json";
 import { rowsToCsv } from "@/lib/exp-so1-field-export";
 
 /** GPG / Trends.Earth-style productivity dynamics (simplified). */
@@ -43,16 +44,27 @@ export function buildExpSo1LpdTemplate(opts?: {
     reportingConfig.periods?.find((p) => p.is_active)?.reporting_period ??
     null;
 
-  const rows = LPD_CLASSES.map((lpd_class) => ({
-    lpd_class,
-    area_km2: null,
-    area_percent: null,
-    baseline_period_id: DEFAULT_BASELINE_PERIOD_ID,
-    reporting_period,
-    data_tier: "tier1_default",
-    source_layer_id: "LPD-NAT-RASTER",
-    confidence: "low",
-  }));
+  const computedLpd = new Map<string, { area_km2: number; area_percent: number }>();
+  const lpdList =
+    (so1Computed as { lpd_classes?: Array<{ lpd_class: string; area_km2: number; area_percent: number }> })
+      .lpd_classes ?? [];
+  for (const item of lpdList) {
+    computedLpd.set(item.lpd_class, { area_km2: item.area_km2, area_percent: item.area_percent });
+  }
+
+  const rows = LPD_CLASSES.map((lpd_class) => {
+    const hit = computedLpd.get(lpd_class);
+    return {
+      lpd_class,
+      area_km2: hit?.area_km2 ?? null,
+      area_percent: hit?.area_percent ?? null,
+      baseline_period_id: DEFAULT_BASELINE_PERIOD_ID,
+      reporting_period,
+      data_tier: hit ? "tier2_national" : "tier1_default",
+      source_layer_id: "LPD-NAT-RASTER",
+      confidence: hit ? "high" : "low",
+    };
+  });
 
   const generated_at = new Date().toISOString();
 

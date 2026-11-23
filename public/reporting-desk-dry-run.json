@@ -1,5 +1,5 @@
 {
-  "dry_run_at": "2026-11-23T19:22:50.161Z",
+  "dry_run_at": "2026-11-23T23:25:23.371Z",
   "reporting_period": "2020-2023",
   "section_F": {
     "F1_EXP_META": {
@@ -28,28 +28,28 @@
     },
     "F5_EXP_SO1_SOC": {
       "pass": false,
-      "tier2_pass": true,
-      "status": "template_only",
+      "tier2_pass": false,
+      "status": "tier2_partial",
       "tier1_source_layer_id": "SOC-NAT-SURFACE",
       "tier1_national_populated": false,
-      "tier2_total": 632,
-      "tier2_depth_0_30": 632,
-      "tier2_with_soc_value": 0,
-      "depth_0_30_complete": true,
+      "tier2_total": 175,
+      "tier2_depth_0_30": 0,
+      "tier2_with_soc_value": 16,
+      "depth_0_30_complete": false,
       "note": "Tier-2 partial; Tier-1 awaits S12",
-      "hash_csv": "43e8f6c2fffe2d9926efe6b1fdc08e3a35313405f3aa16dfdc7aee43aed59390"
+      "hash_csv": "0a9bd28570cac7ed18b3ebe67655040a5b44255ac33ae8946f567d20518623a5"
     },
     "F2_EXP_SO1_FIELD": {
       "pass": true,
       "ldn_columns": 23,
       "stats": {
-        "ldn_total": 150,
-        "ldn_exported": 150,
-        "soil_total": 632,
-        "soil_exported": 632
+        "ldn_total": 172,
+        "ldn_exported": 172,
+        "soil_total": 175,
+        "soil_exported": 175
       },
-      "hash_ldn_csv": "eefc453c7f84f857153bc62da27b6f55a0a40aefb6b86b71fc788dafdcf2f5ac",
-      "hash_soil_csv": "2fc7af21a596e32c47cdbd60bb7931285790b4e08fdccd7b1d3972d34690e28c"
+      "hash_ldn_csv": "3a934a7f786eb2cfc19298596ffb5e69cc28b5d7f256183a92028fe71f366cf5",
+      "hash_soil_csv": "aa2278a605e47b6ebeab18ee707b9db3be0bc89d8a70a4de02651cca91365897"
     },
     "F6_EXP_SO1_STATUS": {
       "pass": true,
@@ -60,15 +60,15 @@
     },
     "E4_EXP_PHOTOS": {
       "pass": true,
-      "manifest_rows": 147,
-      "ldn_with_photos": 147,
-      "hash_csv": "2d0c1a1140b5dd38e47b9f42f20565a2dc865a0bb9e0df4421373ade0d601534"
+      "manifest_rows": 169,
+      "ldn_with_photos": 169,
+      "hash_csv": "835600c49c3d4354a124b3b13edd31c0148577889b0335c18cb3232018a2fabe"
     },
     "F7_REPORTING_BUNDLE": {
       "pass": true,
-      "bundle_id": "BUNDLE-2026-11-23T19-22-50-116Z",
-      "root_dir": "C:\\Users\\ndebelem.ZINGSERVER1\\Desktop\\2026\\OAU\\exports\\2020-2023\\BUNDLE-2026-11-23T19-22-50-116Z",
-      "manifest_sha256": "d3b73504109baf27d877eb11cf975da324c76501e5c804105cc4870ea819644a",
+      "bundle_id": "BUNDLE-2026-11-23T23-25-23-319Z",
+      "root_dir": "C:\\Users\\ndebelem.ZINGSERVER1\\Desktop\\2026\\OAU\\exports\\2020-2023\\BUNDLE-2026-11-23T23-25-23-319Z",
+      "manifest_sha256": "d8ff835aeb080048a10f03c6a583f47ac38f681e004d6ac3b59c0c8c0752d129",
       "package_count": 7
     }
   },
@@ -140,7 +140,7 @@
       "corpus_registered": true,
       "import_status": "awaiting_delivery",
       "tier1_national_populated": false,
-      "tier2_depth_0_30": 632,
+      "tier2_depth_0_30": 0,
       "pass": false,
       "required_for_pass": [
         "S12: deliver national SOC surface to important files/",

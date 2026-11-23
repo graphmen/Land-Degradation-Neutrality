@@ -1,0 +1,451 @@
+{
+  "imported_at": "2026-11-23T23:24:41.260909+00:00",
+  "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+  "total_lab_assays": 34,
+  "matched_lab_assays": 17,
+  "patched_soil_records": 17,
+  "records": [
+    {
+      "item_no": 1,
+      "lab_number": "N0147",
+      "sample_ref": "11619_11614 BIKITA",
+      "ceid_token": "11619_11614",
+      "ceid_norm": "11619_11614",
+      "district": "Bikita",
+      "soc_percent": 1.05,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [],
+      "matched": false
+    },
+    {
+      "item_no": 2,
+      "lab_number": "N0148",
+      "sample_ref": "11622_16622 CHIMANIMANI",
+      "ceid_token": "11622_16622",
+      "ceid_norm": "11622_16622",
+      "district": "Chimanimani",
+      "soc_percent": 0.91,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [
+        "756835481"
+      ],
+      "matched": true
+    },
+    {
+      "item_no": 3,
+      "lab_number": "N0149",
+      "sample_ref": "11646_16610 BUHERA",
+      "ceid_token": "11646_16610",
+      "ceid_norm": "11646_16610",
+      "district": "Buhera",
+      "soc_percent": 0.74,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [
+        "756835494"
+      ],
+      "matched": true
+    },
+    {
+      "item_no": 4,
+      "lab_number": "N0150",
+      "sample_ref": "11656_16802 MASVINGO",
+      "ceid_token": "11656_16802",
+      "ceid_norm": "11656_16802",
+      "district": "Masvingo",
+      "soc_percent": 1.0,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [],
+      "matched": false
+    },
+    {
+      "item_no": 5,
+      "lab_number": "N0151",
+      "sample_ref": "16654_16644 BIKITA",
+      "ceid_token": "16654_16644",
+      "ceid_norm": "16654_16644",
+      "district": "Bikita",
+      "soc_percent": 1.0,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [],
+      "matched": false
+    },
+    {
+      "item_no": 6,
+      "lab_number": "N0152",
+      "sample_ref": "11676_16768 MASVINGO",
+      "ceid_token": "11676_16768",
+      "ceid_norm": "11676_16768",
+      "district": "Masvingo",
+      "soc_percent": 1.83,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [
+        "760619868"
+      ],
+      "matched": true
+    },
+    {
+      "item_no": 7,
+      "lab_number": "N0153",
+      "sample_ref": "11634_16634 BUHERA",
+      "ceid_token": "11634_16634",
+      "ceid_norm": "11634_16634",
+      "district": "Buhera",
+      "soc_percent": 0.85,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [],
+      "matched": false
+    },
+    {
+      "item_no": 8,
+      "lab_number": "N0154",
+      "sample_ref": "11698_16712 MASVINGO",
+      "ceid_token": "11698_16712",
+      "ceid_norm": "11698_16712",
+      "district": "Masvingo",
+      "soc_percent": 1.4,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [],
+      "matched": false
+    },
+    {
+      "item_no": 9,
+      "lab_number": "N0155",
+      "sample_ref": "11656_16782 MASVINGO",
+      "ceid_token": "11656_16782",
+      "ceid_norm": "11656_16782",
+      "district": "Masvingo",
+      "soc_percent": 1.08,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [],
+      "matched": false
+    },
+    {
+      "item_no": 10,
+      "lab_number": "N0156",
+      "sample_ref": "11652_16642 BIKITA",
+      "ceid_token": "11652_16642",
+      "ceid_norm": "11652_16642",
+      "district": "Bikita",
+      "soc_percent": 1.05,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [],
+      "matched": false
+    },
+    {
+      "item_no": 11,
+      "lab_number": "N0157",
+      "sample_ref": "11664_16630 BIKITA",
+      "ceid_token": "11664_16630",
+      "ceid_norm": "11664_16630",
+      "district": "Bikita",
+      "soc_percent": 1.63,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [
+        "758556376"
+      ],
+      "matched": true
+    },
+    {
+      "item_no": 12,
+      "lab_number": "N0158",
+      "sample_ref": "11626_16634 CHIMANIMANI",
+      "ceid_token": "11626_16634",
+      "ceid_norm": "11626_16634",
+      "district": "Chimanimani",
+      "soc_percent": 1.42,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [],
+      "matched": false
+    },
+    {
+      "item_no": 13,
+      "lab_number": "N0159",
+      "sample_ref": "11641_16656 BUHERA",
+      "ceid_token": "11641_16656",
+      "ceid_norm": "11641_16656",
+      "district": "Buhera",
+      "soc_percent": 1.14,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [
+        "756838387"
+      ],
+      "matched": true
+    },
+    {
+      "item_no": 14,
+      "lab_number": "N0160",
+      "sample_ref": "11750_16636 MASVINGO",
+      "ceid_token": "11750_16636",
+      "ceid_norm": "11750_16636",
+      "district": "Masvingo",
+      "soc_percent": 1.15,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [
+        "760356888"
+      ],
+      "matched": true
+    },
+    {
+      "item_no": 15,
+      "lab_number": "N0161",
+      "sample_ref": "11718_16700 MASVINGO",
+      "ceid_token": "11718_16700",
+      "ceid_norm": "11718_16700",
+      "district": "Masvingo",
+      "soc_percent": 1.32,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [
+        "760347854"
+      ],
+      "matched": true
+    },
+    {
+      "item_no": 16,
+      "lab_number": "N0162",
+      "sample_ref": "11662_16634 BIKITA",
+      "ceid_token": "11662_16634",
+      "ceid_norm": "11662_16634",
+      "district": "Bikita",
+      "soc_percent": 1.67,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [],
+      "matched": false
+    },
+    {
+      "item_no": 17,
+      "lab_number": "N0163",
+      "sample_ref": "11716_16702 MASVINGO",
+      "ceid_token": "11716_16702",
+      "ceid_norm": "11716_16702",
+      "district": "Masvingo",
+      "soc_percent": 0.33,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [
+        "760347850"
+      ],
+      "matched": true
+    },
+    {
+      "item_no": 18,
+      "lab_number": "N0164",
+      "sample_ref": "11618_16658 BUHERA",
+      "ceid_token": "11618_16658",
+      "ceid_norm": "11618_16658",
+      "district": "Buhera",
+      "soc_percent": 2.61,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [
+        "756836480"
+      ],
+      "matched": true
+    },
+    {
+      "item_no": 19,
+      "lab_number": "N0165",
+      "sample_ref": "11714_16706 MASVINGO",
+      "ceid_token": "11714_16706",
+      "ceid_norm": "11714_16706",
+      "district": "Masvingo",
+      "soc_percent": 1.35,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [
+        "760347842"
+      ],
+      "matched": true
+    },
+    {
+      "item_no": 20,
+      "lab_number": "N0166",
+      "sample_ref": "11698_16712 MASVINGO",
+      "ceid_token": "11698_16712",
+      "ceid_norm": "11698_16712",
+      "district": "Masvingo",
+      "soc_percent": 0.83,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [],
+      "matched": false
+    },
+    {
+      "item_no": 21,
+      "lab_number": "N0167",
+      "sample_ref": "11752_16634 MASVINGO",
+      "ceid_token": "11752_16634",
+      "ceid_norm": "11752_16634",
+      "district": "Masvingo",
+      "soc_percent": 0.88,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [
+        "760355621"
+      ],
+      "matched": true
+    },
+    {
+      "item_no": 22,
+      "lab_number": "N0168",
+      "sample_ref": "11714_16540 CHIPINGE",
+      "ceid_token": "11714_16540",
+      "ceid_norm": "11714_16540",
+      "district": "Chipinge",
+      "soc_percent": 2.3,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [],
+      "matched": false
+    },
+    {
+      "item_no": 23,
+      "lab_number": "N0169",
+      "sample_ref": "11674_16774 MASVINGO",
+      "ceid_token": "11674_16774",
+      "ceid_norm": "11674_16774",
+      "district": "Masvingo",
+      "soc_percent": 2.21,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [
+        "760619877"
+      ],
+      "matched": true
+    },
+    {
+      "item_no": 24,
+      "lab_number": "N0170",
+      "sample_ref": "11672_16782 MASVINGO",
+      "ceid_token": "11672_16782",
+      "ceid_norm": "11672_16782",
+      "district": "Masvingo",
+      "soc_percent": 0.18,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [
+        "760619884"
+      ],
+      "matched": true
+    },
+    {
+      "item_no": 25,
+      "lab_number": "N0171",
+      "sample_ref": "11674_16774 MASVINGO",
+      "ceid_token": "11674_16774",
+      "ceid_norm": "11674_16774",
+      "district": "Masvingo",
+      "soc_percent": 1.57,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [
+        "760619877"
+      ],
+      "matched": true
+    },
+    {
+      "item_no": 26,
+      "lab_number": "N0172",
+      "sample_ref": "11714_16686 MASVINGO",
+      "ceid_token": "11714_16686",
+      "ceid_norm": "11714_16686",
+      "district": "Masvingo",
+      "soc_percent": 1.18,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [
+        "760200888"
+      ],
+      "matched": true
+    },
+    {
+      "item_no": 27,
+      "lab_number": "N0173",
+      "sample_ref": "116966_16566 CHIPINGE",
+      "ceid_token": "116966_16566",
+      "ceid_norm": "116966_16566",
+      "district": "Chipinge",
+      "soc_percent": 0.84,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [],
+      "matched": false
+    },
+    {
+      "item_no": 28,
+      "lab_number": "N0174",
+      "sample_ref": "1650_16620 BIKITA",
+      "ceid_token": "1650_16620",
+      "ceid_norm": "1650_16620",
+      "district": "Bikita",
+      "soc_percent": 0.36,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [
+        "756836468"
+      ],
+      "matched": true
+    },
+    {
+      "item_no": 29,
+      "lab_number": "N0175",
+      "sample_ref": "11696_16568 CHIPINGE",
+      "ceid_token": "11696_16568",
+      "ceid_norm": "11696_16568",
+      "district": "Chipinge",
+      "soc_percent": 1.73,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [],
+      "matched": false
+    },
+    {
+      "item_no": 30,
+      "lab_number": "N0176",
+      "sample_ref": "11686_16748 MASVINGO",
+      "ceid_token": "11686_16748",
+      "ceid_norm": "11686_16748",
+      "district": "Masvingo",
+      "soc_percent": 1.25,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [
+        "759703147"
+      ],
+      "matched": true
+    },
+    {
+      "item_no": 31,
+      "lab_number": "N0177",
+      "sample_ref": "11696_16566 CHIPINGE",
+      "ceid_token": "11696_16566",
+      "ceid_norm": "11696_16566",
+      "district": "Chipinge",
+      "soc_percent": 1.65,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [],
+      "matched": false
+    },
+    {
+      "item_no": 32,
+      "lab_number": "N0178",
+      "sample_ref": "11628_16638 BUHERA",
+      "ceid_token": "11628_16638",
+      "ceid_norm": "11628_16638",
+      "district": "Buhera",
+      "soc_percent": 2.11,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [],
+      "matched": false
+    },
+    {
+      "item_no": 33,
+      "lab_number": "N0179",
+      "sample_ref": "11619_16614 BIKITA",
+      "ceid_token": "11619_16614",
+      "ceid_norm": "11619_16614",
+      "district": "Bikita",
+      "soc_percent": 1.48,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [],
+      "matched": false
+    },
+    {
+      "item_no": 34,
+      "lab_number": "N0180",
+      "sample_ref": "11718_16496 MASVINGO",
+      "ceid_token": "11718_16496",
+      "ceid_norm": "11718_16496",
+      "district": "Masvingo",
+      "soc_percent": 0.86,
+      "source_file": "E.M.A SOIL ORGANIC CARBON ANALYSIS.xlsx",
+      "matched_soil_ids": [],
+      "matched": false
+    }
+  ]
+}

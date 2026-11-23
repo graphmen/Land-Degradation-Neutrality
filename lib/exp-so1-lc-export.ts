@@ -5,6 +5,7 @@
 
 import { DEFAULT_BASELINE_PERIOD_ID } from "@/lib/compliance-metadata";
 import reportingConfig from "@/public/reporting-period-config.json";
+import so1Computed from "@/public/so1-zonal-computed.json";
 import { csvEscape, rowsToCsv } from "@/lib/exp-so1-field-export";
 
 const UNCCD_CLASSES = [
@@ -46,18 +47,27 @@ export function buildExpSo1LcTemplate(opts?: {
     reportingConfig.periods?.find((p) => p.is_active)?.reporting_period ??
     null;
 
+  const computedMap = new Map<string, number>();
+  const computedRows =
+    (so1Computed as { lc_transitions?: Array<{ from_unccd_class: string; to_unccd_class: string; area_km2: number }> })
+      .lc_transitions ?? [];
+  for (const cr of computedRows) {
+    computedMap.set(`${cr.from_unccd_class}__${cr.to_unccd_class}`, cr.area_km2);
+  }
+
   const rows: Record<string, unknown>[] = [];
   for (const from of UNCCD_CLASSES) {
     for (const to of UNCCD_CLASSES) {
+      const area = computedMap.get(`${from}__${to}`) ?? null;
       rows.push({
         from_unccd_class: from,
         to_unccd_class: to,
-        area_km2: null,
+        area_km2: area,
         baseline_period_id: DEFAULT_BASELINE_PERIOD_ID,
         reporting_period,
-        data_tier: "tier1_default",
+        data_tier: area != null ? "tier2_national" : "tier1_default",
         source_layer_id: "LC-NAT-STACK",
-        confidence: "low",
+        confidence: area != null ? "high" : "low",
       });
     }
   }
