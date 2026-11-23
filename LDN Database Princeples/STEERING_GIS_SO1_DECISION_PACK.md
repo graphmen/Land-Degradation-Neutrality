@@ -28,6 +28,8 @@
 
 **Dry-run gates:** `public/reporting-desk-dry-run.json` → `s10_f3`, `s11_f4`, `s12_f5`.
 
+**Delivery study:** [`STUDY_SO1_NATIONAL_RASTER_DELIVERY.md`](./STUDY_SO1_NATIONAL_RASTER_DELIVERY.md)
+
 **Local QC (no rasters yet):**
 
 ```powershell
