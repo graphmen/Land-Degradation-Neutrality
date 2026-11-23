@@ -4,7 +4,7 @@ All annexes support the **national LDN database** (Deliverable A) and **collecti
 
 | Annex | File | Version | Status | SO / programme focus |
 |-------|------|---------|--------|----------------------|
-| **A** | [ANNEX_A_FIELD_MAPPING.md](./ANNEX_A_FIELD_MAPPING.md) | 0.2 | Draft — EMA sign-off pending | SO1 LDN + Soil (Kobo) |
+| **A** | [ANNEX_A_FIELD_MAPPING.md](./ANNEX_A_FIELD_MAPPING.md) | 0.3 | Draft — EMA sign-off pending | SO1 LDN + Soil (mobile) |
 | **B** | [ANNEX_B_DRYLANDS_FIELD_MAPPING.md](./ANNEX_B_DRYLANDS_FIELD_MAPPING.md) | 0.1 | Draft — this session | ILUP drylands / GEF programme |
 | **C** | [ANNEX_C_SPATIAL_LAYERS_REGISTER.md](./ANNEX_C_SPATIAL_LAYERS_REGISTER.md) | 0.1 | Draft — this session | National LDN polygons + EMA layers |
 | **D** | [ANNEX_D_INTERVENTIONS_REGISTER.md](./ANNEX_D_INTERVENTIONS_REGISTER.md) | 0.1 | Draft — this session | Restoration / SO4 / counterbalancing evidence |
@@ -17,7 +17,8 @@ All annexes support the **national LDN database** (Deliverable A) and **collecti
 |------|----------|---------|-----|
 | 2026-11-23 | ~60 min | Annex A (LDN + Soil) | In commit `3a44813` |
 | 2026-11-23 | ~60 min | Guide v0.3, Work Plan, EMA `important files/`, Word `.docx` | In commit `3a44813` |
-| 2026-11-23 | ~60 min | Annexes B, C, D + workflow + index | *(this commit)* |
+| 2026-11-23 | ~60 min | Annexes B, C, D + workflow + index | Pushed |
+| 2026-11-23 | ~30 min | Mobile-only collection policy (no external survey platform in programme docs) | *(this commit)* |
 
 ---
 

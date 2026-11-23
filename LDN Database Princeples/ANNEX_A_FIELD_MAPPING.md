@@ -1,15 +1,14 @@
-# Annex A — Kobo field → national database → SO mapping
+# Annex A — Mobile form field → national database → SO mapping
 
-**Session:** 60-minute working draft (LDN + Soil forms)  
+**Session:** 60-minute working draft (LDN + Soil modules)  
 **Date:** 2026-11-23  
 **Status:** Draft for EMA workshop sign-off (Phase 0)  
-**Forms in production (Kobo asset IDs):**
+**Collection channel:** EMA national mobile app (**Android + iOS** only) — see Project Guide §1.2.
 
-| Module | Asset ID | Schema snapshot | Primary sync script |
-|--------|----------|-----------------|---------------------|
-| LDN validation | `apM5C5mTP34m2m3DSwdd4E` | `public/ldn-schema.json` | `download_ldn.py` |
-| Soil (legacy) | `am3UGrEY8tYcnrMp3Xddys` | — | `download_ldn.py` (merged) |
-| Soil (current) | `ahkCvpctsofMKN4GzCH3BT` | `public/soil-schema.json` | `download_ldn.py` + `backend/routers/soil.py` |
+| Module | Mobile UI | Canonical schema reference | API / storage |
+|--------|-----------|----------------------------|---------------|
+| LDN validation | `mobile/src/components/LdnForm.tsx` | `public/ldn-schema.json` (field catalogue) | `POST` mobile sync → `ldn_validations` |
+| Soil sampling | `mobile/src/components/SoilForm.tsx` | `public/soil-schema.json` | `soil_samples` (one row per core) |
 
 **Reference:** [ZIMBABWE_LDN_PROJECT_GUIDE.md](./ZIMBABWE_LDN_PROJECT_GUIDE.md) Sections 2, 5, and phased roadmap.
 
@@ -17,11 +16,11 @@
 
 ## A.1 Ingestion rules (dual JSON shapes)
 
-The dashboard and sync pipeline must treat **one logical record** whether it arrives as raw Kobo JSON or as a Supabase-shaped cache row.
+The dashboard and sync pipeline must treat **one logical record** whether it arrives from a **mobile submission payload** or a Supabase-shaped cache row. Legacy caches may use older key names (`geninfo/*`, `sampl/*`); new mobile uploads should use canonical names in Annex tables.
 
 | Layer | LDN (`public/ldn-data.json`) | Soil (`public/soil-data.json`) |
 |-------|------------------------------|--------------------------------|
-| **Kobo native** | Slash-path keys (`geninfo/dist`, `poidet/landcov`, …) under `raw_data` or top-level after `download_ldn.py` | Repeat group `sampl[]` with `sampl/poin`, `sampl/dep`, … |
+| **Mobile payload / legacy cache** | Flat or grouped keys (`landcov`, `dist`, … or legacy `poidet/landcov`) | Parent + sample points (`depth_cm`, `texture`, …) |
 | **API `normalise()`** | Copies last path segment → short alias (`landcov`, `dist`, …) in `app/api/ldn/route.ts` | Same pattern in `app/api/soil/route.ts` |
 | **Supabase table** | `ldn.ldn_validations` | `ldn.soil_samples` |
 | **Cache row (current)** | Top-level columns often **empty**; values live in `raw_data` only (re-run mapping on sync) | One row **per repeat** sample; denormalized columns populated |
@@ -40,11 +39,11 @@ The dashboard and sync pipeline must treat **one logical record** whether it arr
 
 ---
 
-## A.2 UNCCD land cover (SO1-1) — Zimbabwe Kobo → 7-class
+## A.2 UNCCD land cover (SO1-1) — Zimbabwe mobile list → 7-class
 
-GPG / PRAIS reporting uses the standard **seven land-cover classes**. Zimbabwe’s Kobo list is a **national subclass** set; retain both in the database.
+GPG / PRAIS reporting uses the standard **seven land-cover classes**. Zimbabwe’s **mobile LDN land-cover options** are a **national subclass** set; retain both in the database.
 
-| Kobo `poidet/landcov` (n≈150) | Proposed `unccd_land_cover_class` | National subclass retained | Notes |
+| Mobile field `landcov` (n≈150 historical) | Proposed `unccd_land_cover_class` | National subclass retained | Notes |
 |------------------------------|-----------------------------------|----------------------------|--------|
 | Cropland | Cropland | `Cropland` | Direct |
 | Tree/Forest | Tree-covered | `Tree/Forest` | Natural forest |
@@ -52,11 +51,11 @@ GPG / PRAIS reporting uses the standard **seven land-cover classes**. Zimbabwe�
 | Grassland | Grassland | `Grassland` | Direct |
 | Plantation | Tree-covered | `Plantation` | Tagged `plantation=true` in metadata |
 | baresoil | Other land | `baresoil` | Not Water; may indicate degradation hotspot context |
-| *(not in current data)* Wetland | Wetland | — | Add to Kobo if wetlands validated |
+| *(not in current data)* Wetland | Wetland | — | Add to mobile form if wetlands validated |
 | *(not in current data)* Artificial | Artificial land | — | Use `landus=Settlement` + future class |
 | *(not in current data)* Water bodies | Water | — | From CE / national layer if needed |
 
-| Kobo `poidet/landus` | Role | SO link | Canonical column |
+| Mobile field `landus` | Role | SO link | Canonical column |
 |---------------------|------|---------|------------------|
 | Agriculture | Management / pressure context | SO1-1 (interpretation), field verify | `ldn_field_assessment.land_use_type` |
 | Grazing | Same | SO1-2 context | `ldn_field_assessment.land_use_type` |
@@ -69,9 +68,9 @@ GPG / PRAIS reporting uses the standard **seven land-cover classes**. Zimbabwe�
 
 ## A.3 LDN form — full field map (`ldn_field_assessment`)
 
-Kobo form groups: `geninfo` → `poidet` → `ldi` → attachments.
+Mobile LDN form sections: **General info** → **Point details** → **Land degradation indicators** → photos.
 
-| Kobo field (xpath) | Type | Canonical entity.column | Current Supabase `ldn_validations` | SO / reporting link | UNCCD / code list | Action |
+| Mobile field | Type | Canonical entity.column | Current Supabase `ldn_validations` | SO / reporting link | UNCCD / code list | Action |
 |-------------------|------|-------------------------|-------------------------------------|---------------------|-------------------|--------|
 | `start` | metadata | `collected_at` (derive) | — | Audit | — | **Map** from `_submission_time` |
 | `end` | metadata | `form_duration` | — | QA | — | **Extend** (optional) |
@@ -89,16 +88,16 @@ Kobo form groups: `geninfo` → `poidet` → `ldi` → attachments.
 | `poidet/use_spec` | text | `land_use_other` | — | Governance | — | **Extend** |
 | `poidet/lndmat` | select_one | `matches_baseline_lc` | `matches_baseline` | SO1-1 verify vs CE | yes / no / part | **Keep** |
 | `poidet/ex_mism` | text | `baseline_mismatch_note` | — | Field verify | — | **Extend** |
-| `ldi/veg_cov` | select_one | `vegetation_cover_qualitative` | `veg_cover` | **SO1-2** field proxy | high / med / low (Kobo) | **Map** to LPD field vocabulary |
+| `veg_cov` | select_one | `vegetation_cover_qualitative` | `veg_cover` | **SO1-2** field proxy | high / med / low | **Map** to LPD field vocabulary |
 | `ldi/signs_ero` | select_multiple | `degradation_signs[]` | `erosion_signs` (string) | **SO1-2** / hotspot | See § A.5 | **Normalize** to array in DB |
 | `ldi/tree` | select_multiple | `tree_loss_causes[]` | — | SO1-2 / deforestation | See § A.5 | **Extend** column |
 | `ldi/sev` | select_one | `degradation_severity` | `severity` | Field verify / hotspot | non, sli, mod, sev | **Map** labels + GPG status rules |
 | `oth` | text | `observations` | — | Evidence | — | **Extend** |
 | `im` | image | `photo_attachment_ids[]` | in `raw_data._attachments` | Verification | — | **Keep**; store in blob + URL |
 | `_uuid` | system | `uuid` | `uuid` | Identity | — | **Keep** |
-| `_id` | system | `kobo_submission_id` | `kobo_id` | Identity | — | **Keep** |
+| `submission_id` | system | `submission_id` | `kobo_id` (rename Phase 2) | Identity | — | **Keep** |
 | `_submission_time` | system | `submitted_at` | `submission_time` | Audit | — | **Keep** |
-| `_validation_status` | system | `kobo_validation_status` | — | QA | — | **Keep** in `raw_data` |
+| `validation_status` | system | `client_validation_status` | — | QA | — | **Keep** |
 | `meta/*` | system | — | in `raw_data` | — | — | **Archive** only |
 
 **Derived reporting fields (not on form — compute in Phase 1):**
@@ -116,9 +115,9 @@ Kobo form groups: `geninfo` → `poidet` → `ldi` → attachments.
 
 ## A.4 Soil form — full field map (`soil_sample_parent` / `soil_sample_point`)
 
-Soil Kobo uses repeat `sampl`. Each repeat → one `soil_sample_point`; submission → one `soil_sample_parent`.
+Soil mobile module supports **multiple cores per plot**. Each core → one `soil_sample_point`; visit → one `soil_sample_parent`.
 
-| Kobo field (xpath) | Type | Canonical entity.column | Current Supabase `soil_samples` | SO / reporting link | UNCCD / code list | Action |
+| Mobile field | Type | Canonical entity.column | Current Supabase `soil_samples` | SO / reporting link | UNCCD / code list | Action |
 |-------------------|------|-------------------------|----------------------------------|---------------------|-------------------|--------|
 | `geninfo/measurement_date` | date | `parent.measured_at` | via `submission_time` | SO1-3 period | Sampling date | **Map** explicitly |
 | `geninfo/dist` | select_one | `parent.district` | `district` | Admin | Districts | **Keep** |
@@ -135,9 +134,9 @@ Soil Kobo uses repeat `sampl`. Each repeat → one `soil_sample_point`; submissi
 | *(ETL merge)* `sampl/organic_carbon` | decimal | `point.soc_percent` | — (in raw after merge) | **SO1-3** | Lab SOC % | **Extend** Supabase column |
 | *(ETL merge)* `sampl/lab_number` | text | `point.lab_number` | — | Traceability | EMA lab | **Extend** |
 | *(ETL merge)* `sampl/sample_ref` | text | `point.lab_sample_ref` | — | Traceability | Excel crosswalk | **Extend** |
-| `_id` | system | `point.kobo_submission_id` + repeat index | `kobo_id` | Identity | — | **Keep** |
+| `submission_id` | system | `point.submission_id` + sample index | `kobo_id` (rename Phase 2) | Identity | — | **Keep** |
 | `_uuid` | system | `point.uuid` | `uuid` | Identity | — | **Keep** |
-| Parent keys | — | `parent.kobo_submission_id` | `parent_kobo_id` (if present) | — | — | **Keep** |
+| Parent keys | — | `parent.submission_id` | `parent_kobo_id` (rename Phase 2) | — | — | **Keep** |
 
 **SO1-3 linkage:** Join `soil_sample_parent.collect_earth_id` = `ldn_field_assessment.collect_earth_id` for same validation point. SOC stock change uses national gridded SO1-3 + these Tier-2 samples as calibration / verification.
 
@@ -147,14 +146,14 @@ Soil Kobo uses repeat `sampl`. Each repeat → one `soil_sample_point`; submissi
 
 ### LDN `ldi/sev` → display label
 
-| Kobo code | Count | Display | Hotspot heuristic (dashboard) |
+| Field code | Count | Display | Hotspot heuristic (dashboard) |
 |-----------|-------|---------|-------------------------------|
 | `mod` | 64 | Moderate | Hotspot candidate |
 | `sli` | 40 | Slight | Neutral |
 | `non` | 40 | None / no degradation | Bright-spot candidate |
 | `sev` | 6 | Severe | Hotspot |
 
-Mobile app uses words `High` / `Moderate` / `Low` / `None` — **not aligned** with Kobo codes. **Action:** single governed code list + mobile form sync with Kobo.
+Some historical caches use `mod` / `sli` / `non` / `sev`; the app UI uses `High` / `Moderate` / `Low` / `None`. **Action:** single governed code list in the Android/iOS app.
 
 ### LDN `ldi/signs_ero` (space-separated in export)
 
@@ -211,7 +210,7 @@ Mobile app lists additional values (`gully`, `wind`, `overgraz`, `salin`, `minin
 
 ### Soil `sampl/tex` → USDA (draft)
 
-| Kobo code | Count | USDA class (draft) |
+| Field code | Count | USDA class (draft) |
 |-----------|-------|-------------------|
 | `sanlo` | 285 | Sandy loam |
 | `cllo` | 129 | Clay loam |
@@ -220,9 +219,9 @@ Mobile app lists additional values (`gully`, `wind`, `overgraz`, `salin`, `minin
 
 ---
 
-## A.6 Alignment gaps (mobile vs Kobo vs dashboard)
+## A.6 Alignment gaps (app vs database vs dashboard)
 
-| Topic | Kobo / data | Mobile app | Action |
+| Topic | Database / legacy cache | Mobile app (target) | Action |
 |-------|-------------|------------|--------|
 | Land cover labels | Tree/Forest, Bush/Shrub, … | Forest Land, Cropland, … (6 classes) | Regenerate mobile from governed list after EMA sign-off |
 | Severity | `mod`, `sli`, `non`, `sev` | High, Moderate, Low, None | **Map table** in `reference_code_lists` |
@@ -238,7 +237,7 @@ Mobile app lists additional values (`gully`, `wind`, `overgraz`, `salin`, `minin
 - [ ] Approve severity codes and hotspot / bright-spot rules vs GPG **degraded / stable / improved** (do not conflate with national status maps yet).
 - [ ] Approve soil texture and moisture code lists for SOC Tier 2.
 - [ ] Confirm `ceid` as mandatory join key between LDN and Soil.
-- [ ] Authorize Kobo form changes (Phase 3) vs code-list-only Phase 1.
+- [ ] Authorize mobile form releases (Phase 3) vs code-list-only Phase 1.
 - [ ] Assign owner for `reference_code_lists` table and version numbering.
 
 ---
@@ -248,6 +247,7 @@ Mobile app lists additional values (`gully`, `wind`, `overgraz`, `salin`, `minin
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 0.2 | 2026-11-23 | LDN project team (draft) | Completed LDN + Soil Annex A from schemas and live JSON (n=150 LDN, n≈632 soil rows) |
+| 0.3 | 2026-11-23 | LDN project team (draft) | Mobile-only collection channel; removed external survey platform references |
 
 **Approval signatures:** *(pending)*  
 National Reporting Officer: _______________  

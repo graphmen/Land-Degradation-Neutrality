@@ -2,7 +2,7 @@
 
 **Custodian:** Environment Management Agency (EMA) — LDN programme  
 **Received:** November 2026  
-**Purpose:** Reference and analytics layers for the **national LDN database** (Deliverable A). These assets support SO1 context, field validation, drylands / restoration reporting, and spatial QA — they are **not** a substitute for governed field submissions in Kobo/mobile.
+**Purpose:** Reference and analytics layers for the **national LDN database** (Deliverable A). These assets support SO1 context, field validation, drylands / restoration reporting, and spatial QA — they are **not** a substitute for governed field submissions from the **EMA mobile app (Android/iOS)**.
 
 > Store authoritative copies on EMA government backup. This folder is the project working copy linked to the OAU repository.
 
@@ -26,7 +26,7 @@
 1. **Metadata first** — For each dataset: title, owner, vintage, CRS, scale, licence, and confidence before loading to PostGIS.
 2. **CRS harmonization** — Register all imports in WGS 84 for web; retain UTM 35S/36S copies where field teams work in projected coords.
 3. **No silent overwrite** — Version datasets (`dataset_version`, `imported_at`); national LDN combined shapefile updates are new versions, not in-place edits.
-4. **Separation of layers** — Field observations (Kobo/mobile) stay in **field operations** tables; these shapefiles live in **national analytics** or **reference** layers (see project guide §5.1).
+4. **Separation of layers** — Field observations (mobile app) stay in **field operations** tables; these shapefiles live in **national analytics** or **reference** layers (see project guide §5.1).
 5. **PII / sensitivity** — Mining and site locations may be sensitive; apply EMA access rules in the API (district vs national roles).
 
 ---

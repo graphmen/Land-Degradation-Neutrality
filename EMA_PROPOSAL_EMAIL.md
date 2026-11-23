@@ -24,8 +24,8 @@ This experience triggered me to design a quick navigation prototype to resolve t
 
 I have taken it upon myself to develop a complete, end-to-end data ecosystem dedicated to managing our LDN validation, soil core analysis, and target monitoring. The system consists of two primary, synchronized components:
 
-1. **The Field Component (Offline Mobile Client):** A lightweight Android application (APK) that functions 100% offline. It allows field officers to navigate target ward polygons using GPS telemetry, use a digital Munsell color analyzer, and record soil core properties. All submissions are saved to an offline queue and auto-uploaded once cellular signal is detected.
-2. **The Office Component (Central Web Admin Portal):** A central database (integrated with KoboToolbox and powered by PostgreSQL/PostGIS) that aggregates field submissions. It translates raw telemetry into interactive geospatial Leaflet maps, dynamic KPI cards, and progress bars tracking our progress against **Zimbabwe's 12 National UNCCD Targets** (e.g., Forest Reforestation, Gully Reclamation, and Wetland Restoration).
+1. **The Field Component (Offline Mobile Client — Android & iOS):** A Capacitor-based national mobile application that functions offline. It allows field officers to navigate validation polygons using GPS, use a digital Munsell color analyzer, and record LDN, soil, and drylands observations. Submissions queue locally and sync to EMA APIs when connectivity returns.
+2. **The Office Component (Central Web Admin Portal):** A national LDN database (PostgreSQL/PostGIS) that aggregates mobile submissions. It translates field telemetry into interactive Leaflet maps, KPI cards, and progress against **Zimbabwe's national UNCCD targets** (e.g., forest restoration, gully reclamation, wetland protection).
 
 I am excited to share a fully functional prototype of this ecosystem, which is now live for your review and consideration:
 👉 **Web Portal URL:** [https://land-degradation-neutrality.vercel.app/](https://land-degradation-neutrality.vercel.app/)  

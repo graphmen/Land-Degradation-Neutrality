@@ -26,7 +26,7 @@ This platform tracks progress toward **SDG Indicator 15.3.1 (Land Degradation Ne
 ## 🛠️ Technology Stack
 - **Frontend**: Next.js 14 (TypeScript, React, Leaflet Maps, Recharts, Framer Motion)
 - **Backend**: FastAPI (Python, Uvicorn, Async HTTPX Services)
-- **Data Integration**: KoboToolbox API v2 (Direct proxy & synchronized JSON fallback caches)
+- **Data Integration**: EMA mobile sync APIs + PostgreSQL/Supabase; JSON fallback caches for dashboard offline mode
 
 ---
 
@@ -57,7 +57,6 @@ Access the dashboard locally at `http://localhost:3001` and the API documentatio
 When deploying to Vercel, make sure to configure the project in your Vercel Dashboard:
 
 1.  **Root Directory**: Set this to **`frontend`** (Next.js is inside the `/frontend` subfolder).
-2.  **Environment Variables** (Optional, to use live KoboToolbox fetch instead of cached JSON):
-    - `OFFLINE_MODE` = `false`
-    - `KOBO_USERNAME` = `your_username`
-    - `KOBO_PASSWORD` = `your_password`
+2.  **Environment Variables** (see `backend/.env` example):
+    - `OFFLINE_MODE` = `true` (default) uses cached JSON; `false` for live API/Supabase
+    - Backend/database credentials as issued by EMA ICT

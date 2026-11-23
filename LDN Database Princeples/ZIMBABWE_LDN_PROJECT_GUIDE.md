@@ -1,7 +1,7 @@
 # Zimbabwe LDN National Platform — Project Development Guide
 
 **Audience:** EMA technical teams, GIS/reporting officers, database administrators, and mobile field-app developers.  
-**Status:** Draft v0.4 — for EMA steering review before implementation sprints.  
+**Status:** Draft v0.5 — for EMA steering review before implementation sprints.  
 **Formats:** Markdown (source of truth in repo) + **Word** (`.docx`) for official circulation.  
 **Companion:** [ZIMBABWE_LDN_WORK_PLAN.md](./ZIMBABWE_LDN_WORK_PLAN.md)  
 **Aligned with:** UNCCD 2018–2030 Strategic Framework, SDG Indicator **15.3.1**, GPG Version 2 + **2025 Addendum**, Zimbabwe UNCCD Training & Validation Workshop (Sept 2026, Harare).
@@ -10,7 +10,7 @@
 
 ## 1. Purpose of this document
 
-This guide defines how we will **restructure and extend** the existing EMA LDN dashboard and mobile tools **without discarding** current work. The goal is **global compliance** (UNCCD / SDG reporting readiness) while keeping what already works for EMA operations: field collection, maps, database explorer, and Kobo sync.
+This guide defines how we will **restructure and extend** the existing EMA LDN dashboard and **national mobile data collection app** **without discarding** current work. The goal is **global compliance** (UNCCD / SDG reporting readiness) while keeping what already works for EMA operations: **Android/iOS field capture**, maps, database explorer, and API sync to the national database.
 
 **We are not rebuilding from zero.** We are adding structure, metadata, validation workflows, and reporting layers on top of the current system.
 
@@ -23,18 +23,20 @@ At the end of this programme, EMA must have **two production-grade systems** tha
 | Deliverable | Purpose | Global standard role |
 |-------------|---------|----------------------|
 | **A. National LDN database** | Authoritative store for field data, national layers, verification, audit, and reporting exports | Supports SO1 sub-indicators, period/status logic, metadata, PRAIS/Trends.Earth handoff |
-| **B. LDN data collection tool** | Mobile (and optionally Kobo) capture with offline sync, GPS/photos, governed forms | Tier-2 field evidence; QA of hotspots/bright spots; traceable submissions |
+| **B. LDN data collection tool** | **National mobile app (Android + iOS)** — offline sync, GPS/photos, governed forms via EMA API | Tier-2 field evidence; QA of hotspots/bright spots; traceable submissions |
 
 **What we already have (foundation — not throwaway):**
 
 | Existing asset | Maps to deliverable |
 |--------------|---------------------|
 | Next.js web application (`/ldn`, `/soil`, `/drylands`, `/database`, maps, sync) | **Database** operational UI + national visibility |
-| Kobo Collect forms + sync (`download_ldn.py`, `/api/ldn`, `/api/soil`) | **Collection** channel + ingest pipeline |
+| **Capacitor mobile app** (`mobile/`, LDN / Soil / Drylands / Validator) | **Collection** channel (Deliverable B) |
+| REST APIs (`/api/ldn`, `/api/soil`, `/api/drylands`, sync) | Ingest + dashboard read path |
+| Legacy bulk-import scripts | **Historical migration only** — retire after DB cutover |
 | `public/*-data.json` + modifications JSON | Temporary reconciliation — **to migrate** into database tables |
 | FastAPI + optional Supabase | **Database** technical backbone (to be formalized as system of record) |
 | Mobile APK + field validator (offline maps, draft queue) | **Collection tool** core — align forms & sync to national schema |
-| Drylands ILUP workbook / Kobo | Extension under same database + collection model |
+| Drylands ILUP (mobile module + legacy Excel import) | Extension under same database + collection model |
 
 **Definition of “done” for global standards (high level):**
 
@@ -48,9 +50,25 @@ All implementation work should be scored against **Deliverable A** or **Delivera
 
 ---
 
-## 1.2 Standards, principles, and compliance (non‑negotiables)
+## 1.2 Data collection — national mobile app only (EMA assignment)
 
-Implementation must follow these principles. They apply to database design, APIs, mobile/Kobo, and national spatial layers (including datasets in `important files/`).
+**Field data collection for LDN is through the EMA national mobile application on Android and iOS** (Capacitor project in `mobile/`). There is **no** third-party survey platform in scope for new submissions.
+
+| Requirement | Implementation |
+|-------------|----------------|
+| Platforms | **Android** and **iOS** (single codebase; App Store / Play distribution) |
+| Modules | LDN validation, soil sampling, drylands ILUP, field validator / navigator |
+| Offline | Local draft queue, sync when connected to EMA-approved API |
+| Forms | Governed by `reference_code_lists` + `form_version_id` (Section 5.3) |
+| Identity | Per-submission `uuid`, `submission_id`, enumerator, device, timestamps |
+
+Historical records already in JSON/Supabase may use legacy payload shapes; **new** records must use the **mobile submission schema** defined in Annexes A and B. Programme documents and the Work Plan describe **mobile forms**, not external survey tools.
+
+---
+
+## 1.3 Standards, principles, and compliance (non‑negotiables)
+
+Implementation must follow these principles. They apply to database design, APIs, **mobile app**, and national spatial layers (including datasets in `important files/`).
 
 | Principle | What it means in practice |
 |-----------|---------------------------|
@@ -59,7 +77,7 @@ Implementation must follow these principles. They apply to database design, APIs
 | **Tiered evidence** | Tier 1 (defaults), Tier 2 (national field/lab), Tier 3 (research) explicit on SOC, LPD, and land cover. |
 | **Separation of layers** | Field operations ≠ national gridded analytics ≠ PRAIS export packages (see §5.1). |
 | **Verification before reporting** | Submissions flow through governed states; national officer locks data used in official tables. |
-| **Single code-list source** | Kobo, mobile, database, and exports read the same `reference_code_lists` version. |
+| **Single code-list source** | Mobile app, database, and exports read the same `reference_code_lists` version. |
 | **Metadata & lineage** | Imports (shapefiles, Excel, Trends.Earth) carry custodian, vintage, CRS, and confidence. |
 | **Progressive enhancement** | No “big bang” replacement of the working dashboard, sync, or mobile app. |
 | **Government accountability** | Audit trail on changes; soft-delete for field submissions; role-based access. |
@@ -119,7 +137,7 @@ Any national database must store **which period** and **which tier of data** eac
 
 - Metric: **SOC stock** (e.g. t/ha), standard depth **0–30 cm**; needs concentration, bulk density, fragments where applicable.
 - **Tier 1**: global/default (UNCCD); **Tier 2**: national surveys/inventories; **Tier 3**: detailed modelling/monitoring.
-- Field soil surveys (like EMA’s Kobo soil form) are **verification and Tier-2 inputs**, not a substitute for national SOC mapping alone.
+- Field soil surveys (mobile **Soil** module) are **verification and Tier-2 inputs**, not a substitute for national SOC mapping alone.
 
 ### 2.7 Field observations vs national reporting layers
 
@@ -133,7 +151,7 @@ Therefore the mobile app and validation database are **first-class citizens**: t
 |------|------|
 | **PRAIS 4** | Official national report submission |
 | **Trends.Earth** | SO1 gridded analysis, default packages, exports for PRAIS |
-| **Kobo / field apps** | Ground truth, ward-level surveys, photos, GPS |
+| **EMA mobile app** | Ground truth, ward-level surveys, photos, GPS |
 | **National GIS/DB** | Authoritative boundaries, land cover, interventions, drylands |
 
 ---
@@ -143,12 +161,12 @@ Therefore the mobile app and validation database are **first-class citizens**: t
 | Asset | Role today | Keep? |
 |-------|------------|-------|
 | Next.js dashboard (`/ldn`, `/soil`, `/drylands`, `/interventions`, `/database`) | Visualization, edits, export | **Yes** — evolve APIs & schema |
-| Kobo sync + `public/*-data.json` | Operational cache | **Yes** — become *replica* of DB, not source of truth |
-| FastAPI backend | Kobo proxy | **Yes** — extend with reporting-period logic |
+| API sync + `public/*-data.json` | Operational cache | **Yes** — become *replica* of DB, not source of truth |
+| FastAPI backend | Mobile/API gateway, validation rules | **Yes** — extend with reporting-period logic |
 | Mobile Capacitor app + validator | Offline navigation, field validation | **Yes** — align forms to canonical schema |
 | `*-modifications.json` | Local reconciliation | **Migrate** to audited DB tables |
 | Supabase (optional live source) | Remote telemetry | **Yes** — formalize as staging/production DB |
-| Drylands Kobo form / ILUP Excel | Drylands programme | **Integrate** under unified metadata model |
+| Drylands mobile module / ILUP Excel (legacy import) | Drylands programme | **Integrate** under unified metadata model |
 
 **Principle:** *Progressive enhancement* — every sprint must leave the current dashboard usable.
 
@@ -194,7 +212,7 @@ Therefore the mobile app and validation database are **first-class citizens**: t
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### 5.2 Canonical field entities (mobile + Kobo)
+### 5.2 Canonical field entities (mobile submissions)
 
 | Entity | Workshop link | Notes |
 |--------|----------------|-------|
@@ -205,7 +223,7 @@ Therefore the mobile app and validation database are **first-class citizens**: t
 
 Each record must include:
 
-- `uuid`, `kobo_submission_id` (if applicable)
+- `uuid`, `submission_id` (server-assigned on sync)
 - `collected_at`, `enumerator_id`, `device_id`
 - `geometry` (Point/Polygon), accuracy
 - `reporting_period` (nullable until national assignment)
@@ -214,7 +232,7 @@ Each record must include:
 
 ### 5.3 Code lists (governance)
 
-Maintain versioned code lists (DB table + JSON export for Kobo):
+Maintain versioned code lists (DB table + JSON bundle shipped with mobile app releases):
 
 - UNCCD land cover 7 classes (+ Zimbabwe national subclasses)
 - LPD 5 classes
@@ -225,11 +243,11 @@ Maintain versioned code lists (DB table + JSON export for Kobo):
 
 ---
 
-## 6. Mobile application — development principles
+## 6. Mobile application — development principles (Deliverable B)
 
-1. **One national app**, modules: LDN survey, Soil, Drylands (existing forms), Validator (hotspot/bright-spot QA).
+1. **One national app for Android and iOS**, modules: LDN survey, Soil, Drylands (ILUP), Validator (hotspot/bright-spot QA).
 2. **Offline-first** with encrypted local queue; sync when connectivity allows (already partially implemented).
-3. **Form versions** pinned to `form_version_id`; submissions immutable after upload (corrections = new submission + link).
+3. **Form versions** pinned to `form_version_id` in the app; submissions immutable after upload (corrections = new submission + link).
 4. **Mandatory GPS quality** rules (accuracy threshold, stale warning).
 5. **Photo evidence** linked to submission UUID (already partially in export sanitization).
 6. **No PRAIS keys or secrets** in the app — only EMA-approved API endpoints.
@@ -243,7 +261,7 @@ Maintain versioned code lists (DB table + JSON export for Kobo):
 2. **JSON files** remain as read replicas for Vercel/edge fallback only (`OFFLINE_MODE`).
 3. All writes go through API with **role-based access** (enumerator, district reviewer, national reporting officer, admin).
 4. **Migrations** versioned in `backend/migrations/` or Supabase SQL.
-5. **Sync pipeline:** Kobo webhook or scheduled pull → staging → validation rules → production tables → refresh `public/*.json`.
+5. **Sync pipeline:** Mobile HTTPS upload → staging → validation rules → production tables → refresh `public/*.json` read replicas.
 6. **Retention:** align with government records policy; soft-delete + audit, no hard-delete of submitted field data.
 
 ---
@@ -256,7 +274,7 @@ Maintain versioned code lists (DB table + JSON export for Kobo):
 
 - [ ] EMA steering group approves this guide (Word + Markdown)
 - [ ] Appoint **national reporting officer** role in system
-- [ ] Inventory all Kobo forms + Excel (drylands ILUP) + lab SOC spreadsheet
+- [ ] Inventory all mobile form modules + Excel (drylands ILUP legacy) + lab SOC spreadsheet
 - [x] Map form fields → canonical entities — **LDN + Soil draft** in Annex A
 - [ ] Register EMA national spatial datasets — see §13 and [`important files/README.md`](../important%20files/README.md)
 
@@ -270,11 +288,11 @@ Maintain versioned code lists (DB table + JSON export for Kobo):
 
 - [ ] Consolidate Supabase schema (or Postgres) for field + reference layers
 - [ ] Replace `*-modifications.json` with audited tables + migration script
-- [ ] Kobo sync writes to DB first, then JSON cache
+- [ ] Mobile/API sync writes to DB first, then JSON cache
 
 ### Phase 3 — Mobile alignment (4–6 weeks)
 
-- [ ] Regenerate XLSForms from canonical schema
+- [ ] Regenerate mobile form definitions from canonical schema (shared code lists)
 - [ ] Validator links field verdicts to national grid cells / survey IDs
 - [ ] QA test: offline sync, conflict resolution, government sign-off workflow
 
@@ -297,7 +315,7 @@ Maintain versioned code lists (DB table + JSON export for Kobo):
 1. **Review meeting:** Walk through Sections 2–4 with EMA GIS and reporting leads.
 2. **Field mapping workshop:** One session per form (LDN, Soil, Drylands) — fill annex template below.
 3. **Drylands Excel:** Place / confirm `ILUP_for_Drylands_Project_*.xlsx` in repo or `data/imports/`; run import spec (separate task).
-4. **Do not** change production Kobo forms until Phase 1 code lists are signed off.
+4. **Do not** ship new mobile form versions until Phase 1 code lists are signed off.
 
 ---
 
@@ -312,7 +330,7 @@ Master index: **[ANNEX_INDEX.md](./ANNEX_INDEX.md)** · Commit after each sessio
 | C | National spatial layers register | [ANNEX_C_SPATIAL_LAYERS_REGISTER.md](./ANNEX_C_SPATIAL_LAYERS_REGISTER.md) | v0.1 draft |
 | D | Interventions / restoration register | [ANNEX_D_INTERVENTIONS_REGISTER.md](./ANNEX_D_INTERVENTIONS_REGISTER.md) | v0.1 draft |
 
-**Annex A summary (steering):** LDN + Soil Kobo → `ldn_validations` / `soil_samples`; SO1-1/2/3 links; ETL blockers documented in §A.1.
+**Annex A summary (steering):** LDN + Soil **mobile forms** → `ldn_validations` / `soil_samples`; SO1-1/2/3 links; legacy payload normalization in §A.1.
 
 **Annex B–D (this wave):** Drylands 58-question ILUP map; EMA LDN polygons (`Stable` / `Improved` / `Degraded`); interventions path from demo JSON → EMA `projects.zip`.
 
@@ -386,6 +404,7 @@ Delivery is iterative: **~60-minute working sessions** produce annexes and specs
 | 0.2 | 2026-11-23 | EMA / LDN project team (draft) | Annex A field mapping completed (see `ANNEX_A_FIELD_MAPPING.md`) |
 | 0.3 | 2026-11-23 | EMA / LDN project team (draft) | Compliance principles, EMA spatial annex, work plan, Word editions |
 | 0.4 | 2026-11-23 | EMA / LDN project team (draft) | Annexes B–D, annex index, repository workflow |
+| 0.5 | 2026-11-23 | EMA / LDN project team (draft) | Data collection = Android/iOS mobile only; removed external survey platform from scope |
 
 **Approval signatures:** *(pending)*  
 National Reporting Officer: _______________  

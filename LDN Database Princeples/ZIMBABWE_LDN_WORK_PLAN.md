@@ -1,7 +1,7 @@
 # Zimbabwe National LDN Database & Data Collection Tools — Work Plan
 
 **Document:** Work Plan (companion to Project Development Guide)  
-**Version:** 0.1 (draft)  
+**Version:** 0.2 (draft)  
 **Date:** 2026-11-23  
 **Owner:** EMA LDN programme (steering group)  
 **Status:** For EMA review — iterative delivery in **~60-minute working sessions** plus phased sprints
@@ -13,7 +13,7 @@
 This work plan schedules how EMA will evolve the existing OAU platform into:
 
 1. **Deliverable A** — A governed **national LDN database** (PostgreSQL/PostGIS, audit, metadata, reporting exports).  
-2. **Deliverable B** — **LDN data collection tools** (mobile + Kobo, offline, verification workflows).
+2. **Deliverable B** — **National mobile data collection app (Android + iOS)** — offline sync, GPS/photos, verification workflows.
 
 The plan respects **progressive enhancement**: the current dashboard and mobile app remain usable after every increment.
 
@@ -30,7 +30,7 @@ The plan respects **progressive enhancement**: the current dashboard and mobile 
 | O3 | Verification workflow to national reporting quality | States: submitted → verified → approved → locked | Phase 3 |
 | O4 | National spatial layers from EMA `important files` registered in DB | Layer catalogue + PostGIS load | Phase 2–4 |
 | O5 | SO1 reporting rehearsal | Checklist + export package dry run | Phase 5 (ahead of **Nov 2026** SO1) |
-| O6 | Mobile/Kobo alignment | One code-list source; form version pins | Phase 3 |
+| O6 | Mobile app alignment (Android + iOS) | One code-list source; form version pins | Phase 3 |
 
 ---
 
@@ -44,13 +44,13 @@ The plan respects **progressive enhancement**: the current dashboard and mobile 
 | **National reporting officer** | Reporting period, status rules, PRAIS packages |
 | **Database administrator** | PostGIS, migrations, backups, access control |
 | **GIS lead** | National layers, Trends.Earth handoff, CRS/metadata |
-| **Field operations lead** | Kobo/mobile, enumerators, QA |
+| **Field operations lead** | Mobile app rollout, enumerators, QA |
 | **ICT / development team** | OAU codebase, APIs, sync, security |
 | **External verifier (UNCCD workshop)** | Methodology sign-off (as required) |
 
 ### 3.2 Change control
 
-- **Code lists & Kobo form changes** — Steering approval only after Phase 1 registry exists.  
+- **Code lists & mobile form releases** — Steering approval only after Phase 1 registry exists.  
 - **Production schema** — Migration scripts + rollback note; no ad-hoc Supabase edits.  
 - **Documentation** — Guide (Word + Markdown), Work Plan, Annex A updated on each approved phase gate.
 
@@ -74,9 +74,9 @@ The plan respects **progressive enhancement**: the current dashboard and mobile 
 | WP0.2 | Annex A (LDN + Soil) EMA sign-off | Reporting + field leads | [ANNEX_A_FIELD_MAPPING.md](./ANNEX_A_FIELD_MAPPING.md) |
 | WP0.3 | Inventory EMA `important files` + README | GIS | Folder on disk |
 | WP0.4 | Appoint national reporting officer in RACI | Steering | — |
-| WP0.5 | Drylands / ILUP mapping session (Annex B) | Field ops | Excel/Kobo |
+| WP0.5 | Drylands / ILUP mapping session (Annex B) | Field ops | Mobile module + legacy Excel |
 
-**Exit criteria:** Signed Phase 0 checklist; no production Kobo breaking changes.
+**Exit criteria:** Signed Phase 0 checklist; no production mobile form release without code-list sign-off.
 
 ---
 
@@ -101,7 +101,7 @@ The plan respects **progressive enhancement**: the current dashboard and mobile 
 |------|-------------|-------|
 | WP2.1 | Consolidate `ldn_validations`, `soil_samples`, `drylands_observations` | DBA |
 | WP2.2 | Audit log; retire `*-modifications.json` pattern | Dev |
-| WP2.3 | Kobo sync → staging → production → cache refresh | Dev |
+| WP2.3 | Mobile API sync → staging → production → cache refresh | Dev |
 | WP2.4 | PostGIS import: **Combined LDN shapefiles** (versioned) | GIS |
 | WP2.5 | Layer registry API for web + validator | Dev |
 
@@ -113,7 +113,7 @@ The plan respects **progressive enhancement**: the current dashboard and mobile 
 
 | Task | Deliverable | Owner |
 |------|-------------|-------|
-| WP3.1 | Mobile forms match Kobo code lists | Field + dev |
+| WP3.1 | Android + iOS forms match national code lists | Field + dev |
 | WP3.2 | Validator: confirm/reject/adjust vs national grid | Dev |
 | WP3.3 | Offline sync QA (conflicts, GPS rules) | Field ops |
 | WP3.4 | Form versioning (`form_version_id` on each submission) | DBA + dev |
@@ -166,7 +166,7 @@ Assuming start **November 2026**; adjust after steering approval.
 | Phase 0 | Nov 2026 (w1–3) | WP0 | Guide + Annex A approved |
 | Phase 1 | Dec 2026 | WP1 | Code lists v1.0 |
 | Phase 2 | Jan–Feb 2027 | WP2 | DB-first sync + LDN polygons |
-| Phase 3 | Mar–Apr 2027 | WP3 | Mobile/Kobo parity |
+| Phase 3 | Mar–Apr 2027 | WP3 | Mobile app parity (Android + iOS) |
 | Phase 4 | May–Jul 2027 | WP4 | SO1 export package |
 | Phase 5 | Aug 2027 | WP5 | Reporting dry run |
 
@@ -186,7 +186,7 @@ Assuming start **November 2026**; adjust after steering approval.
 | D6 | Annex D — interventions register | Markdown | SO4 / restoration |
 | D6 | Code list registry | DB + export | UNCCD legend, LPD |
 | D7 | National LDN database (production) | PostGIS | Deliverable A |
-| D8 | Mobile + Kobo collection | APK + XLSForm | Deliverable B |
+| D8 | Mobile collection (Android + iOS) | Play Store + App Store builds | Deliverable B |
 | D9 | PRAIS / Trends.Earth export package | Files + metadata | PRAIS 4 |
 
 ---
@@ -195,7 +195,7 @@ Assuming start **November 2026**; adjust after steering approval.
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| Code list mismatch (mobile vs Kobo) | Wrong national totals | WP1 single registry; block form deploy until aligned |
+| Code list mismatch (app vs database) | Wrong national totals | WP1 single registry; block app release until aligned |
 | JSON remains source of truth | Audit failure | WP2 DB-first policy |
 | Large shapefile drift | Wrong validation polygons | Versioned imports; GIS sign-off per version |
 | Reporting deadline before Phase 4 | Incomplete automation | Define MVP export path in Phase 1 |
@@ -238,6 +238,7 @@ Full checklist duplicated in Project Guide §14.
 | Version | Date | Changes |
 |---------|------|---------|
 | 0.1 | 2026-11-23 | Initial work plan; aligned to Project Guide v0.3 |
+| 0.2 | 2026-11-23 | Deliverable B = Android/iOS mobile only; removed external survey platform |
 
 **Approvals:** *(pending)*  
 Steering chair: _______________  

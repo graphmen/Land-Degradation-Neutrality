@@ -3,9 +3,8 @@
 **Session:** 60-minute working draft  
 **Date:** 2026-11-23  
 **Status:** Draft for EMA sign-off (Phase 0)  
-**Form:** ILUP for Drylands Project — Kobo hosted (`public/drylands-schema.json`, 58 questions)  
-**Kobo link (schema):** https://ee.kobotoolbox.org/x/aLVomK4L  
-**Ingest paths:** Kobo sync → `public/drylands-data.json` · Excel via `import_drylands.py` · Supabase `ldn.drylands_observations`
+**Form:** ILUP for Drylands — **mobile module** `DrylandsForm.tsx` (`public/drylands-schema.json`, 58 questions)  
+**Ingest paths:** Mobile API sync → `public/drylands-data.json` · legacy Excel via `import_drylands.py` · Supabase `ldn.drylands_observations`
 
 ---
 
@@ -28,20 +27,20 @@ Drylands observations support **drylands / ILUP programme** planning and evidenc
 
 | Source | Marker | Notes |
 |--------|--------|-------|
-| **Kobo** | `raw_data` + normalised short keys | Checkbox fields → arrays or space-separated strings |
+| **Mobile submission** | JSON payload + `raw_data` cache | Checkbox fields → arrays or joined strings |
 | **ILUP Excel** | `_source: "ilup_excel"` | Column positions fixed in `import_drylands.py` (§ B.4) |
 | **Dashboard edits** | `drylands-modifications.json` | **Migrate** to audited DB (Phase 2) |
 | **Supabase** | `drylands_observations` row | Partial columns today — full payload in `raw_data` |
 
 **District inference (Excel only):** `infer_district()` uses ward-number heuristics for Chivi, Gutu, Chipinge, etc. — **must be replaced** with governed `admin_units` lookup in Phase 1.
 
-**Live cache:** `public/drylands-data.json` — **16 records** at last export (mix of Kobo-shaped rows; Excel import adds when `ILUP_for_Drylands*.xlsx` is present in repo root).
+**Live cache:** `public/drylands-data.json` — **16 records** at last export (mobile + legacy Excel rows).
 
 ---
 
-## B.3 Field map (Kobo question → canonical column)
+## B.3 Field map (mobile form field → canonical column)
 
-| # | Kobo `name` | Type | Canonical `drylands_observation.*` | Supabase (current) | Programme / SO link | Action |
+| # | Mobile field `name` | Type | Canonical `drylands_observation.*` | Supabase (current) | Programme / SO link | Action |
 |---|-------------|------|-----------------------------------|--------------------|---------------------|--------|
 | 1 | `date_of_observation` | text/date | `observed_at` | — | Period tagging | **Extend** |
 | 2 | `enumerator_name` | text | `enumerator` | `enumerator` | Audit | **Keep** |
@@ -99,7 +98,7 @@ Drylands observations support **drylands / ILUP programme** planning and evidenc
 | 54 | `cost_explanation` | text | `cost_notes` | — | — | **Extend** |
 | 55–57 | `photo_1` … `photo_3` | file | `photo_urls[]` | in `raw_data` | Verification | **Keep** |
 | 58 | `additional_notes` | text | `notes` | — | — | **Extend** |
-| — | `_id`, `_uuid` | system | `kobo_submission_id`, `uuid` | `kobo_id`, `uuid` | Identity | **Keep** |
+| — | `submission_id`, `uuid` | system | `submission_id`, `uuid` | `kobo_id` (rename), `uuid` | Identity | **Keep** |
 | — | — | — | `district`, `province` | `district` | Admin | **Derive** / Excel inference |
 | — | — | — | `reporting_period`, `verification_status`, `data_tier` | — | Compliance | **Phase 1** |
 
@@ -107,9 +106,9 @@ Drylands observations support **drylands / ILUP programme** planning and evidenc
 
 ## B.4 ILUP Excel column index (`import_drylands.py`)
 
-Use when reconciling legacy exports with Kobo field names.
+Use when reconciling legacy Excel exports with mobile field names.
 
-| Excel col | Maps to (record key) | Kobo equivalent |
+| Excel col | Maps to (record key) | Mobile field |
 |-----------|-------------------|-----------------|
 | 3 | `date_of_observation` | `date_of_observation` |
 | 4 | `enumerator_name` | `enumerator_name` |
@@ -126,11 +125,11 @@ Use when reconciling legacy exports with Kobo field names.
 | 39–48 | erosion block | `soil_erosion_*`, `erosion_*`, `assets_threatened` |
 | 56–70 | water / wetland | `water_*`, `wetland_*` |
 | 72–85 | climate / fire / drought | `climate_*`, `fire_*`, `drought_*` |
-| 86–108 | livelihoods / conflicts / compatibility | §17–19 Kobo |
-| 109–123 | priority, interventions, cost | §20–21 Kobo |
+| 86–108 | livelihoods / conflicts / compatibility | §17–19 mobile form |
+| 109–123 | priority, interventions, cost | §20–21 mobile form |
 | 125,127,129 | `photo_urls` | `photo_*` |
 | 130 | `notes` | `additional_notes` |
-| 131–133 | `_id`, `_uuid`, `_submission_time` | Kobo metadata |
+| 131–133 | `_id`, `_uuid`, `_submission_time` | Submission metadata |
 
 ---
 
@@ -173,3 +172,4 @@ Use when reconciling legacy exports with Kobo field names.
 | Version | Date | Changes |
 |---------|------|---------|
 | 0.1 | 2026-11-23 | Initial annex from schema, import script, and live cache |
+| 0.2 | 2026-11-23 | Mobile-only collection; removed external survey platform references |

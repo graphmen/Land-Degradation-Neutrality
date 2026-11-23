@@ -48,9 +48,9 @@ Sample record shape (JSON):
 
 ## D.3 Mapping — Drylands recommended interventions → types
 
-From Kobo ILUP (Annex B) — use as **code list** seed for `intervention_type`:
+From drylands mobile ILUP (Annex B) — use as **code list** seed for `intervention_type`:
 
-| Kobo value | UNCCD / national tag (draft) |
+| Mobile form value | UNCCD / national tag (draft) |
 |------------|------------------------------|
 | Vetiver planting | erosion_control |
 | Contour ridges | erosion_control |
