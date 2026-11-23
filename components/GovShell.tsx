@@ -13,9 +13,13 @@ import {
   Settings,
   PanelLeftClose,
   PanelLeftOpen,
-  ArrowUpRight,
   Sprout,
   Shield,
+  MapPin,
+  FlaskConical,
+  Wrench,
+  Image as ImageIcon,
+  Database,
 } from "lucide-react";
 import {
   EMA_ROLE_META,
@@ -26,51 +30,25 @@ import {
 } from "./GovPlatformContext";
 
 const PRIMARY_NAV = [
-  {
-    href: "/national-overview",
-    label: "National Overview",
-    icon: Landmark,
-  },
-  {
-    href: "/evidence/registry",
-    label: "Evidence Registry",
-    icon: FileSpreadsheet,
-  },
-  {
-    href: "/verification",
-    label: "Verification Workspace",
-    icon: ClipboardCheck,
-  },
-  {
-    href: "/layers",
-    label: "National Layers",
-    icon: Layers,
-  },
-  {
-    href: "/analytics",
-    label: "Analytics (SO1)",
-    icon: BarChart3,
-  },
-  {
-    href: "/drylands",
-    label: "Drylands (ILUP)",
-    icon: Sprout,
-  },
-  {
-    href: "/reporting-desk",
-    label: "Reporting Desk",
-    icon: FileCheck2,
-  },
-  {
-    href: "/admin",
-    label: "Administration",
-    icon: Settings,
-  },
+  { href: "/national-overview", label: "National Overview", icon: Landmark },
+  { href: "/evidence/registry", label: "Evidence Registry", icon: FileSpreadsheet },
+  { href: "/verification", label: "Verification Workspace", icon: ClipboardCheck },
+  { href: "/layers", label: "National Layers", icon: Layers },
+  { href: "/analytics", label: "Analytics (SO1)", icon: BarChart3 },
+  { href: "/reporting-desk", label: "Reporting Desk", icon: FileCheck2 },
+  { href: "/admin", label: "Administration", icon: Settings },
 ];
 
-const LEGACY_LINKS = [
-  { href: "/database", label: "Legacy Explorer" },
+const EXPLORER_NAV = [
+  { href: "/ldn", label: "LDN Field Map", icon: MapPin },
+  { href: "/soil", label: "Soil Core Lab", icon: FlaskConical },
+  { href: "/interventions", label: "Interventions Hub", icon: Wrench },
+  { href: "/drylands", label: "Drylands (ILUP)", icon: Sprout },
+  { href: "/gallery", label: "Field Gallery", icon: ImageIcon },
+  { href: "/database", label: "Data Explorer", icon: Database },
 ];
+
+const FULLBLEED_ROUTES = ["/ldn", "/soil", "/interventions", "/drylands", "/database"];
 
 function GovShellInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -185,18 +163,22 @@ function GovShellInner({ children }: { children: React.ReactNode }) {
           <div className="gov-nav-divider" />
 
           <div className="gov-nav-group">
-            <div className="gov-nav-group-label">Transition Links</div>
-            {LEGACY_LINKS.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="gov-nav-link"
-                title={item.label}
-              >
-                <ArrowUpRight size={16} style={{ flexShrink: 0 }} />
-                <span className="gov-nav-text">{item.label}</span>
-              </Link>
-            ))}
+            <div className="gov-nav-group-label">Field Explorers</div>
+            {EXPLORER_NAV.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`gov-nav-link ${active ? "active" : ""}`}
+                  title={item.label}
+                >
+                  <Icon size={16} style={{ flexShrink: 0 }} />
+                  <span className="gov-nav-text">{item.label}</span>
+                </Link>
+              );
+            })}
           </div>
 
           <div id="sidebar-export-container" className="sidebar-export-container" />
@@ -209,9 +191,13 @@ function GovShellInner({ children }: { children: React.ReactNode }) {
           </div>
         </nav>
 
-        <main className="gov-main">
-          <div className="gov-container">{children}</div>
-        </main>
+        {FULLBLEED_ROUTES.some((r) => pathname === r || pathname?.startsWith(`${r}/`)) ? (
+          <main className="gov-main gov-main-fullbleed">{children}</main>
+        ) : (
+          <main className="gov-main">
+            <div className="gov-container">{children}</div>
+          </main>
+        )}
       </div>
 
       <footer className="gov-footer">
