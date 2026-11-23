@@ -47,6 +47,8 @@ frontend-out.log
 
 # EMA GIS extracts (keep zip in important files/; extract locally only)
 important files/LDN shapefiles/
+important files/invasivespecies/
+important files/illegalminingshapefiles/
 
 # Large Datasets, Office temp files, and scientific exports
 *.pdf

@@ -4,7 +4,7 @@
 
 ## Source
 
-`important files/illegalminingshapefiles.zip` — ~769 panning points (+ UTM variants).
+`important files/illegalminingshapefiles.zip` — **769** Lat/Long panning points ([`PRESSURE_LAYERS_QC.md`](./PRESSURE_LAYERS_QC.md)). — ~769 panning points (+ UTM variants).
 
 ## Pre-load
 

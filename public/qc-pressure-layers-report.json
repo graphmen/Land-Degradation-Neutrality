@@ -1,0 +1,149 @@
+{
+  "packages": [
+    {
+      "layer_id": "PRESS-INVASIVE",
+      "archive": "important files\\invasivespecies.zip",
+      "layers": [
+        {
+          "features": 2035,
+          "fields": [
+            "LAT",
+            "LONG",
+            "Altitude",
+            "IASID",
+            "Village",
+            "Species",
+            "Estimate_S",
+            "Estimate_1",
+            "Area_clear",
+            "F10",
+            "Area_affec"
+          ],
+          "layer": "Zim_InvasiveLatLong.zip/Zim_InvasiveLatLong.shp"
+        },
+        {
+          "features": 262,
+          "fields": [
+            "X",
+            "Y",
+            "Altitude",
+            "IASID",
+            "Village",
+            "Species",
+            "Estimate_S",
+            "Estimate_1",
+            "Area_clear"
+          ],
+          "layer": "Zim_InvasiveUTM35Lantana_Camara.zip/Zim_InvasiveUTM35Lantana_Camara.shp"
+        },
+        {
+          "features": 2,
+          "fields": [
+            "X",
+            "Y",
+            "Altitude",
+            "IASID",
+            "Village",
+            "Species",
+            "Estimate_S",
+            "Estimate_1",
+            "Area_clear"
+          ],
+          "layer": "Zim_InvasiveUTM36Azola.zip/Zim_InvasiveUTM36Azola.shp"
+        },
+        {
+          "features": 219,
+          "fields": [
+            "X",
+            "Y",
+            "Altitude",
+            "IASID",
+            "Village",
+            "Species",
+            "Estimate_S",
+            "Estimate_1",
+            "Area_clear"
+          ],
+          "layer": "Zim_InvasiveUTM36Lantana_Camara.zip/Zim_InvasiveUTM36Lantana_Camara.shp"
+        },
+        {
+          "features": 2,
+          "fields": [
+            "X",
+            "Y",
+            "Altitude",
+            "IASID",
+            "Village",
+            "Species",
+            "Estimate_S",
+            "Estimate_1",
+            "Area_clear"
+          ],
+          "layer": "Zim_InvasiveUTM36Water_Hyacinth.zip/Zim_InvasiveUTM36Water_Hyacinth.shp"
+        }
+      ],
+      "feature_total": 2520
+    },
+    {
+      "layer_id": "PRESS-MINING",
+      "archive": "important files\\illegalminingshapefiles.zip",
+      "layers": [
+        {
+          "features": 769,
+          "fields": [
+            "LAT",
+            "LONG",
+            "ALTITUDE",
+            "IPID",
+            "Resource_p",
+            "Num_of_Pit",
+            "Avg_Pit_le",
+            "Avg_pit_wi",
+            "Avg_pit_de",
+            "Avg_pit_ra",
+            "Area_cover",
+            "Est__Stret",
+            "Infra_Eco",
+            "F14"
+          ],
+          "layer": "Gold_Chrome_Panning_LatLong.zip/Gold_Chrome_Panning_LatLong.shp"
+        },
+        {
+          "features": 203,
+          "fields": [
+            "X",
+            "Y",
+            "ALTITUDE",
+            "IPID",
+            "Resource_p",
+            "Num_of_Pit",
+            "Avg_Pit_le",
+            "Avg_pit_wi",
+            "Avg_pit_de",
+            "Avg_pit_ra",
+            "Area_cover"
+          ],
+          "layer": "Gold_Chrome_Panning_UTM35.zip/Gold_Chrome_Panning_UTM35.shp"
+        },
+        {
+          "features": 192,
+          "fields": [
+            "X",
+            "Y",
+            "ALTITUDE",
+            "IPID",
+            "Resource_p",
+            "Num_of_Pit",
+            "Avg_Pit_le",
+            "Avg_pit_wi",
+            "Avg_pit_de",
+            "Avg_pit_ra",
+            "Area_cover"
+          ],
+          "layer": "Gold_Chrome_Panning_UTM36.zip/Gold_Chrome_Panning_UTM36.shp"
+        }
+      ],
+      "feature_total": 1164
+    }
+  ]
+}

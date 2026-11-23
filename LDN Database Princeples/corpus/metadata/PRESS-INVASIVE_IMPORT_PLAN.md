@@ -4,10 +4,11 @@
 
 ## Source
 
-`important files/invasivespecies.zip` — ~2,035 points + species-split shapefiles.
+`important files/invasivespecies.zip` — nested zips; **2,035** Lat/Long points (see [`PRESSURE_LAYERS_QC.md`](./PRESSURE_LAYERS_QC.md)).
 
 ## Pre-load
 
+- [x] Nested zip inventory + field list (`pressure_layer_qc.py`)  
 - Unify species taxon fields into code list (future annex)  
 - CRS harmonize to WGS 84 for web; retain UTM copies in metadata  
 - Link drylands mobile `invasive_species` narratives where ward matches
