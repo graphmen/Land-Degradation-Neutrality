@@ -43,3 +43,5 @@ District and national officers review **field evidence** before records become *
 *States align with* [`R1_INFORMATION_ARCHITECTURE.md`](./R1_INFORMATION_ARCHITECTURE.md) *§6*
 
 **R2 preview API:** [`design/R1_VERIFICATION_QUEUES_API.md`](./design/R1_VERIFICATION_QUEUES_API.md) · `GET /api/verify/queues`
+
+**R2 UI (wireframe):** [`design/R1_VERIFICATION_WORKSPACE_MODULE.md`](./design/R1_VERIFICATION_WORKSPACE_MODULE.md)

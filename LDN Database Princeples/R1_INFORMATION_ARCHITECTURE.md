@@ -98,6 +98,8 @@ Single searchable registry — **three form types, one governance model**.
 
 **R2 data (preview):** `GET /api/evidence/registry` — unified rows; `?prais_eligible=true` for locked pilot. See [`design/R1_EVIDENCE_REGISTRY_API.md`](./design/R1_EVIDENCE_REGISTRY_API.md).
 
+**R2 module design:** [`design/R1_VERIFICATION_WORKSPACE_MODULE.md`](./design/R1_VERIFICATION_WORKSPACE_MODULE.md) (queues UI — pairs with §6 state machine).
+
 ---
 
 ## 6. Verification state machine
@@ -132,6 +134,8 @@ draft → submitted → district_review → national_review → approved → loc
 │ Last PRAIS handoff: date / officer / package hash      │
 └─────────────────────────────────────────────────────────┘
 ```
+
+**R2 module design:** [`design/R1_REPORTING_DESK_MODULE.md`](./design/R1_REPORTING_DESK_MODULE.md) — §F gates, export jobs, checklist A–G.
 
 ---
 

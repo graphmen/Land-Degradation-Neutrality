@@ -13,7 +13,7 @@
 | 10–18 | Peer twins → modules (Study) — [`R1_PEER_TWINNING_IA_MAP.md`](./R1_PEER_TWINNING_IA_MAP.md); confirm **S7** | Twins confirmed |
 | 15–25 | **S1/S2** — code lists + Supabase A+B [`STEERING_S1_S2_DECISION_PACK.md`](./STEERING_S1_S2_DECISION_PACK.md) | DBA go / defer; preflight sha256 |
 | 25–32 | GIS segment — **Q1/Q2** + **S10–S12** [`STEERING_GIS_SO1_DECISION_PACK.md`](./STEERING_GIS_SO1_DECISION_PACK.md) | Raster + polygon gates noted |
-| 25–35 | Walk modules §3–§7 (Evidence, Verification, Layers, Reporting desk) | Names approved |
+| 32–42 | Walk modules §3–§7 (Evidence, Verification, Layers, Reporting desk) — [`design/R1_VERIFICATION_WORKSPACE_MODULE.md`](./design/R1_VERIFICATION_WORKSPACE_MODULE.md) · [`design/R1_REPORTING_DESK_MODULE.md`](./design/R1_REPORTING_DESK_MODULE.md) | Names approved |
 | 35–50 | RBAC §2 — district vs national vs reporting officer | Role list confirmed |
 | 50–58 | Route cutover §8 — what retires | Redirect plan accepted |
 | 58–65 | Sign §9 checklist below | **Go / no-go R2** |
