@@ -15,4 +15,16 @@ Verify:
 SELECT list_key, version, status FROM ldn.reference_code_lists;
 ```
 
+Full post-apply script: [`VERIFY_MIGRATIONS.sql`](./VERIFY_MIGRATIONS.sql)
+
+CLI probe (after apply):
+
+```powershell
+node scripts/verify_supabase_schema.mjs
+# Order reminder only:
+node scripts/verify_supabase_schema.mjs --checklist-only
+```
+
 PostGIS load for `national_ldn_units` is documented in `LDN Database Princeples/IMPORT_NATIONAL_LDN_UNITS.md`.
+
+**Steering gate:** do not apply `003` / shapefile load until **S8** and **S3–S4** in [`STEERING_DECISIONS_QUEUE.md`](../LDN Database Princeples/STEERING_DECISIONS_QUEUE.md).

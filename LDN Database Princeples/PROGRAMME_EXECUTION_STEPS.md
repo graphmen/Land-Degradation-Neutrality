@@ -11,7 +11,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 | R0 | International LDN benchmark | Blueprint + [`INTERNATIONAL_COUNTRY_DOSSIERS.md`](./INTERNATIONAL_COUNTRY_DOSSIERS.md) (11 countries) | 🔶 v0.1 |
 | R0b | National data corpus register | [`NATIONAL_DATA_CORPUS.md`](./NATIONAL_DATA_CORPUS.md) | ✅ living |
 | R0c | Peer twinning + differentiator (Study) | [`STEERING_PEER_TWINNING_RECOMMENDATION.md`](./STEERING_PEER_TWINNING_RECOMMENDATION.md) · [one-pager](./ZIMBABWE_DIFFERENTIATOR_STEERING_ONE_PAGER.md) | 🔶 confirm twins |
-| R1 | EMA UX / information architecture sign-off | [`R1_INFORMATION_ARCHITECTURE.md`](./R1_INFORMATION_ARCHITECTURE.md) | 🔶 draft for sign-off |
+| R1 | EMA UX / information architecture sign-off | [`R1_INFORMATION_ARCHITECTURE.md`](./R1_INFORMATION_ARCHITECTURE.md) · [`R1_STEERING_SIGN_OFF_PACK.md`](./R1_STEERING_SIGN_OFF_PACK.md) | 🔶 pack ready |
 | R2 | New government web shell (replace OAU chrome) | Module map §4 in blueprint | ⬜ |
 | R3 | Cutover: Evidence registry default landing | Retire “telemetry dashboard” copy | ⬜ |
 
@@ -63,7 +63,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 | Step | Action | Done |
 |------|--------|------|
-| 3.1 | iOS build + TestFlight; production API URL | [`MOBILE_API_DEPLOY.md`](./MOBILE_API_DEPLOY.md) | 🔶 doc |
+| 3.1 | iOS build + TestFlight; production API URL | [`MOBILE_API_DEPLOY.md`](./MOBILE_API_DEPLOY.md) · [`MOBILE_IOS_CHECKLIST.md`](./MOBILE_IOS_CHECKLIST.md) | 🔶 Android lane; iOS needs Mac |
 | 3.2 | Align severity/land-cover labels to Annex F | 🔶 codes + **land use** list (`ldn_land_use_type`) |
 | 3.3 | Validator ↔ national polygon `Id` join (after GIS workshop) | ⬜ |
 
@@ -81,7 +81,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 **Autonomous mode:** [`AUTONOMOUS_EXECUTION.md`](./AUTONOMOUS_EXECUTION.md) — no “continue” required.
 
-**Next automatic block:** R1 sign-off facilitation doc · Supabase apply runbook test · iOS build (3.1).
+**Next automatic block:** Apply Supabase after **S2** · R2 shell (post-R1) · Android UAT build.
 
 **Block reviews:** [Study twinning](./BLOCK_REVIEW_2026-11-23_study-peer-twinning.md) · [Discipline](./BLOCK_DISCIPLINE_60MIN.md)
 

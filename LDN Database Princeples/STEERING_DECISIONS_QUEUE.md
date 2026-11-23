@@ -5,7 +5,7 @@
 | ID | Decision | Evidence | Blocks |
 |----|----------|----------|--------|
 | **S1** | Code list v1.0 sign-off (Annex F) | `reference-code-lists.v0.9.json` | Mobile labels, exports |
-| **S2** | Apply Supabase `001`–`005`, then `003` | [`APPLY_MIGRATIONS.md`](../backend/APPLY_MIGRATIONS.md) | DB governance, pressure load |
+| **S2** | Apply Supabase `001`–`005`, then `003` | [`APPLY_MIGRATIONS.md`](../backend/APPLY_MIGRATIONS.md) · [`VERIFY_MIGRATIONS.sql`](../backend/VERIFY_MIGRATIONS.sql) · `node scripts/verify_supabase_schema.mjs` | DB governance, pressure load |
 | **S3** | LDN-NAT-ALL **Area** unit (Q1) | [`CEID_JOIN_QC.md`](./corpus/metadata/CEID_JOIN_QC.md) | PostGIS load, SO1-STATUS km² |
 | **S4** | CEID ↔ shapefile `Id` rule (Q2) | 93/147 `second_segment` | Validator join |
 | **S5** | Reporting period `2020-2023` active | `reporting-period-config.json` | Lock snapshots |

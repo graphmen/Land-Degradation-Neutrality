@@ -147,6 +147,8 @@ draft → submitted → district_review → national_review → approved → loc
 
 ## 9. Sign-off checklist (steering)
 
+**Facilitation pack:** [`R1_STEERING_SIGN_OFF_PACK.md`](./R1_STEERING_SIGN_OFF_PACK.md) (agenda + signature block).
+
 - [ ] Module names acceptable for government  
 - [ ] Landing = National overview (not dashboard KPIs)  
 - [ ] Evidence registry = single front door for field data  
