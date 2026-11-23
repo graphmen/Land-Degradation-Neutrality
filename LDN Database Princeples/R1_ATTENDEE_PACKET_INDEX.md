@@ -7,12 +7,12 @@
 ## Pre-flight (ICT — day before)
 
 ```powershell
-npm run qc:refresh
-npm run export:steering-docx
-npm run export:ceid-worksheet
+npm run r1:preflight
 npm run dev
 npm run r1:smoke
 ```
+
+(`r1:preflight` = QC refresh + Word pack + CEID CSV)
 
 ---
 

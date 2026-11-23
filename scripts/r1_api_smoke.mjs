@@ -4,10 +4,25 @@
  * Usage: npm run r1:smoke
  *        $env:R1_SMOKE_BASE_URL="https://your-host"; npm run r1:smoke
  */
-const base = (process.env.R1_SMOKE_BASE_URL || "http://localhost:3000").replace(
-  /\/$/,
-  ""
-);
+async function resolveBase() {
+  const env = process.env.R1_SMOKE_BASE_URL;
+  if (env) return env.replace(/\/$/, "");
+  for (const port of [3000, 3001]) {
+    const candidate = `http://localhost:${port}`;
+    try {
+      const res = await fetch(`${candidate}/api/status`, {
+        headers: { accept: "application/json" },
+      });
+      if (res.ok) {
+        const body = await res.json();
+        if (body?.programme) return candidate;
+      }
+    } catch {
+      /* try next port */
+    }
+  }
+  return "http://localhost:3000";
+}
 
 const CHECKS = [
   { path: "/api/status", key: "programme" },
@@ -30,7 +45,7 @@ const CHECKS = [
   { path: "/api/export/meta", key: "layers" },
 ];
 
-async function probe({ path, key }) {
+async function probe(base, { path, key }) {
   const url = `${base}${path}`;
   try {
     const res = await fetch(url, { headers: { accept: "application/json" } });
@@ -61,10 +76,11 @@ async function probe({ path, key }) {
 }
 
 async function main() {
+  const base = await resolveBase();
   console.log(`R1 API smoke — ${base}\n`);
   let failed = 0;
   for (const check of CHECKS) {
-    const r = await probe(check);
+    const r = await probe(base, check);
     const mark = r.ok ? "OK" : "FAIL";
     const extra = r.ok ? "" : ` — ${r.detail ?? r.status}`;
     console.log(`  [${mark}] ${check.path}${extra}`);

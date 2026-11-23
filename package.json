@@ -21,6 +21,7 @@
     "export:steering-docx": "python scripts/export_steering_docx.py",
     "export:ceid-worksheet": "python scripts/export_ceid_alias_worksheet.py",
     "r1:smoke": "node scripts/r1_api_smoke.mjs",
+    "r1:preflight": "npm run qc:refresh && npm run export:steering-docx && npm run export:ceid-worksheet",
     "qc:ceid": "python scripts/ceid_join_qc.py",
     "build:ceid-aliases": "python scripts/build_ceid_alias_draft.py",
     "import:ceid-aliases": "python scripts/import_ceid_aliases_from_csv.py",
