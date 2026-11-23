@@ -50,6 +50,7 @@ export async function GET(): Promise<NextResponse> {
         "/api/validator/ceid",
         "/api/pressure-layers",
         "/api/corpus-layers",
+        "/api/qc/summary",
         "/api/interventions",
         "/api/verify/transition",
       ],

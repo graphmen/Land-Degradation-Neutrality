@@ -63,7 +63,11 @@ python scripts/national_raster_qc.py
 
 ---
 
-## E. Attachments for this segment
+## E. QC lineage (optional handout)
+
+[`corpus/CORPUS_QC_LINEAGE.md`](./corpus/CORPUS_QC_LINEAGE.md) · `GET /api/qc/summary`
+
+## F. Attachments for this segment
 
 - [`STEERING_DECISIONS_QUEUE.md`](./STEERING_DECISIONS_QUEUE.md)  
 - [`REPORTING_DESK_CHECKLIST.md`](./REPORTING_DESK_CHECKLIST.md) §B0–B0c, §F  

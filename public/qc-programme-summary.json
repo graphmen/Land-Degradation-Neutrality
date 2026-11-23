@@ -1,0 +1,92 @@
+{
+  "generated_at": "2026-11-23T10:01:33.371205+00:00",
+  "field_ldn": {
+    "records_with_ceid": 150,
+    "unique_ceids": 147,
+    "ceid_join_rule": null,
+    "ceid_match_rate": null
+  },
+  "national_polygon": {
+    "polygon_count": 254873,
+    "unique_unit_ids": 43455,
+    "area_unit_open": "Q1"
+  },
+  "pressure_qc_features": {
+    "PRESS-INVASIVE": 2520,
+    "PRESS-MINING": 1164
+  },
+  "pressure_staging_count": 2804,
+  "intervention_qc_features": {
+    "INT-SBC": 1367,
+    "INT-PROJECTS": 47
+  },
+  "staging_counts": {
+    "ema_projects": 47,
+    "sbc": 1364
+  },
+  "national_rasters": {
+    "delivery_ready": [],
+    "blockers": [
+      "S10: LC t0/t1 GeoTIFF not delivered",
+      "S11: LPD raster not delivered",
+      "S12: SOC surface not delivered"
+    ]
+  },
+  "reporting_gates": {
+    "locked_field_rows": 3,
+    "steering_blockers": [
+      "LDN-NAT-ALL Area unit (Q1)",
+      "1OAO national LC+LPD+SOC run pending",
+      "Pilot only: 3 locked row(s) \u2014 scale lock after R1 + real verifier accounts"
+    ],
+    "s10_f3": {
+      "corpus_registered": true,
+      "import_status": "awaiting_delivery",
+      "template_rows": 49,
+      "km2_cells_populated": 0,
+      "pass": false,
+      "required_for_pass": [
+        "S10c: deliver t0/t1 GeoTIFF to important files/",
+        "S10a: steering sign T1 (Trends.Earth vs EMA)",
+        "S10e: populate area_km2 (0/49 cells)"
+      ],
+      "design": "LDN Database Princeples/design/REPORTING_DESK_F3_S10_GATE.md"
+    },
+    "s11_f4": {
+      "corpus_registered": true,
+      "import_status": "awaiting_delivery",
+      "template_classes": 4,
+      "km2_classes_populated": 0,
+      "pass": false,
+      "required_for_pass": [
+        "S11: deliver LPD raster to important files/",
+        "S11: steering sign LPD source (Trends.Earth vs EMA VI)",
+        "S11: populate area_km2 (0/4 classes)"
+      ],
+      "import_plan": "LDN Database Princeples/corpus/metadata/LPD-NAT-RASTER_IMPORT_PLAN.md"
+    },
+    "s12_f5": {
+      "corpus_registered": true,
+      "import_status": "awaiting_delivery",
+      "tier1_national_populated": false,
+      "tier2_depth_0_30": 632,
+      "pass": false,
+      "required_for_pass": [
+        "S12: deliver national SOC surface to important files/",
+        "S12: steering sign Tier-1 SOC source (Trends.Earth vs EMA)",
+        "S12: populate tier1_national stock or area metric"
+      ],
+      "import_plan": "LDN Database Princeples/corpus/metadata/SOC-NAT-SURFACE_IMPORT_PLAN.md"
+    }
+  },
+  "scripts": [
+    "scripts/ceid_join_qc.py",
+    "scripts/pressure_layer_qc.py",
+    "scripts/intervention_spatial_qc.py",
+    "scripts/national_raster_qc.py",
+    "scripts/import_pressure_layers.py",
+    "scripts/import_sbc_staging.py",
+    "scripts/reporting_desk_dry_run.ts"
+  ],
+  "doc": "LDN Database Princeples/corpus/CORPUS_QC_LINEAGE.md"
+}
