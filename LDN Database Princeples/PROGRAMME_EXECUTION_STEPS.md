@@ -61,11 +61,11 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 ## Phase 3 — Mobile (Deliverable B)
 
-| Step | Action |
-|------|--------|
-| 3.1 | iOS build + TestFlight / internal testing | [`MOBILE_API_DEPLOY.md`](./MOBILE_API_DEPLOY.md) · `VITE_API_BASE_URL` | 🔶 doc |
+| Step | Action | Done |
+|------|--------|------|
+| 3.1 | iOS build + TestFlight; production API URL | [`MOBILE_API_DEPLOY.md`](./MOBILE_API_DEPLOY.md) | 🔶 doc |
 | 3.2 | Align severity/land-cover labels to Annex F | 🔶 codes + **land use** list (`ldn_land_use_type`) |
-| 3.3 | Validator ↔ national polygon `Id` join (after GIS workshop) |
+| 3.3 | Validator ↔ national polygon `Id` join (after GIS workshop) | ⬜ |
 
 ---
 
