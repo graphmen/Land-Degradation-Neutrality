@@ -70,4 +70,4 @@
 ☐ CEID `CEID_ALIAS_WORKSHOP.csv`  
 ☐ API demo [`R1_API_DEMO_SCRIPT.md`](./R1_API_DEMO_SCRIPT.md)
 
-**Post-meeting:** commit decision updates to `STEERING_DECISIONS_QUEUE.md` · `PROGRAMME_EXECUTION_STEPS.md` (R1 → ✅ if signed).
+**Post-meeting:** [`R1_POST_MEETING_PLAYBOOK.md`](./R1_POST_MEETING_PLAYBOOK.md) · `STEERING_DECISIONS_QUEUE.md` · R1 → ✅ if signed.

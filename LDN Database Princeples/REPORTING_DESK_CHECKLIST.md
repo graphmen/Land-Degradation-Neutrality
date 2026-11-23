@@ -28,7 +28,7 @@ Use this at **national overview / reporting desk** — not as a dashboard widget
 | B0b | National LPD surface | LPD-NAT-RASTER | Steering **S11** (L1–L4) | |
 | B0c | National SOC surface **0–30 cm** | SOC-NAT-SURFACE | Steering **S12** + FIELD-SOIL Tier-2 | |
 | B1 | Combined LDN units (254k) | LDN-NAT-ALL | EMA Q1 Area unit + Q2 CEID join answered | |
-| B2 | Field LDN (locked count ≥ policy min) | FIELD-LDN | Verification workspace | |
+| B2 | Field LDN (locked count ≥ policy min) | FIELD-LDN | Verification workspace; policy draft: [`design/VERIFICATION_LOCK_POLICY_V1.md`](./design/VERIFICATION_LOCK_POLICY_V1.md) | |
 | B3 | Soil Tier-2 samples (locked) | FIELD-SOIL | Lab SOC linkage where claimed | |
 | B4 | Drylands ILUP (if cited in SO1 narrative) | FIELD-DRY | Annex B codes | |
 | B5 | EMA projects / SBC (if bright spots) | INT-* | [`CORPUS_METADATA_REGISTER.md`](./corpus/CORPUS_METADATA_REGISTER.md) | |
