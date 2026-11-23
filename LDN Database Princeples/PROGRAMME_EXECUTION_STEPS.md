@@ -4,6 +4,19 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 ---
 
+## Phase R — Government platform redesign (NEW — steering priority)
+
+| Step | Action | Artefact | Done |
+|------|--------|----------|------|
+| R0 | International LDN benchmark | [`INTERNATIONAL_LDN_BENCHMARK_AND_ZIMBABWE_BLUEPRINT.md`](./INTERNATIONAL_LDN_BENCHMARK_AND_ZIMBABWE_BLUEPRINT.md) | 🔶 v0.1 draft |
+| R1 | EMA UX / information architecture sign-off | Wireframes + gov brand | ⬜ |
+| R2 | New government web shell (replace OAU chrome) | Module map §4 in blueprint | ⬜ |
+| R3 | Cutover: Evidence registry default landing | Retire “telemetry dashboard” copy | ⬜ |
+
+**Rule:** No more cosmetic patches on the old dashboard until **R1** is signed. Backend/mobile work continues.
+
+---
+
 ## Phase 0 — Documentation & governance
 
 | Step | Action | Annex / artefact | Done |
