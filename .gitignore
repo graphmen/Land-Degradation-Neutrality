@@ -45,6 +45,9 @@ backend-err.log
 backend-out.log
 frontend-out.log
 
+# EMA GIS extracts (keep zip in important files/; extract locally only)
+important files/LDN shapefiles/
+
 # Large Datasets, Office temp files, and scientific exports
 *.pdf
 *.pptx

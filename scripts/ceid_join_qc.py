@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 """
 CEID ↔ national LDN unit join QA (Step 2.1 prep).
-Reads field CEIDs from public/ldn-data.json; optionally compares to Combined shapefile Id.
+Reads field CEIDs from public/ldn-data.json; compares to Combined shapefile Id.
 
 Usage:
   python scripts/ceid_join_qc.py
   python scripts/ceid_join_qc.py --shp "path/to/Combined ldn shapefiles.shp"
 
-Requires: stdlib only. Optional shapefile: pip install pyshp (or use ogrinfo manually).
+Requires: stdlib + pyshp for shapefile stats (pip install pyshp).
 """
 from __future__ import annotations
 
 import argparse
 import json
-import re
+import statistics
 import sys
+from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -37,34 +38,100 @@ def load_field_ceids() -> list[dict]:
     return out
 
 
-def parse_ceid_parts(ceid: str) -> tuple[str | None, str | None]:
-    """Common pattern: wardId_pointId e.g. 11626_16623 — EMA to confirm."""
-    if "_" in ceid:
-        a, b = ceid.split("_", 1)
-        return a.strip(), b.strip()
-    if ceid.isdigit():
-        return None, ceid
-    return None, ceid
+def ceid_match_keys(ceid: str) -> dict[str, str | None]:
+    """Candidate keys for steering — EMA must confirm one authoritative rule."""
+    parts = ceid.split("_")
+    suffix_after_first = ceid.split("_", 1)[1] if "_" in ceid else ceid
+    return {
+        "suffix_after_first_underscore": suffix_after_first,
+        "second_segment": parts[1] if len(parts) >= 2 else None,
+        "last_segment": parts[-1] if len(parts) >= 2 else None,
+        "full_ceid": ceid,
+        "first_segment": parts[0] if parts and parts[0].isdigit() else None,
+    }
 
 
-def load_shapefile_ids(shp: Path) -> set[str]:
+def load_shapefile_profile(shp: Path) -> tuple[set[str], dict]:
     try:
         import shapefile  # pyshp
     except ImportError:
         print("pyshp not installed; run: pip install pyshp", file=sys.stderr)
         sys.exit(2)
+
     with shapefile.Reader(str(shp)) as sf:
         fields = [f[0] for f in sf.fields if f[0] != "DeletionFlag"]
         if "Id" not in fields:
             print(f"Shapefile fields: {fields}", file=sys.stderr)
             sys.exit(1)
-        idx = fields.index("Id")
-        ids = set()
+        idx_id = fields.index("Id")
+        idx_ld = fields.index("LD") if "LD" in fields else None
+        idx_area = fields.index("Area") if "Area" in fields else None
+
+        ids: set[str] = set()
+        areas: list[float] = []
+        ld_vals: list[str] = []
+        polygon_count = 0
+
         for rec in sf.iterRecords():
-            val = rec[idx]
+            polygon_count += 1
+            val = rec[idx_id]
             if val is not None:
                 ids.add(str(int(val)) if isinstance(val, (int, float)) else str(val).strip())
-        return ids
+            if idx_area is not None and rec[idx_area] is not None:
+                areas.append(float(rec[idx_area]))
+            if idx_ld is not None and rec[idx_ld] is not None:
+                ld_vals.append(str(rec[idx_ld]).strip())
+
+    profile: dict = {
+        "shapefile_fields": fields,
+        "polygon_count": polygon_count,
+        "unique_id_count": len(ids),
+        "polygons_per_unique_id_mean": round(polygon_count / len(ids), 4) if ids else 0,
+    }
+    if areas:
+        profile["area"] = {
+            "min": round(min(areas), 6),
+            "max": round(max(areas), 6),
+            "mean": round(statistics.mean(areas), 6),
+            "median": round(statistics.median(areas), 6),
+            "unit_assumed": None,
+            "steering_note": "Likely hectares for field-scale values; confirm Q1 with EMA.",
+        }
+    if ld_vals:
+        profile["ld_class_counts"] = dict(Counter(ld_vals).most_common())
+
+    return ids, profile
+
+
+def match_strategy_counts(unique_ceids: list[str], ids: set[str]) -> dict:
+    strategies = [
+        "suffix_after_first_underscore",
+        "second_segment",
+        "last_segment",
+        "first_segment",
+        "full_ceid",
+    ]
+    out: dict[str, dict] = {}
+    for name in strategies:
+        matched = 0
+        for c in unique_ceids:
+            key = ceid_match_keys(c).get(name)
+            if key and key in ids:
+                matched += 1
+        out[name] = {
+            "match_count": matched,
+            "match_rate": round(matched / len(unique_ceids), 4) if unique_ceids else 0,
+        }
+    return out
+
+
+def unmatched_using_rule(unique_ceids: list[str], ids: set[str], rule: str) -> list[str]:
+    bad = []
+    for c in unique_ceids:
+        key = ceid_match_keys(c).get(rule)
+        if not key or key not in ids:
+            bad.append(c)
+    return bad
 
 
 def main() -> None:
@@ -76,46 +143,60 @@ def main() -> None:
     ceids = [f["ceid"] for f in field]
     unique_ceids = sorted(set(ceids))
 
-    suffixes: list[str] = []
-    for c in unique_ceids:
-        _, suf = parse_ceid_parts(c)
-        if suf:
-            suffixes.append(suf)
+    suffixes = [ceid_match_keys(c)["suffix_after_first_underscore"] for c in unique_ceids]
 
     report: dict = {
         "source": str(LDN_JSON),
         "field_records_with_ceid": len(field),
         "unique_ceids": len(unique_ceids),
         "ceid_format_samples": unique_ceids[:10],
-        "suffix_numeric_count": sum(1 for s in suffixes if s.isdigit()),
+        "suffix_numeric_count": sum(1 for s in suffixes if str(s).isdigit()),
         "shapefile_checked": False,
-        "match_suffix_to_shapefile_id": None,
-        "match_count": None,
+        "shapefile_profile": None,
+        "match_strategies": None,
+        "recommended_interim_rule": "second_segment",
+        "match_count_recommended": None,
+        "match_rate_recommended": None,
         "unmatched_ceid_samples": [],
+        "unmatched_pattern_summary": {},
         "ema_questions": [
-            "Confirm CEID maps to shapefile field Id (suffix after underscore?)",
-            "Confirm Area units on shapefile",
+            "Q1: Confirm Area units on shapefile (hectares vs m²).",
+            "Q2: Confirm Id ↔ CEID rule (ward_point vs point-only; ZC* / HP1 / named sites).",
+            "Q3: Multiple polygons share one Id (~5.9 mean) — aggregate or explode for field join?",
         ],
     }
 
     shp = args.shp or (DEFAULT_SHP if DEFAULT_SHP.exists() else None)
     if shp and shp.exists():
-        ids = load_shapefile_ids(shp)
+        ids, profile = load_shapefile_profile(shp)
         report["shapefile_checked"] = True
         report["shapefile_path"] = str(shp)
-        report["shapefile_id_count"] = len(ids)
-        matched = 0
-        unmatched = []
-        for c in unique_ceids:
-            _, suf = parse_ceid_parts(c)
-            key = suf if suf else c
-            if key in ids:
-                matched += 1
+        report["shapefile_id_count"] = profile["unique_id_count"]
+        report["shapefile_profile"] = profile
+        report["match_strategies"] = match_strategy_counts(unique_ceids, ids)
+
+        rule = report["recommended_interim_rule"]
+        rec = report["match_strategies"][rule]
+        report["match_count_recommended"] = rec["match_count"]
+        report["match_rate_recommended"] = rec["match_rate"]
+        report["match_suffix_to_shapefile_id"] = {
+            "rule": "suffix_after_first_underscore",
+            **report["match_strategies"]["suffix_after_first_underscore"],
+        }
+
+        unmatched = unmatched_using_rule(unique_ceids, ids, rule)
+        report["unmatched_ceid_samples"] = unmatched[:25]
+        prefixes = Counter()
+        for c in unmatched:
+            if c.startswith("ZC"):
+                prefixes["ZC*"] += 1
+            elif "_" not in c:
+                prefixes["no_underscore_named"] += 1
+            elif c.count("_") >= 2:
+                prefixes["triple_segment_still_unmatched"] += 1
             else:
-                unmatched.append(c)
-        report["match_count"] = matched
-        report["match_rate"] = round(matched / len(unique_ceids), 4) if unique_ceids else 0
-        report["unmatched_ceid_samples"] = unmatched[:20]
+                prefixes["double_segment_unmatched"] += 1
+        report["unmatched_pattern_summary"] = dict(prefixes)
 
     OUT_JSON.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(json.dumps(report, indent=2))

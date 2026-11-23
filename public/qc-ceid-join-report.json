@@ -15,12 +15,97 @@
     "11332_17112"
   ],
   "suffix_numeric_count": 89,
-  "shapefile_checked": false,
-  "match_suffix_to_shapefile_id": null,
-  "match_count": null,
-  "unmatched_ceid_samples": [],
+  "shapefile_checked": true,
+  "shapefile_profile": {
+    "shapefile_fields": [
+      "Id",
+      "LD",
+      "Area",
+      "OBJECTID"
+    ],
+    "polygon_count": 254873,
+    "unique_id_count": 43455,
+    "polygons_per_unique_id_mean": 5.8652,
+    "area": {
+      "min": 4.563432,
+      "max": 3676239.64156,
+      "mean": 153.300259,
+      "median": 7.40746,
+      "unit_assumed": null,
+      "steering_note": "Likely hectares for field-scale values; confirm Q1 with EMA."
+    },
+    "ld_class_counts": {
+      "Improved": 93319,
+      "Stable": 89120,
+      "Degraded": 72434
+    }
+  },
+  "match_strategies": {
+    "suffix_after_first_underscore": {
+      "match_count": 89,
+      "match_rate": 0.6054
+    },
+    "second_segment": {
+      "match_count": 93,
+      "match_rate": 0.6327
+    },
+    "last_segment": {
+      "match_count": 93,
+      "match_rate": 0.6327
+    },
+    "first_segment": {
+      "match_count": 92,
+      "match_rate": 0.6259
+    },
+    "full_ceid": {
+      "match_count": 0,
+      "match_rate": 0.0
+    }
+  },
+  "recommended_interim_rule": "second_segment",
+  "match_count_recommended": 93,
+  "match_rate_recommended": 0.6327,
+  "unmatched_ceid_samples": [
+    "HP1",
+    "Muchawona",
+    "PLR4",
+    "ZC10",
+    "ZC11",
+    "ZC15",
+    "ZC16",
+    "ZC17",
+    "ZC18",
+    "ZC19",
+    "ZC2",
+    "ZC21",
+    "ZC22",
+    "ZC23",
+    "ZC24",
+    "ZC25",
+    "ZC26",
+    "ZC28",
+    "ZC29",
+    "ZC4",
+    "ZC7",
+    "ZC9",
+    "ZE1",
+    "ZE12",
+    "ZE13"
+  ],
+  "unmatched_pattern_summary": {
+    "no_underscore_named": 35,
+    "ZC*": 19
+  },
   "ema_questions": [
-    "Confirm CEID maps to shapefile field Id (suffix after underscore?)",
-    "Confirm Area units on shapefile"
-  ]
+    "Q1: Confirm Area units on shapefile (hectares vs m\u00b2).",
+    "Q2: Confirm Id \u2194 CEID rule (ward_point vs point-only; ZC* / HP1 / named sites).",
+    "Q3: Multiple polygons share one Id (~5.9 mean) \u2014 aggregate or explode for field join?"
+  ],
+  "shapefile_path": "C:\\Users\\ndebelem.ZINGSERVER1\\Desktop\\2026\\OAU\\important files\\LDN shapefiles\\Combined ldn shapefiles.shp",
+  "shapefile_id_count": 43455,
+  "match_suffix_to_shapefile_id": {
+    "rule": "suffix_after_first_underscore",
+    "match_count": 89,
+    "match_rate": 0.6054
+  }
 }

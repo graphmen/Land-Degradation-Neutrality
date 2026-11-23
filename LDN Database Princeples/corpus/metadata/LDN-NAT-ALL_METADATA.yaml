@@ -1,0 +1,42 @@
+# Partial — complete after EMA Q1–Q2 (Annex II + corpus register)
+layer_id: LDN-NAT-ALL
+title: Combined LDN validation polygons (national)
+abstract: >
+  National LDN unit polygons from EMA GIS bundle; attributes Id, LD, Area.
+  Join key for field validation pending EMA CEID rule (see CEID_JOIN_QC.md).
+custodian: Environmental Management Agency
+contact: ""  # GIS lead / LDN reporting officer
+
+vintage: 2026-11
+source_file: LDN shapefiles.zip / Combined ldn shapefiles.shp
+dataset_version: 1
+imported_at: ""  # set at PostGIS load
+imported_by: ""
+
+geometry_type: Polygon
+feature_count: 254873
+unique_unit_ids: 43455
+crs: EPSG:4326
+original_crs: WGS 84  # verify .prj at load
+
+licence: government_internal
+sensitivity: national_only
+lineage: EMA national LDN validation GIS export (2026 drop)
+
+so_uses:
+  - SO1-1
+data_tier: tier2_national
+reporting_period: null
+confidence: medium  # until Area unit + CEID rule signed
+
+shapefile_attributes:
+  - Id      # join candidate for field ceid (Q2)
+  - LD      # Stable | Improved | Degraded
+  - Area    # unit Q1
+  - OBJECTID
+
+prais_alternative_dataset:
+  title: ""
+  source_link_or_doi: ""
+  author_publisher: Environmental Management Agency
+  bibliographic_citation: ""

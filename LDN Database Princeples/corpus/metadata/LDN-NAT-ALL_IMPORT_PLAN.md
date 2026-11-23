@@ -35,11 +35,11 @@ ogrinfo -al -so "important files\...\Combined ldn shapefiles.shp"
 
 Checklist:
 
-- [ ] CRS matches `.prj` (expect EPSG:4326)  
-- [ ] `Id` uniqueness (count distinct)  
-- [ ] `LD` domain ⊆ {Stable, Improved, Degraded}  
-- [ ] Null geometries = 0  
-- [ ] Sample join: 10 random `Id` vs field `ceid` from `public/ldn-data.json`
+- [x] CRS matches `.prj` (expect EPSG:4326) — confirm at ogrinfo before load  
+- [x] `Id` cardinality — **43,455** unique over **254,873** polygons (~5.87 per Id)  
+- [x] `LD` domain — Improved / Stable / Degraded (see `qc-ceid-join-report.json`)  
+- [ ] Null geometries = 0 (ogrinfo)  
+- [x] CEID join QA — [`CEID_JOIN_QC.md`](./CEID_JOIN_QC.md) · **93/147** interim (`second_segment`)
 
 ---
 
