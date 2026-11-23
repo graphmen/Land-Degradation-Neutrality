@@ -1,7 +1,9 @@
 import { createHash } from "crypto";
 import fs from "fs/promises";
 import path from "path";
+import { buildExpMetaPackage } from "../lib/exp-meta-export";
 import { buildExpSo1FieldPackage } from "../lib/exp-so1-field-export";
+import { buildExpSo1LcTemplate } from "../lib/exp-so1-lc-export";
 import { buildExpSo1StatusPackage } from "../lib/exp-so1-status-export";
 
 async function sha256(text: string) {
@@ -9,14 +11,29 @@ async function sha256(text: string) {
 }
 
 async function main() {
+  const meta = await buildExpMetaPackage();
   const field = await buildExpSo1FieldPackage({ eligibility: "all" });
   const status = await buildExpSo1StatusPackage();
+  const lc = buildExpSo1LcTemplate();
   const period = status.reporting_period ?? "unassigned";
 
   const report = {
     dry_run_at: new Date().toISOString(),
     reporting_period: period,
     section_F: {
+      F1_EXP_META: {
+        pass: meta.validation.f1_pass,
+        layer_count: meta.layers.length,
+        hash_csv: await sha256(meta.csv),
+        missing: meta.validation.f1_missing,
+      },
+      F3_EXP_SO1_LC: {
+        pass: false,
+        status: lc.status,
+        row_count: lc.rows.length,
+        note: "Template only until LC rasters registered",
+        hash_csv: await sha256(lc.csv),
+      },
       F2_EXP_SO1_FIELD: {
         pass: field.ldn.length > 0 && field.soil.length > 0,
         ldn_columns: 23,
