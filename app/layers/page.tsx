@@ -476,13 +476,9 @@ export default function NationalLayersPage() {
   return (
     <>
       {/* Page Header */}
-      <div className="gov-page-header">
+      <div className="gov-page-header" style={{ paddingBottom: 12 }}>
         <div>
-          <h1 className="gov-page-title">National Layers & Spatial LDN Hub</h1>
-          <p className="gov-page-subtitle">
-            Governed national spatial corpus (Annex C & F1 EXP-META) pairing live multi-layer GIS
-            overlays with tabular lineage and Zimbabwe’s SDG 15.3.1 counterbalancing posture.
-          </p>
+          <h1 className="gov-page-title">National Layers</h1>
         </div>
         <div className="gov-page-actions">
           <button
@@ -561,14 +557,8 @@ export default function NationalLayersPage() {
         {viewMode === "map" && (
           <div className="gov-card" style={{ padding: 16 }}>
             <div className="gov-card-header" style={{ marginBottom: 10 }}>
-              <div>
-                <div className="gov-card-title">
-                  <MapPin size={16} color="#005a2b" /> Zimbabwe LDN Spatial Intelligence Map
-                </div>
-                <div className="gov-metric-sub">
-                  Toggle layers to compare degradation drivers, restoration bright spots, and field QA.
-                  Use the top-right map switcher for Google Hybrid, Satellite, Streets, Terrain, or Esri.
-                </div>
+              <div className="gov-card-title">
+                <MapPin size={16} color="#005a2b" /> Zimbabwe LDN Spatial Map
               </div>
               <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                 <span className="gov-badge gov-badge-green">
