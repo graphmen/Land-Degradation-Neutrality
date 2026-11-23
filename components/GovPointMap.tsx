@@ -14,14 +14,26 @@ export type GovMapPoint = {
   layerLabel?: string;
 };
 
+export type GovBoundaryOverlay = {
+  id: string;
+  label: string;
+  geojson: GeoJSON.GeoJsonObject;
+  color: string;
+  weight: number;
+  dashArray?: string;
+  fillOpacity?: number;
+};
+
 export type GovMapLegendItem = {
   label: string;
   color: string;
   count?: number;
+  isLine?: boolean;
 };
 
 interface GovPointMapProps {
   points: GovMapPoint[];
+  boundaries?: GovBoundaryOverlay[];
   height?: number;
   zoom?: number;
   showBasemapSwitcher?: boolean;
@@ -30,18 +42,22 @@ interface GovPointMapProps {
 
 export default function GovPointMap({
   points,
+  boundaries,
   height = 360,
   zoom = 6,
   legend,
 }: GovPointMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LType.Map | null>(null);
-  const layerGroupRef = useRef<LType.LayerGroup | null>(null);
+  const boundaryGroupRef = useRef<LType.LayerGroup | null>(null);
+  const pointGroupRef = useRef<LType.LayerGroup | null>(null);
+  const hasFitInitialRef = useRef(false);
 
+  // Initialize map + update point markers
   useEffect(() => {
     let cancelled = false;
 
-    async function initOrUpdate() {
+    async function initOrUpdatePoints() {
       if (!containerRef.current) return;
       const L = (await import("leaflet")).default;
       if (cancelled || !containerRef.current) return;
@@ -51,16 +67,18 @@ export default function GovPointMap({
           center: [-19.0154, 29.1549],
           zoom,
           scrollWheelZoom: true,
+          preferCanvas: true,
         });
 
         addBaseTileLayers(L, map);
 
         mapRef.current = map;
-        layerGroupRef.current = L.layerGroup().addTo(map);
+        boundaryGroupRef.current = L.layerGroup().addTo(map);
+        pointGroupRef.current = L.layerGroup().addTo(map);
       }
 
       const map = mapRef.current;
-      const group = layerGroupRef.current;
+      const group = pointGroupRef.current;
       if (!map || !group) return;
 
       group.clearLayers();
@@ -90,11 +108,10 @@ export default function GovPointMap({
 
       if (validPoints.length === 1) {
         map.setView([validPoints[0].lat, validPoints[0].lng], 13);
-      } else if (validPoints.length > 1) {
+      } else if (validPoints.length > 1 && !hasFitInitialRef.current) {
         const bounds = L.latLngBounds(validPoints.map((p) => [p.lat, p.lng] as [number, number]));
         map.fitBounds(bounds, { padding: [30, 30], maxZoom: 10 });
-      } else {
-        map.setView([-19.0154, 29.1549], 6);
+        hasFitInitialRef.current = true;
       }
 
       setTimeout(() => {
@@ -102,19 +119,86 @@ export default function GovPointMap({
       }, 100);
     }
 
-    initOrUpdate();
+    initOrUpdatePoints();
 
     return () => {
       cancelled = true;
     };
   }, [points, zoom]);
 
+  // Render administrative boundary overlays (Provinces / Districts / Wards)
+  useEffect(() => {
+    let cancelled = false;
+
+    async function renderBoundaries() {
+      const map = mapRef.current;
+      const bGroup = boundaryGroupRef.current;
+      if (!map || !bGroup) return;
+
+      const L = (await import("leaflet")).default;
+      if (cancelled || !boundaryGroupRef.current) return;
+
+      bGroup.clearLayers();
+
+      for (const overlay of boundaries ?? []) {
+        const gjLayer = L.geoJSON(overlay.geojson, {
+          style: () => ({
+            color: overlay.color,
+            weight: overlay.weight,
+            dashArray: overlay.dashArray,
+            fillColor: overlay.color,
+            fillOpacity: overlay.fillOpacity ?? 0.04,
+            opacity: 0.9,
+          }),
+          onEachFeature: (feature, layer) => {
+            const props = (feature.properties ?? {}) as Record<string, unknown>;
+            const name = String(props.shapeName ?? props.NAME ?? props.name ?? "Boundary");
+            const type = String(props.shapeType ?? overlay.label);
+            layer.bindTooltip(
+              `<div style="font-family:Inter,sans-serif;font-size:11px;"><strong>${name.replace(/</g, "&lt;")}</strong> <span style="opacity:0.75;">(${type})</span></div>`,
+              { sticky: true, direction: "top" }
+            );
+            layer.on("mouseover", () => {
+              if ("setStyle" in layer && typeof (layer as LType.Path).setStyle === "function") {
+                (layer as LType.Path).setStyle({
+                  weight: overlay.weight + 1.2,
+                  fillOpacity: Math.min((overlay.fillOpacity ?? 0.04) + 0.12, 0.25),
+                });
+              }
+            });
+            layer.on("mouseout", () => {
+              gjLayer.resetStyle(layer);
+            });
+          },
+        });
+        gjLayer.addTo(bGroup);
+      }
+
+      // Ensure points remain clickable above polygon boundaries
+      if (pointGroupRef.current) {
+        pointGroupRef.current.eachLayer((l) => {
+          if ("bringToFront" in l && typeof (l as LType.Path).bringToFront === "function") {
+            (l as LType.Path).bringToFront();
+          }
+        });
+      }
+    }
+
+    renderBoundaries();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [boundaries, points]);
+
   useEffect(() => {
     return () => {
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
-        layerGroupRef.current = null;
+        boundaryGroupRef.current = null;
+        pointGroupRef.current = null;
+        hasFitInitialRef.current = false;
       }
     };
   }, []);
@@ -148,7 +232,7 @@ export default function GovPointMap({
             display: "flex",
             flexDirection: "column",
             gap: 5,
-            minWidth: 180,
+            minWidth: 190,
           }}
         >
           <div
@@ -175,21 +259,33 @@ export default function GovPointMap({
               }}
             >
               <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 600 }}>
-                <span
-                  style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: "50%",
-                    background: item.color,
-                    border: "1.5px solid #ffffff",
-                    boxShadow: "0 0 0 1px rgba(0,0,0,0.25)",
-                  }}
-                />
+                {item.isLine ? (
+                  <span
+                    style={{
+                      width: 14,
+                      height: 3,
+                      borderRadius: 2,
+                      background: item.color,
+                      border: "0.5px solid rgba(0,0,0,0.3)",
+                    }}
+                  />
+                ) : (
+                  <span
+                    style={{
+                      width: 10,
+                      height: 10,
+                      borderRadius: "50%",
+                      background: item.color,
+                      border: "1.5px solid #ffffff",
+                      boxShadow: "0 0 0 1px rgba(0,0,0,0.25)",
+                    }}
+                  />
+                )}
                 {item.label}
               </span>
               {item.count != null && (
                 <span style={{ fontFamily: "monospace", fontSize: 11, color: "#4f6457" }}>
-                  {item.count}
+                  {item.count.toLocaleString()}
                 </span>
               )}
             </div>

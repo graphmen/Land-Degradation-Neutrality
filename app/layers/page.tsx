@@ -19,7 +19,11 @@ import {
   X,
 } from "lucide-react";
 import type { CorpusLayerRow } from "@/lib/corpus-manifest";
-import type { GovMapLegendItem, GovMapPoint } from "@/components/GovPointMap";
+import type {
+  GovBoundaryOverlay,
+  GovMapLegendItem,
+  GovMapPoint,
+} from "@/components/GovPointMap";
 import { useGovPlatform } from "@/components/GovPlatformContext";
 
 const GovPointMap = dynamic(() => import("@/components/GovPointMap"), { ssr: false });
@@ -102,6 +106,44 @@ const STATUS_CLASS: Record<string, string> = {
   not_started: "gov-badge-slate",
 };
 
+type BoundaryKey = "provinces" | "districts" | "wards";
+
+const BOUNDARY_CONFIGS: Array<{
+  key: BoundaryKey;
+  label: string;
+  url: string;
+  color: string;
+  weight: number;
+  dashArray?: string;
+  count: number;
+}> = [
+  {
+    key: "provinces",
+    label: "Provinces (10)",
+    url: "/boundaries/zwe-provinces.geojson",
+    color: "#facc15",
+    weight: 2.5,
+    count: 10,
+  },
+  {
+    key: "districts",
+    label: "Districts (91)",
+    url: "/boundaries/zwe-districts.geojson",
+    color: "#38bdf8",
+    weight: 1.5,
+    dashArray: "4 3",
+    count: 91,
+  },
+  {
+    key: "wards",
+    label: "Wards (1,961)",
+    url: "/boundaries/zwe-wards.geojson",
+    color: "#f8fafc",
+    weight: 0.9,
+    count: 1961,
+  },
+];
+
 type ViewMode = "map" | "table";
 type TableTab = "catalogue" | "features";
 
@@ -129,6 +171,62 @@ export default function NationalLayersPage() {
   });
   const [overlayCache, setOverlayCache] = useState<Partial<Record<OverlayKey, GovMapPoint[]>>>({});
   const [mapLoading, setMapLoading] = useState(false);
+
+  // Zimbabwe Admin Boundary Overlays (Provinces / Districts / Wards)
+  const [activeBoundaries, setActiveBoundaries] = useState<Record<BoundaryKey, boolean>>({
+    provinces: true,
+    districts: false,
+    wards: false,
+  });
+  const [boundaryCache, setBoundaryCache] = useState<
+    Partial<Record<BoundaryKey, GeoJSON.GeoJsonObject>>
+  >({});
+
+  useEffect(() => {
+    const missing = BOUNDARY_CONFIGS.filter(
+      (b) => activeBoundaries[b.key] && !boundaryCache[b.key]
+    );
+    if (missing.length === 0) return;
+
+    let cancelled = false;
+    async function loadBoundaries() {
+      setMapLoading(true);
+      try {
+        const updates: Partial<Record<BoundaryKey, GeoJSON.GeoJsonObject>> = {};
+        await Promise.all(
+          missing.map(async (b) => {
+            const res = await fetch(b.url);
+            if (!res.ok) return;
+            updates[b.key] = (await res.json()) as GeoJSON.GeoJsonObject;
+          })
+        );
+        if (!cancelled) {
+          setBoundaryCache((prev) => ({ ...prev, ...updates }));
+        }
+      } finally {
+        if (!cancelled) setMapLoading(false);
+      }
+    }
+
+    loadBoundaries();
+    return () => {
+      cancelled = true;
+    };
+  }, [activeBoundaries, boundaryCache]);
+
+  const activeBoundaryOverlays: GovBoundaryOverlay[] = useMemo(
+    () =>
+      BOUNDARY_CONFIGS.filter((b) => activeBoundaries[b.key] && boundaryCache[b.key]).map((b) => ({
+        id: b.key,
+        label: b.label,
+        geojson: boundaryCache[b.key]!,
+        color: b.color,
+        weight: b.weight,
+        dashArray: b.dashArray,
+        fillOpacity: b.key === "provinces" ? 0.04 : 0.02,
+      })),
+    [activeBoundaries, boundaryCache]
+  );
 
   const loadCore = async () => {
     setLoading(true);
@@ -318,13 +416,20 @@ export default function NationalLayersPage() {
   }, [activeOverlays, overlayCache]);
 
   const activeLegend: GovMapLegendItem[] = useMemo(
-    () =>
-      OVERLAY_CONFIGS.filter((cfg) => activeOverlays[cfg.key]).map((cfg) => ({
+    () => [
+      ...BOUNDARY_CONFIGS.filter((b) => activeBoundaries[b.key]).map((b) => ({
+        label: b.label.replace(/\s*\(.+\)/, ""),
+        color: b.color,
+        count: b.count,
+        isLine: true,
+      })),
+      ...OVERLAY_CONFIGS.filter((cfg) => activeOverlays[cfg.key]).map((cfg) => ({
         label: cfg.label,
         color: cfg.color,
         count: overlayCache[cfg.key]?.length ?? 0,
       })),
-    [activeOverlays, overlayCache]
+    ],
+    [activeBoundaries, activeOverlays, overlayCache]
   );
 
   const filteredLayers = useMemo(() => {
@@ -475,11 +580,12 @@ export default function NationalLayersPage() {
               </div>
             </div>
 
-            {/* Interactive Multi-Layer Toggle Chips */}
+            {/* Interactive Multi-Layer & Admin Boundary Toggle Chips */}
             <div
               style={{
                 display: "flex",
                 flexWrap: "wrap",
+                alignItems: "center",
                 gap: 7,
                 marginBottom: 12,
                 padding: "10px 12px",
@@ -488,6 +594,77 @@ export default function NationalLayersPage() {
                 border: "1px solid #e1e9e4",
               }}
             >
+              <span
+                style={{
+                  fontSize: 10,
+                  fontWeight: 800,
+                  textTransform: "uppercase",
+                  letterSpacing: 0.6,
+                  color: "#4f6457",
+                  marginRight: 2,
+                }}
+              >
+                Boundaries:
+              </span>
+              {BOUNDARY_CONFIGS.map((b) => {
+                const isOn = activeBoundaries[b.key];
+                return (
+                  <button
+                    key={b.key}
+                    type="button"
+                    onClick={() =>
+                      setActiveBoundaries((prev) => ({ ...prev, [b.key]: !prev[b.key] }))
+                    }
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6,
+                      padding: "5px 10px",
+                      borderRadius: 999,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      border: `1px solid ${isOn ? "#043016" : "#cbd7cf"}`,
+                      background: isOn ? "#043016" : "#ffffff",
+                      color: isOn ? "#ffffff" : "#1d3226",
+                      transition: "all 0.15s ease",
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: 11,
+                        height: 3,
+                        borderRadius: 2,
+                        background: b.color,
+                        border: "0.5px solid rgba(0,0,0,0.25)",
+                      }}
+                    />
+                    <span>{b.label}</span>
+                  </button>
+                );
+              })}
+
+              <span
+                style={{
+                  width: 1,
+                  height: 20,
+                  background: "#cbd7cf",
+                  margin: "0 4px",
+                }}
+              />
+
+              <span
+                style={{
+                  fontSize: 10,
+                  fontWeight: 800,
+                  textTransform: "uppercase",
+                  letterSpacing: 0.6,
+                  color: "#4f6457",
+                  marginRight: 2,
+                }}
+              >
+                LDN Layers:
+              </span>
               {OVERLAY_CONFIGS.map((cfg) => {
                 const isOn = activeOverlays[cfg.key];
                 const blocked = Boolean(cfg.restricted && !permissions.canViewRestrictedLayers);
@@ -546,6 +723,7 @@ export default function NationalLayersPage() {
             <div style={{ position: "relative" }}>
               <GovPointMap
                 points={combinedPoints}
+                boundaries={activeBoundaryOverlays}
                 height={620}
                 legend={activeLegend}
               />
