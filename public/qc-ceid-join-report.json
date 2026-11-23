@@ -1,0 +1,26 @@
+{
+  "source": "C:\\Users\\ndebelem.ZINGSERVER1\\Desktop\\2026\\OAU\\public\\ldn-data.json",
+  "field_records_with_ceid": 150,
+  "unique_ceids": 147,
+  "ceid_format_samples": [
+    "11268_17236",
+    "11280_17220",
+    "11300_17150",
+    "11304_17212",
+    "11308_17192",
+    "11310_17120",
+    "11324_17112",
+    "11324_17128",
+    "11324_17172",
+    "11332_17112"
+  ],
+  "suffix_numeric_count": 89,
+  "shapefile_checked": false,
+  "match_suffix_to_shapefile_id": null,
+  "match_count": null,
+  "unmatched_ceid_samples": [],
+  "ema_questions": [
+    "Confirm CEID maps to shapefile field Id (suffix after underscore?)",
+    "Confirm Area units on shapefile"
+  ]
+}

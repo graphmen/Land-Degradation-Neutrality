@@ -31,6 +31,8 @@
 
 Add a row here **first**, then Annex C §C.2, then migration/script.
 
+**Template:** [`CORPUS_METADATA_TEMPLATE.md`](./CORPUS_METADATA_TEMPLATE.md) (PRAIS Annex II fields).
+
 ---
 
 *Parent:* [`../NATIONAL_DATA_CORPUS.md`](../NATIONAL_DATA_CORPUS.md)
