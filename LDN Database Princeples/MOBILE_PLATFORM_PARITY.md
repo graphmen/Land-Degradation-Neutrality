@@ -18,6 +18,7 @@ Both platforms are **the only** field submission channel. National dashboard is 
 | Offline IndexedDB queue | ✅ | Same codebase | — |
 | Sync `POST /api/submit/*` | ✅ UAT doc | Same | `MOBILE_API_DEPLOY` host |
 | CEID blur → national LD hint | ✅ | Same | `GET /api/validator/ceid` |
+| Legacy CEID (`ZC*`) pending message | ✅ 2026-11-23 | Same | `alias_status: pending_ema` |
 | Governance fields on submit | ✅ API | Same | P1 compliance metadata |
 | Photos attachment | ✅ | Same | Annex A fields |
 | Pressure map (staging) | — | — | `GET /api/pressure-layers` (web/R1 later) |
