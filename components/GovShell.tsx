@@ -199,6 +199,8 @@ function GovShellInner({ children }: { children: React.ReactNode }) {
             ))}
           </div>
 
+          <div id="sidebar-export-container" className="sidebar-export-container" />
+
           <div className="gov-sidebar-footer">
             <div className="gov-sidebar-footer-text">
               <div>UNCCD GPG v2 · PRAIS 4</div>

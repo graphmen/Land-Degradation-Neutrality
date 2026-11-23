@@ -1495,7 +1495,10 @@ export default function DrylandsPage() {
           </div>
         </div>
       )}
-      {mounted && createPortal(exportPanel, document.getElementById("sidebar-export-container")!)}
+      {mounted &&
+        typeof document !== "undefined" &&
+        document.getElementById("sidebar-export-container") &&
+        createPortal(exportPanel, document.getElementById("sidebar-export-container")!)}
     </div>
   );
 }
