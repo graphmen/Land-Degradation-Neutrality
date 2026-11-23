@@ -43,7 +43,7 @@
 
 | If approved | Next block |
 |-------------|------------|
-| **S1+S2** only | DBA sprint — verify schema script with env |
+| **S1+S2** only | DBA sprint — verify schema script with env · [`STUDY_POSTGIS_READINESS_CHECKLIST.md`](./STUDY_POSTGIS_READINESS_CHECKLIST.md) |
 | **Q2** only | Alias import + re-`qc:ceid` |
 | **S10–S12** deferred | Track in [`STUDY_SO1_NATIONAL_RASTER_DELIVERY.md`](./STUDY_SO1_NATIONAL_RASTER_DELIVERY.md) |
 

@@ -35,7 +35,8 @@ With `VITE_API_BASE_URL` pointing at production or preview:
 | # | Call | Pass |
 |---|------|------|
 | 1 | `POST /api/submit/ldn` (from Queue after draft) | governance in response |
-| 2 | `GET /api/validator/ceid?ceid=11268_17236` (CEID blur in LdnForm) | hint JSON |
+| 2 | `GET /api/validator/ceid?ceid=11268_17236` (CEID blur in LdnForm) | grid match |
+| 2b | Enter `ZC2` in form | amber “GIS alias pending” (no fake polygon) |
 | 3 | `GET /api/status` | programme + `locked_ldn_exports` |
 | 4 | Offline draft → reconnect sync | no duplicate UUID |
 
