@@ -25,6 +25,8 @@
 | S3–S4 | Area unit + CEID join |
 | S5 | Reporting period |
 | S6 | R1 module map sign-off |
+| S7 | Peer twins (Botswana + Panama?) |
+| S10 | LC raster source (F3) |
 
 ## Live demo (optional, 5 min)
 

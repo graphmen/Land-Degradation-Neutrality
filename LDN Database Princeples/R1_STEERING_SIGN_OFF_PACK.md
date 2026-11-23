@@ -10,9 +10,10 @@
 | Time | Topic | Output |
 |------|--------|--------|
 | 0–10 | Why not extend OAU dashboard | Agree corpus-first story |
-| 10–25 | Walk modules §3–§7 (Evidence, Verification, Layers, Reporting desk) | Names approved |
-| 25–40 | RBAC §2 — district vs national vs reporting officer | Role list confirmed |
-| 40–55 | Route cutover §8 — what retires | Redirect plan accepted |
+| 10–18 | Peer twins → modules (Study) — [`R1_PEER_TWINNING_IA_MAP.md`](./R1_PEER_TWINNING_IA_MAP.md); confirm **S7** | Twins confirmed |
+| 18–30 | Walk modules §3–§7 (Evidence, Verification, Layers, Reporting desk) | Names approved |
+| 30–45 | RBAC §2 — district vs national vs reporting officer | Role list confirmed |
+| 45–55 | Route cutover §8 — what retires | Redirect plan accepted |
 | 55–60 | Sign §9 checklist below | **Go / no-go R2** |
 
 ---
@@ -38,6 +39,8 @@
 - Export rehearsal §F: `npx tsx scripts/export_reporting_bundle.ts`
 - Corpus QC: register + pressure/SBC counts
 - Mobile submit → `/api/submit/*` (production URL: [`MOBILE_API_DEPLOY.md`](./MOBILE_API_DEPLOY.md))
+- **3-row lock pilot** + `GET /api/status` (`locked_ldn_exports`)
+- **LC path** registered: `LC-NAT-STACK` (SO1-1 await **S10**)
 
 **Do not demo:** Legacy home dashboard as “the product.”
 
@@ -45,7 +48,9 @@
 
 ## Linked steering decisions
 
-Before or with R1, resolve **S1, S5, S6** in [`STEERING_DECISIONS_QUEUE.md`](./STEERING_DECISIONS_QUEUE.md).
+Before or with R1, resolve **S1, S5, S6, S7, S10** in [`STEERING_DECISIONS_QUEUE.md`](./STEERING_DECISIONS_QUEUE.md).
+
+**Peer narrative (study):** [`R1_PEER_TWINNING_IA_MAP.md`](./R1_PEER_TWINNING_IA_MAP.md) · [`ZIMBABWE_DIFFERENTIATOR_STEERING_ONE_PAGER.md`](./ZIMBABWE_DIFFERENTIATOR_STEERING_ONE_PAGER.md)
 
 ---
 
