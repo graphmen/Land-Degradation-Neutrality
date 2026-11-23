@@ -67,4 +67,8 @@ The current Next.js routes are **temporary viewers** until Phase R2 government s
 
 ---
 
+**Living register:** [`corpus/CORPUS_METADATA_REGISTER.md`](./corpus/CORPUS_METADATA_REGISTER.md)
+
+**Autonomous runs:** [`AUTONOMOUS_EXECUTION.md`](./AUTONOMOUS_EXECUTION.md)
+
 *Related:* [INTERNATIONAL_LDN_BENCHMARK_AND_ZIMBABWE_BLUEPRINT.md](./INTERNATIONAL_LDN_BENCHMARK_AND_ZIMBABWE_BLUEPRINT.md) · [ZIMBABWE_LDN_PROJECT_GUIDE.md](./ZIMBABWE_LDN_PROJECT_GUIDE.md) v0.7 amendment §1.4

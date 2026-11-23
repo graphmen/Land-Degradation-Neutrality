@@ -50,7 +50,9 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 | Step | Action | Done |
 |------|--------|------|
-| 2.1 | PostGIS `national_ldn_units` from combined shapefile | 🔶 `002_national_ldn_units.sql` + ogr2ogr notes |
+| 2.1 | PostGIS `national_ldn_units` from combined shapefile | 🔶 `002` + [LDN-NAT-ALL plan](./corpus/metadata/LDN-NAT-ALL_IMPORT_PLAN.md) |
+| 2.1b | Corpus metadata register | [`corpus/CORPUS_METADATA_REGISTER.md`](./corpus/CORPUS_METADATA_REGISTER.md) | ✅ |
+| 2.5 | Pressure layers schema stub | `003_pressure_layers.sql` + import plans | 🔶 drafted |
 | 2.2 | Import `intervention_spatial` (47 EMA projects) | ✅ staging `ema-projects-import.json` |
 | 2.3 | Mobile sync → DB first; JSON cache second | 🔶 `/api/submit/*` + queue → localhost/vercel |
 | 2.4 | `verification_log` + review UI (district / national) |
@@ -77,7 +79,9 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 ---
 
-**Next automatic block:** **R1 Design** — `R1_INFORMATION_ARCHITECTURE.md` (no code). Then steering tick on twins (R0c).
+**Autonomous mode:** [`AUTONOMOUS_EXECUTION.md`](./AUTONOMOUS_EXECUTION.md) — no “continue” required.
+
+**Next automatic block:** Reporting desk checklist (Annex E expand) · `003` apply after steering · pressure layer unpack QA when EMA confirms.
 
 **Block reviews:** [Study twinning](./BLOCK_REVIEW_2026-11-23_study-peer-twinning.md) · [Discipline](./BLOCK_DISCIPLINE_60MIN.md)
 

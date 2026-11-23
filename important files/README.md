@@ -44,6 +44,10 @@
 
 ---
 
+## Corpus metadata (versioning)
+
+All layers must appear in [`LDN Database Princeples/corpus/CORPUS_METADATA_REGISTER.md`](../LDN%20Database%20Princeples/corpus/CORPUS_METADATA_REGISTER.md) before PostGIS load.
+
 ## Related project documents
 
 - [`../LDN Database Princeples/ZIMBABWE_LDN_PROJECT_GUIDE.md`](../LDN%20Database%20Princeples/ZIMBABWE_LDN_PROJECT_GUIDE.md)  
