@@ -161,6 +161,19 @@ export default function NationalLayersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selected, setSelected] = useState<CorpusLayerRow | null>(null);
 
+  // Export Filter Modal state
+  const [exportOpen, setExportOpen] = useState(false);
+  const [exportScope, setExportScope] = useState<"register" | "plotted" | "custom">("plotted");
+  const [exportFormat, setExportFormat] = useState<"csv" | "geojson">("csv");
+  const [exportLayers, setExportLayers] = useState<Record<OverlayKey, boolean>>({
+    field_ldn: true,
+    ref_sites: true,
+    int_projects: true,
+    press_invasive: false,
+    press_mining: false,
+  });
+  const [exporting, setExporting] = useState(false);
+
   // Multi-layer spatial overlay state
   const [activeOverlays, setActiveOverlays] = useState<Record<OverlayKey, boolean>>({
     field_ldn: true,
@@ -465,6 +478,204 @@ export default function NationalLayersPage() {
     setViewMode("map");
   };
 
+  const triggerDownload = (content: string, filename: string, mime: string) => {
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const csvCell = (v: unknown) => {
+    const s = v == null ? "" : String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+
+  const handleFilteredExport = async () => {
+    setExporting(true);
+    try {
+      const dateTag = new Date().toISOString().slice(0, 10);
+
+      if (exportScope === "register") {
+        if (exportFormat === "geojson") {
+          triggerDownload(
+            JSON.stringify({ layers: filteredLayers }, null, 2),
+            `ema-ldn-layer-register-${dateTag}.json`,
+            "application/json"
+          );
+        } else {
+          const headers = [
+            "layer_id",
+            "title",
+            "custodian",
+            "geometry_type",
+            "feature_count",
+            "vintage",
+            "crs",
+            "data_tier",
+            "confidence",
+            "import_status",
+            "so_uses",
+          ];
+          const lines = [
+            headers.join(","),
+            ...filteredLayers.map((r) =>
+              [
+                r.layer_id,
+                r.title,
+                r.custodian,
+                r.geometry_type,
+                r.feature_count ?? "",
+                r.vintage,
+                r.crs,
+                r.data_tier,
+                r.confidence,
+                r.import_status,
+                r.so_uses.join(";"),
+              ]
+                .map(csvCell)
+                .join(",")
+            ),
+          ];
+          triggerDownload(
+            lines.join("\n"),
+            `ema-ldn-layer-register-${dateTag}.csv`,
+            "text/csv;charset=utf-8"
+          );
+        }
+        setExportOpen(false);
+        return;
+      }
+
+      // Spatial features export ("plotted" or "custom")
+      const chosenKeys: OverlayKey[] =
+        exportScope === "plotted"
+          ? (Object.keys(activeOverlays) as OverlayKey[]).filter((k) => activeOverlays[k])
+          : (Object.keys(exportLayers) as OverlayKey[]).filter(
+              (k) =>
+                exportLayers[k] &&
+                !(k === "press_mining" && !permissions.canViewRestrictedLayers)
+            );
+
+      // Fetch any uncached selected layers on demand
+      const pointsToExport: GovMapPoint[] = [];
+      for (const key of chosenKeys) {
+        if (overlayCache[key]) {
+          pointsToExport.push(...(overlayCache[key] ?? []));
+          continue;
+        }
+        if (key === "field_ldn") {
+          const res = await fetch("/api/evidence/registry?type=ldn&limit=500", { cache: "no-store" });
+          const json = res.ok ? await res.json() : {};
+          for (const r of json.records ?? []) {
+            if (typeof r.lat === "number" && typeof r.lng === "number") {
+              pointsToExport.push({
+                id: `ldn-${r.record_id}`,
+                lat: r.lat,
+                lng: r.lng,
+                title: `LDN #${r.record_id}${r.ceid ? ` · ${r.ceid}` : ""}`,
+                subtitle: `${r.district ?? "Zimbabwe"} · ${r.verification_status}`,
+                layerLabel: "FIELD-LDN",
+              });
+            }
+          }
+        } else if (key === "ref_sites") {
+          const res = await fetch("/api/reference/monitoring-sites", { cache: "no-store" });
+          const json = res.ok ? await res.json() : {};
+          for (const r of json.records ?? []) {
+            if (typeof r.lat === "number" && typeof r.lng === "number") {
+              pointsToExport.push({
+                id: `ref-${r.id}`,
+                lat: r.lat,
+                lng: r.lng,
+                title: r.site_name ?? `Site ${r.id}`,
+                subtitle: r.district ?? "Zimbabwe",
+                layerLabel: "REF-SITES",
+              });
+            }
+          }
+        } else if (key === "int_projects") {
+          const res = await fetch("/api/interventions", { cache: "no-store" });
+          const json = res.ok ? await res.json() : {};
+          for (const r of json.records ?? []) {
+            const lat = Number(r.lat ?? r.latitude);
+            const lng = Number(r.lng ?? r.longitude);
+            if (Number.isFinite(lat) && Number.isFinite(lng) && lat !== 0) {
+              pointsToExport.push({
+                id: `int-${r._id ?? r.id}`,
+                lat,
+                lng,
+                title: String(r.name ?? r.project_name ?? r.title ?? "Intervention"),
+                subtitle: String(r.district ?? "Zimbabwe"),
+                layerLabel: "INT-PROJECTS",
+              });
+            }
+          }
+        } else if (key === "press_invasive" || key === "press_mining") {
+          const theme = key === "press_mining" ? "illegal_mining" : "invasive";
+          const res = await fetch(`/api/pressure-layers?theme=${theme}`, { cache: "no-store" });
+          const json = res.ok ? await res.json() : {};
+          for (const r of json.records ?? []) {
+            if (typeof r.lat === "number" && typeof r.lng === "number") {
+              pointsToExport.push({
+                id: `${key}-${r._id}`,
+                lat: r.lat,
+                lng: r.lng,
+                title: String(r.attributes?.Species ?? r.attributes?.Village ?? r.layer_id ?? theme),
+                subtitle: key === "press_mining" ? "Illegal Mining" : "Invasive Species",
+                layerLabel: key === "press_mining" ? "PRESS-MINING" : "PRESS-INVASIVE",
+              });
+            }
+          }
+        }
+      }
+
+      if (exportFormat === "geojson") {
+        const fc = {
+          type: "FeatureCollection",
+          exported_at: new Date().toISOString(),
+          feature_count: pointsToExport.length,
+          features: pointsToExport.map((p) => ({
+            type: "Feature",
+            geometry: { type: "Point", coordinates: [p.lng, p.lat] },
+            properties: {
+              id: p.id,
+              layer: p.layerLabel ?? "",
+              title: p.title,
+              context: p.subtitle ?? "",
+            },
+          })),
+        };
+        triggerDownload(
+          JSON.stringify(fc, null, 2),
+          `ema-ldn-spatial-${dateTag}.geojson`,
+          "application/geo+json"
+        );
+      } else {
+        const lines = [
+          "id,layer,title,context,lat,lng",
+          ...pointsToExport.map((p) =>
+            [p.id, p.layerLabel ?? "", p.title, p.subtitle ?? "", p.lat, p.lng]
+              .map(csvCell)
+              .join(",")
+          ),
+        ];
+        triggerDownload(
+          lines.join("\n"),
+          `ema-ldn-spatial-${dateTag}.csv`,
+          "text/csv;charset=utf-8"
+        );
+      }
+      setExportOpen(false);
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const degradedPct = so1Status?.summary?.degraded_area_percent ?? 8.86;
   const liveReadyCount = (data?.layers ?? []).filter((l) =>
     ["etl_complete", "json_loaded", "staging_json", "partial"].includes(l.import_status)
@@ -499,9 +710,9 @@ export default function NationalLayersPage() {
           <button type="button" className="gov-btn" onClick={loadCore} disabled={loading}>
             <RefreshCw size={14} /> Refresh
           </button>
-          <a href="/api/corpus-layers?format=csv" className="gov-btn">
-            <Download size={14} /> Export CSV
-          </a>
+          <button type="button" className="gov-btn" onClick={() => setExportOpen(true)}>
+            <Download size={14} /> Export Data…
+          </button>
         </div>
       </div>
 
@@ -1015,6 +1226,215 @@ export default function NationalLayersPage() {
           </Link>
         </span>
       </div>
+
+      {/* Export Filter Modal */}
+      {exportOpen && (
+        <div className="gov-drawer-backdrop" onClick={() => setExportOpen(false)}>
+          <div
+            className="gov-drawer"
+            style={{ width: 460 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="gov-drawer-header">
+              <div>
+                <div className="gov-metric-label">Filtered Data Export</div>
+                <div className="gov-card-title" style={{ marginTop: 2 }}>
+                  <Download size={16} /> Choose What to Export
+                </div>
+              </div>
+              <button
+                type="button"
+                className="gov-btn gov-btn-sm"
+                onClick={() => setExportOpen(false)}
+              >
+                <X size={14} />
+              </button>
+            </div>
+
+            <div className="gov-drawer-body">
+              <div>
+                <div className="gov-kv-label" style={{ marginBottom: 8 }}>
+                  1. Export Scope
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  <label
+                    className="gov-card"
+                    style={{
+                      padding: "10px 12px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      cursor: "pointer",
+                      borderColor: exportScope === "plotted" ? "#005a2b" : undefined,
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="exportScope"
+                      checked={exportScope === "plotted"}
+                      onChange={() => setExportScope("plotted")}
+                    />
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 13 }}>
+                        Active Map Layers ({combinedPoints.length.toLocaleString()} features)
+                      </div>
+                      <div style={{ fontSize: 11, color: "#556b5e" }}>
+                        Exports exactly what is currently toggled ON on the map.
+                      </div>
+                    </div>
+                  </label>
+
+                  <label
+                    className="gov-card"
+                    style={{
+                      padding: "10px 12px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      cursor: "pointer",
+                      borderColor: exportScope === "custom" ? "#005a2b" : undefined,
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="exportScope"
+                      checked={exportScope === "custom"}
+                      onChange={() => setExportScope("custom")}
+                    />
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 13 }}>Select Specific Layers</div>
+                      <div style={{ fontSize: 11, color: "#556b5e" }}>
+                        Pick individual spatial layers below.
+                      </div>
+                    </div>
+                  </label>
+
+                  <label
+                    className="gov-card"
+                    style={{
+                      padding: "10px 12px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      cursor: "pointer",
+                      borderColor: exportScope === "register" ? "#005a2b" : undefined,
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="exportScope"
+                      checked={exportScope === "register"}
+                      onChange={() => setExportScope("register")}
+                    />
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 13 }}>
+                        Corpus Layer Register ({filteredLayers.length} layers)
+                      </div>
+                      <div style={{ fontSize: 11, color: "#556b5e" }}>
+                        Annex C / F1 metadata catalogue (respects active status & tier filters).
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {exportScope === "custom" && (
+                <div>
+                  <div className="gov-kv-label" style={{ marginBottom: 8 }}>
+                    Select Spatial Layers
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {OVERLAY_CONFIGS.map((cfg) => {
+                      const blocked = Boolean(
+                        cfg.restricted && !permissions.canViewRestrictedLayers
+                      );
+                      return (
+                        <label
+                          key={cfg.key}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            padding: "7px 10px",
+                            border: "1px solid #d9e2dc",
+                            borderRadius: 7,
+                            fontSize: 13,
+                            opacity: blocked ? 0.5 : 1,
+                            cursor: blocked ? "not-allowed" : "pointer",
+                          }}
+                        >
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                            <input
+                              type="checkbox"
+                              disabled={blocked}
+                              checked={!blocked && exportLayers[cfg.key]}
+                              onChange={(e) =>
+                                setExportLayers((prev) => ({
+                                  ...prev,
+                                  [cfg.key]: e.target.checked,
+                                }))
+                              }
+                            />
+                            <span
+                              style={{
+                                width: 8,
+                                height: 8,
+                                borderRadius: "50%",
+                                background: cfg.color,
+                              }}
+                            />
+                            <strong>{cfg.label}</strong>
+                          </span>
+                          {cfg.restricted && (
+                            <span className="gov-badge gov-badge-red" style={{ fontSize: 10 }}>
+                              <Lock size={9} /> Restricted
+                            </span>
+                          )}
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <div className="gov-kv-label" style={{ marginBottom: 8 }}>
+                  2. File Format
+                </div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    type="button"
+                    className={`gov-btn ${exportFormat === "csv" ? "gov-btn-primary" : ""}`}
+                    style={{ flex: 1, justifyContent: "center" }}
+                    onClick={() => setExportFormat("csv")}
+                  >
+                    CSV (Excel / PRAIS)
+                  </button>
+                  <button
+                    type="button"
+                    className={`gov-btn ${exportFormat === "geojson" ? "gov-btn-primary" : ""}`}
+                    style={{ flex: 1, justifyContent: "center" }}
+                    onClick={() => setExportFormat("geojson")}
+                  >
+                    {exportScope === "register" ? "JSON" : "GeoJSON (QGIS / GIS)"}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="gov-btn gov-btn-primary"
+                style={{ justifyContent: "center", padding: "11px 16px" }}
+                disabled={exporting}
+                onClick={handleFilteredExport}
+              >
+                <Download size={15} />
+                {exporting ? "Preparing download…" : "Download Filtered Export"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Metadata Lineage Drawer */}
       {selected && (
