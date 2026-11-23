@@ -50,7 +50,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 | Step | Action | Done |
 |------|--------|------|
-| 2.1 | PostGIS `national_ldn_units` from combined shapefile | 🔶 `002` + [LDN-NAT-ALL plan](./corpus/metadata/LDN-NAT-ALL_IMPORT_PLAN.md) |
+| 2.1 | PostGIS `national_ldn_units` from combined shapefile | 🔶 `002` + [LDN-NAT-ALL plan](./corpus/metadata/LDN-NAT-ALL_IMPORT_PLAN.md); CEID QA **93/147** ([`CEID_JOIN_QC.md`](./corpus/metadata/CEID_JOIN_QC.md)) |
 | 2.1b | Corpus metadata register | [`corpus/CORPUS_METADATA_REGISTER.md`](./corpus/CORPUS_METADATA_REGISTER.md) | ✅ |
 | 2.5 | Pressure layers schema stub | `003_pressure_layers.sql` + import plans | 🔶 drafted |
 | 2.2 | Import `intervention_spatial` (47 EMA projects) | ✅ staging `ema-projects-import.json` |
@@ -71,17 +71,17 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 ## Phase 4–5 — Reporting
 
-| Step | Action |
-|------|--------|
-| 4.1 | Export jobs `EXP-SO1-*` (Annex E) |
+| Step | Action | Done |
+|------|--------|------|
+| 4.1 | Export jobs `EXP-SO1-*` (Annex E); SO1-1 matrix design | [`design/SO1_LC_TRANSITION_MATRIX.md`](./design/SO1_LC_TRANSITION_MATRIX.md) | 🔶 v0.1 |
 | 4.2 | SO1 rehearsal checklist (Nov 2026 target) | [`REPORTING_DESK_CHECKLIST.md`](./REPORTING_DESK_CHECKLIST.md) | ✅ draft |
-| 5.1 | Lock snapshot + PRAIS package |
+| 5.1 | Lock snapshot + PRAIS package | | ⬜ |
 
 ---
 
 **Autonomous mode:** [`AUTONOMOUS_EXECUTION.md`](./AUTONOMOUS_EXECUTION.md) — no “continue” required.
 
-**Next automatic block:** Reporting desk checklist (Annex E expand) · `003` apply after steering · pressure layer unpack QA when EMA confirms.
+**Next automatic block:** Verification API nullable fields (Annex E Phase 4 P1) · `003` apply after steering · pressure layer unpack QA when EMA confirms.
 
 **Block reviews:** [Study twinning](./BLOCK_REVIEW_2026-11-23_study-peer-twinning.md) · [Discipline](./BLOCK_DISCIPLINE_60MIN.md)
 
