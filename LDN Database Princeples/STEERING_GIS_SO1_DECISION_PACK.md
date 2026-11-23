@@ -16,6 +16,8 @@
 
 **Q2 workshop:** [`STEERING_Q2_CEID_WORKSHOP_ONE_PAGER.md`](./STEERING_Q2_CEID_WORKSHOP_ONE_PAGER.md) · Excel: `npm run export:ceid-worksheet`
 
+**Pressure (S8):** [`STEERING_S8_PRESSURE_ONE_PAGER.md`](./STEERING_S8_PRESSURE_ONE_PAGER.md)
+
 ---
 
 ## B. SO1 national raster trilogy (delivery → F3/F4/F5)
