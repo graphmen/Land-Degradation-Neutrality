@@ -134,6 +134,31 @@ def unmatched_using_rule(unique_ceids: list[str], ids: set[str], rule: str) -> l
     return bad
 
 
+def classify_unmatched(ceid: str, ids: set[str], rule: str) -> dict:
+    keys = ceid_match_keys(ceid)
+    key = keys.get(rule)
+    parts = ceid.split("_")
+    if ceid.startswith("ZC") or ceid.startswith("ZE"):
+        category = "legacy_zc_ze_token"
+    elif "_" not in ceid:
+        category = "named_or_short_token"
+    elif len(parts) >= 3:
+        category = "triple_segment"
+    else:
+        category = "double_segment_no_id_match"
+    return {
+        "ceid": ceid,
+        "category": category,
+        "join_key_tried": key,
+        "first_segment_in_shapefile": (
+            parts[0] in ids if parts and parts[0].isdigit() else False
+        ),
+        "second_segment_in_shapefile": (
+            keys.get("second_segment") in ids if keys.get("second_segment") else False
+        ),
+    }
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--shp", type=Path, default=None, help="Combined LDN shapefile")
@@ -185,17 +210,12 @@ def main() -> None:
         }
 
         unmatched = unmatched_using_rule(unique_ceids, ids, rule)
+        report["unmatched_count"] = len(unmatched)
         report["unmatched_ceid_samples"] = unmatched[:25]
-        prefixes = Counter()
-        for c in unmatched:
-            if c.startswith("ZC"):
-                prefixes["ZC*"] += 1
-            elif "_" not in c:
-                prefixes["no_underscore_named"] += 1
-            elif c.count("_") >= 2:
-                prefixes["triple_segment_still_unmatched"] += 1
-            else:
-                prefixes["double_segment_unmatched"] += 1
+        report["unmatched_ceids"] = unmatched
+        details = [classify_unmatched(c, ids, rule) for c in unmatched]
+        report["unmatched_details"] = details
+        prefixes = Counter(d["category"] for d in details)
         report["unmatched_pattern_summary"] = dict(prefixes)
 
     OUT_JSON.write_text(json.dumps(report, indent=2), encoding="utf-8")

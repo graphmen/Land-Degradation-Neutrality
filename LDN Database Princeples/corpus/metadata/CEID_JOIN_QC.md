@@ -39,6 +39,8 @@ Many field CEIDs will join to **one national unit** that is represented by **sev
 
 **Interim engineering assumption:** use **second segment** as shapefile `Id` until EMA signs Q2. Triple-part IDs that match only via middle segment support this.
 
+**Unmatched breakdown (Study):** 54 CEIDs — **30** legacy `ZC*`/`ZE*`, **24** named/short tokens — see [`CEID_UNMATCHED_STUDY.md`](./CEID_UNMATCHED_STUDY.md). **CLI:** `npm run qc:ceid`.
+
 ---
 
 ## Steering actions

@@ -9,7 +9,7 @@
 
 | Layer / topic | Script | Output JSON | Steering gate |
 |---------------|--------|-------------|---------------|
-| CEID ↔ LDN-NAT-ALL | `ceid_join_qc.py` | `qc-ceid-join-report.json` | **Q2**, S3–S4 |
+| CEID ↔ LDN-NAT-ALL | `ceid_join_qc.py` · `npm run qc:ceid` | `qc-ceid-join-report.json` | **Q2**, S3–S4 · Study: `CEID_UNMATCHED_STUDY.md` |
 | Pressure zips | `pressure_layer_qc.py` | `qc-pressure-layers-report.json` | **S8** |
 | Pressure staging | `import_pressure_layers.py` | `pressure-layers-staging.json` | S8 → PostGIS |
 | Interventions QC | `intervention_spatial_qc.py` | `qc-intervention-spatial-report.json` | S9 |
@@ -24,6 +24,7 @@
 ## 2. Refresh procedure (before steering)
 
 ```powershell
+npm run qc:ceid
 python scripts/pressure_layer_qc.py
 python scripts/intervention_spatial_qc.py
 python scripts/national_raster_qc.py

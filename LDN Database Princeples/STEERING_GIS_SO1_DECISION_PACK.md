@@ -9,7 +9,7 @@
 | ID | Decision | Status | Evidence |
 |----|----------|--------|----------|
 | **Q1** | `Area` field unit on LDN-NAT-ALL | ⬜ | [`CEID_JOIN_QC.md`](./corpus/metadata/CEID_JOIN_QC.md) |
-| **Q2** | CEID ↔ shapefile `Id` (93/147 interim) | ⬜ | [`CEID_VALIDATOR_API.md`](./corpus/metadata/CEID_VALIDATOR_API.md) |
+| **Q2** | CEID ↔ shapefile `Id` (93/147 interim) | ⬜ | [`CEID_VALIDATOR_API.md`](./corpus/metadata/CEID_VALIDATOR_API.md) · Study: [`CEID_UNMATCHED_STUDY.md`](./corpus/metadata/CEID_UNMATCHED_STUDY.md) |
 | **S3–S4** | Load **002** + polygons | Blocked on Q1–Q2 | [`LDN-NAT-ALL_IMPORT_PLAN.md`](./corpus/metadata/LDN-NAT-ALL_IMPORT_PLAN.md) |
 
 **Ask:** GIS lead states **Area unit** and **CEID rule** on the record.

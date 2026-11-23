@@ -93,8 +93,8 @@
     "ZE13"
   ],
   "unmatched_pattern_summary": {
-    "no_underscore_named": 35,
-    "ZC*": 19
+    "named_or_short_token": 24,
+    "legacy_zc_ze_token": 30
   },
   "ema_questions": [
     "Q1: Confirm Area units on shapefile (hectares vs m\u00b2).",
@@ -107,5 +107,442 @@
     "rule": "suffix_after_first_underscore",
     "match_count": 89,
     "match_rate": 0.6054
-  }
+  },
+  "unmatched_count": 54,
+  "unmatched_ceids": [
+    "HP1",
+    "Muchawona",
+    "PLR4",
+    "ZC10",
+    "ZC11",
+    "ZC15",
+    "ZC16",
+    "ZC17",
+    "ZC18",
+    "ZC19",
+    "ZC2",
+    "ZC21",
+    "ZC22",
+    "ZC23",
+    "ZC24",
+    "ZC25",
+    "ZC26",
+    "ZC28",
+    "ZC29",
+    "ZC4",
+    "ZC7",
+    "ZC9",
+    "ZE1",
+    "ZE12",
+    "ZE13",
+    "ZE14",
+    "ZE15",
+    "ZE16",
+    "ZE2",
+    "ZE24",
+    "ZE26",
+    "ZE27",
+    "ZE3",
+    "ZW23",
+    "ZW5",
+    "ZW7",
+    "Zw1",
+    "Zw11",
+    "Zw12",
+    "Zw13",
+    "Zw17",
+    "Zw19",
+    "Zw2",
+    "Zw20",
+    "Zw21",
+    "Zw24",
+    "Zw26",
+    "Zw27",
+    "Zw28",
+    "Zw3",
+    "Zw4",
+    "Zw6",
+    "Zw8",
+    "Zw9"
+  ],
+  "unmatched_details": [
+    {
+      "ceid": "HP1",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "Muchawona",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "PLR4",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZC10",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZC11",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZC15",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZC16",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZC17",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZC18",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZC19",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZC2",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZC21",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZC22",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZC23",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZC24",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZC25",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZC26",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZC28",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZC29",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZC4",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZC7",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZC9",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZE1",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZE12",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZE13",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZE14",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZE15",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZE16",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZE2",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZE24",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZE26",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZE27",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZE3",
+      "category": "legacy_zc_ze_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZW23",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZW5",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "ZW7",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "Zw1",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "Zw11",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "Zw12",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "Zw13",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "Zw17",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "Zw19",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "Zw2",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "Zw20",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "Zw21",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "Zw24",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "Zw26",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "Zw27",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "Zw28",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "Zw3",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "Zw4",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "Zw6",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "Zw8",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    },
+    {
+      "ceid": "Zw9",
+      "category": "named_or_short_token",
+      "join_key_tried": null,
+      "first_segment_in_shapefile": false,
+      "second_segment_in_shapefile": false
+    }
+  ]
 }
