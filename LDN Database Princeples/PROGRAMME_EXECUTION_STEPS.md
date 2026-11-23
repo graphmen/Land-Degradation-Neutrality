@@ -37,7 +37,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 |------|--------|------|
 | 2.1 | PostGIS `national_ldn_units` from combined shapefile | 🔶 `002_national_ldn_units.sql` + ogr2ogr notes |
 | 2.2 | Import `intervention_spatial` (47 EMA projects) | ✅ staging `ema-projects-import.json` |
-| 2.3 | Mobile sync → DB first; JSON cache second |
+| 2.3 | Mobile sync → DB first; JSON cache second | 🔶 `/api/submit/*` + queue → localhost/vercel |
 | 2.4 | `verification_log` + review UI (district / national) |
 
 ---
@@ -47,7 +47,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 | Step | Action |
 |------|--------|
 | 3.1 | iOS build + TestFlight / internal testing |
-| 3.2 | Align severity/land-cover labels to Annex F | 🔶 codes on save (LDN, drylands, soil moisture) |
+| 3.2 | Align severity/land-cover labels to Annex F | 🔶 codes + **land use** list (`ldn_land_use_type`) |
 | 3.3 | Validator ↔ national polygon `Id` join (after GIS workshop) |
 
 ---
@@ -62,6 +62,6 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 ---
 
-**Next automatic block:** Supabase **001/002** apply · **2.1** polygon load after EMA · **3.1** iOS · LDN **land use** code list.
+**Next automatic block:** Run **`backend/APPLY_MIGRATIONS.md`** · **3.1** iOS/Capacitor · production `VITE_API_BASE_URL` on mobile builds.
 
 **Block reviews:** [ETL](./BLOCK_REVIEW_2026-11-23_phase1-etl.md) · [Mobile/imports](./BLOCK_REVIEW_2026-11-23_phase1-mobile-and-imports.md) · [Mobile codes](./BLOCK_REVIEW_2026-11-23_phase3-mobile-codes.md)

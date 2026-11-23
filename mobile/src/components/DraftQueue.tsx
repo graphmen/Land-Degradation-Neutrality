@@ -23,8 +23,11 @@ export default function DraftQueue({ onSuccess, onError, onEditDraft }: DraftQue
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
 
-  // Expose Google Sheets script URL directly from Environment variables with hardcoded fallback
-  const serverUrl = import.meta.env.GOOGLE_SHEET_SCRIPT_URL || "https://script.google.com/macros/s/AKfycbzkVfTIunxsy83TV6rIgDh6qttR3wHdB4tPlRpAeSdd9opb7-O-sDhX0mLomR-zL19vHQ/exec";
+  // National telemetry hub (Next.js). Override with VITE_API_BASE_URL at build time.
+  const serverUrl =
+    import.meta.env.VITE_API_BASE_URL ||
+    import.meta.env.VITE_TELEMETRY_URL ||
+    "http://localhost:3000";
 
   const loadDrafts = async () => {
     setLoading(true);
@@ -77,7 +80,7 @@ export default function DraftQueue({ onSuccess, onError, onEditDraft }: DraftQue
     setSyncing(true);
     onSuccess(`Sync initialized. Uploading ${totalDrafts} field records to server...`);
 
-    const isGoogleScript = serverUrl.includes("script.google.com");
+    const isGoogleScript = false;
     let ldnSuccess = 0;
     let soilSuccess = 0;
     let drylandsSuccess = 0;
@@ -98,8 +101,8 @@ export default function DraftQueue({ onSuccess, onError, onEditDraft }: DraftQue
 
         if (response && response.status === 200) {
           const resJson = await response.json().catch(() => ({}));
-          if (isGoogleScript && resJson.status === "error") {
-            console.error("Google Script Sync error:", resJson.message);
+          if (resJson.success === false) {
+            console.error("LDN sync error:", resJson.error);
             failedCount++;
           } else {
             ldnSuccess++;
@@ -170,7 +173,7 @@ export default function DraftQueue({ onSuccess, onError, onEditDraft }: DraftQue
     for (const draft of drylandsDrafts) {
       try {
         const payload = isGoogleScript ? { type: "drylands", data: draft } : draft;
-        const targetUrl = isGoogleScript ? serverUrl : `${serverUrl}/api/drylands`;
+        const targetUrl = `${serverUrl}/api/submit/drylands`;
 
         const response = await fetch(targetUrl, {
           method: "POST",

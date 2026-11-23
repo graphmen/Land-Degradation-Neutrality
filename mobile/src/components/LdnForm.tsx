@@ -9,6 +9,9 @@ import {
   getLdnLandCoverCode,
   getLdnLandCoverLabel,
   getLdnLandCoverOptions,
+  getLdnLandUseCode,
+  getLdnLandUseLabel,
+  getLdnLandUseOptions,
   getLdnSeverityCode,
   getLdnSeverityLabel,
   getLdnSeverityOptions,
@@ -37,10 +40,7 @@ const PROVINCE_DISTRICTS: Record<string, string[]> = {
 
 const LANDCOVERS = getLdnLandCoverOptions().map((o) => o.label);
 
-const LANDUSES = [
-  "Conservation Forestry", "Commercial Cropland", "Subsistence Cropland", 
-  "Communal Grazing", "Wildlife Conservation", "Mining", "Urban Settlement", "Other"
-];
+const LAND_USE_OPTIONS = getLdnLandUseOptions();
 
 const VEG_COVERS = [
   "High/Dense Cover", "Moderate Cover", "Low/Sparse Cover", "Bare Soil"
@@ -106,7 +106,7 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
           setGps(draft.GPS || "");
           setCeid(draft.ceid || "");
           setLandcov(getLdnLandCoverLabel(draft.landcov || ""));
-          setLandus(draft.landus || "");
+          setLandus(getLdnLandUseLabel(draft.landus || ""));
           setUseSpec(draft.use_spec || "");
           setLndmat(draft.lndmat || "");
           setExMism(draft.ex_mism || "");
@@ -263,8 +263,8 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
       GPS: gps,
       ceid,
       landcov: getLdnLandCoverCode(landcov),
-      landus,
-      use_spec: landus === "Other" ? useSpec : undefined,
+      landus: getLdnLandUseCode(landus),
+      use_spec: getLdnLandUseCode(landus) === "other" ? useSpec : undefined,
       lndmat,
       ex_mism: (lndmat === "no" || lndmat === "part") ? exMism : undefined,
       veg_cov: vegCov,
@@ -388,11 +388,13 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
             <label className="form-label">Land Use Type *</label>
             <select className="form-input form-select" value={landus} onChange={(e) => setLandus(e.target.value)}>
               <option value="">-- Select Type --</option>
-              {LANDUSES.map(lu => <option key={lu} value={lu}>{lu}</option>)}
+              {LAND_USE_OPTIONS.map((lu) => (
+                <option key={lu.code} value={lu.label}>{lu.label}</option>
+              ))}
             </select>
           </div>
 
-          {landus === "Other" && (
+          {getLdnLandUseCode(landus) === "other" && (
             <div className="form-group">
               <label className="form-label">Specify Land Use</label>
               <input type="text" className="form-input" placeholder="Specify land use details" value={useSpec} onChange={(e) => setUseSpec(e.target.value)} />

@@ -53,6 +53,18 @@ export function getLdnLandCoverLabel(value: string): string {
   return findInList("ldn_land_cover_mobile_labels", value)?.label ?? value;
 }
 
+export function getLdnLandUseOptions(): { code: string; label: string }[] {
+  return valuesOf("ldn_land_use_type");
+}
+
+export function getLdnLandUseCode(value: string): string {
+  return findInList("ldn_land_use_type", value)?.code ?? value.toLowerCase();
+}
+
+export function getLdnLandUseLabel(value: string): string {
+  return findInList("ldn_land_use_type", value)?.label ?? value;
+}
+
 export function getSoilTextureOptions(): { code: string; label: string }[] {
   return valuesOf("soil_texture");
 }

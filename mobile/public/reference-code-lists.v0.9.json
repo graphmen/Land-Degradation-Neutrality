@@ -69,6 +69,18 @@
         { "code": "baresoil", "label": "Bare soil" }
       ]
     },
+    "ldn_land_use_type": {
+      "description": "National land use (Annex A) — mobile poidet/landus",
+      "values": [
+        { "code": "agriculture", "label": "Agriculture", "legacy_labels": ["Commercial Cropland", "Subsistence Cropland"] },
+        { "code": "grazing", "label": "Grazing", "legacy_labels": ["Communal Grazing"] },
+        { "code": "forestry", "label": "Forestry", "legacy_labels": ["Conservation Forestry"] },
+        { "code": "conservation", "label": "Conservation", "legacy_labels": ["Wildlife Conservation", "cons"] },
+        { "code": "settlement", "label": "Settlement", "legacy_labels": ["Urban Settlement"] },
+        { "code": "mining", "label": "Mining" },
+        { "code": "other", "label": "Other" }
+      ]
+    },
     "verification_status": {
       "values": [
         "draft",
