@@ -4,13 +4,14 @@ import "./globals.css";
 import "./gov-platform.css";
 
 export const metadata: Metadata = {
-  title: "Zimbabwe LDN - Environmental Intelligence Platform",
-  description: "High-fidelity geospatial intelligence platform for Land Degradation Neutrality and Soil Analysis",
+  title: "EMA National LDN Platform — Republic of Zimbabwe",
+  description:
+    "Official Environmental Management Agency (EMA) national platform for UNCCD SDG Indicator 15.3.1 Land Degradation Neutrality monitoring, verification, and PRAIS 4 reporting.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Zim LDN",
+    title: "EMA LDN",
   },
 };
 

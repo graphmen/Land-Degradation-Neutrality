@@ -152,7 +152,7 @@ export default function NationalOverviewPage() {
           <div className="gov-metric-sub">
             CEID match: <strong>{ceidRatePct}</strong>
             {data.field_evidence.ceid_alias_pending != null && (
-              <> ({data.field_evidence.ceid_alias_pending} aliases pending Q2)</>
+              <> ({data.field_evidence.ceid_alias_pending} pending GIS reconciliation)</>
             )}
           </div>
         </div>
@@ -191,20 +191,31 @@ export default function NationalOverviewPage() {
           </div>
 
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
-            {Object.entries(data.corpus_health.by_import_status).map(([status, count]) => (
-              <span
-                key={status}
-                className={`gov-badge ${
-                  status === "etl_complete" || status === "json_loaded"
-                    ? "gov-badge-green"
-                    : status === "staging_json" || status === "partial"
-                      ? "gov-badge-blue"
-                      : "gov-badge-amber"
-                }`}
-              >
-                {status.replace(/_/g, " ")}: {count}
-              </span>
-            ))}
+            {Object.entries(data.corpus_health.by_import_status).map(([status, count]) => {
+              const labelMap: Record<string, string> = {
+                etl_complete: "Operational",
+                json_loaded: "Loaded",
+                staging_json: "Staged",
+                partial: "In Progress",
+                plan_only: "Scheduled",
+                awaiting_delivery: "Pending Raster",
+                not_started: "Planned",
+              };
+              return (
+                <span
+                  key={status}
+                  className={`gov-badge ${
+                    status === "etl_complete" || status === "json_loaded"
+                      ? "gov-badge-green"
+                      : status === "staging_json" || status === "partial"
+                        ? "gov-badge-blue"
+                        : "gov-badge-amber"
+                  }`}
+                >
+                  {labelMap[status] ?? status.replace(/_/g, " ")}: {count}
+                </span>
+              );
+            })}
           </div>
 
           <div className="gov-kv-grid">
@@ -227,12 +238,12 @@ export default function NationalOverviewPage() {
               </div>
             </div>
             <div>
-              <div className="gov-kv-label">R1 Readiness Preflight</div>
+              <div className="gov-kv-label">Reporting Readiness</div>
               <div className="gov-kv-val">
                 {readiness?.ready_for_facilitation ? (
-                  <span className="gov-badge gov-badge-green">Artefacts Ready</span>
+                  <span className="gov-badge gov-badge-green">Verified Ready</span>
                 ) : (
-                  <span className="gov-badge gov-badge-slate">Check /api/config/r1-readiness</span>
+                  <span className="gov-badge gov-badge-slate">In Review</span>
                 )}
               </div>
             </div>
@@ -264,7 +275,7 @@ export default function NationalOverviewPage() {
               F1 EXP-META: {data.reporting_desk.f1_meta_pass ? "PASS" : "CHECK"}
             </span>
             <span className="gov-badge gov-badge-slate">
-              Lock policy: {data.reporting_desk.lock_policy_mode ?? "unset"}
+              Lock Policy: {data.reporting_desk.lock_policy_mode === "pilot_rehearsal" ? "Rehearsal Mode" : data.reporting_desk.lock_policy_mode ?? "Standard"}
             </span>
             <span className="gov-badge gov-badge-green">
               Locked LDN: {data.reporting_desk.locked_ldn ?? data.verification.locked_count}

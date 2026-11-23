@@ -124,10 +124,10 @@ export default function AdminPage() {
     <>
       <div className="gov-page-header">
         <div>
-          <h1 className="gov-page-title">Administration — ICT, DBA & GIS Governance</h1>
+          <h1 className="gov-page-title">System Administration & Data Governance</h1>
           <p className="gov-page-subtitle">
-            Supabase S2 migration preflight, Q2 CEID alias workbench, Annex F reference code lists,
-            and R1/R2 artefact readiness checks.
+            Database schema governance, Collect Earth ID (CEID) reconciliation, UNCCD Annex F
+            reference code lists, and national reporting readiness.
           </p>
         </div>
         <div className="gov-page-actions">
@@ -140,10 +140,10 @@ export default function AdminPage() {
       <div className="gov-filters">
         {(
           [
-            { id: "s2", label: "S2 Migrations (DBA)", icon: Database },
-            { id: "ceid", label: `CEID Aliases (${ceid?.entries?.length ?? 0})`, icon: FileCode2 },
+            { id: "s2", label: "Database Migrations", icon: Database },
+            { id: "ceid", label: `CEID Reconciliation (${ceid?.entries?.length ?? 0})`, icon: FileCode2 },
             { id: "codes", label: "Code Lists (Annex F)", icon: ListChecks },
-            { id: "readiness", label: "Platform Readiness", icon: ShieldCheck },
+            { id: "readiness", label: "System Readiness", icon: ShieldCheck },
           ] as const
         ).map((t) => {
           const Icon = t.icon;
@@ -387,14 +387,24 @@ export default function AdminPage() {
           </div>
 
           {(readiness.commands ?? []).length > 0 && (
-            <div>
-              <div className="gov-kv-label" style={{ marginBottom: 6 }}>
-                <Terminal size={12} style={{ verticalAlign: "middle", marginRight: 4 }} />
-                Standard Preflight Commands
-              </div>
+            <details style={{ marginTop: 8 }}>
+              <summary
+                style={{
+                  cursor: "pointer",
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: "#4f6457",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                }}
+              >
+                <Terminal size={13} /> Technical Operations Reference (ICT)
+              </summary>
               <pre
                 className="gov-mono"
                 style={{
+                  marginTop: 8,
                   padding: 12,
                   background: "#062814",
                   color: "#e6f6ec",
@@ -403,7 +413,7 @@ export default function AdminPage() {
               >
                 {(readiness.commands ?? []).join("\n")}
               </pre>
-            </div>
+            </details>
           )}
         </div>
       )}

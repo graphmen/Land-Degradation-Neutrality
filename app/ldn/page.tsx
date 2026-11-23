@@ -478,7 +478,7 @@ export default function LdnPage() {
               Land Degradation Neutrality (LDN) Framework
             </h1>
             <p style={{ fontSize: "10px", color: "var(--text-muted)", margin: 0, fontWeight: 500 }}>
-              Monitoring SDG 15.3.1 - Land Degradation & Telemetry
+              UNCCD SDG 15.3.1 — National Field Assessment
             </p>
           </div>
         </div>
@@ -906,10 +906,10 @@ export default function LdnPage() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
               <div>
                 <h3 style={{ fontSize: "13px", fontWeight: 800, color: "var(--text-primary)", margin: 0, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                  Monitoring Activity & Telemetry Records by District
+                  Field Assessment Activity by District
                 </h3>
                 <p style={{ fontSize: "11px", color: "var(--text-muted)", margin: "4px 0 0 0" }}>
-                  Total field survey nodes collected and monitored across all reporting districts
+                  Verified field assessment sites recorded across reporting districts
                 </p>
               </div>
               <span style={{ fontSize: "11px", fontWeight: 700, padding: "4px 12px", background: "rgba(59, 130, 246, 0.1)", color: "#1d4ed8", borderRadius: "12px", border: "1px solid rgba(59, 130, 246, 0.2)" }}>

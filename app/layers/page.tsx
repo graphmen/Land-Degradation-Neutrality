@@ -106,6 +106,16 @@ const STATUS_CLASS: Record<string, string> = {
   not_started: "gov-badge-slate",
 };
 
+const STATUS_LABEL: Record<string, string> = {
+  etl_complete: "Operational",
+  json_loaded: "Loaded",
+  staging_json: "Staged",
+  partial: "In Progress",
+  plan_only: "Scheduled",
+  awaiting_delivery: "Pending Raster",
+  not_started: "Planned",
+};
+
 type BoundaryKey = "provinces" | "districts" | "wards";
 
 const BOUNDARY_CONFIGS: Array<{
@@ -752,7 +762,7 @@ export default function NationalLayersPage() {
             <strong>
               {liveReadyCount}/{data?.layer_count ?? 13}
             </strong>{" "}
-            live · {awaitingCount} awaiting S10–S12
+            operational · {awaitingCount} rasters pending
           </span>
         </div>
         <Link href="/analytics" style={{ color: "#005a2b", fontWeight: 700, textDecoration: "none" }}>
@@ -1119,7 +1129,8 @@ export default function NationalLayersPage() {
                                   STATUS_CLASS[layer.import_status] ?? "gov-badge-slate"
                                 }`}
                               >
-                                {layer.import_status.replace(/_/g, " ")}
+                                {STATUS_LABEL[layer.import_status] ??
+                                  layer.import_status.replace(/_/g, " ")}
                               </span>
                             </td>
                             <td style={{ fontSize: 12 }}>{layer.so_uses.join(", ")}</td>
@@ -1214,15 +1225,15 @@ export default function NationalLayersPage() {
         )}
       </div>
 
-      {/* S10-S12 National Raster Callout */}
+      {/* National Raster Callout */}
       <div className="gov-alert gov-alert-amber">
         <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: 2 }} />
         <span>
-          <strong>National SO1 Raster Layers Pending (S10–S12):</strong>{" "}
+          <strong>National SO1 Raster Layers Scheduled:</strong>{" "}
           <code>LC-NAT-STACK</code>, <code>LPD-NAT-RASTER</code>, and <code>SOC-NAT-SURFACE</code>{" "}
-          are registered in Annex C and ready for ingestion once EMA GIS drops GeoTIFF files.{" "}
+          are registered in Annex C and ready for ingestion upon national GeoTIFF delivery.{" "}
           <Link href="/reporting-desk" style={{ color: "#7c4700", fontWeight: 700 }}>
-            View §F Gates →
+            View Reporting Desk →
           </Link>
         </span>
       </div>

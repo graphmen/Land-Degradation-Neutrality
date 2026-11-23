@@ -332,10 +332,10 @@ export default function AnalyticsPage() {
             <div className="gov-alert gov-alert-amber" style={{ marginBottom: 14 }}>
               <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: 2 }} />
               <span>
-                <strong>Gate F3 Blocked (Steering S10):</strong> National t₀/t₁ land-cover GeoTIFF
-                stack (<code>LC-NAT-STACK</code>) awaiting delivery ({populatedCount}/49 cells
-                populated). Cell tints display official UNCCD degradation/improvement rules so
-                reviewers can validate transition logic ahead of raster ingestion.
+                <strong>National Land Cover Raster Pending:</strong> National t₀/t₁ land-cover
+                GeoTIFF surfaces (<code>LC-NAT-STACK</code>) are scheduled for ingestion (
+                {populatedCount}/49 cells populated). Cell colors reflect official UNCCD GPG v2
+                degradation/improvement transition rules.
               </span>
             </div>
 
@@ -480,7 +480,7 @@ export default function AnalyticsPage() {
                             style={cellStyle(dir, dimmed, isSel)}
                             onClick={() => setSelectedCell({ from: from.code, to: to.code })}
                             title={`${from.label} → ${to.label}: UNCCD ${dir.toUpperCase()} (${
-                              val != null ? `${val} km²` : "awaiting S10 raster"
+                              val != null ? `${val} km²` : "awaiting national raster"
                             })`}
                           >
                             <div style={{ fontWeight: 800, fontSize: 13, lineHeight: 1.1 }}>
@@ -574,7 +574,7 @@ export default function AnalyticsPage() {
                       UNCCD Rule: {dir.toUpperCase()}
                     </span>
                     <span className="gov-badge gov-badge-blue">
-                      Area: {val != null ? `${val.toLocaleString()} km²` : "Pending LC-NAT-STACK (S10)"}
+                      Area: {val != null ? `${val.toLocaleString()} km²` : "Pending National LC Raster"}
                     </span>
                     <span className="gov-badge gov-badge-slate">Baseline: t0_end_2015</span>
                   </div>
@@ -598,8 +598,8 @@ export default function AnalyticsPage() {
           <div className="gov-alert gov-alert-amber" style={{ marginBottom: 14 }}>
             <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: 2 }} />
             <span>
-              <strong>Gate F4 Blocked (Steering S11):</strong> National LPD raster (`LPD-NAT-RASTER`)
-              and legend decision pending EMA steering.
+              <strong>National Productivity (LPD) Raster Pending:</strong> National LPD surface (
+              <code>LPD-NAT-RASTER</code>) is awaiting final GIS ingestion.
             </span>
           </div>
 
@@ -640,8 +640,9 @@ export default function AnalyticsPage() {
           <div className="gov-alert gov-alert-amber">
             <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: 2 }} />
             <span>
-              <strong>Gate F5 Partial (Steering S12):</strong> Tier-1 national SOC surface awaits
-              delivery; Tier-2 EMA field soil cores are loaded and ready for lab SOC reconciliation.
+              <strong>Tier-1 National SOC Surface Pending:</strong> National Tier-1 SOC surface is
+              scheduled for ingestion; 632 EMA Tier-2 field soil cores are loaded and ready for
+              laboratory assay reconciliation.
             </span>
           </div>
 
@@ -660,7 +661,7 @@ export default function AnalyticsPage() {
               <div className="gov-card">
                 <div className="gov-metric-label">Lab SOC % Populated</div>
                 <div className="gov-metric-value">{soc.stats.tier2_with_soc_value}</div>
-                <div className="gov-metric-sub">Awaiting Tier-2 laboratory assay join (S12)</div>
+                <div className="gov-metric-sub">Awaiting Tier-2 laboratory assay reconciliation</div>
               </div>
             </div>
           )}
@@ -732,8 +733,8 @@ export default function AnalyticsPage() {
                 {status.summary.polygon_count?.toLocaleString() ?? "254,873"}
               </div>
               <div className="gov-metric-sub">
-                Area unit confirmed (Q1):{" "}
-                <strong>{status.metadata.area_unit_confirmed ? "Yes" : "Pending"}</strong>
+                Area unit verification:{" "}
+                <strong>{status.metadata.area_unit_confirmed ? "Confirmed" : "In Review"}</strong>
               </div>
             </div>
             <div className="gov-card" style={{ background: "#f8fbf9" }}>
@@ -744,7 +745,7 @@ export default function AnalyticsPage() {
                     status.metadata.one_ao_ready ? "gov-badge-green" : "gov-badge-amber"
                   }`}
                 >
-                  {status.metadata.one_ao_ready ? "1OAO Complete" : "Pending S10–S12 Rasters"}
+                  {status.metadata.one_ao_ready ? "1OAO Complete" : "Pending National Rasters"}
                 </span>
               </div>
               <div className="gov-metric-sub">{status.metadata.note ?? "One-Out-All-Out requires LC + LPD + SOC."}</div>

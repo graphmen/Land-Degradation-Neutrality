@@ -204,7 +204,7 @@ export default function GalleryPage() {
           </div>
           <div>
             <h1 style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", margin: 0, fontFamily: "var(--font-title)" }}>
-              Field Telemetry Photo Gallery
+              National Field Evidence Photo Gallery
             </h1>
             <p style={{ fontSize: "11px", color: "var(--text-muted)", margin: 0, fontWeight: 500 }}>
               High-Resolution Ground Observation Imagery Captured Across Zimbabwe Monitored Landscapes

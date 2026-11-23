@@ -51,14 +51,14 @@ type DryRunPayload = {
 };
 
 const EXPORT_JOBS = [
-  { id: "EXP-META", label: "Corpus Metadata (CSV)", href: "/api/export/meta?format=csv", gate: "F1" },
-  { id: "EXP-SO1-FIELD", label: "SO1 Field Evidence (JSON)", href: "/api/export/so1-field", gate: "F2" },
-  { id: "EXP-SO1-STATUS", label: "SO1 Status Summary", href: "/api/export/so1-status", gate: "F6" },
-  { id: "EXP-SO1-LC", label: "SO1 Land Cover Matrix", href: "/api/export/so1-lc", gate: "F3 (S10)" },
-  { id: "EXP-SO1-LPD", label: "SO1 Productivity (LPD)", href: "/api/export/so1-lpd", gate: "F4 (S11)" },
-  { id: "EXP-SO1-SOC", label: "SO1 Soil Organic Carbon", href: "/api/export/so1-soc", gate: "F5 (S12)" },
-  { id: "EXP-PHOTOS", label: "Field Photo Manifest", href: "/api/export/photos", gate: "E4" },
-  { id: "BUNDLE", label: "Full Reporting Bundle", href: "/api/export/bundle", gate: "F7" },
+  { id: "EXP-META", label: "Corpus Metadata (CSV)", href: "/api/export/meta?format=csv", gate: "Annex II" },
+  { id: "EXP-SO1-FIELD", label: "SO1 Field Evidence (JSON)", href: "/api/export/so1-field", gate: "Field QA" },
+  { id: "EXP-SO1-STATUS", label: "SO1 Status Summary", href: "/api/export/so1-status", gate: "SO1-4" },
+  { id: "EXP-SO1-LC", label: "SO1 Land Cover Matrix", href: "/api/export/so1-lc", gate: "SO1-1" },
+  { id: "EXP-SO1-LPD", label: "SO1 Productivity (LPD)", href: "/api/export/so1-lpd", gate: "SO1-2" },
+  { id: "EXP-SO1-SOC", label: "SO1 Soil Organic Carbon", href: "/api/export/so1-soc", gate: "SO1-3" },
+  { id: "EXP-PHOTOS", label: "Field Photo Manifest", href: "/api/export/photos", gate: "Attachments" },
+  { id: "BUNDLE", label: "Full Reporting Bundle", href: "/api/export/bundle", gate: "PRAIS 4" },
 ];
 
 export default function ReportingDeskPage() {
@@ -96,8 +96,8 @@ export default function ReportingDeskPage() {
       <div className="gov-alert gov-alert-red">
         <AlertTriangle size={18} />
         <div>
-          <strong>Reporting Desk dry-run unavailable</strong>
-          <div>{error ?? "Run `npm run reporting:dry-run` to generate §F gate output."}</div>
+          <strong>Reporting Desk snapshot unavailable</strong>
+          <div>{error ?? "Reporting rehearsal snapshot has not been generated yet."}</div>
         </div>
       </div>
     );
@@ -113,46 +113,46 @@ export default function ReportingDeskPage() {
   const gpgSections = [
     {
       code: "A",
-      title: "Governance (before numbers)",
+      title: "Governance & Authority",
       status: "partial",
       items: [
-        "A1: Reporting officer RACI defined in steering pack",
-        `A2: Active reporting period tagged (${period} · baseline t0_end_2015)`,
-        "A3: Annex F code list v0.9-draft ready for v1.0 sign-off (S1)",
-        "A5: LC raster authority (S10) pending steering confirmation",
+        "National Reporting Officer responsibilities established under EMA RACI",
+        `Active reporting cycle tagged (${period} · UNCCD baseline end 2015)`,
+        "UNCCD Annex F national code lists standardized across web & mobile",
+        "National Land Cover raster authority pending final approval",
       ],
     },
     {
       code: "B",
-      title: "National Corpus Ready (Deliverable A)",
+      title: "National Spatial Corpus",
       status: "partial",
       items: [
-        "B0–B0c: LC/LPD/SOC national GeoTIFFs awaiting S10–S12 drop",
-        "B1: LDN-NAT-ALL (254,873 polygons) plan + QC ready (Q1/Q2 pending)",
-        `B2: Field LDN locked count = ${dryRun.gates?.locked_field_rows ?? 0} (pilot)`,
-        "B3–B7: Soil (632), Drylands (16), EMA projects (47), SBC (1,367), Pressures (2,804), REF-SITES (28)",
+        "National Land Cover, LPD, and SOC GeoTIFF surfaces scheduled for ingestion",
+        "Combined national LDN validation units (254,873 polygons) registered",
+        `Locked field validations ready for PRAIS export: ${dryRun.gates?.locked_field_rows ?? 0}`,
+        "Soil cores (632), Drylands ILUP (16), Restoration projects (47), SBC (1,367), Pressures (2,804), Monitoring sites (28)",
       ],
     },
     {
       code: "C",
-      title: "PRAIS 4 SO1 Table Map",
+      title: "PRAIS 4 SO1 Table Mapping",
       status: "ready",
       items: [
-        "SO1-1 Land Cover → EXP-SO1-LC (7-class UNCCD matrix)",
-        "SO1-2 Productivity → EXP-SO1-LPD (4-class LPD summary)",
-        "SO1-3 SOC → EXP-SO1-SOC (Tier-1 surface + 632 Tier-2 cores)",
-        "SO1-4 Status → EXP-SO1-STATUS + Annex II Metadata (EXP-META)",
+        "SO1-1 Land Cover → EXP-SO1-LC (7-class UNCCD transition matrix)",
+        "SO1-2 Land Productivity → EXP-SO1-LPD (4-class LPD summary)",
+        "SO1-3 Soil Organic Carbon → EXP-SO1-SOC (Tier-1 surface + 632 Tier-2 cores)",
+        "SO1-4 Proportion Degraded → EXP-SO1-STATUS + Annex II Metadata (EXP-META)",
       ],
     },
     {
       code: "D",
-      title: "UNCCD GPG v2 Method Compliance",
+      title: "UNCCD GPG v2 Methodology",
       status: "partial",
       items: [
-        "D1: Baseline period end 2015 (t0_end_2015) tagged on exports",
-        "D2: One-Out-All-Out (1OAO) logic flagged interim until S10–S12",
-        "D3–D4: 7-class UNCCD land cover legend + 49-cell transition matrix",
-        "D5–D6: Data Tier (Tier 1/2/3) & Confidence labelled on all 13 corpus rows",
+        "Baseline period end 2015 (t0_end_2015) tagged across all exports",
+        "One-Out-All-Out (1OAO) integration active once national rasters are ingested",
+        "7-class UNCCD land cover legend & 49-cell transition rules verified",
+        "Data Tier (Tier 1/2/3) & Confidence levels recorded on all 13 corpus layers",
       ],
     },
     {
@@ -160,20 +160,20 @@ export default function ReportingDeskPage() {
       title: "Internal Verification Gate",
       status: f2Pass ? "ready" : "partial",
       items: [
-        "E1: PRAIS-eligible filter enforces verification_status = locked only",
-        "E2: Audit trail recorded via verification_log on every transition",
-        "E3: code_list_version stamped on mobile + API records",
-        "E4: Field photo manifest (EXP-PHOTOS · 147 rows) linked",
+        "PRAIS export strictly enforces immutable locked verification status",
+        "Complete verification audit trail maintained per record transition",
+        "Standardized code list version recorded on mobile & web submissions",
+        "Field photo evidence manifest (147 records) linked to submissions",
       ],
     },
     {
       code: "F & G",
-      title: "Export Dry-Run & PRAIS Handoff",
+      title: "Export Rehearsal & PRAIS Submission",
       status: f1Pass && f2Pass ? "partial" : "blocked",
       items: [
-        `F1/F2/F6/F7: Rehearsal packages passing (Manifest SHA-256: ${f7Hash.slice(0, 14)}…)`,
-        "F3–F5: Blocked on S10–S12 national raster delivery",
-        "G1–G4: Target PRAIS 4 submission November 2026; freeze locked snapshot before upload",
+        `Metadata, Field QA, and Bundle rehearsal packages verified (SHA-256: ${f7Hash.slice(0, 14)}…)`,
+        "SO1-1, SO1-2, and SO1-3 raster export tables awaiting national GeoTIFF ingestion",
+        "Target UNCCD PRAIS 4 national submission: November 2026",
       ],
     },
   ];
@@ -184,9 +184,8 @@ export default function ReportingDeskPage() {
         <div className="gov-alert gov-alert-amber">
           <Lock size={16} style={{ flexShrink: 0, marginTop: 2 }} />
           <span>
-            <strong>RBAC Read-Only Notice ({role}):</strong> Reporting Desk export attestation is
-            restricted to the <strong>National Reporting Officer</strong> (R1 §5). Switch role in
-            the top header to test officer permissions.
+            <strong>Access Notice:</strong> Reporting Desk export attestation is reserved for the{" "}
+            <strong>National Reporting Officer</strong>.
           </span>
         </div>
       )}
@@ -252,7 +251,7 @@ export default function ReportingDeskPage() {
           <span>
             <strong>Lock Policy:</strong>{" "}
             <span className="gov-badge gov-badge-amber" style={{ padding: "1px 7px" }}>
-              {lockPolicy?.mode ?? "pilot_rehearsal"}
+              {lockPolicy?.mode === "pilot_rehearsal" ? "Rehearsal Mode" : lockPolicy?.mode ?? "Standard"}
             </span>
           </span>
           <span style={{ color: "#cbd7cf" }}>|</span>

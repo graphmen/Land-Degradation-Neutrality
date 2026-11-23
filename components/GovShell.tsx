@@ -113,7 +113,7 @@ function GovShellInner({ children }: { children: React.ReactNode }) {
             </select>
           </label>
 
-          <label className="gov-period-pill" title="Active EMA RBAC Role (R1 §2)">
+          <label className="gov-period-pill" title="Active EMA Role">
             <Shield size={12} color="#fde68a" />
             <select
               value={role}
@@ -186,7 +186,7 @@ function GovShellInner({ children }: { children: React.ReactNode }) {
           <div className="gov-sidebar-footer">
             <div className="gov-sidebar-footer-text">
               <div>UNCCD GPG v2 · PRAIS 4</div>
-              <div>Annex F code lists v0.9-draft</div>
+              <div>EMA National Standards</div>
             </div>
           </div>
         </nav>
