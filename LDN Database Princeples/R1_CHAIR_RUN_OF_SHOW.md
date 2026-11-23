@@ -32,7 +32,8 @@ npm run r1:smoke
 | 0–8 | Opening | “National LDN **data platform** — corpus first, not KPI dashboard.” | — |
 | 8–15 | Twins | Botswana grid + Panama platform; CEID discipline [`STUDY_CEID_GRID_PEER_BENCHMARK.md`](./STUDY_CEID_GRID_PEER_BENCHMARK.md) | **S7** |
 | 15–22 | Data governance | Code lists v1.0; Supabase Phase A+B preflight | **S1, S2** |
-| 22–32 | GIS | Area unit Q1; CEID Q2 + 54-alias workshop | **S3, S4, S10–S12** |
+| 20–22 | Reporting period | [`STEERING_S5_REPORTING_PERIOD_ONE_PAGER.md`](./STEERING_S5_REPORTING_PERIOD_ONE_PAGER.md) | **S5** |
+| 22–32 | GIS | Q1/Q2; raster study [`STUDY_SO1_NATIONAL_RASTER_DELIVERY.md`](./STUDY_SO1_NATIONAL_RASTER_DELIVERY.md); CEID workshop | **S3, S4, S10–S12** |
 | 32–44 | **Live API** | Run [`R1_API_DEMO_SCRIPT.md`](./R1_API_DEMO_SCRIPT.md) steps **1–7, 10–11** (skip pressure/interventions if time) | — |
 | 44–52 | IA wireframes | Evidence, verification queues, reporting desk — names only | **S6** |
 | 52–58 | Cutover + RBAC | §8 redirects; district vs national roles | — |
@@ -67,7 +68,8 @@ npm run r1:smoke
 | S8–S12 | Pressure + rasters | Defer OK with date |
 | R1 §9 | Authorize R2 shell build? | ☐ Go / no-go |
 
-Update [`STEERING_DECISIONS_QUEUE.md`](./STEERING_DECISIONS_QUEUE.md) before adjourn.
+Update [`STEERING_DECISIONS_QUEUE.md`](./STEERING_DECISIONS_QUEUE.md) before adjourn.  
+**Minutes:** fill [`STEERING_MINUTES_TEMPLATE_R1.md`](./STEERING_MINUTES_TEMPLATE_R1.md) → save as `STEERING_MINUTES_R1_YYYY-MM-DD.md`.
 
 ---
 

@@ -27,6 +27,7 @@ Outputs (gitignored): `exports/steering-docx/*.docx`
 | ZIMBABWE_DIFFERENTIATOR_STEERING_ONE_PAGER | Ministerial one-pager |
 | R1_API_DEMO_SCRIPT | Live API walkthrough |
 | R1_CHAIR_RUN_OF_SHOW | Minute-by-minute facilitation |
+| STEERING_MINUTES_TEMPLATE_R1 | Fillable R1 minutes |
 | PROGRAMME_SESSION_SUMMARY_2026-11-23 | Day summary for leadership |
 | corpus/CORPUS_QC_LINEAGE | QC script index |
 
