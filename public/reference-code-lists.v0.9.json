@@ -41,6 +41,33 @@
         { "code": "clay", "label": "Clay", "usda": "Clay" }
       ]
     },
+    "soil_moisture": {
+      "values": [
+        { "code": "dry", "label": "Dry" },
+        { "code": "moist", "label": "Moist" },
+        { "code": "wet", "label": "Wet" }
+      ]
+    },
+    "soil_sample_location": {
+      "values": [
+        { "code": "cent", "label": "Center Location" },
+        { "code": "north", "label": "North Boundary" },
+        { "code": "east", "label": "East Boundary" },
+        { "code": "south", "label": "South Boundary" },
+        { "code": "west", "label": "West Boundary" }
+      ]
+    },
+    "ldn_land_cover_mobile_labels": {
+      "description": "Labels shown in LDN mobile UI",
+      "values": [
+        { "code": "cropland", "label": "Cropland" },
+        { "code": "tree_forest", "label": "Tree/Forest" },
+        { "code": "bush_shrub", "label": "Bush/Shrub" },
+        { "code": "grassland", "label": "Grassland" },
+        { "code": "plantation", "label": "Plantation" },
+        { "code": "baresoil", "label": "Bare soil" }
+      ]
+    },
     "verification_status": {
       "values": [
         "draft",

@@ -3,6 +3,11 @@ import { MapPin, Save, ChevronLeft, ChevronRight, RefreshCw, Plus, Trash } from 
 import { Geolocation } from "@capacitor/geolocation";
 import { saveSoilDraft, getSoilDraft } from "../lib/db";
 import type { SoilDraft, SoilCoreDraft } from "../lib/db";
+import {
+  getSoilMoistureOptions,
+  getSoilSampleLocationOptions,
+  getSoilTextureOptions,
+} from "../lib/code-lists";
 
 interface SoilFormProps {
   onSuccess: (message: string) => void;
@@ -25,21 +30,9 @@ const PROVINCE_DISTRICTS: Record<string, string[]> = {
   "Midlands": ["Chirumhanzu", "Gokwe North", "Gokwe South", "Gweru", "Kwekwe", "Mberengwa", "Shurugwi", "Zvishavane"]
 };
 
-const LOCATIONS = [
-  { val: "cent", label: "Center Location" },
-  { val: "north", label: "North Boundary" },
-  { val: "east", label: "East Boundary" },
-  { val: "south", label: "South Boundary" },
-  { val: "west", label: "West Boundary" }
-];
-
-const MOISTURE_LEVELS = [
-  "Wet", "Saturated", "Moist", "Dry"
-];
-
-const TEXTURES = [
-  "Clay", "Loam", "Sand", "Silt"
-];
+const LOCATIONS = getSoilSampleLocationOptions().map((o) => ({ val: o.code, label: o.label }));
+const MOISTURE_LEVELS = getSoilMoistureOptions();
+const TEXTURES = getSoilTextureOptions().map((o) => o.label);
 
 export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editingDraftId, onClearEdit }: SoilFormProps) {
   const [step, setStep] = useState(1);

@@ -24,19 +24,19 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 |------|--------|--------|------|
 | 1.1 | Import monitoring sites XLS | `public/reference-monitoring-sites.json` | ✅ this session |
 | 1.2 | API governance fields on reads | `lib/compliance-metadata.ts` + `/api/*` | ✅ this session |
-| 1.3 | Code list v1.0 in database | Supabase migration | ⬜ |
+| 1.3 | Code list v1.0 in database | `backend/migrations/001_reference_code_lists.sql` | 🔶 SQL drafted (not applied) |
 | 1.4 | Fix LDN denormalized ETL | `land_cover` / `land_use` in cache | ✅ 150/150 |
 | 1.5 | Drylands erosion `Mild` → `low` on import | API read + Excel import | ✅ |
-| 1.6 | Mobile forms use `reference-code-lists` | `LdnForm` severity only; Soil/Drylands next | 🔶 partial |
+| 1.6 | Mobile forms use `reference-code-lists` | All three main forms (bundled JSON) | ✅ |
 
 ---
 
 ## Phase 2 — Database hardening
 
-| Step | Action |
-|------|--------|
-| 2.1 | PostGIS `national_ldn_units` from combined shapefile |
-| 2.2 | Import `intervention_spatial` (47 EMA projects) |
+| Step | Action | Done |
+|------|--------|------|
+| 2.1 | PostGIS `national_ldn_units` from combined shapefile | ⬜ |
+| 2.2 | Import `intervention_spatial` (47 EMA projects) | ✅ staging `ema-projects-import.json` |
 | 2.3 | Mobile sync → DB first; JSON cache second |
 | 2.4 | `verification_log` + review UI (district / national) |
 
@@ -62,6 +62,6 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 ---
 
-**Next recommended 60-minute block:** Finish **1.6** (Soil + Drylands code lists) → **1.3** (Supabase SQL) → or **2.2** (import 47 EMA projects).
+**Next automatic block:** **2.1** PostGIS LDN units stub · interventions API read staging · EMA one-pager for step 0.7.
 
-**Latest block review:** [BLOCK_REVIEW_2026-11-23_phase1-etl.md](./BLOCK_REVIEW_2026-11-23_phase1-etl.md)
+**Block reviews:** [ETL](./BLOCK_REVIEW_2026-11-23_phase1-etl.md) · [Mobile/imports](./BLOCK_REVIEW_2026-11-23_phase1-mobile-and-imports.md)

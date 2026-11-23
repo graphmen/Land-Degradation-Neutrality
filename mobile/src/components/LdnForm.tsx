@@ -4,7 +4,7 @@ import { Geolocation } from "@capacitor/geolocation";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import { saveLdnDraft, getLdnDraft } from "../lib/db";
 import type { LdnDraft } from "../lib/db";
-import { getLdnSeverityOptions } from "../lib/code-lists";
+import { getLdnLandCoverOptions, getLdnSeverityOptions } from "../lib/code-lists";
 
 interface LdnFormProps {
   onSuccess: (message: string) => void;
@@ -27,9 +27,7 @@ const PROVINCE_DISTRICTS: Record<string, string[]> = {
   "Midlands": ["Chirumhanzu", "Gokwe North", "Gokwe South", "Gweru", "Kwekwe", "Mberengwa", "Shurugwi", "Zvishavane"]
 };
 
-const LANDCOVERS = [
-  "Forest Land", "Cropland", "Grassland", "Wetland", "Settlements", "Other Land"
-];
+const LANDCOVERS = getLdnLandCoverOptions().map((o) => o.label);
 
 const LANDUSES = [
   "Conservation Forestry", "Commercial Cropland", "Subsistence Cropland", 

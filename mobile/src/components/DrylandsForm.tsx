@@ -3,6 +3,7 @@ import { MapPin, Save, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react
 import { Geolocation } from "@capacitor/geolocation";
 import { saveDrylandsDraft, getDrylandsDraft } from "../lib/db";
 import type { DrylandsDraft } from "../lib/db";
+import { getDrylandsErosionSeverityOptions } from "../lib/code-lists";
 
 interface DrylandsFormProps {
   onSuccess: (message: string) => void;
@@ -18,7 +19,7 @@ const SOIL_TYPES = ["Jecha (Sandy)", "Red sandy clay", "Very sandy infertile soi
 const AREA_TYPES = ["Arable", "Grazing", "Wetland", "Forest/Woodland", "Other"];
 const LAND_COVERS = ["Cropland", "Grassland", "Woodland", "Bare Land", "Wetland Vegetation"];
 const EROSION_TYPES = ["Sheet", "Rill", "Gully"];
-const EROSION_SEVERITIES = ["None", "Low", "Moderate", "Severe"];
+const EROSION_SEVERITIES = ["None", ...getDrylandsErosionSeverityOptions()];
 const WATER_SOURCES = ["Borehole", "River", "Wetland", "Stream", "Seasonal water point", "Other"];
 const WATER_QUALITIES = ["Clear", "Slightly Turbid", "Highly Silted"];
 const CLIMATE_INDICATORS = ["Prolonged dry spells", "Failed crops", "Drying wetlands", "Reduced stream flow", "Other"];
