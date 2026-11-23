@@ -2,17 +2,20 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import {
+  AlertTriangle,
   CheckCircle2,
   Database,
   FileCode2,
   ListChecks,
+  Lock,
   RefreshCw,
   Search,
   ShieldCheck,
   Terminal,
 } from "lucide-react";
+import { useGovPlatform } from "@/components/GovPlatformContext";
 
-type AdminTab = "s2" | "ceid" | "codes" | "readiness";
+type AdminTab = "migrations" | "ceid" | "codes" | "readiness";
 
 type S2File = {
   phase: string;
@@ -58,8 +61,52 @@ type CodeListsPayload = {
   lists?: Record<string, Array<{ code?: string; label?: string } | string>>;
 };
 
+type CeidValidationResult = {
+  valid?: boolean;
+  ceid?: string;
+  matched_id?: string | number | null;
+  rule?: string;
+  hint?: string;
+  error?: string;
+};
+
+const MIGRATION_DESCRIPTIONS: Record<string, string> = {
+  "001_reference_code_lists.sql": "UNCCD Annex F controlled vocabulary schema",
+  "001_reference_code_lists_seed.sql": "Initial national land cover, erosion & severity code lists",
+  "004_field_governance.sql": "Verification status, data tier & reporting period columns",
+  "005_verification_log.sql": "Immutable verification audit trail table",
+  "003_pressure_layers.sql": "Invasive species & mining pressure spatial tables",
+  "002_national_ldn_units.sql": "Combined national LDN validation units (254,873 polygons)",
+};
+
+const CATEGORY_LABELS: Record<string, string> = {
+  named_or_short_token: "Named / Short Code",
+  legacy_zc_ze_token: "Legacy ZC / ZE Code",
+  numeric_unmatched: "Unmatched Numeric ID",
+  malformed_or_other: "Other Format",
+};
+
+const ARTEFACT_LABELS: Record<string, string> = {
+  qc_programme_summary: "National QC Programme Summary",
+  reporting_desk_dry_run: "PRAIS 4 Reporting Snapshot",
+  qc_ceid_join_report: "CEID Polygon Join Report",
+  s2_migration_preflight: "Database Migration Preflight",
+  reference_ceid_aliases: "CEID Alias Register",
+  verification_lock_policy: "Verification Lock Policy",
+};
+
+function formatGroupLabel(raw: string): string {
+  return raw
+    .replace(/_/g, " ")
+    .replace(/\bldn\b/gi, "LDN")
+    .replace(/\bunccd\b/gi, "UNCCD")
+    .replace(/\bsoc\b/gi, "SOC")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export default function AdminPage() {
-  const [tab, setTab] = useState<AdminTab>("s2");
+  const { role, permissions } = useGovPlatform();
+  const [tab, setTab] = useState<AdminTab>("migrations");
   const [s2, setS2] = useState<S2Payload | null>(null);
   const [ceid, setCeid] = useState<CeidAliasPayload | null>(null);
   const [readiness, setReadiness] = useState<ReadinessPayload | null>(null);
@@ -68,7 +115,8 @@ export default function AdminPage() {
 
   const [ceidSearch, setCeidSearch] = useState("");
   const [ceidTestInput, setCeidTestInput] = useState("");
-  const [ceidTestResult, setCeidTestResult] = useState<string | null>(null);
+  const [ceidTestResult, setCeidTestResult] = useState<CeidValidationResult | null>(null);
+  const [ceidTesting, setCeidTesting] = useState(false);
 
   const loadAll = async () => {
     setLoading(true);
@@ -107,27 +155,32 @@ export default function AdminPage() {
   const testCeidValidator = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!ceidTestInput.trim()) return;
-    setCeidTestResult("Checking…");
+    setCeidTesting(true);
+    setCeidTestResult(null);
     try {
       const res = await fetch(
         `/api/validator/ceid?ceid=${encodeURIComponent(ceidTestInput.trim())}`,
         { cache: "no-store" }
       );
-      const json = await res.json();
-      setCeidTestResult(JSON.stringify(json, null, 2));
+      const json = (await res.json()) as CeidValidationResult;
+      setCeidTestResult(json);
     } catch {
-      setCeidTestResult("Validator request failed.");
+      setCeidTestResult({ valid: false, error: "Validator service unavailable." });
+    } finally {
+      setCeidTesting(false);
     }
   };
 
+  const allMigrations = [...(s2?.phase_ab_files ?? []), ...(s2?.phase_cd_deferred ?? [])];
+
   return (
     <>
-      <div className="gov-page-header">
+      <div className="gov-page-header" style={{ paddingBottom: 12 }}>
         <div>
           <h1 className="gov-page-title">System Administration & Data Governance</h1>
           <p className="gov-page-subtitle">
             Database schema governance, Collect Earth ID (CEID) reconciliation, UNCCD Annex F
-            reference code lists, and national reporting readiness.
+            reference code lists, and national platform health checks.
           </p>
         </div>
         <div className="gov-page-actions">
@@ -137,10 +190,20 @@ export default function AdminPage() {
         </div>
       </div>
 
+      {!permissions.canAccessAdmin && (
+        <div className="gov-alert gov-alert-amber" style={{ padding: "9px 14px" }}>
+          <Lock size={15} style={{ flexShrink: 0, marginTop: 2 }} />
+          <span style={{ fontSize: 12 }}>
+            <strong>Read-Only View ({role}):</strong> Administrative schema changes are restricted
+            to the <strong>ICT / DBA</strong> role.
+          </span>
+        </div>
+      )}
+
       <div className="gov-filters">
         {(
           [
-            { id: "s2", label: "Database Migrations", icon: Database },
+            { id: "migrations", label: `Database Migrations (${allMigrations.length})`, icon: Database },
             { id: "ceid", label: `CEID Reconciliation (${ceid?.entries?.length ?? 0})`, icon: FileCode2 },
             { id: "codes", label: "Code Lists (Annex F)", icon: ListChecks },
             { id: "readiness", label: "System Readiness", icon: ShieldCheck },
@@ -161,47 +224,49 @@ export default function AdminPage() {
         })}
       </div>
 
-      {/* S2 Migrations */}
-      {tab === "s2" && s2 && (
+      {/* TAB 1: DATABASE MIGRATIONS */}
+      {tab === "migrations" && s2 && (
         <div className="gov-card">
           <div className="gov-card-header">
-            <div className="gov-card-title">Supabase Migration Preflight (S2)</div>
+            <div className="gov-card-title">PostgreSQL / Supabase Schema Migrations</div>
             <span className={`gov-badge ${s2.phase_ab_ready ? "gov-badge-green" : "gov-badge-amber"}`}>
-              Phase A+B: {s2.phase_ab_ready ? "READY TO APPLY" : "CHECK"}
+              Core Schema: {s2.phase_ab_ready ? "Ready to Apply" : "In Review"}
             </span>
           </div>
 
-          <div className="gov-table-wrap" style={{ marginBottom: 18 }}>
+          <div className="gov-table-wrap">
             <table className="gov-table">
               <thead>
                 <tr>
-                  <th>Phase</th>
-                  <th>SQL File</th>
-                  <th>Gate</th>
-                  <th>Lines / Size</th>
-                  <th>SHA-256</th>
+                  <th>Stage</th>
+                  <th>Migration Script</th>
+                  <th>Purpose</th>
+                  <th>Size</th>
                   <th>Status</th>
                 </tr>
               </thead>
               <tbody>
-                {[...(s2.phase_ab_files ?? []), ...(s2.phase_cd_deferred ?? [])].map((f) => (
+                {allMigrations.map((f) => (
                   <tr key={f.file}>
                     <td>
-                      <span className="gov-badge gov-badge-slate">Phase {f.phase}</span>
+                      <span className="gov-badge gov-badge-slate">Stage {f.phase}</span>
                     </td>
                     <td className="gov-mono" style={{ fontWeight: 600 }}>
                       {f.file}
                     </td>
-                    <td>{f.steering_gate}</td>
-                    <td>
-                      {f.lines} lines · {f.bytes} B
+                    <td style={{ fontSize: 12, color: "#4f6457" }}>
+                      {MIGRATION_DESCRIPTIONS[f.file] ?? "National LDN database schema"}
                     </td>
-                    <td className="gov-mono">{f.sha256.slice(0, 14)}…</td>
+                    <td style={{ fontSize: 12, whiteSpace: "nowrap" }}>
+                      {f.lines} lines
+                    </td>
                     <td>
                       {f.phase === "A" || f.phase === "B" ? (
-                        <span className="gov-badge gov-badge-green">Ready (A+B)</span>
+                        <span className="gov-badge gov-badge-green">
+                          <CheckCircle2 size={11} /> Ready to Apply
+                        </span>
                       ) : (
-                        <span className="gov-badge gov-badge-amber">Deferred ({f.steering_gate})</span>
+                        <span className="gov-badge gov-badge-amber">Scheduled (PostGIS)</span>
                       )}
                     </td>
                   </tr>
@@ -212,14 +277,14 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* CEID Alias Workbench */}
+      {/* TAB 2: CEID RECONCILIATION */}
       {tab === "ceid" && ceid && (
         <>
           <div className="gov-card">
             <div className="gov-card-header">
-              <div className="gov-card-title">Live CEID Validator Lookup</div>
+              <div className="gov-card-title">Collect Earth ID (CEID) Validator</div>
               <span className="gov-badge gov-badge-blue">
-                Default rule: {ceid.default_join_rule ?? "second_segment"}
+                Join Rule: Second-Segment Match
               </span>
             </div>
             <form onSubmit={testCeidValidator} style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -227,35 +292,47 @@ export default function AdminPage() {
                 type="text"
                 className="gov-input"
                 style={{ flex: "1 1 260px" }}
-                placeholder="Enter a CEID token to test (e.g. HP1, ZC10, or 12-4501)…"
+                placeholder="Enter a CEID token to check (e.g. HP1, ZC10, or 11619_11614)…"
                 value={ceidTestInput}
                 onChange={(e) => setCeidTestInput(e.target.value)}
               />
-              <button type="submit" className="gov-btn gov-btn-primary">
-                Validate CEID
+              <button type="submit" className="gov-btn gov-btn-primary" disabled={ceidTesting}>
+                {ceidTesting ? "Checking…" : "Validate CEID"}
               </button>
             </form>
+
             {ceidTestResult && (
-              <pre
-                className="gov-mono"
-                style={{
-                  marginTop: 12,
-                  padding: 12,
-                  background: "#f4f7f5",
-                  borderRadius: 8,
-                  border: "1px solid #d9e2dc",
-                  overflowX: "auto",
-                }}
+              <div
+                className={`gov-alert ${
+                  ceidTestResult.valid ? "gov-alert-green" : "gov-alert-amber"
+                }`}
+                style={{ marginTop: 12 }}
               >
-                {ceidTestResult}
-              </pre>
+                {ceidTestResult.valid ? (
+                  <CheckCircle2 size={16} style={{ flexShrink: 0, marginTop: 2 }} />
+                ) : (
+                  <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: 2 }} />
+                )}
+                <div style={{ fontSize: 12 }}>
+                  <strong>
+                    {ceidTestResult.valid
+                      ? `Matched National Polygon ID: ${ceidTestResult.matched_id ?? "Verified"}`
+                      : "Unmatched CEID Token"}
+                  </strong>
+                  <div>
+                    {ceidTestResult.hint ??
+                      ceidTestResult.error ??
+                      "Check the alias register below or assign a shapefile ID during GIS reconciliation."}
+                  </div>
+                </div>
+              </div>
             )}
           </div>
 
           <div className="gov-card">
             <div className="gov-card-header">
               <div className="gov-card-title">
-                Unmatched CEID Alias Register ({filteredAliases.length} entries · Q2)
+                Unmatched CEID Reconciliation Register ({filteredAliases.length} entries)
               </div>
               <div style={{ position: "relative", minWidth: 220 }}>
                 <Search
@@ -272,7 +349,7 @@ export default function AdminPage() {
                   type="text"
                   className="gov-input"
                   style={{ paddingLeft: 28, width: "100%" }}
-                  placeholder="Filter aliases…"
+                  placeholder="Filter CEID tokens…"
                   value={ceidSearch}
                   onChange={(e) => setCeidSearch(e.target.value)}
                 />
@@ -284,9 +361,9 @@ export default function AdminPage() {
                 <thead>
                   <tr>
                     <th>CEID Token</th>
-                    <th>Category</th>
-                    <th>Mapped Shapefile ID</th>
-                    <th>Resolution</th>
+                    <th>Classification</th>
+                    <th>Mapped Polygon ID</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -295,7 +372,7 @@ export default function AdminPage() {
                       <td className="gov-mono" style={{ fontWeight: 700 }}>
                         {e.ceid}
                       </td>
-                      <td>{e.category}</td>
+                      <td>{CATEGORY_LABELS[e.category] ?? formatGroupLabel(e.category)}</td>
                       <td className="gov-mono">{e.shapefile_id ?? "—"}</td>
                       <td>
                         <span
@@ -303,7 +380,7 @@ export default function AdminPage() {
                             e.resolution === "pending_ema" ? "gov-badge-amber" : "gov-badge-green"
                           }`}
                         >
-                          {e.resolution}
+                          {e.resolution === "pending_ema" ? "Pending GIS Mapping" : e.resolution}
                         </span>
                       </td>
                     </tr>
@@ -315,21 +392,19 @@ export default function AdminPage() {
         </>
       )}
 
-      {/* Code Lists */}
+      {/* TAB 3: CODE LISTS */}
       {tab === "codes" && (
         <div className="gov-card">
           <div className="gov-card-header">
-            <div className="gov-card-title">Annex F Reference Code Lists</div>
-            <span className="gov-badge gov-badge-blue">
-              {codes?.version ?? "v0.9-draft"}
-            </span>
+            <div className="gov-card-title">UNCCD Annex F Reference Code Lists</div>
+            <span className="gov-badge gov-badge-blue">EMA Standard v1.0</span>
           </div>
 
           <div className="gov-grid-2">
             {Object.entries(codes?.lists ?? {}).map(([groupName, items]) => (
               <div key={groupName} className="gov-card" style={{ background: "#f9fbfa", padding: 14 }}>
                 <div className="gov-kv-label" style={{ marginBottom: 8 }}>
-                  {groupName} ({Array.isArray(items) ? items.length : 0})
+                  {formatGroupLabel(groupName)} ({Array.isArray(items) ? items.length : 0})
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                   {Array.isArray(items) &&
@@ -351,17 +426,17 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* Readiness */}
+      {/* TAB 4: SYSTEM READINESS */}
       {tab === "readiness" && readiness && (
         <div className="gov-card">
           <div className="gov-card-header">
-            <div className="gov-card-title">Platform & Steering Artefact Readiness</div>
+            <div className="gov-card-title">National System Health & Governance Artefacts</div>
             <span
               className={`gov-badge ${
                 readiness.ready_for_facilitation ? "gov-badge-green" : "gov-badge-amber"
               }`}
             >
-              {readiness.ready_for_facilitation ? "ALL ARTEFACTS PRESENT" : "ACTION NEEDED"}
+              {readiness.ready_for_facilitation ? "All Checks Passing" : "Action Needed"}
             </span>
           </div>
 
@@ -375,12 +450,15 @@ export default function AdminPage() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
+                  gap: 8,
                 }}
               >
-                <span className="gov-mono">{key}</span>
+                <span style={{ fontSize: 12, fontWeight: 600 }}>
+                  {ARTEFACT_LABELS[key] ?? formatGroupLabel(key)}
+                </span>
                 <span className={`gov-badge ${ok ? "gov-badge-green" : "gov-badge-red"}`}>
                   {ok ? <CheckCircle2 size={12} /> : null}
-                  {ok ? "OK" : "MISSING"}
+                  {ok ? "Verified" : "Missing"}
                 </span>
               </div>
             ))}
