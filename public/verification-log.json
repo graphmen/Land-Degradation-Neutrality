@@ -1,5 +1,171 @@
 {
   "schema_version": 1,
   "description": "Append-only verification transitions (mirror of ldn.verification_log until DB applied)",
-  "entries": []
+  "entries": [
+    {
+      "id": "vl-1795424166973-qxu2948",
+      "created_at": "2026-11-23T08:56:06.973Z",
+      "record_type": "ldn",
+      "record_id": "756835184",
+      "from_status": "submitted",
+      "to_status": "district_review",
+      "actor_id": "pilot.district@ema.zw",
+      "actor_role": null,
+      "reporting_period": null,
+      "note": null,
+      "metadata": {
+        "pilot": true
+      }
+    },
+    {
+      "id": "vl-1795424177716-202bsjy",
+      "created_at": "2026-11-23T08:56:17.716Z",
+      "record_type": "ldn",
+      "record_id": "756835184",
+      "from_status": "district_review",
+      "to_status": "national_review",
+      "actor_id": "pilot.district@ema.zw",
+      "actor_role": null,
+      "reporting_period": null,
+      "note": "Pilot district QA complete",
+      "metadata": {
+        "pilot": true
+      }
+    },
+    {
+      "id": "vl-1795424219312-nx9aief",
+      "created_at": "2026-11-23T08:56:59.312Z",
+      "record_type": "ldn",
+      "record_id": "756835184",
+      "from_status": "approved",
+      "to_status": "locked",
+      "actor_id": "pilot.reporting@ema.zw",
+      "actor_role": null,
+      "reporting_period": "2020-2023",
+      "note": "Pilot lock for SO1 rehearsal",
+      "metadata": {
+        "pilot": true
+      }
+    },
+    {
+      "id": "vl-1795424230039-u4qjuaf",
+      "created_at": "2026-11-23T08:57:10.039Z",
+      "record_type": "ldn",
+      "record_id": "756835338",
+      "from_status": "submitted",
+      "to_status": "district_review",
+      "actor_id": "pilot.district@ema.zw",
+      "actor_role": null,
+      "reporting_period": null,
+      "note": null,
+      "metadata": {
+        "pilot": true
+      }
+    },
+    {
+      "id": "vl-1795424230571-5ywy7qo",
+      "created_at": "2026-11-23T08:57:10.571Z",
+      "record_type": "ldn",
+      "record_id": "756835338",
+      "from_status": "district_review",
+      "to_status": "national_review",
+      "actor_id": "pilot.district@ema.zw",
+      "actor_role": null,
+      "reporting_period": null,
+      "note": "Pilot district QA complete",
+      "metadata": {
+        "pilot": true
+      }
+    },
+    {
+      "id": "vl-1795424230694-6trm05u",
+      "created_at": "2026-11-23T08:57:10.694Z",
+      "record_type": "ldn",
+      "record_id": "756835338",
+      "from_status": "national_review",
+      "to_status": "approved",
+      "actor_id": "pilot.national@ema.zw",
+      "actor_role": null,
+      "reporting_period": null,
+      "note": "Pilot national methodology OK",
+      "metadata": {
+        "pilot": true
+      }
+    },
+    {
+      "id": "vl-1795424230845-0wdd51v",
+      "created_at": "2026-11-23T08:57:10.845Z",
+      "record_type": "ldn",
+      "record_id": "756835338",
+      "from_status": "approved",
+      "to_status": "locked",
+      "actor_id": "pilot.reporting@ema.zw",
+      "actor_role": null,
+      "reporting_period": "2020-2023",
+      "note": "Pilot lock for SO1 rehearsal",
+      "metadata": {
+        "pilot": true
+      }
+    },
+    {
+      "id": "vl-1795424230986-5h8uj5w",
+      "created_at": "2026-11-23T08:57:10.986Z",
+      "record_type": "ldn",
+      "record_id": "756835469",
+      "from_status": "submitted",
+      "to_status": "district_review",
+      "actor_id": "pilot.district@ema.zw",
+      "actor_role": null,
+      "reporting_period": null,
+      "note": null,
+      "metadata": {
+        "pilot": true
+      }
+    },
+    {
+      "id": "vl-1795424231106-lajqffx",
+      "created_at": "2026-11-23T08:57:11.106Z",
+      "record_type": "ldn",
+      "record_id": "756835469",
+      "from_status": "district_review",
+      "to_status": "national_review",
+      "actor_id": "pilot.district@ema.zw",
+      "actor_role": null,
+      "reporting_period": null,
+      "note": "Pilot district QA complete",
+      "metadata": {
+        "pilot": true
+      }
+    },
+    {
+      "id": "vl-1795424231233-qixgnoo",
+      "created_at": "2026-11-23T08:57:11.233Z",
+      "record_type": "ldn",
+      "record_id": "756835469",
+      "from_status": "national_review",
+      "to_status": "approved",
+      "actor_id": "pilot.national@ema.zw",
+      "actor_role": null,
+      "reporting_period": null,
+      "note": "Pilot national methodology OK",
+      "metadata": {
+        "pilot": true
+      }
+    },
+    {
+      "id": "vl-1795424231383-9j3zeyz",
+      "created_at": "2026-11-23T08:57:11.383Z",
+      "record_type": "ldn",
+      "record_id": "756835469",
+      "from_status": "approved",
+      "to_status": "locked",
+      "actor_id": "pilot.reporting@ema.zw",
+      "actor_role": null,
+      "reporting_period": "2020-2023",
+      "note": "Pilot lock for SO1 rehearsal",
+      "metadata": {
+        "pilot": true
+      }
+    }
+  ]
 }

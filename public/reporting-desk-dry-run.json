@@ -1,5 +1,5 @@
 {
-  "dry_run_at": "2026-11-23T08:49:41.407Z",
+  "dry_run_at": "2026-11-23T08:59:31.700Z",
   "reporting_period": "2020-2023",
   "section_F": {
     "F1_EXP_META": {
@@ -39,7 +39,7 @@
         "soil_total": 632,
         "soil_exported": 632
       },
-      "hash_ldn_csv": "ba67bde6c876a82bd960d6f3b4a429414457f9e094c93302a3af00e14ce0f95c",
+      "hash_ldn_csv": "eefc453c7f84f857153bc62da27b6f55a0a40aefb6b86b71fc788dafdcf2f5ac",
       "hash_soil_csv": "2fc7af21a596e32c47cdbd60bb7931285790b4e08fdccd7b1d3972d34690e28c"
     },
     "F6_EXP_SO1_STATUS": {
@@ -53,22 +53,22 @@
       "pass": true,
       "manifest_rows": 147,
       "ldn_with_photos": 147,
-      "hash_csv": "5c7b0064c38c9712c674c55beddfefd6a33fd79cf50ea799d8982bf0e913f9db"
+      "hash_csv": "2d0c1a1140b5dd38e47b9f42f20565a2dc865a0bb9e0df4421373ade0d601534"
     },
     "F7_REPORTING_BUNDLE": {
       "pass": true,
-      "bundle_id": "BUNDLE-2026-11-23T08-49-41-366Z",
-      "root_dir": "C:\\Users\\ndebelem.ZINGSERVER1\\Desktop\\2026\\OAU\\exports\\2020-2023\\BUNDLE-2026-11-23T08-49-41-366Z",
-      "manifest_sha256": "845e7592aa529aa3cb7c5f16def7a9ee58458865298c69d8871ad570bd795a8f",
+      "bundle_id": "BUNDLE-2026-11-23T08-59-31-645Z",
+      "root_dir": "C:\\Users\\ndebelem.ZINGSERVER1\\Desktop\\2026\\OAU\\exports\\2020-2023\\BUNDLE-2026-11-23T08-59-31-645Z",
+      "manifest_sha256": "fcbf58b41891c7f41f871d77a11e699ec0111f4ba0553ac0ea120b57ddfa349f",
       "package_count": 7
     }
   },
   "gates": {
-    "locked_field_rows": 0,
+    "locked_field_rows": 3,
     "steering_blockers": [
       "LDN-NAT-ALL Area unit (Q1)",
       "1OAO national LC+LPD+SOC run pending",
-      "Zero locked field rows for production export"
+      "Pilot only: 3 locked row(s) — scale lock after R1 + real verifier accounts"
     ]
   }
 }

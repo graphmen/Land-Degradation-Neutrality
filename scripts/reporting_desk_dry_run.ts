@@ -26,6 +26,19 @@ async function main() {
   const bundle = await buildAndWriteReportingBundle({ rehearsal: true });
   const manifestRaw = await fs.readFile(bundle.manifest_path, "utf-8");
   const manifestHash = await sha256(manifestRaw);
+  const lockedField = await buildExpSo1FieldPackage({ eligibility: "locked" });
+  const lockedCount = lockedField.stats.ldn_exported;
+  const steering_blockers = [
+    "LDN-NAT-ALL Area unit (Q1)",
+    "1OAO national LC+LPD+SOC run pending",
+  ];
+  if (lockedCount === 0) {
+    steering_blockers.push("Zero locked field rows for production export");
+  } else {
+    steering_blockers.push(
+      `Pilot only: ${lockedCount} locked row(s) — scale lock after R1 + real verifier accounts`
+    );
+  }
 
   const report = {
     dry_run_at: new Date().toISOString(),
@@ -88,13 +101,8 @@ async function main() {
       },
     },
     gates: {
-      locked_field_rows:
-        (await buildExpSo1FieldPackage({ eligibility: "locked" })).stats.ldn_exported,
-      steering_blockers: [
-        "LDN-NAT-ALL Area unit (Q1)",
-        "1OAO national LC+LPD+SOC run pending",
-        "Zero locked field rows for production export",
-      ],
+      locked_field_rows: lockedCount,
+      steering_blockers,
     },
   };
 

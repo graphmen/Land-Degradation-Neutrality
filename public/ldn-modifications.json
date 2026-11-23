@@ -1,0 +1,33 @@
+{
+  "additions": [],
+  "deletions": [],
+  "edits": {
+    "756835184": {
+      "verification_status": "locked",
+      "verified_by": "pilot.reporting@ema.zw",
+      "verified_at": "2026-11-23T08:56:59.297Z",
+      "district_note": "Pilot district QA complete",
+      "national_note": "Pilot national methodology OK",
+      "reporting_period": "2020-2023",
+      "verification_comment": "Pilot lock for SO1 rehearsal"
+    },
+    "756835338": {
+      "verification_status": "locked",
+      "verified_by": "pilot.reporting@ema.zw",
+      "verified_at": "2026-11-23T08:57:10.825Z",
+      "district_note": "Pilot district QA complete",
+      "national_note": "Pilot national methodology OK",
+      "reporting_period": "2020-2023",
+      "verification_comment": "Pilot lock for SO1 rehearsal"
+    },
+    "756835469": {
+      "verification_status": "locked",
+      "verified_by": "pilot.reporting@ema.zw",
+      "verified_at": "2026-11-23T08:57:11.365Z",
+      "district_note": "Pilot district QA complete",
+      "national_note": "Pilot national methodology OK",
+      "reporting_period": "2020-2023",
+      "verification_comment": "Pilot lock for SO1 rehearsal"
+    }
+  }
+}

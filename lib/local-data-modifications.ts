@@ -64,7 +64,10 @@ async function syncDataFile(dataPath: string, mod: ModFile) {
     json.count = edited.length;
     await fs.writeFile(dataPath, JSON.stringify(json, null, 2), "utf-8");
   } catch (err) {
-    console.error(`Failed to sync ${dataPath}:`, err);
+    console.warn(
+      `Deferred sync of ${dataPath} (file may be locked — mod ledger is source of truth until next API read):`,
+      err instanceof Error ? err.message : err
+    );
   }
 }
 

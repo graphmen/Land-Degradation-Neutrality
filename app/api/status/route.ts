@@ -23,7 +23,34 @@ export async function GET(): Promise<NextResponse> {
     countRecords(path.join(publicDir, "drylands-data.json")),
   ]);
 
+  const reportingPeriod =
+    (await import("@/public/reporting-period-config.json")).default?.periods?.find(
+      (p: { is_active?: boolean }) => p.is_active
+    )?.reporting_period ?? null;
+
+  let lockedLdn = 0;
+  try {
+    const { buildExpSo1FieldPackage } = await import("@/lib/exp-so1-field-export");
+    const pkg = await buildExpSo1FieldPackage({ eligibility: "locked" });
+    lockedLdn = pkg.stats.ldn_exported;
+  } catch {
+    lockedLdn = -1;
+  }
+
   return NextResponse.json({
+    programme: {
+      reporting_period: reportingPeriod,
+      locked_ldn_exports: lockedLdn,
+      export_routes: [
+        "/api/export/meta",
+        "/api/export/so1-field",
+        "/api/export/so1-status",
+        "/api/export/photos",
+        "/api/export/bundle",
+        "/api/validator/ceid",
+        "/api/verify/transition",
+      ],
+    },
     environment: {
       isVercel: !!process.env.VERCEL,
       nodeEnv: process.env.NODE_ENV,
