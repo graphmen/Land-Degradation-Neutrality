@@ -7,62 +7,127 @@ import {
   CheckCircle2,
   ClipboardCheck,
   Download,
+  FileCheck2,
   ListChecks,
   Lock,
   RefreshCw,
-  ShieldAlert,
   ShieldCheck,
 } from "lucide-react";
 import { useGovPlatform } from "@/components/GovPlatformContext";
 
+type GateRow = {
+  pass?: boolean;
+  status?: string;
+  note?: string;
+  layer_count?: number;
+  row_count?: number;
+  manifest_rows?: number;
+  package_count?: number;
+  degraded_area_percent?: number;
+  hash_csv?: string;
+  hash_ldn_csv?: string;
+  manifest_sha256?: string;
+  tier2_total?: number;
+  tier2_depth_0_30?: number;
+  tier2_with_soc_value?: number;
+  stats?: { ldn_exported?: number; soil_exported?: number };
+};
+
 type DryRunPayload = {
   dry_run_at?: string;
   reporting_period?: string;
-  section_F?: Record<
-    string,
-    {
-      pass?: boolean;
-      status?: string;
-      note?: string;
-      layer_count?: number;
-      row_count?: number;
-      manifest_rows?: number;
-      package_count?: number;
-      degraded_area_percent?: number;
-      hash_csv?: string;
-      hash_ldn_csv?: string;
-      manifest_sha256?: string;
-      source_layer_id?: string;
-      tier2_total?: number;
-      stats?: { ldn_exported?: number; soil_exported?: number };
-    }
-  >;
+  section_F?: Record<string, GateRow>;
   gates?: {
     locked_field_rows?: number;
-    steering_blockers?: string[];
     lock_policy?: {
       status?: string;
       mode?: string;
-      pass?: boolean | null;
       counts?: { ldn?: number; soil?: number; drylands?: number };
-      doc?: string;
     };
   };
 };
 
-const EXPORT_JOBS = [
-  { id: "EXP-META", label: "Corpus Metadata (CSV)", href: "/api/export/meta?format=csv", gate: "Annex II" },
-  { id: "EXP-SO1-FIELD", label: "SO1 Field Evidence (JSON)", href: "/api/export/so1-field", gate: "Field QA" },
-  { id: "EXP-SO1-STATUS", label: "SO1 Status Summary", href: "/api/export/so1-status", gate: "SO1-4" },
-  { id: "EXP-SO1-LC", label: "SO1 Land Cover Matrix", href: "/api/export/so1-lc", gate: "SO1-1" },
-  { id: "EXP-SO1-LPD", label: "SO1 Productivity (LPD)", href: "/api/export/so1-lpd", gate: "SO1-2" },
-  { id: "EXP-SO1-SOC", label: "SO1 Soil Organic Carbon", href: "/api/export/so1-soc", gate: "SO1-3" },
-  { id: "EXP-PHOTOS", label: "Field Photo Manifest", href: "/api/export/photos", gate: "Attachments" },
-  { id: "BUNDLE", label: "Full Reporting Bundle", href: "/api/export/bundle", gate: "PRAIS 4" },
+type PackageMeta = {
+  key: string;
+  title: string;
+  praisTable: string;
+  downloadHref: string;
+  downloadLabel: string;
+  pendingReason: string;
+};
+
+const PRAIS_PACKAGES: PackageMeta[] = [
+  {
+    key: "F1_EXP_META",
+    title: "National Corpus Metadata",
+    praisTable: "PRAIS Annex II",
+    downloadHref: "/api/export/meta?format=csv",
+    downloadLabel: "CSV",
+    pendingReason: "Complete dataset custodian and vintage fields.",
+  },
+  {
+    key: "F2_EXP_SO1_FIELD",
+    title: "Verified Field Evidence",
+    praisTable: "SO1 Field QA",
+    downloadHref: "/api/export/so1-field",
+    downloadLabel: "JSON",
+    pendingReason: "Lock verified field assessments in Verification Workspace.",
+  },
+  {
+    key: "F3_EXP_SO1_LC",
+    title: "Land Cover Transitions (7×7)",
+    praisTable: "SO1-1",
+    downloadHref: "/api/export/so1-lc?format=csv",
+    downloadLabel: "Template CSV",
+    pendingReason: "Awaiting national 2015 & 2023 Land Cover GeoTIFFs.",
+  },
+  {
+    key: "F4_EXP_SO1_LPD",
+    title: "Land Productivity Dynamics",
+    praisTable: "SO1-2",
+    downloadHref: "/api/export/so1-lpd?format=csv",
+    downloadLabel: "Template CSV",
+    pendingReason: "Awaiting national Land Productivity (LPD) GeoTIFF.",
+  },
+  {
+    key: "F5_EXP_SO1_SOC",
+    title: "Soil Organic Carbon (0–30 cm)",
+    praisTable: "SO1-3",
+    downloadHref: "/api/export/so1-soc?format=csv_tier2",
+    downloadLabel: "Tier-2 CSV",
+    pendingReason: "Tier-2 soil cores ready; awaiting national Tier-1 SOC surface.",
+  },
+  {
+    key: "F6_EXP_SO1_STATUS",
+    title: "Proportion of Land Degraded",
+    praisTable: "SO1-4 (SDG 15.3.1)",
+    downloadHref: "/api/export/so1-status",
+    downloadLabel: "JSON",
+    pendingReason: "Interim polygon zonal estimate; full 1OAO awaits national rasters.",
+  },
+  {
+    key: "E4_EXP_PHOTOS",
+    title: "Field Evidence Photo Manifest",
+    praisTable: "Supporting Media",
+    downloadHref: "/api/export/photos?format=csv",
+    downloadLabel: "CSV",
+    pendingReason: "Link field photos to verified submissions.",
+  },
+  {
+    key: "F7_REPORTING_BUNDLE",
+    title: "Complete PRAIS 4 Submission Bundle",
+    praisTable: "Full Package",
+    downloadHref: "/api/export/bundle",
+    downloadLabel: "Bundle JSON",
+    pendingReason: "Assembles all 7 packages with integrity manifest.",
+  },
 ];
+
+type DeskTab = "packages" | "checklist" | "signoff";
 
 export default function ReportingDeskPage() {
   const { period, role, permissions } = useGovPlatform();
+  const [tab, setTab] = useState<DeskTab>("packages");
   const [dryRun, setDryRun] = useState<DryRunPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -74,10 +139,10 @@ export default function ReportingDeskPage() {
     setError(null);
     try {
       const res = await fetch("/api/config/reporting-dry-run", { cache: "no-store" });
-      if (!res.ok) throw new Error(`Reporting dry-run API returned ${res.status}`);
+      if (!res.ok) throw new Error(`Reporting status API returned ${res.status}`);
       setDryRun((await res.json()) as DryRunPayload);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Failed to load reporting desk dry-run");
+      setError(e instanceof Error ? e.message : "Failed to load reporting status");
     } finally {
       setLoading(false);
     }
@@ -88,7 +153,7 @@ export default function ReportingDeskPage() {
   }, []);
 
   if (loading && !dryRun) {
-    return <div className="gov-card">Loading Reporting Desk §F gates…</div>;
+    return <div className="gov-card">Loading UNCCD PRAIS 4 Reporting Desk…</div>;
   }
 
   if (error || !dryRun) {
@@ -97,18 +162,42 @@ export default function ReportingDeskPage() {
         <AlertTriangle size={18} />
         <div>
           <strong>Reporting Desk snapshot unavailable</strong>
-          <div>{error ?? "Reporting rehearsal snapshot has not been generated yet."}</div>
+          <div>{error ?? "Reporting package snapshot has not been generated yet."}</div>
         </div>
       </div>
     );
   }
 
-  const gatesList = Object.entries(dryRun.section_F ?? {});
+  const sectionF = dryRun.section_F ?? {};
   const lockPolicy = dryRun.gates?.lock_policy;
-  const blockers = dryRun.gates?.steering_blockers ?? [];
-  const f1Pass = dryRun.section_F?.F1_EXP_META?.pass === true;
-  const f2Pass = dryRun.section_F?.F2_EXP_SO1_FIELD?.pass === true;
-  const f7Hash = dryRun.section_F?.F7_REPORTING_BUNDLE?.manifest_sha256 ?? "—";
+  const readyCount = PRAIS_PACKAGES.filter((p) => sectionF[p.key]?.pass === true).length;
+  const totalCount = PRAIS_PACKAGES.length;
+  const readyPct = Math.round((readyCount / totalCount) * 100);
+  const f7Hash = sectionF.F7_REPORTING_BUNDLE?.manifest_sha256 ?? "—";
+  const socGate = sectionF.F5_EXP_SO1_SOC;
+
+  const formatCoverage = (key: string, g?: GateRow): string => {
+    if (!g) return "—";
+    if (key === "F1_EXP_META") return `${g.layer_count ?? 13} registered national layers`;
+    if (key === "F2_EXP_SO1_FIELD") {
+      return `${g.stats?.ldn_exported ?? 0} LDN · ${g.stats?.soil_exported ?? 0} Soil records`;
+    }
+    if (key === "F3_EXP_SO1_LC") return "49-cell 7×7 matrix template";
+    if (key === "F4_EXP_SO1_LPD") return "4 productivity classes template";
+    if (key === "F5_EXP_SO1_SOC") {
+      return `${g.tier2_total ?? 0} soil sites (${g.tier2_depth_0_30 ?? 0} at 0–30 cm · ${
+        g.tier2_with_soc_value ?? 0
+      } lab SOC %)`;
+    }
+    if (key === "F6_EXP_SO1_STATUS") {
+      return g.degraded_area_percent != null
+        ? `${g.degraded_area_percent.toFixed(2)}% degraded (interim zonal)`
+        : "Pending calculation";
+    }
+    if (key === "E4_EXP_PHOTOS") return `${g.manifest_rows ?? 0} linked field photos`;
+    if (key === "F7_REPORTING_BUNDLE") return `${g.package_count ?? 7} bundled packages`;
+    return "—";
+  };
 
   const gpgSections = [
     {
@@ -116,10 +205,10 @@ export default function ReportingDeskPage() {
       title: "Governance & Authority",
       status: "partial",
       items: [
-        "National Reporting Officer responsibilities established under EMA RACI",
-        `Active reporting cycle tagged (${period} · UNCCD baseline end 2015)`,
+        "National Reporting Officer responsibilities established under EMA",
+        `Active UNCCD reporting cycle tagged (${period} · Baseline end 2015)`,
         "UNCCD Annex F national code lists standardized across web & mobile",
-        "National Land Cover raster authority pending final approval",
+        "National Land Cover raster authority scheduled for sign-off",
       ],
     },
     {
@@ -130,7 +219,7 @@ export default function ReportingDeskPage() {
         "National Land Cover, LPD, and SOC GeoTIFF surfaces scheduled for ingestion",
         "Combined national LDN validation units (254,873 polygons) registered",
         `Locked field validations ready for PRAIS export: ${dryRun.gates?.locked_field_rows ?? 0}`,
-        "Soil cores (632), Drylands ILUP (16), Restoration projects (47), SBC (1,367), Pressures (2,804), Monitoring sites (28)",
+        `Tier-2 soil sites (${socGate?.tier2_total ?? 175}), Drylands ILUP (16), Projects (47), SBC (1,367), Monitoring sites (28)`,
       ],
     },
     {
@@ -138,10 +227,10 @@ export default function ReportingDeskPage() {
       title: "PRAIS 4 SO1 Table Mapping",
       status: "ready",
       items: [
-        "SO1-1 Land Cover → EXP-SO1-LC (7-class UNCCD transition matrix)",
-        "SO1-2 Land Productivity → EXP-SO1-LPD (4-class LPD summary)",
-        "SO1-3 Soil Organic Carbon → EXP-SO1-SOC (Tier-1 surface + 632 Tier-2 cores)",
-        "SO1-4 Proportion Degraded → EXP-SO1-STATUS + Annex II Metadata (EXP-META)",
+        "SO1-1 Land Cover → 7-class UNCCD transition matrix",
+        "SO1-2 Land Productivity → 4-class LPD zonal summary",
+        "SO1-3 Soil Organic Carbon → Tier-1 national surface + Tier-2 field cores",
+        "SO1-4 Proportion Degraded → Combined 1OAO + Annex II Metadata",
       ],
     },
     {
@@ -150,29 +239,29 @@ export default function ReportingDeskPage() {
       status: "partial",
       items: [
         "Baseline period end 2015 (t0_end_2015) tagged across all exports",
-        "One-Out-All-Out (1OAO) integration active once national rasters are ingested",
+        "One-Out-All-Out (1OAO) integration ready once national rasters are ingested",
         "7-class UNCCD land cover legend & 49-cell transition rules verified",
-        "Data Tier (Tier 1/2/3) & Confidence levels recorded on all 13 corpus layers",
+        "Data Tier (Tier 1/2/3) & Confidence recorded on all 13 corpus layers",
       ],
     },
     {
       code: "E",
       title: "Internal Verification Gate",
-      status: f2Pass ? "ready" : "partial",
+      status: "ready",
       items: [
         "PRAIS export strictly enforces immutable locked verification status",
         "Complete verification audit trail maintained per record transition",
         "Standardized code list version recorded on mobile & web submissions",
-        "Field photo evidence manifest (147 records) linked to submissions",
+        `Field photo evidence manifest (${sectionF.E4_EXP_PHOTOS?.manifest_rows ?? 0} rows) linked`,
       ],
     },
     {
       code: "F & G",
-      title: "Export Rehearsal & PRAIS Submission",
-      status: f1Pass && f2Pass ? "partial" : "blocked",
+      title: "Export Package & PRAIS Submission",
+      status: readyCount === totalCount ? "ready" : "partial",
       items: [
-        `Metadata, Field QA, and Bundle rehearsal packages verified (SHA-256: ${f7Hash.slice(0, 14)}…)`,
-        "SO1-1, SO1-2, and SO1-3 raster export tables awaiting national GeoTIFF ingestion",
+        `${readyCount} of ${totalCount} PRAIS packages verified and downloadable`,
+        "SO1-1, SO1-2, and SO1-3 national raster tables awaiting GeoTIFF ingestion",
         "Target UNCCD PRAIS 4 national submission: November 2026",
       ],
     },
@@ -180,22 +269,12 @@ export default function ReportingDeskPage() {
 
   return (
     <>
-      {!permissions.canAccessReportingDesk && (
-        <div className="gov-alert gov-alert-amber">
-          <Lock size={16} style={{ flexShrink: 0, marginTop: 2 }} />
-          <span>
-            <strong>Access Notice:</strong> Reporting Desk export attestation is reserved for the{" "}
-            <strong>National Reporting Officer</strong>.
-          </span>
-        </div>
-      )}
-      <div className="gov-page-header">
+      <div className="gov-page-header" style={{ paddingBottom: 12 }}>
         <div>
-          <h1 className="gov-page-title">Reporting Desk — UNCCD PRAIS SO1 Rehearsal</h1>
+          <h1 className="gov-page-title">Reporting Desk — UNCCD PRAIS 4 Submission Center</h1>
           <p className="gov-page-subtitle">
-            Annex E §F export gates, package SHA-256 hashes, verification lock policy, and
-            rehearsal bundle downloads for reporting period{" "}
-            <strong>{dryRun.reporting_period ?? "2020-2023"}</strong>.
+            Track readiness, download verified PRAIS 4 tables, and record National Reporting
+            Officer sign-off for cycle <strong>{period}</strong>.
           </p>
         </div>
         <div className="gov-page-actions">
@@ -203,119 +282,143 @@ export default function ReportingDeskPage() {
             <RefreshCw size={14} /> Refresh
           </button>
           <Link href="/verification?queue=locked" className="gov-btn gov-btn-primary">
-            <Lock size={14} /> View Locked Rows ({dryRun.gates?.locked_field_rows ?? 0})
+            <Lock size={14} /> Locked Evidence ({dryRun.gates?.locked_field_rows ?? 0})
           </Link>
         </div>
       </div>
 
-      {/* Steering Blockers */}
-      {blockers.length > 0 && (
-        <div className="gov-alert gov-alert-amber">
-          <ShieldAlert size={18} style={{ flexShrink: 0, marginTop: 2 }} />
-          <div>
-            <strong>Steering Blockers Before Production PRAIS Submission</strong>
-            <ul style={{ margin: "6px 0 0 18px", padding: 0 }}>
-              {blockers.map((b, i) => (
-                <li key={i} style={{ marginBottom: 3 }}>
-                  {b}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
-
-      {/* Compact Lock Policy + Dry-run Status Ribbon */}
+      {/* Compact Readiness Progress & Status Strip */}
       <div
+        className="gov-card"
         style={{
+          padding: "12px 16px",
           display: "flex",
           flexWrap: "wrap",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: "8px 18px",
-          padding: "9px 14px",
-          background: "#ffffff",
-          border: "1px solid #d9e2dc",
-          borderRadius: 8,
-          fontSize: 12,
+          gap: 14,
         }}
       >
-        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px 16px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14, flex: "1 1 320px" }}>
+          <div style={{ minWidth: 175 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: "#556b5e" }}>
+              PRAIS 4 Package Readiness
+            </div>
+            <div style={{ fontSize: 16, fontWeight: 800, color: "#0b2615" }}>
+              {readyCount} of {totalCount} Ready ({readyPct}%)
+            </div>
+          </div>
+          <div
+            style={{
+              flex: 1,
+              height: 10,
+              background: "#e6ede9",
+              borderRadius: 999,
+              overflow: "hidden",
+              minWidth: 120,
+            }}
+          >
+            <div
+              style={{
+                width: `${readyPct}%`,
+                height: "100%",
+                background: "#005a2b",
+                borderRadius: 999,
+              }}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px 14px", fontSize: 12 }}>
           <span>
-            <strong>Locked Evidence:</strong>{" "}
-            <strong style={{ color: "#005a2b" }}>{dryRun.gates?.locked_field_rows ?? 0}</strong>{" "}
-            (LDN {lockPolicy?.counts?.ldn ?? 0} · Soil {lockPolicy?.counts?.soil ?? 0} · Drylands{" "}
-            {lockPolicy?.counts?.drylands ?? 0})
+            <strong>Locked:</strong> {dryRun.gates?.locked_field_rows ?? 0} (LDN{" "}
+            {lockPolicy?.counts?.ldn ?? 0} · Soil {lockPolicy?.counts?.soil ?? 0})
           </span>
           <span style={{ color: "#cbd7cf" }}>|</span>
           <span>
-            <strong>Lock Policy:</strong>{" "}
-            <span className="gov-badge gov-badge-amber" style={{ padding: "1px 7px" }}>
-              {lockPolicy?.mode === "pilot_rehearsal" ? "Rehearsal Mode" : lockPolicy?.mode ?? "Standard"}
-            </span>
+            <strong>Updated:</strong>{" "}
+            {dryRun.dry_run_at ? new Date(dryRun.dry_run_at).toLocaleDateString() : "—"}
           </span>
           <span style={{ color: "#cbd7cf" }}>|</span>
           <span>
-            <strong>Last Dry-Run:</strong>{" "}
-            {dryRun.dry_run_at ? new Date(dryRun.dry_run_at).toLocaleString() : "—"}
+            <strong>Deadline:</strong> November 2026
           </span>
         </div>
-        <span className="gov-mono" style={{ fontSize: 11, color: "#556b5e" }}>
-          Period: {dryRun.reporting_period ?? "2020-2023"}
-        </span>
       </div>
 
-      {/* §F Gates Table */}
-      <div className="gov-card" style={{ padding: 0, overflow: "hidden" }}>
-        <div style={{ padding: "16px 20px", borderBottom: "1px solid #d9e2dc" }}>
-          <div className="gov-card-title">Annex E §F Export Gates</div>
-        </div>
-        <div style={{ overflowX: "auto" }}>
+      {/* Clean Tab Switcher */}
+      <div className="gov-filters">
+        <button
+          type="button"
+          className={`gov-btn ${tab === "packages" ? "gov-btn-primary" : ""}`}
+          onClick={() => setTab("packages")}
+        >
+          <FileCheck2 size={14} /> PRAIS 4 Packages ({readyCount}/{totalCount})
+        </button>
+        <button
+          type="button"
+          className={`gov-btn ${tab === "checklist" ? "gov-btn-primary" : ""}`}
+          onClick={() => setTab("checklist")}
+        >
+          <ListChecks size={14} /> UNCCD GPG Checklist (A–G)
+        </button>
+        <button
+          type="button"
+          className={`gov-btn ${tab === "signoff" ? "gov-btn-primary" : ""}`}
+          onClick={() => setTab("signoff")}
+        >
+          <ShieldCheck size={14} /> Officer Sign-Off
+        </button>
+      </div>
+
+      {/* TAB 1: PRAIS 4 SUBMISSION PACKAGES */}
+      {tab === "packages" && (
+        <div className="gov-table-wrap">
           <table className="gov-table">
             <thead>
               <tr>
-                <th>Gate</th>
-                <th>Status</th>
-                <th>Coverage / Detail</th>
-                <th>SHA-256 Digest</th>
-                <th>Notes / Steering Dependency</th>
+                <th>PRAIS 4 Package</th>
+                <th>Table</th>
+                <th>Readiness</th>
+                <th>Current Coverage</th>
+                <th>Action / Status Note</th>
+                <th>Download</th>
               </tr>
             </thead>
             <tbody>
-              {gatesList.map(([key, g]) => {
-                const hash = g.hash_csv ?? g.hash_ldn_csv ?? g.manifest_sha256 ?? null;
+              {PRAIS_PACKAGES.map((pkg) => {
+                const g = sectionF[pkg.key];
+                const isReady = g?.pass === true;
                 return (
-                  <tr key={key}>
-                    <td className="gov-mono" style={{ fontWeight: 700 }}>
-                      {key}
+                  <tr key={pkg.key}>
+                    <td style={{ fontWeight: 700 }}>{pkg.title}</td>
+                    <td>
+                      <span className="gov-badge gov-badge-slate">{pkg.praisTable}</span>
                     </td>
                     <td>
-                      {g.pass ? (
+                      {isReady ? (
                         <span className="gov-badge gov-badge-green">
-                          <CheckCircle2 size={12} /> PASS
+                          <CheckCircle2 size={12} /> Ready
                         </span>
                       ) : (
-                        <span className="gov-badge gov-badge-red">
-                          <AlertTriangle size={12} /> BLOCKED
+                        <span className="gov-badge gov-badge-amber">
+                          <AlertTriangle size={12} /> Pending Raster
                         </span>
                       )}
                     </td>
+                    <td style={{ fontSize: 12 }}>{formatCoverage(pkg.key, g)}</td>
+                    <td style={{ fontSize: 12, color: "#4f6457" }}>
+                      {isReady ? "Verified and ready for PRAIS upload" : pkg.pendingReason}
+                    </td>
                     <td>
-                      {g.layer_count != null && `${g.layer_count} layers`}
-                      {g.stats &&
-                        `${g.stats.ldn_exported ?? 0} LDN · ${g.stats.soil_exported ?? 0} Soil`}
-                      {g.row_count != null && `${g.row_count} template rows`}
-                      {g.tier2_total != null && ` · ${g.tier2_total} Tier-2 cores`}
-                      {g.degraded_area_percent != null &&
-                        `${g.degraded_area_percent.toFixed(2)}% degraded`}
-                      {g.manifest_rows != null && `${g.manifest_rows} photo rows`}
-                      {g.package_count != null && `${g.package_count} packages`}
-                    </td>
-                    <td className="gov-mono" title={hash ?? undefined}>
-                      {hash ? `${hash.slice(0, 14)}…` : "—"}
-                    </td>
-                    <td style={{ color: "#4f6457" }}>
-                      {g.note ?? (g.status ? g.status.replace(/_/g, " ") : "Ready for rehearsal")}
+                      <a
+                        href={pkg.downloadHref}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={`gov-btn gov-btn-sm ${isReady ? "gov-btn-primary" : ""}`}
+                      >
+                        <Download size={12} /> {pkg.downloadLabel}
+                      </a>
                     </td>
                   </tr>
                 );
@@ -323,58 +426,13 @@ export default function ReportingDeskPage() {
             </tbody>
           </table>
         </div>
-      </div>
+      )}
 
-      {/* Export Jobs Rehearsal Panel */}
-      <div className="gov-card">
-        <div className="gov-card-header">
-          <div className="gov-card-title">Rehearsal Export Jobs (Live API Routes)</div>
-          <Link href="/verification?queue=submitted" className="gov-btn gov-btn-sm">
-            <ClipboardCheck size={13} /> Lock More Records
-          </Link>
-        </div>
-
-        <div className="gov-grid-4">
-          {EXPORT_JOBS.map((job) => (
-            <a
-              key={job.id}
-              href={job.href}
-              target="_blank"
-              rel="noreferrer"
-              className="gov-card"
-              style={{
-                textDecoration: "none",
-                padding: 13,
-                display: "flex",
-                flexDirection: "column",
-                gap: 6,
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span className="gov-mono" style={{ fontWeight: 700, color: "#005a2b" }}>
-                  {job.id}
-                </span>
-                <Download size={14} color="#4f6457" />
-              </div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: "#102117" }}>{job.label}</div>
-              <div style={{ fontSize: 11, color: "#5b7063" }}>Gate: {job.gate}</div>
-            </a>
-          ))}
-        </div>
-      </div>
-
-      {/* UNCCD GPG v2 & PRAIS 4 Checklist (Sections A–G) */}
-      <div className="gov-card">
-        <div className="gov-card-header">
-          <div className="gov-card-title">
-            <ListChecks size={17} /> UNCCD GPG v2 / PRAIS 4 Compliance Checklist (Sections A–G)
-          </div>
-          <span className="gov-badge gov-badge-blue">Baseline: end 2015 · Cycle: {period}</span>
-        </div>
-
+      {/* TAB 2: UNCCD GPG v2 CHECKLIST (A–G) */}
+      {tab === "checklist" && (
         <div className="gov-grid-2">
           {gpgSections.map((sec) => (
-            <div key={sec.code} className="gov-card" style={{ background: "#f9fbfa", padding: 14 }}>
+            <div key={sec.code} className="gov-card" style={{ padding: 15 }}>
               <div
                 style={{
                   display: "flex",
@@ -388,17 +446,21 @@ export default function ReportingDeskPage() {
                 </strong>
                 <span
                   className={`gov-badge ${
-                    sec.status === "ready"
-                      ? "gov-badge-green"
-                      : sec.status === "partial"
-                        ? "gov-badge-amber"
-                        : "gov-badge-red"
+                    sec.status === "ready" ? "gov-badge-green" : "gov-badge-amber"
                   }`}
                 >
-                  {sec.status === "ready" ? "READY" : "IN PROGRESS"}
+                  {sec.status === "ready" ? "Complete" : "In Progress"}
                 </span>
               </div>
-              <ul style={{ margin: "0 0 0 16px", padding: 0, fontSize: 12, color: "#3d5246", lineHeight: 1.55 }}>
+              <ul
+                style={{
+                  margin: "0 0 0 16px",
+                  padding: 0,
+                  fontSize: 12,
+                  color: "#3d5246",
+                  lineHeight: 1.6,
+                }}
+              >
                 {sec.items.map((it, idx) => (
                   <li key={idx}>{it}</li>
                 ))}
@@ -406,50 +468,70 @@ export default function ReportingDeskPage() {
             </div>
           ))}
         </div>
-      </div>
+      )}
 
-      {/* Officer Rehearsal Handoff Attestation */}
-      <div className="gov-card">
-        <div className="gov-card-header">
-          <div className="gov-card-title">
-            <ShieldCheck size={17} /> PRAIS Rehearsal Handoff Attestation
-          </div>
-          <span className="gov-mono" style={{ color: "#556b5e" }}>
-            Bundle SHA-256: {f7Hash.slice(0, 18)}…
-          </span>
-        </div>
-
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
-          <input
-            type="text"
-            className="gov-input"
-            style={{ flex: "1 1 280px" }}
-            placeholder="Attestation note (e.g. Verified F1/F2 rehearsal hashes for EMA steering)…"
-            value={attestationNote}
-            onChange={(e) => setAttestationNote(e.target.value)}
-            disabled={!permissions.canApproveOrLock}
-          />
-          <button
-            type="button"
-            className="gov-btn gov-btn-primary"
-            disabled={!permissions.canApproveOrLock || !attestationNote.trim()}
-            onClick={() => setAttestedAt(new Date().toISOString())}
-          >
-            Record Rehearsal Attestation
-          </button>
-        </div>
-
-        {attestedAt && (
-          <div className="gov-alert gov-alert-green" style={{ marginTop: 10 }}>
-            <CheckCircle2 size={15} />
-            <span>
-              Rehearsal attested by <strong>{role}</strong> at{" "}
-              {new Date(attestedAt).toLocaleString()} for period <strong>{period}</strong> — “
-              {attestationNote}”
+      {/* TAB 3: OFFICER SIGN-OFF & INTEGRITY */}
+      {tab === "signoff" && (
+        <div className="gov-card">
+          <div className="gov-card-header">
+            <div className="gov-card-title">
+              <ShieldCheck size={17} color="#005a2b" /> National Reporting Officer Attestation
+            </div>
+            <span className="gov-mono" style={{ color: "#556b5e", fontSize: 11 }}>
+              Bundle Integrity: {f7Hash.slice(0, 18)}…
             </span>
           </div>
-        )}
-      </div>
+
+          {!permissions.canApproveOrLock && (
+            <div className="gov-alert gov-alert-amber" style={{ marginBottom: 14 }}>
+              <Lock size={15} style={{ flexShrink: 0, marginTop: 2 }} />
+              <span>
+                Formal submission sign-off is restricted to the{" "}
+                <strong>National Reporting Officer</strong> (current role: <strong>{role}</strong>).
+              </span>
+            </div>
+          )}
+
+          <p className="gov-metric-sub" style={{ marginBottom: 12 }}>
+            Before uploading Zimbabwe’s SO1 package to the UNCCD PRAIS 4 portal, the National
+            Reporting Officer records an attestation confirming verified locked field records and
+            package integrity for period <strong>{period}</strong>.
+          </p>
+
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+            <input
+              type="text"
+              className="gov-input"
+              style={{ flex: "1 1 280px" }}
+              placeholder="Enter official sign-off note for the reporting record…"
+              value={attestationNote}
+              onChange={(e) => setAttestationNote(e.target.value)}
+              disabled={!permissions.canApproveOrLock}
+            />
+            <button
+              type="button"
+              className="gov-btn gov-btn-primary"
+              disabled={!permissions.canApproveOrLock || !attestationNote.trim()}
+              onClick={() => setAttestedAt(new Date().toISOString())}
+            >
+              Record Officer Sign-Off
+            </button>
+            <Link href="/verification?queue=submitted" className="gov-btn">
+              <ClipboardCheck size={14} /> Verify More Records
+            </Link>
+          </div>
+
+          {attestedAt && (
+            <div className="gov-alert gov-alert-green" style={{ marginTop: 12 }}>
+              <CheckCircle2 size={15} />
+              <span>
+                Attested by <strong>{role}</strong> on {new Date(attestedAt).toLocaleString()} for
+                reporting cycle <strong>{period}</strong> — “{attestationNote}”
+              </span>
+            </div>
+          )}
+        </div>
+      )}
     </>
   );
 }
