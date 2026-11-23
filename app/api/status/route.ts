@@ -55,6 +55,7 @@ export async function GET(): Promise<NextResponse> {
         "/api/evidence/registry",
         "/api/interventions",
         "/api/verify/transition",
+        "/api/verify/queues",
       ],
     },
     environment: {

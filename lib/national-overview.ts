@@ -123,7 +123,8 @@ export async function buildNationalOverview(): Promise<NationalOverviewPackage> 
       { label: "Reporting desk dry-run", href: "/api/export/bundle" },
       { label: "Corpus layers", href: "/api/corpus-layers" },
       { label: "QC summary", href: "/api/qc/summary" },
-      { label: "Verification transition", href: "/api/verify/log" },
+      { label: "Verification queues", href: "/api/verify/queues" },
+      { label: "Verification audit log", href: "/api/verify/log" },
     ],
     qc_summary_path: "public/qc-programme-summary.json",
     feature_flag: {

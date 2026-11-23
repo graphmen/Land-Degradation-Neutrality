@@ -41,3 +41,5 @@ District and national officers review **field evidence** before records become *
 - No edit of field values in workspace (return to mobile resubmit)
 
 *States align with* [`R1_INFORMATION_ARCHITECTURE.md`](./R1_INFORMATION_ARCHITECTURE.md) *§6*
+
+**R2 preview API:** [`design/R1_VERIFICATION_QUEUES_API.md`](./design/R1_VERIFICATION_QUEUES_API.md) · `GET /api/verify/queues`
