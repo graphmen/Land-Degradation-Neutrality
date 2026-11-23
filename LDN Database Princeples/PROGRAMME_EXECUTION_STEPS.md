@@ -25,9 +25,9 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 | 1.1 | Import monitoring sites XLS | `public/reference-monitoring-sites.json` | ✅ this session |
 | 1.2 | API governance fields on reads | `lib/compliance-metadata.ts` + `/api/*` | ✅ this session |
 | 1.3 | Code list v1.0 in database | Supabase migration | ⬜ |
-| 1.4 | Fix LDN denormalized ETL | `land_cover` / `land_use` in cache | ⬜ |
-| 1.5 | Drylands erosion `Mild` → `low` on import | API read + pending Excel import | ✅ API read |
-| 1.6 | Mobile forms use `reference-code-lists` | `LdnForm`, `SoilForm`, `DrylandsForm` | ⬜ |
+| 1.4 | Fix LDN denormalized ETL | `land_cover` / `land_use` in cache | ✅ 150/150 |
+| 1.5 | Drylands erosion `Mild` → `low` on import | API read + Excel import | ✅ |
+| 1.6 | Mobile forms use `reference-code-lists` | `LdnForm` severity only; Soil/Drylands next | 🔶 partial |
 
 ---
 
@@ -62,4 +62,6 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 ---
 
-**Next recommended 60-minute block:** Step **1.4** (LDN ETL) + **1.5** (drylands Mild mapping), or **GIS workshop** for CEID ↔ polygon `Id`.
+**Next recommended 60-minute block:** Finish **1.6** (Soil + Drylands code lists) → **1.3** (Supabase SQL) → or **2.2** (import 47 EMA projects).
+
+**Latest block review:** [BLOCK_REVIEW_2026-11-23_phase1-etl.md](./BLOCK_REVIEW_2026-11-23_phase1-etl.md)

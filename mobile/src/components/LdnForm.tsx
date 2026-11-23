@@ -4,6 +4,7 @@ import { Geolocation } from "@capacitor/geolocation";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import { saveLdnDraft, getLdnDraft } from "../lib/db";
 import type { LdnDraft } from "../lib/db";
+import { getLdnSeverityOptions } from "../lib/code-lists";
 
 interface LdnFormProps {
   onSuccess: (message: string) => void;
@@ -58,9 +59,7 @@ const TREE_LOSS_CAUSES = [
   { val: "infra", label: "Infrastructure Expansion" }
 ];
 
-const SEVERITIES = [
-  "High", "Moderate", "Low", "None"
-];
+const SEVERITIES = getLdnSeverityOptions();
 
 export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editingDraftId, onClearEdit }: LdnFormProps) {
   const [step, setStep] = useState(1);

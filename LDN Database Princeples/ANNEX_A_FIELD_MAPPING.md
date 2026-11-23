@@ -33,7 +33,7 @@ The dashboard and sync pipeline must treat **one logical record** whether it arr
 
 **Canonical read order (Soil):** top-level `depth_cm`, `texture`, … then `raw_data['sampl/dep']`, etc. (`scripts/repopulate-supabase.js`).
 
-**Action (Phase 1):** Fix ETL so `public/ldn-data.json` and Supabase columns are filled on every sync (today ~150 LDN rows have `land_cover = null` at top level while `raw_data` is complete).
+**Action (Phase 1):** ~~Fix ETL~~ **Done:** `scripts/ldn-record-mapper.js` + `scripts/flatten_ldn_cache.js`; sync runs flatten after download. Cache now **150/150** with `land_cover` / `land_use` at top level.
 
 **Known defect:** `repopulate-supabase.js` maps `land_use` from `raw['ldi/tree']` when `poidet/landus` is missing — remove that fallback (tree-loss causes are not land use).
 

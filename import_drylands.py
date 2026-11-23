@@ -68,6 +68,16 @@ def cell(ws, row, col):
     v = ws.cell(row, col).value
     return str(v).strip() if v is not None else ""
 
+
+def normalize_erosion_severity(value: str) -> str:
+    """Annex F / Step 1.5 — Mild → Low."""
+    s = (value or "").strip()
+    if not s:
+        return s
+    if s.lower() == "mild":
+        return "Low"
+    return s
+
 def import_ilup_records(ws):
     records = []
     for row in range(2, ws.max_row + 1):
@@ -115,7 +125,7 @@ def import_ilup_records(ws):
             # Erosion
             "soil_erosion_present": cell(ws, row, 39),
             "erosion_type": cell(ws, row, 40),
-            "erosion_severity": cell(ws, row, 45),
+            "erosion_severity": normalize_erosion_severity(cell(ws, row, 45)),
             "erosion_expanding": cell(ws, row, 47),
             "assets_threatened": cell(ws, row, 48),
             # Water

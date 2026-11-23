@@ -23,7 +23,8 @@ All annexes support the **national LDN database** (Deliverable A) and **collecti
 | 2026-11-23 | ~60 min | Annexes B, C, D + workflow + index | Pushed |
 | 2026-11-23 | ~30 min | Mobile-only collection policy (no external survey platform in programme docs) | `b5b85c9` |
 | 2026-11-23 | ~60 min | Annex C v0.2 unpack, Annex E verification/PRAIS, Annex D projects | `e8da4b8` |
-| 2026-11-23 | ~60 min | Annex F, monitoring sites, compliance API fields, execution steps | *(this commit)* |
+| 2026-11-23 | ~60 min | Annex F, monitoring sites, compliance API fields, execution steps | `897a762` |
+| 2026-11-23 | ~60 min | Step 1.4 LDN ETL, sync flatten, mobile severity lists | *(this commit)* |
 
 ---
 

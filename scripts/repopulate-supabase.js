@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { extractLdnFields } = require('./ldn-record-mapper');
 
 const SUPABASE_URL = "https://pqfbcvxisrmtmhmuxbjk.supabase.co";
 const SUPABASE_KEY = process.env.SUPABASE_KEY || "";
@@ -38,38 +39,28 @@ async function run() {
     console.log(`\n📋 Processing ${records.length} LDN records...`);
 
     const rows = records.map(r => {
+      const f = extractLdnFields(r);
       const raw = r.raw_data || {};
-      const dist = r.district || raw['geninfo/dist'] || raw['dist'] || null;
-      const ward = r.ward || raw['geninfo/ward'] || raw['ward'] || null;
-      const team = r.team || raw['geninfo/Team'] || raw['Team'] || raw['team'] || null;
-      const ceid = r.ceid || raw['geninfo/ceid'] || raw['ceid'] || null;
-      const landcov = r.land_cover || raw['poidet/landcov'] || raw['landcov'] || raw['land_cover'] || null;
-      const landus = r.land_use || raw['poidet/landus'] || raw['ldi/tree'] || raw['landus'] || raw['land_use'] || null;
-      const lndmat = r.matches_baseline || raw['poidet/lndmat'] || raw['lndmat'] || null;
-      const vegcov = r.veg_cover || raw['ldi/veg_cov'] || raw['veg_cov'] || null;
-      const ero = r.erosion_signs || raw['ldi/signs_ero'] || raw['oth'] || raw['signs_ero'] || null;
-      const sev = r.severity || raw['ldi/sev'] || raw['sev'] || null;
-
       return {
-        kobo_id: r.kobo_id || raw._id || r.id,
-        uuid: r.uuid || raw._uuid || raw['formhub/uuid'] || null,
-        ceid: ceid ? String(ceid) : null,
-        province: r.province || raw['prov'] || raw['province'] || null,
-        district: dist ? String(dist) : null,
-        ward: ward ? String(ward) : null,
-        team: team ? String(team) : null,
-        lat: r.lat || (raw._geolocation && raw._geolocation[0]) || null,
-        lng: r.lng || (raw._geolocation && raw._geolocation[1]) || null,
-        altitude: r.altitude || null,
-        accuracy: r.accuracy || null,
-        land_cover: landcov ? String(landcov) : null,
-        land_use: landus ? String(landus) : null,
-        matches_baseline: lndmat ? String(lndmat) : null,
-        veg_cover: vegcov ? String(vegcov) : null,
-        erosion_signs: ero ? String(ero) : null,
-        severity: sev ? String(sev) : null,
+        kobo_id: f.kobo_id,
+        uuid: f.uuid || raw['formhub/uuid'] || null,
+        ceid: f.ceid,
+        province: f.province,
+        district: f.district,
+        ward: f.ward,
+        team: f.team,
+        lat: f.lat,
+        lng: f.lng,
+        altitude: f.altitude,
+        accuracy: f.accuracy,
+        land_cover: f.land_cover,
+        land_use: f.land_use,
+        matches_baseline: f.matches_baseline,
+        veg_cover: f.veg_cover,
+        erosion_signs: f.erosion_signs,
+        severity: f.severity,
         raw_data: raw,
-        submission_time: r.submission_time || raw._submission_time || null
+        submission_time: f.submission_time
       };
     });
 

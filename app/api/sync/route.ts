@@ -33,6 +33,18 @@ function getPythonCmd(): string {
 }
 
 /** Run the python download script. Returns { success, stdout, stderr, error? } */
+function runFlattenLdnCache(rootDir: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const script = path.join(rootDir, "scripts", "flatten_ldn_cache.js");
+    execFile(process.execPath, [script], { cwd: rootDir, timeout: 60_000 }, (err, stdout, stderr) => {
+      if (stdout) console.log("[Sync flatten]", stdout.trim());
+      if (stderr) console.warn("[Sync flatten stderr]", stderr.trim());
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+}
+
 function runDownloadScript(rootDir: string): Promise<{ success: boolean; stdout: string; stderr: string; error?: string }> {
   return new Promise((resolve) => {
     const pythonCmd = getPythonCmd();
@@ -128,7 +140,13 @@ export async function POST(): Promise<NextResponse> {
   // If running on Vercel, use direct Kobo API instead of Python script
   if (process.env.VERCEL) {
     try {
-      const counts = await directKoboFallback(process.cwd());
+      const cwd = process.cwd();
+      const counts = await directKoboFallback(cwd);
+      try {
+        await runFlattenLdnCache(cwd);
+      } catch (e: any) {
+        console.warn("[Sync] LDN flatten failed (non-fatal):", e.message);
+      }
       return NextResponse.json({
         success: true,
         message: `Synced ${counts.ldn} LDN and ${counts.soil} soil records directly from KoboToolbox.`,
@@ -151,6 +169,11 @@ export async function POST(): Promise<NextResponse> {
   const scriptResult = await runDownloadScript(rootDir);
 
   if (scriptResult.success) {
+    try {
+      await runFlattenLdnCache(rootDir);
+    } catch (e: any) {
+      console.warn("[Sync] LDN flatten failed (non-fatal):", e.message);
+    }
     const counts = await readRecordCounts(rootDir);
     console.log("[Sync] Python script completed successfully.", counts);
     return NextResponse.json({
@@ -165,6 +188,11 @@ export async function POST(): Promise<NextResponse> {
   console.warn("[Sync] Python script failed. Attempting direct Kobo API fallback...");
   try {
     const counts = await directKoboFallback(rootDir);
+    try {
+      await runFlattenLdnCache(rootDir);
+    } catch (e: any) {
+      console.warn("[Sync] LDN flatten failed (non-fatal):", e.message);
+    }
     return NextResponse.json({
       success: true,
       message: `Synced ${counts.ldn} LDN and ${counts.soil} soil records directly from KoboToolbox (Python script unavailable).`,
