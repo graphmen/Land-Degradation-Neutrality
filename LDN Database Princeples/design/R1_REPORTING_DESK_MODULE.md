@@ -48,13 +48,11 @@ Single government-facing surface for **SO1 rehearsal**, **§F export gates**, an
 
 | UI zone | Interim API / artefact | Refresh |
 |---------|------------------------|---------|
-| §F gates | `public/reporting-desk-dry-run.json` (`section_F`, `gates.s10_f3`…) | `npm run reporting:dry-run` |
+| §F gates | `GET /api/config/reporting-dry-run` · `public/reporting-desk-dry-run.json` | `npm run reporting:dry-run` |
 | Locked counts | `GET /api/national-overview` → `verification.locked_count` | dynamic |
 | Corpus counts | `GET /api/qc/summary` | `npm run qc:summary` |
 | Layer register | `GET /api/export/meta` | dynamic |
 | Steering blockers | `GET /api/national-overview` → `reporting_desk.steering_blockers` | dynamic |
-
-**Optional R2 enhancement (post-sign-off):** `GET /api/config/reporting-dry-run` mirroring dry-run JSON (same pattern as S2 preflight).
 
 ---
 

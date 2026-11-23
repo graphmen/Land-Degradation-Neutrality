@@ -120,7 +120,8 @@ export async function buildNationalOverview(): Promise<NationalOverviewPackage> 
       steering_blockers: dryRun?.gates?.steering_blockers ?? [],
     },
     steering_actions: [
-      { label: "Reporting desk dry-run", href: "/api/export/bundle" },
+      { label: "Reporting desk §F gates", href: "/api/config/reporting-dry-run" },
+      { label: "Export bundle rehearsal", href: "/api/export/bundle" },
       { label: "Corpus layers", href: "/api/corpus-layers" },
       { label: "QC summary", href: "/api/qc/summary" },
       { label: "Verification queues", href: "/api/verify/queues" },

@@ -39,7 +39,8 @@
 5. `GET /api/national-overview` → R2 landing JSON (rehearsal)  
 6. `GET /api/evidence/registry?prais_eligible=true` → locked pilot rows  
 7. `GET /api/verify/queues?queue=locked` → verification workspace preview  
-8. `GET /api/config/s2-preflight` → S2 Phase A+B file hashes (DBA minutes)
+8. `GET /api/config/s2-preflight` → S2 Phase A+B file hashes (DBA minutes)  
+9. `GET /api/config/reporting-dry-run` → §F pass/fail for reporting officer
 
 ## Word pack (optional)
 

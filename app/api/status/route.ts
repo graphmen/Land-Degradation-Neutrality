@@ -57,6 +57,7 @@ export async function GET(): Promise<NextResponse> {
         "/api/verify/transition",
         "/api/verify/queues",
         "/api/config/s2-preflight",
+        "/api/config/reporting-dry-run",
       ],
     },
     environment: {
