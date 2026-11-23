@@ -1,0 +1,42 @@
+# Partial — complete after steering S11 + EMA GIS delivers LPD surface
+layer_id: LPD-NAT-RASTER
+title: National land productivity dynamics (LPD) zonal surface
+abstract: >
+  National LPD class raster or pre-aggregated zonal summary for SO1-2.
+  May be Trends.Earth export or EMA VI workflow — steering S11.
+custodian: Environmental Management Agency
+contact: ""
+
+vintage: ""
+source_file: ""
+dataset_version: 0
+imported_at: ""
+imported_by: ""
+
+geometry_type: Raster
+feature_count: null
+crs: EPSG:4326
+original_crs: ""
+
+licence: government_internal
+sensitivity: national_only
+lineage: Pending — Trends.Earth LPD default vs national VI time series
+
+so_uses:
+  - SO1-2
+data_tier: tier1_default
+reporting_period: 2020-2023
+baseline_period_id: 2015-baseline
+confidence: low
+
+lpd_classes:
+  - declining
+  - stable
+  - increasing
+  - not_assessed
+
+prais_alternative_dataset:
+  title: ""
+  source_link_or_doi: ""
+  author_publisher: Environmental Management Agency
+  bibliographic_citation: ""

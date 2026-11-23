@@ -27,6 +27,7 @@
 | S6 | R1 module map sign-off |
 | S7 | Peer twins (Botswana + Panama?) |
 | S10 | LC raster source (F3) |
+| S11 | LPD national source (F4) |
 
 ## Live demo (optional, 5 min)
 

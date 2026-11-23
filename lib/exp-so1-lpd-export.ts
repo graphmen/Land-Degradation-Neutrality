@@ -50,7 +50,7 @@ export function buildExpSo1LpdTemplate(opts?: {
     baseline_period_id: DEFAULT_BASELINE_PERIOD_ID,
     reporting_period,
     data_tier: "tier1_default",
-    source_layer_id: "LPD-NAT-RASTER-TBD",
+    source_layer_id: "LPD-NAT-RASTER",
     confidence: "low",
   }));
 
@@ -71,7 +71,10 @@ export function buildExpSo1LpdTemplate(opts?: {
       baseline_period_id: DEFAULT_BASELINE_PERIOD_ID,
       generated_at,
       methods:
-        "Populate from national LPD raster zonal stats; legend must match Trends.Earth / national workflow.",
+        "Populate from national LPD raster zonal stats when LPD-NAT-RASTER loaded.",
+      import_plan:
+        "LDN Database Princeples/corpus/metadata/LPD-NAT-RASTER_IMPORT_PLAN.md",
+      steering_decision: "S11",
       lpd_class_count: rows.length,
     },
   };

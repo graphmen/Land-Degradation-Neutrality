@@ -6,6 +6,7 @@
 | Layer ID | Title | Custodian | Vintage | Geometry | Count | CRS | Tier | SO link | Import status | Doc |
 |----------|-------|-----------|---------|----------|-------|-----|------|---------|---------------|-----|
 | **LC-NAT-STACK** | National LC rasters t₀/t₁ (UNCCD 7-class) | EMA GIS / Trends.Earth | TBD (T1) | Raster | — | WGS 84 | Tier 1–2 | **SO1-1** | ⬜ await delivery | [LC plan](./metadata/LC-NAT-STACK_IMPORT_PLAN.md) |
+| **LPD-NAT-RASTER** | National LPD zonal surface | EMA GIS / Trends.Earth | TBD (S11) | Raster | — | WGS 84 | Tier 1–2 | **SO1-2** | ⬜ await delivery | [LPD plan](./metadata/LPD-NAT-RASTER_IMPORT_PLAN.md) |
 | **LDN-NAT-ALL** | Combined LDN validation polygons | EMA GIS | 2026-11 EMA drop | Polygon | 254,873 | WGS 84 | National analytics | SO1 context | 🔶 plan only | [import plan](./metadata/LDN-NAT-ALL_IMPORT_PLAN.md) |
 | **LDN-PROV-*** | Provincial LDN shapefile splits | EMA GIS | Same bundle | Polygon | varies | WGS 84 | National analytics | SO1 QA | ⬜ | Annex C |
 | **REF-SITES** | Existing monitoring sites | EMA field ops | XLS “latest” | Point | 48 → 28 geocoded | WGS 84 | Reference | Operations | ✅ JSON | Phase 1.1 |

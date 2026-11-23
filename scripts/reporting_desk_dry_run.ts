@@ -43,6 +43,21 @@ async function main() {
   }
   const f3Pass =
     lc.status !== "template_only" && km2Populated === lc.rows.length;
+  const lpdLayer = meta.layers.find((l) => l.layer_id === "LPD-NAT-RASTER");
+  const lpdKm2Populated = lpd.rows.filter((r) => r.area_km2 != null).length;
+  const s11Required: string[] = [];
+  if (!lpdLayer) s11Required.push("LPD-NAT-RASTER missing from EXP-META");
+  if (lpdLayer?.import_status === "awaiting_delivery") {
+    s11Required.push("S11: deliver LPD raster to important files/");
+  }
+  s11Required.push("S11: steering sign LPD source (Trends.Earth vs EMA VI)");
+  if (lpdKm2Populated < lpd.rows.length) {
+    s11Required.push(
+      `S11: populate area_km2 (${lpdKm2Populated}/${lpd.rows.length} classes)`
+    );
+  }
+  const f4Pass =
+    lpd.status !== "template_only" && lpdKm2Populated === lpd.rows.length;
   const steering_blockers = [
     "LDN-NAT-ALL Area unit (Q1)",
     "1OAO national LC+LPD+SOC run pending",
@@ -77,9 +92,14 @@ async function main() {
         hash_csv: await sha256(lc.csv),
       },
       F4_EXP_SO1_LPD: {
-        pass: false,
+        pass: f4Pass,
         status: lpd.status,
         row_count: lpd.rows.length,
+        source_layer_id: "LPD-NAT-RASTER",
+        km2_classes_populated: lpdKm2Populated,
+        note: f4Pass
+          ? "National LPD zonal summary populated"
+          : "Template until S11 + LPD raster",
         hash_csv: await sha256(lpd.csv),
       },
       F5_EXP_SO1_SOC: {
@@ -130,6 +150,16 @@ async function main() {
         pass: f3Pass,
         required_for_pass: s10Required,
         design: "LDN Database Princeples/design/REPORTING_DESK_F3_S10_GATE.md",
+      },
+      s11_f4: {
+        corpus_registered: lpdLayer != null,
+        import_status: lpdLayer?.import_status ?? "missing",
+        template_classes: lpd.rows.length,
+        km2_classes_populated: lpdKm2Populated,
+        pass: f4Pass,
+        required_for_pass: s11Required,
+        import_plan:
+          "LDN Database Princeples/corpus/metadata/LPD-NAT-RASTER_IMPORT_PLAN.md",
       },
     },
   };
