@@ -1,5 +1,5 @@
 {
-  "dry_run_at": "2026-11-23T23:25:23.371Z",
+  "dry_run_at": "2026-11-23T23:32:37.198Z",
   "reporting_period": "2020-2023",
   "section_F": {
     "F1_EXP_META": {
@@ -28,16 +28,16 @@
     },
     "F5_EXP_SO1_SOC": {
       "pass": false,
-      "tier2_pass": false,
+      "tier2_pass": true,
       "status": "tier2_partial",
       "tier1_source_layer_id": "SOC-NAT-SURFACE",
       "tier1_national_populated": false,
       "tier2_total": 175,
-      "tier2_depth_0_30": 0,
+      "tier2_depth_0_30": 174,
       "tier2_with_soc_value": 16,
       "depth_0_30_complete": false,
       "note": "Tier-2 partial; Tier-1 awaits S12",
-      "hash_csv": "0a9bd28570cac7ed18b3ebe67655040a5b44255ac33ae8946f567d20518623a5"
+      "hash_csv": "009c2dfde16c30921845d736d4cbe940704a227df777bcee88384c21a344a403"
     },
     "F2_EXP_SO1_FIELD": {
       "pass": true,
@@ -66,9 +66,9 @@
     },
     "F7_REPORTING_BUNDLE": {
       "pass": true,
-      "bundle_id": "BUNDLE-2026-11-23T23-25-23-319Z",
-      "root_dir": "C:\\Users\\ndebelem.ZINGSERVER1\\Desktop\\2026\\OAU\\exports\\2020-2023\\BUNDLE-2026-11-23T23-25-23-319Z",
-      "manifest_sha256": "d8ff835aeb080048a10f03c6a583f47ac38f681e004d6ac3b59c0c8c0752d129",
+      "bundle_id": "BUNDLE-2026-11-23T23-32-37-152Z",
+      "root_dir": "C:\\Users\\ndebelem.ZINGSERVER1\\Desktop\\2026\\OAU\\exports\\2020-2023\\BUNDLE-2026-11-23T23-32-37-152Z",
+      "manifest_sha256": "a7e9a6b7c94e95dab46e6ae47d51943a1c6f48cfaac0f7e4fe76ef1de55e56b3",
       "package_count": 7
     }
   },
@@ -140,7 +140,7 @@
       "corpus_registered": true,
       "import_status": "awaiting_delivery",
       "tier1_national_populated": false,
-      "tier2_depth_0_30": 0,
+      "tier2_depth_0_30": 174,
       "pass": false,
       "required_for_pass": [
         "S12: deliver national SOC surface to important files/",

@@ -59,20 +59,41 @@ export async function buildExpSo1SocPackage(opts?: {
 
   const records = await loadReconciledSoilRecords();
   const tier2_samples = records.map((r) => {
-    const depth_cm = r.depth_cm ?? null;
-    const soc = r.soc_percent ?? null;
+    const samplList = Array.isArray(r.sampl) ? (r.sampl as Record<string, unknown>[]) : [];
+    const first = samplList[0] ?? {};
+    const rawDepth = r.depth_cm ?? first["sampl/dep"] ?? first.dep ?? null;
+    const depth_cm =
+      rawDepth != null && rawDepth !== "" && !Number.isNaN(Number(rawDepth))
+        ? Number(rawDepth)
+        : null;
+    const rawSoc =
+      r.soc_percent ??
+      first.organic_carbon ??
+      first["sampl/organic_carbon"] ??
+      r.organic_carbon ??
+      null;
+    const soc =
+      rawSoc != null && rawSoc !== "" && !Number.isNaN(Number(rawSoc))
+        ? Number(rawSoc)
+        : null;
+    const labNumber =
+      r.lab_number ?? first.lab_number ?? first["sampl/lab_number"] ?? null;
+    const texture = r.texture ?? first["sampl/tex"] ?? first.tex ?? null;
+    const moisture = r.moisture ?? first["sampl/moisture"] ?? first.moisture ?? null;
+    const ceid = r.ceid ?? r["geninfo/ceid"] ?? null;
+
     return {
       submission_id: r.kobo_id ?? r.id ?? r._id,
-      collect_earth_id: r.ceid ?? null,
+      collect_earth_id: ceid,
       lat: r.lat ?? null,
       lng: r.lng ?? null,
       depth_cm,
       depth_range: depthRange(depth_cm),
-      texture_class: r.texture ?? null,
-      moisture_condition: r.moisture ?? null,
+      texture_class: texture,
+      moisture_condition: moisture,
       soc_percent: soc,
-      lab_number: r.lab_number ?? null,
-      data_tier: r.data_tier ?? "field_verify",
+      lab_number: labNumber,
+      data_tier: soc != null ? "tier2_national" : r.data_tier ?? "field_verify",
       verification_status: r.verification_status ?? "submitted",
       reporting_period: r.reporting_period ?? null,
       code_list_version: r.code_list_version ?? CODE_LIST_VERSION,
@@ -83,7 +104,7 @@ export async function buildExpSo1SocPackage(opts?: {
     (s) => s.depth_range === "0-30"
   ).length;
   const tier2_with_soc = tier2_samples.filter(
-    (s) => s.soc_percent != null && s.soc_percent !== ""
+    (s) => s.soc_percent != null
   ).length;
 
   const status =

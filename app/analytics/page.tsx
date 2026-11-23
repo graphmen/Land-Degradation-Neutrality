@@ -641,28 +641,39 @@ export default function AnalyticsPage() {
             <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: 2 }} />
             <span>
               <strong>Tier-1 National SOC Surface Pending:</strong> National Tier-1 SOC surface is
-              scheduled for ingestion; 632 EMA Tier-2 field soil cores are loaded and ready for
-              laboratory assay reconciliation.
+              scheduled for ingestion;{" "}
+              <strong>{soc?.stats.tier2_total ?? 0}</strong> EMA Tier-2 soil survey sites are
+              loaded ({soc?.stats.tier2_with_soc_value ?? 0} with verified laboratory SOC %).
             </span>
           </div>
 
           {soc && (
-            <div className="gov-grid-3">
-              <div className="gov-card">
-                <div className="gov-metric-label">Tier-2 Soil Cores</div>
-                <div className="gov-metric-value">{soc.stats.tier2_total}</div>
-                <div className="gov-metric-sub">Field samples in unified corpus</div>
-              </div>
-              <div className="gov-card">
-                <div className="gov-metric-label">0–30 cm Depth Coverage</div>
-                <div className="gov-metric-value">{soc.stats.tier2_depth_0_30}</div>
-                <div className="gov-metric-sub">Meets UNCCD standard topsoil depth</div>
-              </div>
-              <div className="gov-card">
-                <div className="gov-metric-label">Lab SOC % Populated</div>
-                <div className="gov-metric-value">{soc.stats.tier2_with_soc_value}</div>
-                <div className="gov-metric-sub">Awaiting Tier-2 laboratory assay reconciliation</div>
-              </div>
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "center",
+                gap: "8px 18px",
+                padding: "9px 14px",
+                background: "#ffffff",
+                border: "1px solid #d9e2dc",
+                borderRadius: 8,
+                fontSize: 12,
+              }}
+            >
+              <span>
+                <strong>Tier-2 Soil Sites:</strong> {soc.stats.tier2_total}
+              </span>
+              <span style={{ color: "#cbd7cf" }}>|</span>
+              <span>
+                <strong>0–30 cm Topsoil Coverage:</strong>{" "}
+                <strong style={{ color: "#005a2b" }}>{soc.stats.tier2_depth_0_30}</strong>
+              </span>
+              <span style={{ color: "#cbd7cf" }}>|</span>
+              <span>
+                <strong>Verified Lab SOC %:</strong>{" "}
+                <strong style={{ color: "#1d4ed8" }}>{soc.stats.tier2_with_soc_value}</strong>
+              </span>
             </div>
           )}
 
@@ -717,39 +728,48 @@ export default function AnalyticsPage() {
             </a>
           </div>
 
-          <div className="gov-grid-3" style={{ marginBottom: 16 }}>
-            <div className="gov-card" style={{ background: "#f8fbf9" }}>
-              <div className="gov-metric-label">Degraded Area (%)</div>
-              <div className="gov-metric-value">
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              gap: "8px 18px",
+              padding: "10px 14px",
+              background: "#f8fbf9",
+              border: "1px solid #d9e2dc",
+              borderRadius: 8,
+              fontSize: 12,
+            }}
+          >
+            <span>
+              <strong>Degraded Area (Interim):</strong>{" "}
+              <strong style={{ color: "#b42318", fontSize: 14 }}>
                 {status.summary.degraded_area_percent != null
                   ? `${status.summary.degraded_area_percent.toFixed(2)}%`
                   : "—"}
-              </div>
-              <div className="gov-metric-sub">Interim LDN-NAT-ALL zonal ratio</div>
-            </div>
-            <div className="gov-card" style={{ background: "#f8fbf9" }}>
-              <div className="gov-metric-label">Polygons Aggregated</div>
-              <div className="gov-metric-value">
-                {status.summary.polygon_count?.toLocaleString() ?? "254,873"}
-              </div>
-              <div className="gov-metric-sub">
-                Area unit verification:{" "}
-                <strong>{status.metadata.area_unit_confirmed ? "Confirmed" : "In Review"}</strong>
-              </div>
-            </div>
-            <div className="gov-card" style={{ background: "#f8fbf9" }}>
-              <div className="gov-metric-label">1OAO Integration</div>
-              <div style={{ margin: "10px 0 6px" }}>
-                <span
-                  className={`gov-badge ${
-                    status.metadata.one_ao_ready ? "gov-badge-green" : "gov-badge-amber"
-                  }`}
-                >
-                  {status.metadata.one_ao_ready ? "1OAO Complete" : "Pending National Rasters"}
-                </span>
-              </div>
-              <div className="gov-metric-sub">{status.metadata.note ?? "One-Out-All-Out requires LC + LPD + SOC."}</div>
-            </div>
+              </strong>
+            </span>
+            <span style={{ color: "#cbd7cf" }}>|</span>
+            <span>
+              <strong>Polygons Aggregated:</strong>{" "}
+              <strong>{status.summary.polygon_count?.toLocaleString() ?? "254,873"}</strong>
+            </span>
+            <span style={{ color: "#cbd7cf" }}>|</span>
+            <span>
+              <strong>Area Unit:</strong>{" "}
+              {status.metadata.area_unit_confirmed ? "Confirmed" : "In Review"}
+            </span>
+            <span style={{ color: "#cbd7cf" }}>|</span>
+            <span>
+              <strong>1OAO Status:</strong>{" "}
+              <span
+                className={`gov-badge ${
+                  status.metadata.one_ao_ready ? "gov-badge-green" : "gov-badge-amber"
+                }`}
+              >
+                {status.metadata.one_ao_ready ? "1OAO Complete" : "Pending National Rasters"}
+              </span>
+            </span>
           </div>
         </div>
       )}
