@@ -52,7 +52,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 |------|--------|------|
 | 2.1 | PostGIS `national_ldn_units` from combined shapefile | 🔶 `002` + [LDN-NAT-ALL plan](./corpus/metadata/LDN-NAT-ALL_IMPORT_PLAN.md); CEID QA **93/147** ([`CEID_JOIN_QC.md`](./corpus/metadata/CEID_JOIN_QC.md)) |
 | 2.1b | Corpus metadata register | [`corpus/CORPUS_METADATA_REGISTER.md`](./corpus/CORPUS_METADATA_REGISTER.md) | ✅ |
-| 2.5 | Pressure layers schema stub | `003_pressure_layers.sql` + import plans; zip QC **2035 / 769** Lat/Long ([`PRESSURE_LAYERS_QC.md`](./corpus/metadata/PRESSURE_LAYERS_QC.md)) | 🔶 QC done |
+| 2.5 | Pressure layers schema stub | `003` + [`import_pressure_layers.py`](../scripts/import_pressure_layers.py) → staging **2804** pts | 🔶 staging + `/api/pressure-layers` |
 | 2.2 | Import `intervention_spatial` (47 EMA projects) | ✅ staging JSON; shapefile QC **47** geog ([`INTERVENTION_SPATIAL_QC.md`](./corpus/metadata/INTERVENTION_SPATIAL_QC.md)) |
 | 2.3 | Mobile sync → DB first; JSON cache second | 🔶 `/api/submit/*` + queue → localhost/vercel |
 | 2.4 | `verification_log` + review UI (district / national) | P1 ✅ [`GOVERNANCE_API_P1.md`](./design/GOVERNANCE_API_P1.md) · P2 audit ✅ [`GOVERNANCE_API_P2.md`](./design/GOVERNANCE_API_P2.md) · UI after R1 |

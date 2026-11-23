@@ -13,8 +13,8 @@
 | **REF-SITES** | Existing monitoring sites | EMA field ops | XLS “latest” | Point | 48 → 28 geocoded | WGS 84 | Reference | Operations | ✅ JSON | Phase 1.1 |
 | **INT-PROJECTS** | EMA restoration projects | EMA programmes | 2026 drop | Point | 47 | WGS 84 | Programme spatial | SO4 | 🔶 staging JSON | Phase 2.2 |
 | **INT-SBC** | Soil & water conservation points | EMA | 2026 drop | Point | 1,367+ | WGS 84 / UTM | Programme spatial | Restoration | ⬜ | [SBC plan](./metadata/INT-SBC_IMPORT_PLAN.md) |
-| **PRESS-INVASIVE** | Invasive species observations | EMA | 2026 drop | Point | 2,035+ | WGS 84 | Pressure | SO1-2 | ⬜ | [invasives plan](./metadata/PRESS-INVASIVE_IMPORT_PLAN.md) |
-| **PRESS-MINING** | Illegal panning / mining points | EMA | 2026 drop | Point | 769+ | WGS 84 | Pressure | SO2 | ⬜ | [mining plan](./metadata/PRESS-MINING_IMPORT_PLAN.md) |
+| **PRESS-INVASIVE** | Invasive species observations | EMA | 2026 drop | Point | 2,035 | WGS 84 | Pressure | SO1-2 | 🔶 staging JSON | [invasives plan](./metadata/PRESS-INVASIVE_IMPORT_PLAN.md) |
+| **PRESS-MINING** | Illegal panning / mining points | EMA | 2026 drop | Point | 769 | WGS 84 | Pressure | SO2 | 🔶 staging JSON | [mining plan](./metadata/PRESS-MINING_IMPORT_PLAN.md) |
 | **FIELD-LDN** | LDN field validations (mobile/Kobo legacy) | EMA field | Rolling | Point | 150 | — | Field ops | SO1 verify | ✅ ETL | Annex A |
 | **FIELD-SOIL** | Soil core surveys | EMA field | Rolling | Point | 632 | — | Field ops | SO1-3 tier 2 | ✅ partial | Annex A |
 | **FIELD-DRY** | Drylands ILUP observations | EMA field | Rolling | Point | 16+ | — | Field ops | ILUP | ✅ partial | Annex B |

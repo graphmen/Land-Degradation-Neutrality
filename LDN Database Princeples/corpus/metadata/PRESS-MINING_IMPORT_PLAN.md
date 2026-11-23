@@ -18,4 +18,5 @@ SO2 pressure; contextualises degradation hotspots near artisanal mining.
 
 ## Status
 
-⬜ Plan only — awaiting `pressure_layers` schema + EMA access policy sign-off.
+🔶 **Staging JSON** (769 Lat/Long) — shared file `public/pressure-layers-staging.json` · `GET /api/pressure-layers?theme=illegal_mining`  
+⬜ PostGIS until **S8** + migration **003** (S2 Phase C).

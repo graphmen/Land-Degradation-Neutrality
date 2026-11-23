@@ -48,6 +48,7 @@ export async function GET(): Promise<NextResponse> {
         "/api/export/photos",
         "/api/export/bundle",
         "/api/validator/ceid",
+        "/api/pressure-layers",
         "/api/verify/transition",
       ],
     },

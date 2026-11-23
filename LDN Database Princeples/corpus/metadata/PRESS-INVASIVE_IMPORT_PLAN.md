@@ -19,4 +19,5 @@ SO1-2 degradation drivers; pressure overlay in Verification workspace.
 
 ## Status
 
-⬜ Plan only — no ogr2ogr until `pressure_layers` table migration drafted (Phase 2).
+🔶 **Staging JSON** — `npm run import:pressure-staging` → `public/pressure-layers-staging.json` · `GET /api/pressure-layers?theme=invasive`  
+⬜ PostGIS until **S8** + `003_pressure_layers.sql` applied (S2 Phase C).

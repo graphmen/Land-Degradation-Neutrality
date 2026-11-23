@@ -13,7 +13,8 @@
     "verify:supabase": "node scripts/verify_supabase_schema.mjs",
     "verify:supabase:checklist": "node scripts/verify_supabase_schema.mjs --checklist-only",
     "qc:rasters": "python scripts/national_raster_qc.py",
-    "qc:rasters:checklist": "python scripts/national_raster_qc.py --checklist-only"
+    "qc:rasters:checklist": "python scripts/national_raster_qc.py --checklist-only",
+    "import:pressure-staging": "python scripts/import_pressure_layers.py"
   },
   "dependencies": {
     "framer-motion": "^11.2.10",
