@@ -49,6 +49,8 @@ export async function GET(): Promise<NextResponse> {
         "/api/export/bundle",
         "/api/validator/ceid",
         "/api/pressure-layers",
+        "/api/corpus-layers",
+        "/api/interventions",
         "/api/verify/transition",
       ],
     },

@@ -37,6 +37,10 @@
 3. Mobile CEID blur (APK on tablet)  
 4. `GET /api/status` → `locked_ldn_exports: 3` (pilot)
 
+## Word pack (optional)
+
+`npm run export:steering-docx` → `exports/steering-docx/` ([`STEERING_DOCX_EXPORT.md`](./STEERING_DOCX_EXPORT.md))
+
 ## DBA pack (S2)
 
 [`backend/SUPABASE_S2_STEERING_RUNBOOK.md`](../backend/SUPABASE_S2_STEERING_RUNBOOK.md) · `VERIFY_MIGRATIONS.sql` · `node scripts/verify_supabase_schema.mjs --checklist-only`

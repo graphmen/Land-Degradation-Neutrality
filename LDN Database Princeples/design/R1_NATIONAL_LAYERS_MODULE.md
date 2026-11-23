@@ -57,7 +57,7 @@ SO1 rasters appear under **Analytics** in IA but **register** here for lineage (
 | Interventions | `GET /api/interventions` (+ EMA staging merge) | DB first |
 | Monitoring | static `public/reference-monitoring-sites.json` or future route | — |
 | LDN units | `GET /api/validator/ceid` (point QA) | PostGIS `national_ldn_units` |
-| Corpus all | `GET /api/export/meta` | EXP-META rehearsal |
+| Corpus all | `GET /api/corpus-layers` · `GET /api/export/meta` | R2 hub table |
 
 **Status smoke:** `GET /api/status` lists export/pressure routes.
 
