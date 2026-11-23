@@ -73,6 +73,8 @@ EMA National LDN Platform
 
 **Retired from landing:** LDN target progress cards, “Surveyed Nodes”, developer telemetry tone.
 
+**R2 data (preview, no shell):** `GET /api/national-overview` — corpus health, verification backlog, SO1 headline fields (`lib/national-overview.ts`). Disable with `ENABLE_NATIONAL_OVERVIEW_API=false`.
+
 ---
 
 ## 5. Wireframe — Evidence registry

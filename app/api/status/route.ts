@@ -51,6 +51,7 @@ export async function GET(): Promise<NextResponse> {
         "/api/pressure-layers",
         "/api/corpus-layers",
         "/api/qc/summary",
+        "/api/national-overview",
         "/api/interventions",
         "/api/verify/transition",
       ],

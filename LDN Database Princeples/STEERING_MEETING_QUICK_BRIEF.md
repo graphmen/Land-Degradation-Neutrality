@@ -35,7 +35,8 @@
 1. `GET /api/validator/ceid?ceid=11268_17236`  
 2. `GET /api/export/meta`  
 3. Mobile CEID blur (APK on tablet)  
-4. `GET /api/status` → `locked_ldn_exports: 3` (pilot)
+4. `GET /api/status` → `locked_ldn_exports: 3` (pilot)  
+5. `GET /api/national-overview` → R2 landing JSON (rehearsal)
 
 ## Word pack (optional)
 
