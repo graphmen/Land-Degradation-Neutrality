@@ -8,7 +8,7 @@ All annexes support the **national LDN database** (Deliverable A) and **collecti
 | **B** | [ANNEX_B_DRYLANDS_FIELD_MAPPING.md](./ANNEX_B_DRYLANDS_FIELD_MAPPING.md) | 0.1 | Draft — this session | ILUP drylands / GEF programme |
 | **C** | [ANNEX_C_SPATIAL_LAYERS_REGISTER.md](./ANNEX_C_SPATIAL_LAYERS_REGISTER.md) | 0.2 | Attribute dictionaries unpacked | National LDN polygons + EMA layers |
 | **D** | [ANNEX_D_INTERVENTIONS_REGISTER.md](./ANNEX_D_INTERVENTIONS_REGISTER.md) | 0.2 | EMA 47-project map | Restoration / SO4 / counterbalancing evidence |
-| **E** | [ANNEX_E_VERIFICATION_AND_REPORTING.md](./ANNEX_E_VERIFICATION_AND_REPORTING.md) | 0.1 | Draft | Verification + PRAIS export packages |
+| **E** | [ANNEX_E_VERIFICATION_AND_REPORTING.md](./ANNEX_E_VERIFICATION_AND_REPORTING.md) | 0.2 | Draft + [Reporting desk checklist](./REPORTING_DESK_CHECKLIST.md) | Verification + PRAIS export packages |
 | **F** | [ANNEX_F_NATIONAL_CODE_LISTS.md](./ANNEX_F_NATIONAL_CODE_LISTS.md) | 0.9-draft | Pending sign-off | Code lists |
 | — | [PROGRAMME_EXECUTION_STEPS.md](./PROGRAMME_EXECUTION_STEPS.md) | — | Living checklist | Recommended order |
 

@@ -74,7 +74,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 | Step | Action |
 |------|--------|
 | 4.1 | Export jobs `EXP-SO1-*` (Annex E) |
-| 4.2 | SO1 rehearsal checklist (Nov 2026 target) |
+| 4.2 | SO1 rehearsal checklist (Nov 2026 target) | [`REPORTING_DESK_CHECKLIST.md`](./REPORTING_DESK_CHECKLIST.md) | ✅ draft |
 | 5.1 | Lock snapshot + PRAIS package |
 
 ---

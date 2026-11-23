@@ -2,7 +2,8 @@
 
 **Session:** 60-minute working draft  
 **Date:** 2026-11-23  
-**Status:** Draft for national reporting officer + steering sign-off  
+**Status:** Draft v0.2 — operational checklist added  
+**Operational checklist:** [`REPORTING_DESK_CHECKLIST.md`](./REPORTING_DESK_CHECKLIST.md) (Reporting desk module)  
 **Standards:** GPG SDG 15.3.1 (v2 + 2025 Addendum), PRAIS 4 reporting manual, Project Guide §1.3, §13
 
 ---
@@ -33,7 +34,7 @@ This annex does **not** replace PRAIS screens — it defines **EMA’s internal*
 1. Only `approved` or `locked` records appear in **official export** datasets.  
 2. `locked` is required for the final PRAIS submission snapshot for a given `reporting_period`.  
 3. Every transition writes `verification_log` (user, role, timestamp, from_state, to_state, comment).  
-4. Mobile app shows read-only status; reviewers use **web** `/database` or dedicated review UI (Phase 3).
+4. Mobile app shows read-only status; reviewers use **Verification workspace** (R1 — not legacy `/database`).
 
 **Applies to:** `ldn_field_assessment`, `soil_sample_*`, `drylands_observation`, `intervention_record` (where field-captured).
 
