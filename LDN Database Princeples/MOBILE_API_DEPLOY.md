@@ -15,6 +15,15 @@ No trailing slash. Used by `DraftQueue.tsx` for:
 
 Legacy alias: `VITE_TELEMETRY_URL` (deprecated).
 
+### Also used by mobile (read-only)
+
+| Route | Use |
+|-------|-----|
+| `GET /api/validator/ceid` | CEID blur hint in `LdnForm` |
+| `GET /api/status` | Smoke test / support |
+
+CORS for Capacitor: root `middleware.ts` on `/api/*`.
+
 ## Builds
 
 ```powershell

@@ -63,7 +63,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 | Step | Action | Done |
 |------|--------|------|
-| 3.1 | iOS build + TestFlight; production API URL | [`MOBILE_API_DEPLOY.md`](./MOBILE_API_DEPLOY.md) · [`MOBILE_IOS_CHECKLIST.md`](./MOBILE_IOS_CHECKLIST.md) | 🔶 Android lane; iOS needs Mac |
+| 3.1 | iOS build + TestFlight; production API URL | [`MOBILE_IOS_CHECKLIST.md`](./MOBILE_IOS_CHECKLIST.md) · [`mobile/UAT_IOS.md`](../mobile/UAT_IOS.md) · parity matrix | 🔶 Android UAT done; iOS needs Mac |
 | 3.2 | Align severity/land-cover labels to Annex F | 🔶 codes + **land use** list (`ldn_land_use_type`) |
 | 3.3 | Validator ↔ national polygon `Id` join (after GIS workshop) | 🔶 [`CEID_VALIDATOR_API.md`](./corpus/metadata/CEID_VALIDATOR_API.md) |
 

@@ -1,38 +1,48 @@
 # iOS build checklist (Phase 3.1 — Deliverable B)
 
-**Current repo:** Android Capacitor project present · **iOS platform not generated** (requires macOS).
+**Updated:** 2026-11-23 (study block — parity with Android UAT)  
+**Detail:** [`mobile/UAT_IOS.md`](../mobile/UAT_IOS.md) · [`MOBILE_PLATFORM_PARITY.md`](./MOBILE_PLATFORM_PARITY.md)
 
-## Prerequisites
+## Current repo status
 
 | Item | Status |
 |------|--------|
-| Apple Developer account | EMA ICT |
-| Mac with Xcode 15+ | Field team or contractor |
-| `VITE_API_BASE_URL` production host | [`MOBILE_API_DEPLOY.md`](./MOBILE_API_DEPLOY.md) |
+| Android Capacitor | ✅ `mobile/android` |
+| iOS platform folder | ⬜ **Requires Mac** — `npx cap add ios` |
+| Android UAT script | ✅ [`mobile/UAT_ANDROID.md`](../mobile/UAT_ANDROID.md) |
+| iOS UAT / TestFlight script | ✅ [`mobile/UAT_IOS.md`](../mobile/UAT_IOS.md) |
 
-## Commands (on Mac, after `mobile` deps installed)
+## Prerequisites
+
+| Item | Owner |
+|------|--------|
+| Apple Developer account | EMA ICT |
+| Mac + Xcode 15+ | Field / contractor |
+| `VITE_API_BASE_URL` production HTTPS | [`MOBILE_API_DEPLOY.md`](./MOBILE_API_DEPLOY.md) |
+| Code lists synced before release | `npm run sync:mobile-codes` |
+
+## macOS commands (summary)
 
 ```bash
-cd mobile
-npm install
-npm install @capacitor/ios@^6
-npm run build
-npx cap add ios
-npx cap sync ios
-npx cap open ios
+cd mobile && npm install && npm install @capacitor/ios@^6
+npm run build && npx cap sync ios && npx cap open ios
 ```
 
-In Xcode: set signing team, bundle id `gov.zw.ema.ldn`, enable Camera + Location usage strings in `Info.plist`.
+## Windows / CI lane (until Mac)
 
-## Windows / CI lane
+- Android: `npm run build` + `npx cap sync android` (see UAT_ANDROID)  
+- Programme tracks **3.1** blocked on Mac; backend/mobile API work continues  
 
-- **Android UAT (verified):** `cd mobile && npm run build && npx cap sync android` → open `mobile/android` in Android Studio.
-- Sync code lists: `node scripts/sync_mobile_code_lists.mjs`
-- Track iOS in programme step **3.1** until Mac build completes.
+## API acceptance (both platforms)
 
-## Test plan
+See UAT_IOS §2 — submit, CEID validator, status, offline sync.
 
-1. Offline draft save (IndexedDB)  
-2. Sync to `/api/submit/ldn` on national HTTPS host  
-3. Confirm `governance` fields in API response  
-4. TestFlight internal group (iOS) or sideload APK (Android)
+## TestFlight gate
+
+- [ ] Archive uploaded to App Store Connect  
+- [ ] Internal testers complete UAT_IOS script  
+- [ ] Build recorded in steering minutes  
+
+## Steering export (optional)
+
+Government briefing copies of programme docs: root [`convert_to_docx.py`](../convert_to_docx.py) (markdown → Word); not required for TestFlight.
