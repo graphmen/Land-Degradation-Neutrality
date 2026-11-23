@@ -1,5 +1,5 @@
 {
-  "dry_run_at": "2026-11-23T12:25:23.954Z",
+  "dry_run_at": "2026-11-23T19:07:29.886Z",
   "reporting_period": "2020-2023",
   "section_F": {
     "F1_EXP_META": {
@@ -66,14 +66,45 @@
     },
     "F7_REPORTING_BUNDLE": {
       "pass": true,
-      "bundle_id": "BUNDLE-2026-11-23T12-25-23-920Z",
-      "root_dir": "C:\\Users\\ndebelem.ZINGSERVER1\\Desktop\\2026\\OAU\\exports\\2020-2023\\BUNDLE-2026-11-23T12-25-23-920Z",
-      "manifest_sha256": "349db13f26475be746357cf68bec728bdbd9c66d0fdda7d64661d215196e9a8a",
+      "bundle_id": "BUNDLE-2026-11-23T19-07-29-815Z",
+      "root_dir": "C:\\Users\\ndebelem.ZINGSERVER1\\Desktop\\2026\\OAU\\exports\\2020-2023\\BUNDLE-2026-11-23T19-07-29-815Z",
+      "manifest_sha256": "04b68df6ffb57a3ebbbc2e5a01e287e7780366220ea7a4b3859182ba14ac4d44",
       "package_count": 7
     }
   },
   "gates": {
     "locked_field_rows": 3,
+    "lock_policy": {
+      "status": "draft_pending_ema_sign_off",
+      "counts": {
+        "ldn": 3,
+        "soil": 0,
+        "drylands": 0
+      },
+      "checks": [
+        {
+          "key": "ldn",
+          "locked": 3,
+          "minimum": null,
+          "met": null
+        },
+        {
+          "key": "soil",
+          "locked": 0,
+          "minimum": null,
+          "met": null
+        },
+        {
+          "key": "drylands",
+          "locked": 0,
+          "minimum": null,
+          "met": null
+        }
+      ],
+      "pass": null,
+      "mode": "pilot_rehearsal",
+      "doc": "LDN Database Princeples/design/VERIFICATION_LOCK_POLICY_V1.md"
+    },
     "steering_blockers": [
       "LDN-NAT-ALL Area unit (Q1)",
       "1OAO national LC+LPD+SOC run pending",

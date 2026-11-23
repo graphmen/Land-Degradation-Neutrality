@@ -30,7 +30,7 @@ Define **minimum locked field evidence** before `EXP-SO1-FIELD` is attested for 
 3. Lock is **irreversible** for that period without supersede workflow.  
 4. Dry-run gate F2 may warn below minimum; does not auto-fail until policy signed here.
 
-**Config target (post-R1):** `public/verification-lock-policy.json` (not created until S6 + policy tick).
+**Config (draft):** `public/verification-lock-policy.json` · `GET /api/config/verification-lock-policy` · dry-run `gates.lock_policy`.
 
 ---
 

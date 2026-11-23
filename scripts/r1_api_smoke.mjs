@@ -25,6 +25,7 @@ const CHECKS = [
   { path: "/api/config/s2-preflight", key: "phase_ab_ready" },
   { path: "/api/config/reporting-dry-run", key: "section_F" },
   { path: "/api/config/reporting", key: "active_reporting_period" },
+  { path: "/api/config/verification-lock-policy", key: "minimums" },
   { path: "/api/config/ceid-aliases", key: "entries" },
   { path: "/api/export/meta", key: "layers" },
 ];

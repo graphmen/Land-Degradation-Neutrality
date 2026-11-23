@@ -9,6 +9,7 @@ import { buildExpSo1SocPackage } from "../lib/exp-so1-soc-export";
 import { buildAndWriteReportingBundle } from "../lib/exp-reporting-bundle";
 import { buildExpPhotosPackage } from "../lib/exp-photos-export";
 import { buildExpSo1StatusPackage } from "../lib/exp-so1-status-export";
+import { buildEvidenceSummary } from "../lib/evidence-summary";
 
 async function sha256(text: string) {
   return createHash("sha256").update(text, "utf8").digest("hex");
@@ -28,6 +29,62 @@ async function main() {
   const manifestHash = await sha256(manifestRaw);
   const lockedField = await buildExpSo1FieldPackage({ eligibility: "locked" });
   const lockedCount = lockedField.stats.ldn_exported;
+  const evidenceSummary = await buildEvidenceSummary();
+  const lockedByType = evidenceSummary.locked_by_type;
+
+  let lockPolicy: {
+    status?: string;
+    minimums?: {
+      ldn_locked?: number | null;
+      soil_locked?: number | null;
+      drylands_locked?: number | null;
+    };
+  } = {};
+  try {
+    const policyRaw = await fs.readFile(
+      path.join(process.cwd(), "public", "verification-lock-policy.json"),
+      "utf-8"
+    );
+    lockPolicy = JSON.parse(policyRaw) as typeof lockPolicy;
+  } catch {
+    lockPolicy = { status: "missing" };
+  }
+
+  const mins = lockPolicy.minimums ?? {};
+  const policyChecks: Array<{ key: string; locked: number; minimum: number | null; met: boolean | null }> = [
+    {
+      key: "ldn",
+      locked: lockedByType.ldn,
+      minimum: mins.ldn_locked ?? null,
+      met:
+        mins.ldn_locked == null
+          ? null
+          : lockedByType.ldn >= Number(mins.ldn_locked),
+    },
+    {
+      key: "soil",
+      locked: lockedByType.soil,
+      minimum: mins.soil_locked ?? null,
+      met:
+        mins.soil_locked == null
+          ? null
+          : lockedByType.soil >= Number(mins.soil_locked),
+    },
+    {
+      key: "drylands",
+      locked: lockedByType.drylands,
+      minimum: mins.drylands_locked ?? null,
+      met:
+        mins.drylands_locked == null
+          ? null
+          : lockedByType.drylands >= Number(mins.drylands_locked),
+    },
+  ];
+  const enforced = policyChecks.filter((c) => c.minimum != null);
+  const lockPolicyPass =
+    enforced.length === 0
+      ? null
+      : enforced.every((c) => c.met === true);
   const lcLayer = meta.layers.find((l) => l.layer_id === "LC-NAT-STACK");
   const km2Populated = lc.rows.filter((r) => r.area_km2 != null).length;
   const s10Required: string[] = [];
@@ -163,6 +220,17 @@ async function main() {
     },
     gates: {
       locked_field_rows: lockedCount,
+      lock_policy: {
+        status: lockPolicy.status ?? "missing",
+        counts: lockedByType,
+        checks: policyChecks,
+        pass: lockPolicyPass,
+        mode:
+          lockPolicy.status?.includes("draft") || lockPolicyPass == null
+            ? "pilot_rehearsal"
+            : "policy",
+        doc: "LDN Database Princeples/design/VERIFICATION_LOCK_POLICY_V1.md",
+      },
       steering_blockers,
       s10_f3: {
         corpus_registered: lcLayer != null,

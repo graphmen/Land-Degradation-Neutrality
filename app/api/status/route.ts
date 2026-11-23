@@ -60,6 +60,7 @@ export async function GET(): Promise<NextResponse> {
         "/api/config/s2-preflight",
         "/api/config/reporting-dry-run",
         "/api/config/ceid-aliases",
+        "/api/config/verification-lock-policy",
       ],
     },
     environment: {

@@ -1,0 +1,14 @@
+{
+  "status": "draft_pending_ema_sign_off",
+  "updated_at": "2026-11-23",
+  "minimums": {
+    "ldn_locked": null,
+    "soil_locked": null,
+    "drylands_locked": null
+  },
+  "pilot_reference": {
+    "ldn_locked": 3,
+    "note": "Pilot only — npm run pilot:lock"
+  },
+  "doc": "LDN Database Princeples/design/VERIFICATION_LOCK_POLICY_V1.md"
+}
