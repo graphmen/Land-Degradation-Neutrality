@@ -64,14 +64,26 @@ From drylands mobile ILUP (Annex B) — use as **code list** seed for `intervent
 
 ---
 
-## D.4 Mapping — EMA projects shapefile (pending unpack)
+## D.4 Mapping — EMA projects shapefile (Annex C §C.5)
+
+**Source:** `ema_projects_combined_geog` — **47** point features (see Annex C).
+
+| DBF field | `intervention_record` column |
+|-----------|------------------------------|
+| `Name` | `title` |
+| `activty` | `intervention_type` (normalise spelling) |
+| `funding_pa` | `funding_source` |
+| `Role_of_em` | `implementing_org` / `ema_role` |
+| `year_estab` | `year_established` |
+| `ward` + `village` | `admin_unit` text + FK when `admin_units` ready |
+| `lat`, `lon` | `geometry` Point |
 
 | Step | Action |
 |------|--------|
-| 1 | Unpack `projects.zip` / `ema_projects_combined_geog.zip` |
-| 2 | Document attribute dictionary (same format as Annex C §C.3) |
-| 3 | Map to `intervention_record` + optional polygon geometry |
-| 4 | Deduplicate against drylands recommendations by ward + intervention type |
+| 1 | Import geog layer to `intervention_spatial` staging |
+| 2 | Promote to `intervention_record` with `data_tier = tier2_national` |
+| 3 | Replace demo rows in `interventions-data.json` after DB becomes source of truth |
+| 4 | Deduplicate against drylands mobile recommendations by ward + type |
 
 ---
 
@@ -103,3 +115,4 @@ From drylands mobile ILUP (Annex B) — use as **code list** seed for `intervent
 | Version | Date | Changes |
 |---------|------|---------|
 | 0.1 | 2026-11-23 | Initial register from app JSON + EMA zip inventory |
+| 0.2 | 2026-11-23 | EMA projects 47-point attribute map (Annex C §C.5) |

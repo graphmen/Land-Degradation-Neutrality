@@ -1,7 +1,7 @@
 # Zimbabwe LDN National Platform — Project Development Guide
 
 **Audience:** EMA technical teams, GIS/reporting officers, database administrators, and mobile field-app developers.  
-**Status:** Draft v0.5 — for EMA steering review before implementation sprints.  
+**Status:** Draft v0.6 — for EMA steering review before implementation sprints.  
 **Formats:** Markdown (source of truth in repo) + **Word** (`.docx`) for official circulation.  
 **Companion:** [ZIMBABWE_LDN_WORK_PLAN.md](./ZIMBABWE_LDN_WORK_PLAN.md)  
 **Aligned with:** UNCCD 2018–2030 Strategic Framework, SDG Indicator **15.3.1**, GPG Version 2 + **2025 Addendum**, Zimbabwe UNCCD Training & Validation Workshop (Sept 2026, Harare).
@@ -325,16 +325,17 @@ Master index: **[ANNEX_INDEX.md](./ANNEX_INDEX.md)** · Commit after each sessio
 
 | Annex | Title | File | Status |
 |-------|-------|------|--------|
-| A | LDN + Soil field mapping | [ANNEX_A_FIELD_MAPPING.md](./ANNEX_A_FIELD_MAPPING.md) | v0.2 draft |
-| B | ILUP Drylands field mapping | [ANNEX_B_DRYLANDS_FIELD_MAPPING.md](./ANNEX_B_DRYLANDS_FIELD_MAPPING.md) | v0.1 draft |
-| C | National spatial layers register | [ANNEX_C_SPATIAL_LAYERS_REGISTER.md](./ANNEX_C_SPATIAL_LAYERS_REGISTER.md) | v0.1 draft |
-| D | Interventions / restoration register | [ANNEX_D_INTERVENTIONS_REGISTER.md](./ANNEX_D_INTERVENTIONS_REGISTER.md) | v0.1 draft |
+| A | LDN + Soil field mapping | [ANNEX_A_FIELD_MAPPING.md](./ANNEX_A_FIELD_MAPPING.md) | v0.3 draft |
+| B | ILUP Drylands field mapping | [ANNEX_B_DRYLANDS_FIELD_MAPPING.md](./ANNEX_B_DRYLANDS_FIELD_MAPPING.md) | v0.2 draft |
+| C | National spatial layers register | [ANNEX_C_SPATIAL_LAYERS_REGISTER.md](./ANNEX_C_SPATIAL_LAYERS_REGISTER.md) | v0.2 draft |
+| D | Interventions / restoration register | [ANNEX_D_INTERVENTIONS_REGISTER.md](./ANNEX_D_INTERVENTIONS_REGISTER.md) | v0.2 draft |
+| E | Verification + PRAIS exports | [ANNEX_E_VERIFICATION_AND_REPORTING.md](./ANNEX_E_VERIFICATION_AND_REPORTING.md) | v0.1 draft |
 
 **Annex A summary (steering):** LDN + Soil **mobile forms** → `ldn_validations` / `soil_samples`; SO1-1/2/3 links; legacy payload normalization in §A.1.
 
 **Annex B–D (this wave):** Drylands 58-question ILUP map; EMA LDN polygons (`Stable` / `Improved` / `Degraded`); interventions path from demo JSON → EMA `projects.zip`.
 
-**Next annex (future):** Verification workflow + PRAIS export field list (Annex E).
+**Annex E (steering):** Verification state machine + `EXP-SO1-*` export packages for PRAIS rehearsal.
 
 ---
 
@@ -405,6 +406,7 @@ Delivery is iterative: **~60-minute working sessions** produce annexes and specs
 | 0.3 | 2026-11-23 | EMA / LDN project team (draft) | Compliance principles, EMA spatial annex, work plan, Word editions |
 | 0.4 | 2026-11-23 | EMA / LDN project team (draft) | Annexes B–D, annex index, repository workflow |
 | 0.5 | 2026-11-23 | EMA / LDN project team (draft) | Data collection = Android/iOS mobile only; removed external survey platform from scope |
+| 0.6 | 2026-11-23 | EMA / LDN project team (draft) | Annex C spatial unpack; Annex E verification/PRAIS |
 
 **Approval signatures:** *(pending)*  
 National Reporting Officer: _______________  

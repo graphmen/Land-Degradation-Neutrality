@@ -20,6 +20,7 @@ This folder holds official UNCCD / Zimbabwe workshop materials used to align the
 | Annex B — Drylands | [`ANNEX_B_DRYLANDS_FIELD_MAPPING.md`](./ANNEX_B_DRYLANDS_FIELD_MAPPING.md) | guide pack |
 | Annex C — Spatial layers | [`ANNEX_C_SPATIAL_LAYERS_REGISTER.md`](./ANNEX_C_SPATIAL_LAYERS_REGISTER.md) | guide pack |
 | Annex D — Interventions | [`ANNEX_D_INTERVENTIONS_REGISTER.md`](./ANNEX_D_INTERVENTIONS_REGISTER.md) | guide pack |
+| Annex E — Verification / PRAIS | [`ANNEX_E_VERIFICATION_AND_REPORTING.md`](./ANNEX_E_VERIFICATION_AND_REPORTING.md) | guide pack |
 | Git safety rhythm | [`REPOSITORY_WORKFLOW.md`](./REPOSITORY_WORKFLOW.md) | — |
 
 EMA national spatial datasets: [`../important files/README.md`](../important%20files/README.md)

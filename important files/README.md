@@ -14,10 +14,10 @@
 |------|----------------|-------------------|-------------------|---------------------|
 | `LDN shapefiles.zip` | ~49 MB | Provincial and **Combined LDN shapefiles** (`.shp`/`.dbf`/…), including Midlands, Bulawayo (Byo), Harare, etc. | National analytics + reporting context | SO1 national units; validator overlays |
 | `Final Existing sites latest.xls` | ~60 KB | Sheet **Existing sites**: District, Location, Lat, Lon (~48 rows) | Reference: monitoring / training sites | Field operations; QA of coverage |
-| `projects.zip` | ~15 KB | Nested zips: `ema_projects_combined_geog`, UTM 35/36 | `intervention_record` / restoration spatial | SO4 / implementation; bright-spot evidence |
-| `sbc.zip` | ~139 KB | Soil and water conservation (SBC) — Lat/Long + UTM 35/36 | Intervention / conservation polygons | Land restoration, erosion control |
-| `invasivespecies.zip` | ~125 KB | Invasive species (Lantana, Water hyacinth, Azolla, …) | Pressure / threat layer | SO1-2 context; degradation drivers |
-| `illegalminingshapefiles.zip` | ~56 KB | Gold/chrome panning — Lat/Long + UTM | Pressure / threat layer | SO2 exposure; land degradation pressure |
+| `projects.zip` | ~15 KB | **47** geog points (+ UTM copies); see Annex C §C.5 | `intervention_record` / restoration spatial | SO4 / implementation; bright-spot evidence |
+| `sbc.zip` | ~139 KB | **1,367** SBC points (Lat/Long) + UTM subsets | Intervention / conservation spatial | Land restoration, erosion control |
+| `invasivespecies.zip` | ~125 KB | **2,035** invasive points (+ species splits) | Pressure / threat layer | SO1-2 context; degradation drivers |
+| `illegalminingshapefiles.zip` | ~56 KB | **769** panning points (+ UTM) | Pressure / threat layer | SO2 exposure; land degradation pressure |
 
 ---
 

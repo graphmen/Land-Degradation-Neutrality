@@ -226,10 +226,10 @@ Full checklist duplicated in Project Guide §14.
 | **Done** | Annex B Drylands ILUP | [ANNEX_B_DRYLANDS_FIELD_MAPPING.md](./ANNEX_B_DRYLANDS_FIELD_MAPPING.md) |
 | **Done** | Annex C spatial register + LDN DBF | [ANNEX_C_SPATIAL_LAYERS_REGISTER.md](./ANNEX_C_SPATIAL_LAYERS_REGISTER.md) |
 | **Done** | Annex D interventions | [ANNEX_D_INTERVENTIONS_REGISTER.md](./ANNEX_D_INTERVENTIONS_REGISTER.md) |
-| **Next 1** | Unpack `projects.zip` / invasives — extend Annex C §C.5 | Layer attributes |
-| **Next 2** | Code list workshop (land cover + severity) | `v0.9` code list for steering |
-| **Next 3** | ETL fix + existing sites import spec | Dev ticket + SQL sketch |
-| **Next 4** | Annex E — verification + PRAIS export fields | Draft |
+| **Done** | Annex C unpack + Annex E verification/PRAIS | Annex C v0.2, Annex E v0.1 |
+| **Next 1** | Code list workshop (land cover + severity) | `v0.9` for steering |
+| **Next 2** | ETL + `reference_monitoring_sites` import | Dev + SQL |
+| **Next 3** | PostGIS staging for LDN polygons + projects | WP2.4 |
 
 ---
 

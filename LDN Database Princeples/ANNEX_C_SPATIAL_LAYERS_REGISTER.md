@@ -2,7 +2,7 @@
 
 **Session:** 60-minute working draft  
 **Date:** 2026-11-23  
-**Status:** Draft for GIS lead sign-off  
+**Status:** Draft v0.2 — attribute dictionaries for nested archives  
 **Custodian folder:** [`../important files/`](../important%20files/)  
 **Summary README:** [`../important files/README.md`](../important%20files/README.md)
 
@@ -23,10 +23,10 @@ Layers sit in the **National analytics** or **Reference** tiers (Project Guide �
 | **LDN-NAT-ALL** | `LDN shapefiles.zip` → `Combined ldn shapefiles.*` | Polygon | 254,873 | WGS 84 (`.prj` geographic) | `national_ldn_units` | National validation units; status overlay | SO1 status context |
 | **LDN-PROV-*** | Same zip — Byo, Harare, Manicaland, mashcentral, masheast, mashwest, masvingo, matnorth, matsouth, midlands | Polygon | 379–43,455 per file | WGS 84 | `national_ldn_units` (+ `province` attr) | Provincial QA | SO1 |
 | **REF-SITES** | `Final Existing sites latest.xls` | Point | 48 | WGS 84 lat/lon | `reference_monitoring_sites` | Training / monitoring sites | Operations |
-| **INT-PROJECTS** | `projects.zip` → nested project zips | *TBD unpack* | *TBD* | Lat/long + UTM 35/36 | `intervention_spatial` | EMA project footprints | SO4 / restoration |
-| **INT-SBC** | `sbc.zip` | *TBD unpack* | *TBD* | Lat/long + UTM | `intervention_spatial` (theme=sbc) | Soil & water conservation | Restoration |
-| **PRESS-INVASIVE** | `invasivespecies.zip` | *TBD unpack* | *TBD* | Lat/long + UTM | `pressure_layers` | Invasive spread | SO1-2 drivers |
-| **PRESS-MINING** | `illegalminingshapefiles.zip` | *TBD unpack* | *TBD* | Lat/long + UTM | `pressure_layers` | Illegal mining / panning | SO2 pressure |
+| **INT-PROJECTS** | `projects.zip` → `ema_projects_combined_geog` (+ UTM) | Point | 47 (geog) / 65×2 UTM | WGS 84 / UTM 35S·36S | `intervention_spatial` | EMA project sites | SO4 / restoration |
+| **INT-SBC** | `sbc.zip` → `SBC_LatLong` (+ UTM) | Point | 1,367 (lat/lon) + 156 + 293 UTM | WGS 84 / UTM | `intervention_spatial` (`theme=sbc`) | Soil & water conservation | Restoration |
+| **PRESS-INVASIVE** | `invasivespecies.zip` | Point | 2,035 + species splits | WGS 84 / UTM | `pressure_layers` (`theme=invasive`) | Invasive spread | SO1-2 drivers |
+| **PRESS-MINING** | `illegalminingshapefiles.zip` | Point | 769 + 203 + 192 UTM | WGS 84 / UTM | `pressure_layers` (`theme=mining`) | Illegal panning | SO2 pressure |
 
 ---
 
@@ -58,20 +58,92 @@ Parsed from `Combined ldn shapefiles.dbf` (and consistent across provinces).
 
 **Not** validation polygons — reference for operations and coverage maps.
 
----
-
-## C.5 Nested archives (pending unpack schema)
-
-| Archive | Inner packages | Next session action |
-|---------|----------------|---------------------|
-| `projects.zip` | `ema_projects_combined_geog.zip`, UTM 35, UTM 36 | List layers/attributes → update §C.2 counts |
-| `sbc.zip` | `SBC_LatLong.zip`, UTM variants | Theme tag `sbc` |
-| `invasivespecies.zip` | Species-specific zips (Lantana, Azolla, water hyacinth) | Theme tag + link drylands `invasive_species_name` |
-| `illegalminingshapefiles.zip` | Gold/chrome panning | Restricted role access |
+**Import spec (Phase 1):** `backend/migrations/` or one-off script — load 48 rows into `reference_monitoring_sites` with `source_file` = Excel basename, `imported_at` = now().
 
 ---
 
-## C.6 Ingestion metadata template (per layer)
+## C.5 EMA projects (`INT-PROJECTS`) — attribute dictionary
+
+Source: `ema_projects_combined_geog.dbf` (n=47). UTM copies (n=65 each) add `size`; prefer **geographic** layer for web map.
+
+| Source field | DB column (proposed) | Notes |
+|--------------|----------------------|--------|
+| `lat`, `lon` | `lat`, `lng` | WGS 84 |
+| `ward` | `ward` | Numeric in DBF — map via `admin_units` |
+| `village` | `village` | |
+| `year_estab` | `year_established` | |
+| `activty` | `activity` | Typo in source; normalise on import |
+| `funding_pa` | `funding_partner` | |
+| `Role_of_em` / `role` | `ema_role` | |
+| `Name` | `project_name` | |
+| `size` | `extent_label` | UTM layers only |
+
+**Annex D link:** Merge into `intervention_record` where `Name` + location match.
+
+---
+
+## C.6 Soil & water conservation — SBC (`INT-SBC`)
+
+Primary file: `SBC_LatLong.dbf` (n=1,367). Common fields (all variants):
+
+| Source field | DB column | Notes |
+|--------------|-----------|--------|
+| `SBCID` | `sbc_id` | Business key |
+| `lat`/`lon` or `X`/`Y` | geometry | Store CRS per import |
+| `Ward`, `did`, `pid` | admin codes | Join to `admin_units` |
+| `Village`, `Chief` | text | |
+| `River_name` | `river_name` | |
+| `Land_use_c` | `land_use` | |
+| `Soil_type` | `soil_type` | |
+| `Action_Tak` | `action_taken` | Restoration narrative |
+| `Other_prob`, `Biodiversi`, `Major_Spec`, … | JSONB `attributes` | Preserve until EMA defines schema |
+
+---
+
+## C.7 Invasive species (`PRESS-INVASIVE`)
+
+Primary: `Zim_InvasiveLatLong.dbf` (n=2,035). Species-specific UTM zips are **subsets** (e.g. Azolla n=2, Lantana n=262).
+
+| Source field | DB column | Notes |
+|--------------|-----------|--------|
+| `IASID` | `invasive_site_id` | |
+| `LAT`, `LONG` | `lat`, `lng` | |
+| `Species` | `species_name` | Link drylands Annex B `invasive_species_name` |
+| `Estimate_S`, `Estimate_1` | `extent_estimate` | Confirm units with GIS |
+| `Area_clear`, `Area_affec` | `area_cleared`, `area_affected` | |
+
+**Access:** `use_constraint` = **internal** or district — sensitive locations.
+
+---
+
+## C.8 Illegal mining / panning (`PRESS-MINING`)
+
+Primary: `Gold_Chrome_Panning_LatLong.dbf` (n=769).
+
+| Source field | DB column | Notes |
+|--------------|-----------|--------|
+| `IPID` | `panning_site_id` | |
+| `Resource_p` | `resource_type` | Gold / chrome |
+| `Num_of_Pit`, pit dimension fields | `pit_metrics` JSONB | Engineering detail |
+| `Area_cover` | `area_covered` | |
+| `Infra_Eco` | `infrastructure_ecosystem` | |
+
+**Access:** **restricted** national role; optional exclusion from public web map.
+
+---
+
+## C.5b Nested archive index (for GIS unpack)
+
+| Outer zip | Inner shapefile packages |
+|-----------|-------------------------|
+| `projects.zip` | `ema_projects_combined_geog`, `ema_projects_utm_35`, `ema_projects_utm_36` |
+| `sbc.zip` | `SBC_LatLong`, `SBC_UTM35`, `SBC_UTM36` |
+| `invasivespecies.zip` | `Zim_InvasiveLatLong`, Lantana UTM35, Azolla UTM36, Water hyacinth UTM36, … |
+| `illegalminingshapefiles.zip` | `Gold_Chrome_Panning_LatLong`, UTM35, UTM36 |
+
+---
+
+## C.9 Ingestion metadata template (per layer)
 
 Each import row in `spatial_dataset_catalog` should include:
 
@@ -90,7 +162,7 @@ Each import row in `spatial_dataset_catalog` should include:
 
 ---
 
-## C.7 Integration with OAU platform
+## C.10 Integration with OAU platform
 
 | Consumer | Integration |
 |----------|-------------|
@@ -99,11 +171,11 @@ Each import row in `spatial_dataset_catalog` should include:
 | Drylands / Annex B | Crosswalk invasive pressure layers |
 | Reporting export | GeoPackage layer + metadata sidecar for PRAIS evidence |
 
-**Join hypothesis (to verify):** Field `geninfo/ceid` / Collect Earth point ID ↔ polygon `Id` — GIS workshop required.
+**Join hypothesis (to verify):** Mobile `collect_earth_id` ↔ polygon `Id` — GIS workshop required.
 
 ---
 
-## C.8 EMA sign-off checklist
+## C.11 EMA sign-off checklist
 
 - [ ] Confirm area units for `Area` field.  
 - [ ] Confirm `Id` ↔ Collect Earth / LDN survey linkage.  
@@ -118,3 +190,4 @@ Each import row in `spatial_dataset_catalog` should include:
 | Version | Date | Changes |
 |---------|------|---------|
 | 0.1 | 2026-11-23 | Combined LDN DBF dictionary, register, site spreadsheet |
+| 0.2 | 2026-11-23 | Unpacked projects, SBC, invasives, mining — counts + attribute maps |
