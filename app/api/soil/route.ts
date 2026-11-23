@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 import { cronCache } from "@/lib/cronCache";
+import { enrichRecords } from "@/lib/compliance-metadata";
 import soilDataStatic from "@/public/soil-data.json";
 
 const soilModPath = path.join(process.cwd(), "public", "soil-modifications.json");
@@ -244,9 +245,11 @@ export async function GET(req: Request) {
   // Remove parent records with no samples left
   reconciledRecords = reconciledRecords.filter(r => !Array.isArray(r.sampl) || r.sampl.length > 0);
 
+  const enriched = enrichRecords(reconciledRecords);
+
   return NextResponse.json({
-    count: reconciledRecords.length,
-    records: reconciledRecords,
+    count: enriched.length,
+    records: enriched,
     source: source,
     modificationsCount: {
       additions: mod.additions.length,

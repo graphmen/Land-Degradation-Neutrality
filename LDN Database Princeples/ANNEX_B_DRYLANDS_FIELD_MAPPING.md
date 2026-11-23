@@ -140,7 +140,18 @@ Use when reconciling legacy Excel exports with mobile field names.
 | `vegetation_condition` | Intact, Moderately Degraded, Severely Degraded, Deforested |
 | `priority_level` | High (Immediate Action Required), Medium, Low |
 | `dominant_soil_type` | Jecha (Sandy), Clay, Dark fertile alluvial, … |
-| `erosion_severity` | **Severe**, **Mild** (3), **Moderate** — schema says **Low** not Mild |
+| `erosion_severity` | **Severe**, **Mild** (3), **Moderate** — canonical **Low** per Annex F |
+
+### B.5.1 Harmonization (v0.2)
+
+| Raw in cache | Canonical (Annex F) | API behaviour |
+|--------------|---------------------|---------------|
+| `Mild` | `Low` | `GET /api/drylands` maps on read (`lib/normalize-field-values.ts`) |
+| `Low` | `Low` | unchanged |
+| `Moderate` | `Moderate` | trim whitespace |
+| `Severe` | `Severe` | unchanged |
+
+Mobile form options should use **Low / Moderate / Severe** only (no “Mild”).
 
 ---
 
@@ -173,3 +184,4 @@ Use when reconciling legacy Excel exports with mobile field names.
 |---------|------|---------|
 | 0.1 | 2026-11-23 | Initial annex from schema, import script, and live cache |
 | 0.2 | 2026-11-23 | Mobile-only collection; removed external survey platform references |
+| 0.3 | 2026-11-23 | Erosion Mild→Low; API normalize on read |

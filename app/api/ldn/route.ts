@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 import { cronCache } from "@/lib/cronCache";
+import { enrichRecords } from "@/lib/compliance-metadata";
 import ldnDataStatic from "@/public/ldn-data.json";
 
 const ldnModPath = path.join(process.cwd(), "public", "ldn-modifications.json");
@@ -157,9 +158,11 @@ export async function GET(req: Request) {
     }
   }
 
+  const enriched = enrichRecords(reconciledRecords);
+
   return NextResponse.json({
-    count: reconciledRecords.length,
-    records: reconciledRecords,
+    count: enriched.length,
+    records: enriched,
     source: source,
     modificationsCount: {
       additions: mod.additions.length,

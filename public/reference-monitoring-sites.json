@@ -1,0 +1,231 @@
+{
+  "count": 28,
+  "imported_at": "2026-11-23T01:19:08.860882+00:00",
+  "layer_id": "REF-SITES",
+  "records": [
+    {
+      "id": 1,
+      "district": "Makonde",
+      "site_name": "Mhangura High School",
+      "lat": -16.91733,
+      "lng": 30.16006,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 2,
+      "district": "Makonde",
+      "site_name": "EMA Provincial Office",
+      "lat": -17.35947,
+      "lng": 30.206176,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 3,
+      "district": "Hurungwe",
+      "site_name": "Vuti High School",
+      "lat": -16.46132,
+      "lng": 29.45949,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 4,
+      "district": "Hurungwe",
+      "site_name": "Kazangarare High School",
+      "lat": -16.52142,
+      "lng": 29.87302,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 5,
+      "district": "Zvimba",
+      "site_name": "Gwebi College",
+      "lat": -17.48512,
+      "lng": 29.78892,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 6,
+      "district": "Zvimba",
+      "site_name": "Raffingora High School",
+      "lat": -17.02948,
+      "lng": 30.4509,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 7,
+      "district": "Gokwe North",
+      "site_name": "Chireya High School",
+      "lat": -17.51446,
+      "lng": 28.6244,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 8,
+      "district": "Gokwe North",
+      "site_name": "Zumba Secondary School",
+      "lat": -17.40115,
+      "lng": 28.73148,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 9,
+      "district": "Gokwe North",
+      "site_name": "Zhomba Secondary School",
+      "lat": -17.53774,
+      "lng": 28.32461,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 10,
+      "district": "Gokwe North",
+      "site_name": "Chinyenyetu High School",
+      "lat": -17.919932,
+      "lng": 29.076325,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 11,
+      "district": "Shurugwi",
+      "site_name": "Poshayi Primary School (Gef7) site",
+      "lat": -19.74813,
+      "lng": 30.259441,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 12,
+      "district": "Shamva",
+      "site_name": "Madziwa Secondary",
+      "lat": -16.92029,
+      "lng": 31.52795,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 13,
+      "district": "Mazowe",
+      "site_name": "Nyachuru High",
+      "lat": -17.2198,
+      "lng": 30.99614,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 14,
+      "district": "Mazowe",
+      "site_name": "Bare Secondary",
+      "lat": -16.88029,
+      "lng": 31.13057,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 15,
+      "district": "Mudzi",
+      "site_name": "Shinga Secondary",
+      "lat": -17.01278,
+      "lng": 32.2564,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 16,
+      "district": "Mutoko",
+      "site_name": "Chidenga Secondary",
+      "lat": -17.14117,
+      "lng": 32.06416,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 17,
+      "district": "Chimanimani",
+      "site_name": "Mutambara School",
+      "lat": -19.53162,
+      "lng": 32.69018,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 18,
+      "district": "Chipinge",
+      "site_name": "Rimbi School",
+      "lat": -20.54311,
+      "lng": 32.39052,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 19,
+      "district": "Buhera",
+      "site_name": "Muzokomba High",
+      "lat": -19.32113,
+      "lng": 31.43991,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 20,
+      "district": "Chipinge",
+      "site_name": "Mutema High",
+      "lat": -20.13485,
+      "lng": 32.36335,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 21,
+      "district": "Zaka",
+      "site_name": "Vanyoro seedbank",
+      "lat": -20.512,
+      "lng": 31.388,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 22,
+      "district": "Masvingo",
+      "site_name": "Makomba high",
+      "lat": -19.86671,
+      "lng": 30.88143,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 23,
+      "district": "Umzingwane",
+      "site_name": "Mawabeni Sec school",
+      "lat": -20.38798,
+      "lng": 28.9863,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 24,
+      "district": "Beitbridde",
+      "site_name": "Zezani",
+      "lat": -21.60868,
+      "lng": 29.49913,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 25,
+      "district": "Mangwe",
+      "site_name": "Embakwe",
+      "lat": -20.777379,
+      "lng": 27.8226,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 26,
+      "district": "Nkayi",
+      "site_name": "Sivomo High Shool",
+      "lat": -18.85156,
+      "lng": 28.83374,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 27,
+      "district": "Hwange",
+      "site_name": "Lukosi High School",
+      "lat": -18.39014,
+      "lng": 26.63148,
+      "source_file": "Final Existing sites latest.xls"
+    },
+    {
+      "id": 28,
+      "district": "Tsholotsho",
+      "site_name": "Dinyane High School",
+      "lat": -19.88457,
+      "lng": 27.75827,
+      "source_file": "Final Existing sites latest.xls"
+    }
+  ]
+}

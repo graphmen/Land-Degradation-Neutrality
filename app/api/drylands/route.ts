@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 import drylandsDataStatic from "@/public/drylands-data.json";
+import { enrichRecords } from "@/lib/compliance-metadata";
+import { normalizeDrylandsRecords } from "@/lib/normalize-field-values";
 
 const dataPath = path.join(process.cwd(), "public", "drylands-data.json");
 const modPath = path.join(process.cwd(), "public", "drylands-modifications.json");
@@ -147,9 +149,12 @@ export async function GET(req: Request) {
       }
     }
 
+    const normalized = normalizeDrylandsRecords(reconciled);
+    const enriched = enrichRecords(normalized);
+
     return NextResponse.json({
-      count: reconciled.length,
-      records: reconciled,
+      count: enriched.length,
+      records: enriched,
       modificationsCount: {
         additions: mod.additions.length,
         deletions: mod.deletions.length,
