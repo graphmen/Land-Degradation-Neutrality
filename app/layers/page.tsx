@@ -509,44 +509,48 @@ export default function NationalLayersPage() {
         </div>
       </div>
 
-      {/* National LDN Posture & Corpus Readiness Strip */}
-      <div className="gov-grid-4">
-        <div className="gov-card" style={{ borderLeft: "4px solid #005a2b" }}>
-          <div className="gov-metric-label">SDG 15.3.1 Status (Interim)</div>
-          <div className="gov-metric-value">{degradedPct.toFixed(2)}%</div>
-          <div className="gov-metric-sub">
-            Degraded across <strong>254,873</strong> national polygons ·{" "}
-            <Link href="/analytics" style={{ color: "#005a2b", fontWeight: 600 }}>
-              SO1 Matrix →
-            </Link>
-          </div>
+      {/* Compact Single-Line LDN Posture Ribbon */}
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "8px 16px",
+          padding: "8px 14px",
+          background: "#ffffff",
+          border: "1px solid #d9e2dc",
+          borderRadius: 8,
+          fontSize: 12,
+        }}
+      >
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px 18px" }}>
+          <span>
+            <strong style={{ color: "#005a2b" }}>SDG 15.3.1:</strong>{" "}
+            <strong>{degradedPct.toFixed(2)}%</strong> degraded (interim)
+          </span>
+          <span style={{ color: "#cbd7cf" }}>|</span>
+          <span>
+            <strong style={{ color: "#1d4ed8" }}>Bright Spots:</strong> <strong>1,414</strong> (47
+            projects · 1,367 SBC)
+          </span>
+          <span style={{ color: "#cbd7cf" }}>|</span>
+          <span>
+            <strong style={{ color: "#d97706" }}>Pressures:</strong> <strong>2,804</strong> (2,035
+            invasive · 769 mining)
+          </span>
+          <span style={{ color: "#cbd7cf" }}>|</span>
+          <span>
+            <strong style={{ color: "#0891b2" }}>Corpus:</strong>{" "}
+            <strong>
+              {liveReadyCount}/{data?.layer_count ?? 13}
+            </strong>{" "}
+            live · {awaitingCount} awaiting S10–S12
+          </span>
         </div>
-
-        <div className="gov-card" style={{ borderLeft: "4px solid #1d4ed8" }}>
-          <div className="gov-metric-label">Restoration Bright Spots (SO4)</div>
-          <div className="gov-metric-value">1,414</div>
-          <div className="gov-metric-sub">
-            <strong>47</strong> EMA projects + <strong>1,367</strong> SBC conservation points
-          </div>
-        </div>
-
-        <div className="gov-card" style={{ borderLeft: "4px solid #d97706" }}>
-          <div className="gov-metric-label">Degradation Drivers (Pressures)</div>
-          <div className="gov-metric-value">2,804</div>
-          <div className="gov-metric-sub">
-            <strong>2,035</strong> invasive species + <strong>769</strong> mining (restricted)
-          </div>
-        </div>
-
-        <div className="gov-card" style={{ borderLeft: "4px solid #0891b2" }}>
-          <div className="gov-metric-label">Corpus Readiness (F1 Meta)</div>
-          <div className="gov-metric-value">
-            {liveReadyCount}/{data?.layer_count ?? 13}
-          </div>
-          <div className="gov-metric-sub">
-            Operational/staging · <strong>{awaitingCount}</strong> rasters awaiting S10–S12
-          </div>
-        </div>
+        <Link href="/analytics" style={{ color: "#005a2b", fontWeight: 700, textDecoration: "none" }}>
+          SO1 Matrix →
+        </Link>
       </div>
 
       {error && <div className="gov-alert gov-alert-red">{error}</div>}
