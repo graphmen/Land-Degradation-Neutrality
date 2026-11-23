@@ -74,14 +74,90 @@ type So1StatusPayload = {
 };
 
 const UNCCD_CLASSES = [
-  "tree_covered",
-  "grassland",
-  "cropland",
-  "wetland",
-  "artificial",
-  "other_land",
-  "water",
-];
+  { code: "tree_covered", label: "Tree-covered", color: "#15803d" },
+  { code: "grassland", label: "Grassland", color: "#84cc16" },
+  { code: "cropland", label: "Cropland", color: "#eab308" },
+  { code: "wetland", label: "Wetland", color: "#0891b2" },
+  { code: "artificial", label: "Artificial", color: "#dc2626" },
+  { code: "other_land", label: "Other land", color: "#a8a29e" },
+  { code: "water", label: "Water", color: "#2563eb" },
+] as const;
+
+type TransitionDirection = "degradation" | "stable" | "improvement";
+
+/**
+ * UNCCD GPG SDG 15.3.1 v2 default 7×7 Land Cover Transition rules
+ * (- = degradation, 0 = stable, + = improvement)
+ */
+const UNCCD_TRANSITION_RULES: Record<string, Record<string, TransitionDirection>> = {
+  tree_covered: {
+    tree_covered: "stable",
+    grassland: "degradation",
+    cropland: "degradation",
+    wetland: "degradation",
+    artificial: "degradation",
+    other_land: "degradation",
+    water: "stable",
+  },
+  grassland: {
+    tree_covered: "improvement",
+    grassland: "stable",
+    cropland: "improvement",
+    wetland: "degradation",
+    artificial: "degradation",
+    other_land: "degradation",
+    water: "stable",
+  },
+  cropland: {
+    tree_covered: "improvement",
+    grassland: "degradation",
+    cropland: "stable",
+    wetland: "degradation",
+    artificial: "degradation",
+    other_land: "degradation",
+    water: "stable",
+  },
+  wetland: {
+    tree_covered: "degradation",
+    grassland: "degradation",
+    cropland: "degradation",
+    wetland: "stable",
+    artificial: "degradation",
+    other_land: "degradation",
+    water: "stable",
+  },
+  artificial: {
+    tree_covered: "improvement",
+    grassland: "improvement",
+    cropland: "improvement",
+    wetland: "improvement",
+    artificial: "stable",
+    other_land: "improvement",
+    water: "stable",
+  },
+  other_land: {
+    tree_covered: "improvement",
+    grassland: "improvement",
+    cropland: "improvement",
+    wetland: "improvement",
+    artificial: "degradation",
+    other_land: "stable",
+    water: "stable",
+  },
+  water: {
+    tree_covered: "stable",
+    grassland: "stable",
+    cropland: "stable",
+    wetland: "stable",
+    artificial: "stable",
+    other_land: "stable",
+    water: "stable",
+  },
+};
+
+function getTransitionRule(from: string, to: string): TransitionDirection {
+  return UNCCD_TRANSITION_RULES[from]?.[to] ?? "stable";
+}
 
 export default function AnalyticsPage() {
   const [tab, setTab] = useState<TabId>("lc");
@@ -91,6 +167,9 @@ export default function AnalyticsPage() {
   const [status, setStatus] = useState<So1StatusPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [lcFilter, setLcFilter] = useState<"all" | TransitionDirection>("all");
+  const [selectedCell, setSelectedCell] = useState<{ from: string; to: string } | null>(null);
 
   const loadAll = async () => {
     setLoading(true);
@@ -167,61 +246,344 @@ export default function AnalyticsPage() {
       {error && <div className="gov-alert gov-alert-red">{error}</div>}
 
       {/* SO1-1 Land Cover Matrix */}
-      {tab === "lc" && (
-        <div className="gov-card">
-          <div className="gov-card-header">
-            <div className="gov-card-title">
-              SO1-1 Land Cover Transition Matrix (UNCCD 7-Class · km²)
+      {tab === "lc" && (() => {
+        let populatedCount = 0;
+        let degTotal = 0;
+        let impTotal = 0;
+        let stabTotal = 0;
+        const rowTotals: Record<string, number | null> = {};
+        const colTotals: Record<string, number | null> = {};
+
+        for (const f of UNCCD_CLASSES) {
+          let rSum = 0;
+          let rHas = false;
+          for (const t of UNCCD_CLASSES) {
+            const v = lcLookup.get(`${f.code}__${t.code}`);
+            if (v != null) {
+              populatedCount++;
+              rSum += v;
+              rHas = true;
+              const rule = getTransitionRule(f.code, t.code);
+              if (rule === "degradation") degTotal += v;
+              else if (rule === "improvement") impTotal += v;
+              else stabTotal += v;
+            }
+          }
+          rowTotals[f.code] = rHas ? rSum : null;
+        }
+
+        for (const t of UNCCD_CLASSES) {
+          let cSum = 0;
+          let cHas = false;
+          for (const f of UNCCD_CLASSES) {
+            const v = lcLookup.get(`${f.code}__${t.code}`);
+            if (v != null) {
+              cSum += v;
+              cHas = true;
+            }
+          }
+          colTotals[t.code] = cHas ? cSum : null;
+        }
+
+        const grandTotal = populatedCount > 0 ? degTotal + impTotal + stabTotal : null;
+
+        const cellStyle = (dir: TransitionDirection, dimmed: boolean, isSelected: boolean): React.CSSProperties => {
+          const palette: Record<TransitionDirection, { bg: string; fg: string; border: string }> = {
+            degradation: { bg: "#fef2f2", fg: "#b42318", border: "#fecaca" },
+            improvement: { bg: "#ecfdf3", fg: "#146c38", border: "#bbf7d0" },
+            stable: { bg: "#f6f8f7", fg: "#465d50", border: "#e2e8e4" },
+          };
+          const p = palette[dir];
+          return {
+            background: p.bg,
+            color: p.fg,
+            opacity: dimmed ? 0.25 : 1,
+            cursor: "pointer",
+            textAlign: "center",
+            borderRight: "1px solid #e7eeea",
+            outline: isSelected ? "2px solid #005a2b" : undefined,
+            outlineOffset: isSelected ? -2 : undefined,
+            transition: "opacity 0.15s ease, background 0.15s ease",
+            padding: "10px 8px",
+          };
+        };
+
+        const labelFor = (code: string) =>
+          UNCCD_CLASSES.find((c) => c.code === code)?.label ?? code;
+
+        return (
+          <div className="gov-card">
+            <div className="gov-card-header">
+              <div>
+                <div className="gov-card-title">
+                  SO1-1 Land Cover Transition Matrix (UNCCD 7-Class · km²)
+                </div>
+                <div className="gov-metric-sub" style={{ marginTop: 2 }}>
+                  Baseline <strong>t₀ (end 2015)</strong> rows → Reporting{" "}
+                  <strong>t₁ ({lc?.reporting_period ?? "2020-2023"})</strong> columns · Default
+                  UNCCD GPG v2 transition rules shown per cell.
+                </div>
+              </div>
+              <a href="/api/export/so1-lc?format=csv" className="gov-btn gov-btn-sm">
+                <Download size={13} /> Download Matrix CSV
+              </a>
             </div>
-            <a href="/api/export/so1-lc?format=csv" className="gov-btn gov-btn-sm">
-              <Download size={13} /> Download Template CSV
-            </a>
-          </div>
 
-          <div className="gov-alert gov-alert-amber" style={{ marginBottom: 14 }}>
-            <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: 2 }} />
-            <span>
-              <strong>Gate F3 Blocked (Steering S10):</strong> National t₀/t₁ land-cover GeoTIFF
-              stack (`LC-NAT-STACK`) awaiting delivery. Matrix cells show `—` until zonal stats run.
-            </span>
-          </div>
+            <div className="gov-alert gov-alert-amber" style={{ marginBottom: 14 }}>
+              <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: 2 }} />
+              <span>
+                <strong>Gate F3 Blocked (Steering S10):</strong> National t₀/t₁ land-cover GeoTIFF
+                stack (<code>LC-NAT-STACK</code>) awaiting delivery ({populatedCount}/49 cells
+                populated). Cell tints display official UNCCD degradation/improvement rules so
+                reviewers can validate transition logic ahead of raster ingestion.
+              </span>
+            </div>
 
-          <div className="gov-table-wrap">
-            <table className="gov-table">
-              <thead>
-                <tr>
-                  <th>From \ To</th>
-                  {UNCCD_CLASSES.map((c) => (
-                    <th key={c}>{c.replace(/_/g, " ")}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {UNCCD_CLASSES.map((from) => (
-                  <tr key={from}>
-                    <td style={{ fontWeight: 700 }}>{from.replace(/_/g, " ")}</td>
-                    {UNCCD_CLASSES.map((to) => {
-                      const val = lcLookup.get(`${from}__${to}`);
-                      return (
-                        <td
-                          key={to}
-                          className="gov-mono"
+            {/* Matrix Summary & Legend Controls */}
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 10,
+                marginBottom: 14,
+              }}
+            >
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                <button
+                  type="button"
+                  className={`gov-btn gov-btn-sm ${lcFilter === "all" ? "gov-btn-primary" : ""}`}
+                  onClick={() => setLcFilter("all")}
+                >
+                  All Cells (49)
+                </button>
+                <button
+                  type="button"
+                  className="gov-btn gov-btn-sm"
+                  style={{
+                    background: lcFilter === "degradation" ? "#b42318" : "#fef2f2",
+                    color: lcFilter === "degradation" ? "#ffffff" : "#b42318",
+                    borderColor: "#f7c3c3",
+                  }}
+                  onClick={() => setLcFilter("degradation")}
+                >
+                  − Degradation ({populatedCount > 0 ? `${degTotal.toLocaleString()} km²` : "18 rules"})
+                </button>
+                <button
+                  type="button"
+                  className="gov-btn gov-btn-sm"
+                  style={{
+                    background: lcFilter === "stable" ? "#3d5246" : "#f4f7f5",
+                    color: lcFilter === "stable" ? "#ffffff" : "#3d5246",
+                    borderColor: "#d1dbd5",
+                  }}
+                  onClick={() => setLcFilter("stable")}
+                >
+                  0 Stable ({populatedCount > 0 ? `${stabTotal.toLocaleString()} km²` : "19 rules"})
+                </button>
+                <button
+                  type="button"
+                  className="gov-btn gov-btn-sm"
+                  style={{
+                    background: lcFilter === "improvement" ? "#146c38" : "#ecfdf3",
+                    color: lcFilter === "improvement" ? "#ffffff" : "#146c38",
+                    borderColor: "#b8e6c8",
+                  }}
+                  onClick={() => setLcFilter("improvement")}
+                >
+                  + Improvement ({populatedCount > 0 ? `${impTotal.toLocaleString()} km²` : "12 rules"})
+                </button>
+              </div>
+
+              <span className="gov-badge gov-badge-slate">
+                Click any cell to inspect UNCCD transition rule
+              </span>
+            </div>
+
+            {/* Enhanced 7×7 Pivot Matrix */}
+            <div className="gov-table-wrap">
+              <table className="gov-table" style={{ tableLayout: "fixed", minWidth: 880 }}>
+                <thead>
+                  <tr>
+                    <th style={{ width: 165, background: "#eef4f0", borderRight: "2px solid #cbd7cf" }}>
+                      Baseline t₀ ↓ \ Reporting t₁ →
+                    </th>
+                    {UNCCD_CLASSES.map((c) => (
+                      <th key={c.code} style={{ textAlign: "center", padding: "10px 6px" }}>
+                        <div
                           style={{
-                            background: from === to ? "#f4f8f5" : undefined,
-                            color: val == null ? "#8a9c91" : "#102117",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: 5,
+                            justifyContent: "center",
                           }}
                         >
-                          {val != null ? val.toLocaleString() : "—"}
-                        </td>
-                      );
-                    })}
+                          <span
+                            style={{
+                              width: 8,
+                              height: 8,
+                              borderRadius: "50%",
+                              background: c.color,
+                              flexShrink: 0,
+                            }}
+                          />
+                          <span>{c.label}</span>
+                        </div>
+                      </th>
+                    ))}
+                    <th
+                      style={{
+                        width: 105,
+                        textAlign: "right",
+                        background: "#eef4f0",
+                        borderLeft: "2px solid #cbd7cf",
+                      }}
+                    >
+                      t₀ Total (km²)
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {UNCCD_CLASSES.map((from) => (
+                    <tr key={from.code}>
+                      <td
+                        style={{
+                          fontWeight: 700,
+                          background: "#f9fbfa",
+                          borderRight: "2px solid #cbd7cf",
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                          <span
+                            style={{
+                              width: 9,
+                              height: 9,
+                              borderRadius: "50%",
+                              background: from.color,
+                              flexShrink: 0,
+                            }}
+                          />
+                          <span>{from.label}</span>
+                        </div>
+                      </td>
+                      {UNCCD_CLASSES.map((to) => {
+                        const val = lcLookup.get(`${from.code}__${to.code}`);
+                        const dir = getTransitionRule(from.code, to.code);
+                        const symbol = dir === "degradation" ? "−" : dir === "improvement" ? "+" : "0";
+                        const dimmed = lcFilter !== "all" && lcFilter !== dir;
+                        const isSel =
+                          selectedCell?.from === from.code && selectedCell?.to === to.code;
+                        return (
+                          <td
+                            key={to.code}
+                            style={cellStyle(dir, dimmed, isSel)}
+                            onClick={() => setSelectedCell({ from: from.code, to: to.code })}
+                            title={`${from.label} → ${to.label}: UNCCD ${dir.toUpperCase()} (${
+                              val != null ? `${val} km²` : "awaiting S10 raster"
+                            })`}
+                          >
+                            <div style={{ fontWeight: 800, fontSize: 13, lineHeight: 1.1 }}>
+                              {val != null ? val.toLocaleString() : symbol}
+                            </div>
+                            <div style={{ fontSize: 10, opacity: 0.72, marginTop: 2 }}>
+                              {val != null ? "km²" : "pending"}
+                            </div>
+                          </td>
+                        );
+                      })}
+                      <td
+                        className="gov-mono"
+                        style={{
+                          textAlign: "right",
+                          fontWeight: 700,
+                          background: "#f9fbfa",
+                          borderLeft: "2px solid #cbd7cf",
+                        }}
+                      >
+                        {rowTotals[from.code] != null
+                          ? rowTotals[from.code]!.toLocaleString()
+                          : "—"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr style={{ background: "#eef4f0", borderTop: "2px solid #cbd7cf" }}>
+                    <td style={{ fontWeight: 800, borderRight: "2px solid #cbd7cf" }}>
+                      t₁ Total (km²)
+                    </td>
+                    {UNCCD_CLASSES.map((c) => (
+                      <td
+                        key={c.code}
+                        className="gov-mono"
+                        style={{ textAlign: "center", fontWeight: 700 }}
+                      >
+                        {colTotals[c.code] != null ? colTotals[c.code]!.toLocaleString() : "—"}
+                      </td>
+                    ))}
+                    <td
+                      className="gov-mono"
+                      style={{
+                        textAlign: "right",
+                        fontWeight: 800,
+                        borderLeft: "2px solid #cbd7cf",
+                      }}
+                    >
+                      {grandTotal != null ? grandTotal.toLocaleString() : "—"}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+            {/* Interactive Cell Inspector Strip */}
+            {selectedCell && (() => {
+              const dir = getTransitionRule(selectedCell.from, selectedCell.to);
+              const val = lcLookup.get(`${selectedCell.from}__${selectedCell.to}`);
+              return (
+                <div
+                  className="gov-card"
+                  style={{
+                    marginTop: 14,
+                    padding: "12px 16px",
+                    background: "#f8fbf9",
+                    display: "flex",
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 12,
+                  }}
+                >
+                  <div>
+                    <div className="gov-kv-label">Selected Transition Cell</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, marginTop: 2 }}>
+                      {labelFor(selectedCell.from)} → {labelFor(selectedCell.to)}
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+                    <span
+                      className={`gov-badge ${
+                        dir === "degradation"
+                          ? "gov-badge-red"
+                          : dir === "improvement"
+                            ? "gov-badge-green"
+                            : "gov-badge-slate"
+                      }`}
+                    >
+                      UNCCD Rule: {dir.toUpperCase()}
+                    </span>
+                    <span className="gov-badge gov-badge-blue">
+                      Area: {val != null ? `${val.toLocaleString()} km²` : "Pending LC-NAT-STACK (S10)"}
+                    </span>
+                    <span className="gov-badge gov-badge-slate">Baseline: t0_end_2015</span>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* SO1-2 LPD */}
       {tab === "lpd" && (
