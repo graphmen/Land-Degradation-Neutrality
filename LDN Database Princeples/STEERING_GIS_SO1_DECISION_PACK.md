@@ -14,6 +14,8 @@
 
 **Ask:** GIS lead states **Area unit** and **CEID rule** on the record.
 
+**Q2 workshop:** [`STEERING_Q2_CEID_WORKSHOP_ONE_PAGER.md`](./STEERING_Q2_CEID_WORKSHOP_ONE_PAGER.md) · Excel: `npm run export:ceid-worksheet`
+
 ---
 
 ## B. SO1 national raster trilogy (delivery → F3/F4/F5)

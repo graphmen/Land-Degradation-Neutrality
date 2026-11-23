@@ -18,6 +18,7 @@
     "import:pressure-staging": "python scripts/import_pressure_layers.py",
     "import:sbc-staging": "python scripts/import_sbc_staging.py",
     "export:steering-docx": "python scripts/export_steering_docx.py",
+    "export:ceid-worksheet": "python scripts/export_ceid_alias_worksheet.py",
     "qc:ceid": "python scripts/ceid_join_qc.py",
     "build:ceid-aliases": "python scripts/build_ceid_alias_draft.py",
     "qc:summary": "python scripts/qc_programme_summary.py",
