@@ -1,0 +1,20 @@
+{
+  "status": "draft_pending_ema_sign_off",
+  "updated_at": "2026-11-23",
+  "baseline_defaults": {
+    "baseline_period_id": "t0_end_2015",
+    "baseline_end_year": 2015,
+    "label": "UNCCD baseline (end 2015)"
+  },
+  "periods": [
+    {
+      "reporting_period": "2020-2023",
+      "label": "PRAIS 4 cycle — rehearsal (draft)",
+      "baseline_period_id": "t0_end_2015",
+      "baseline_end_year": 2015,
+      "is_active": true,
+      "prais_due": "2026-11",
+      "notes": "Annex E §E.4 — confirm with national reporting officer before lock snapshots."
+    }
+  ]
+}

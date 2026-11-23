@@ -2,6 +2,8 @@
  * Map mobile IndexedDB drafts → Supabase rows + local cache records (Step 2.3).
  */
 
+import { newFieldSubmissionGovernance } from "./compliance-metadata";
+
 export type MobileLdnDraft = {
   id: string;
   measurement_date?: string;
@@ -101,6 +103,10 @@ export function buildLdnFromMobileDraft(draft: MobileLdnDraft) {
     _geolocation: lat != null && lng != null ? [lat, lng] : undefined,
   };
 
+  const governance = newFieldSubmissionGovernance({
+    code_list_version: draft.code_list_version ?? undefined,
+  });
+
   const cacheRecord = {
     ...raw_data,
     _id: numericId,
@@ -118,8 +124,7 @@ export function buildLdnFromMobileDraft(draft: MobileLdnDraft) {
     lng,
     altitude,
     accuracy,
-    verification_status: "submitted",
-    code_list_version: draft.code_list_version,
+    ...governance,
   };
 
   const supabaseRow = {
@@ -140,8 +145,7 @@ export function buildLdnFromMobileDraft(draft: MobileLdnDraft) {
     severity: draft.sev ?? null,
     raw_data,
     submission_time: submissionTime,
-    verification_status: "submitted",
-    code_list_version: draft.code_list_version ?? null,
+    ...governance,
   };
 
   return { cacheRecord, supabaseRow, koboId: String(numericId) };
@@ -183,6 +187,10 @@ export function buildSoilRowsFromMobileDraft(draft: MobileSoilDraft) {
       _geolocation: lat != null && lng != null ? [lat, lng] : undefined,
     };
 
+    const governance = newFieldSubmissionGovernance({
+      code_list_version: draft.code_list_version ?? undefined,
+    });
+
     cacheRecords.push({
       ...raw_data,
       raw_data,
@@ -197,6 +205,7 @@ export function buildSoilRowsFromMobileDraft(draft: MobileSoilDraft) {
       munsell_color: core.col,
       texture: core.tex,
       sample_position: core.samloc,
+      ...governance,
     });
 
     supabaseRows.push({
@@ -214,7 +223,7 @@ export function buildSoilRowsFromMobileDraft(draft: MobileSoilDraft) {
       texture: core.tex,
       raw_data,
       submission_time: submissionTime,
-      code_list_version: draft.code_list_version ?? null,
+      ...governance,
     });
   });
 
@@ -241,6 +250,10 @@ export function buildDrylandsFromMobileDraft(draft: MobileDrylandsDraft) {
     ? (draft.area_type as string[]).join(", ")
   : (draft.area_type as string) || null;
 
+  const governance = newFieldSubmissionGovernance({
+    code_list_version: draft.code_list_version ?? undefined,
+  });
+
   const cacheRecord = {
     ...raw_data,
     _id: numericId,
@@ -250,7 +263,7 @@ export function buildDrylandsFromMobileDraft(draft: MobileDrylandsDraft) {
     enumerator_name: draft.enumerator_name,
     ward_name: draft.ward_name,
     erosion_severity: draft.erosion_severity,
-    verification_status: "submitted",
+    ...governance,
   };
 
   const supabaseRow = {
@@ -264,8 +277,7 @@ export function buildDrylandsFromMobileDraft(draft: MobileDrylandsDraft) {
     erosion_severity: draft.erosion_severity ?? null,
     raw_data,
     submission_time: submissionTime,
-    code_list_version: draft.code_list_version ?? null,
-    verification_status: "submitted",
+    ...governance,
   };
 
   return { cacheRecord, supabaseRow, koboId: String(numericId) };

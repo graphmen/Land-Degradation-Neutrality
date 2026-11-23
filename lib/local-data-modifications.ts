@@ -79,3 +79,26 @@ export async function appendLocalRecords(
   await saveMod(modPath, mod);
   await syncDataFile(dataPath, mod);
 }
+
+/** Patch a record in the local modification ledger (Supabase sync is Phase 2). */
+export async function patchLocalRecord(
+  kind: keyof typeof paths,
+  recordId: string,
+  fields: Record<string, unknown>
+) {
+  const { mod: modPath, data: dataPath } = paths[kind];
+  const mod = await loadMod(modPath);
+  const id = String(recordId);
+
+  const addedIndex = mod.additions.findIndex(
+    (r: Record<string, unknown>) => String(r._id ?? r.id) === id
+  );
+  if (addedIndex !== -1) {
+    mod.additions[addedIndex] = { ...mod.additions[addedIndex], ...fields };
+  } else {
+    mod.edits[id] = { ...(mod.edits[id] || {}), ...fields };
+  }
+
+  await saveMod(modPath, mod);
+  await syncDataFile(dataPath, mod);
+}

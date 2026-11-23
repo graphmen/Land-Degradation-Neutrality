@@ -25,6 +25,13 @@ export async function POST(req: Request) {
       kobo_id: koboId,
       persisted_to: db.ok ? ["supabase", "local_cache"] : ["local_cache"],
       supabase: db.ok ? "ok" : { status: db.status, error: db.error },
+      governance: {
+        verification_status: cacheRecord.verification_status,
+        data_tier: cacheRecord.data_tier,
+        reporting_period: cacheRecord.reporting_period,
+        code_list_version: cacheRecord.code_list_version,
+        baseline_period_id: cacheRecord.baseline_period_id,
+      },
     });
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : String(e);

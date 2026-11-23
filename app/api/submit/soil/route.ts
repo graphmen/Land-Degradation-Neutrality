@@ -19,11 +19,21 @@ export async function POST(req: Request) {
     const db = await supabaseInsertLdn("soil_samples", supabaseRows);
     await appendLocalRecords("soil", cacheRecords);
 
+    const sampleGov = cacheRecords[0];
     return NextResponse.json({
       success: true,
       rows: cacheRecords.length,
       persisted_to: db.ok ? ["supabase", "local_cache"] : ["local_cache"],
       supabase: db.ok ? "ok" : { status: db.status, error: db.error },
+      governance: sampleGov
+        ? {
+            verification_status: sampleGov.verification_status,
+            data_tier: sampleGov.data_tier,
+            reporting_period: sampleGov.reporting_period,
+            code_list_version: sampleGov.code_list_version,
+            baseline_period_id: sampleGov.baseline_period_id,
+          }
+        : null,
     });
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : String(e);

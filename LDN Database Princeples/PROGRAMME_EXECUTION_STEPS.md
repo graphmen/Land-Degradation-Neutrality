@@ -55,7 +55,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 | 2.5 | Pressure layers schema stub | `003_pressure_layers.sql` + import plans | 🔶 drafted |
 | 2.2 | Import `intervention_spatial` (47 EMA projects) | ✅ staging `ema-projects-import.json` |
 | 2.3 | Mobile sync → DB first; JSON cache second | 🔶 `/api/submit/*` + queue → localhost/vercel |
-| 2.4 | `verification_log` + review UI (district / national) |
+| 2.4 | `verification_log` + review UI (district / national) | Governance P1 on API ✅ · [`GOVERNANCE_API_P1.md`](./design/GOVERNANCE_API_P1.md) |
 
 ---
 
@@ -81,7 +81,7 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 **Autonomous mode:** [`AUTONOMOUS_EXECUTION.md`](./AUTONOMOUS_EXECUTION.md) — no “continue” required.
 
-**Next automatic block:** Verification API nullable fields (Annex E Phase 4 P1) · `003` apply after steering · pressure layer unpack QA when EMA confirms.
+**Next automatic block:** Pressure layer unpack QA (`PRESS-*`) · `004`/`003` apply on Supabase after steering · `verification_log` (Phase 2).
 
 **Block reviews:** [Study twinning](./BLOCK_REVIEW_2026-11-23_study-peer-twinning.md) · [Discipline](./BLOCK_DISCIPLINE_60MIN.md)
 
