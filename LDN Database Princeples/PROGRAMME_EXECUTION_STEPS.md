@@ -8,7 +8,8 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 | Step | Action | Artefact | Done |
 |------|--------|----------|------|
-| R0 | International LDN benchmark | [`INTERNATIONAL_LDN_BENCHMARK_AND_ZIMBABWE_BLUEPRINT.md`](./INTERNATIONAL_LDN_BENCHMARK_AND_ZIMBABWE_BLUEPRINT.md) | 🔶 v0.1 draft |
+| R0 | International LDN benchmark | Blueprint + [`INTERNATIONAL_COUNTRY_DOSSIERS.md`](./INTERNATIONAL_COUNTRY_DOSSIERS.md) (11 countries) | 🔶 v0.1 |
+| R0b | National data corpus register | [`NATIONAL_DATA_CORPUS.md`](./NATIONAL_DATA_CORPUS.md) | ✅ living |
 | R1 | EMA UX / information architecture sign-off | Wireframes + gov brand | ⬜ |
 | R2 | New government web shell (replace OAU chrome) | Module map §4 in blueprint | ⬜ |
 | R3 | Cutover: Evidence registry default landing | Retire “telemetry dashboard” copy | ⬜ |

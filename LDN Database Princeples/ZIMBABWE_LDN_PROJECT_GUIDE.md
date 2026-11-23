@@ -1,7 +1,7 @@
 # Zimbabwe LDN National Platform — Project Development Guide
 
 **Audience:** EMA technical teams, GIS/reporting officers, database administrators, and mobile field-app developers.  
-**Status:** Draft v0.6 — for EMA steering review before implementation sprints.  
+**Status:** Draft v0.7 — strategic charter amended 2026-11-23 (national platform, not dashboard).  
 **Formats:** Markdown (source of truth in repo) + **Word** (`.docx`) for official circulation.  
 **Companion:** [ZIMBABWE_LDN_WORK_PLAN.md](./ZIMBABWE_LDN_WORK_PLAN.md)  
 **Aligned with:** UNCCD 2018–2030 Strategic Framework, SDG Indicator **15.3.1**, GPG Version 2 + **2025 Addendum**, Zimbabwe UNCCD Training & Validation Workshop (Sept 2026, Harare).
@@ -10,9 +10,11 @@
 
 ## 1. Purpose of this document
 
-This guide defines how we will **restructure and extend** the existing EMA LDN dashboard and **national mobile data collection app** **without discarding** current work. The goal is **global compliance** (UNCCD / SDG reporting readiness) while keeping what already works for EMA operations: **Android/iOS field capture**, maps, database explorer, and API sync to the national database.
+This guide defines how EMA will build a **National LDN Data Platform** — a **long-lived government system** for evidence, national layers, verification, and UNCCD reporting — plus the **national mobile collection app**. It is **not** a project to refresh a developer dashboard.
 
-**We are not rebuilding from zero.** We are adding structure, metadata, validation workflows, and reporting layers on top of the current system.
+**Charter (v0.7):** The datasets you provide (`important files/`, field records, and future ministry layers) form the **national LDN data corpus**. Code, APIs, and mobile work done to date are **foundation**, not the finished product. The **web experience will be replaced** (Phase R) with government information architecture; see [`INTERNATIONAL_LDN_BENCHMARK_AND_ZIMBABWE_BLUEPRINT.md`](./INTERNATIONAL_LDN_BENCHMARK_AND_ZIMBABWE_BLUEPRINT.md) and [`NATIONAL_DATA_CORPUS.md`](./NATIONAL_DATA_CORPUS.md).
+
+**We are not rebuilding from zero technically** — we are **redefining the product** so continuity, compliance, and ministerial credibility come first.
 
 ---
 
@@ -79,7 +81,7 @@ Implementation must follow these principles. They apply to database design, APIs
 | **Verification before reporting** | Submissions flow through governed states; national officer locks data used in official tables. |
 | **Single code-list source** | Mobile app, database, and exports read the same `reference_code_lists` version. |
 | **Metadata & lineage** | Imports (shapefiles, Excel, Trends.Earth) carry custodian, vintage, CRS, and confidence. |
-| **Progressive enhancement** | No “big bang” replacement of the working dashboard, sync, or mobile app. |
+| **Progressive enhancement** | **Mobile + DB + APIs** incrementally; **government web shell** may step-change after R1 sign-off (not “same dashboard forever”). |
 | **Government accountability** | Audit trail on changes; soft-delete for field submissions; role-based access. |
 | **Security** | No PRAIS credentials in client apps; secrets only on EMA-controlled infrastructure. |
 
@@ -156,11 +158,11 @@ Therefore the mobile app and validation database are **first-class citizens**: t
 
 ---
 
-## 3. Current platform — what we keep
+## 3. Current platform — foundation vs product
 
-| Asset | Role today | Keep? |
-|-------|------------|-------|
-| Next.js dashboard (`/ldn`, `/soil`, `/drylands`, `/interventions`, `/database`) | Visualization, edits, export | **Yes** — evolve APIs & schema |
+| Asset | Role today | Disposition |
+|-------|------------|-------------|
+| Next.js routes (`/ldn`, `/soil`, `/drylands`, …) | **Temporary operational viewers** | **Replace UI (Phase R)**; keep APIs during cutover |
 | API sync + `public/*-data.json` | Operational cache | **Yes** — become *replica* of DB, not source of truth |
 | FastAPI backend | Mobile/API gateway, validation rules | **Yes** — extend with reporting-period logic |
 | Mobile Capacitor app + validator | Offline navigation, field validation | **Yes** — align forms to canonical schema |
@@ -168,7 +170,11 @@ Therefore the mobile app and validation database are **first-class citizens**: t
 | Supabase (optional live source) | Remote telemetry | **Yes** — formalize as staging/production DB |
 | Drylands mobile module / ILUP Excel (legacy import) | Drylands programme | **Integrate** under unified metadata model |
 
-**Principle:** *Progressive enhancement* — every sprint must leave the current dashboard usable.
+**Principle:** *Continuity of **data and field operations*** — every sprint must keep mobile + corpus ingest working; **visual product** follows approved government UX (Phase R).
+
+### 3.1 International benchmark (assigned countries)
+
+EMA assigned comparative study: Botswana, Kenya, Costa Rica, Colombia, Chile, Panama, Namibia, Ghana, Senegal, Mongolia, Thailand — see [`INTERNATIONAL_COUNTRY_DOSSIERS.md`](./INTERNATIONAL_COUNTRY_DOSSIERS.md). Zimbabwe’s design **composes strengths** (e.g. Botswana grid discipline, Panama institutionalized monitoring, Namibia MEA integration, Colombia participatory SO1) without cloning any one system.
 
 ---
 

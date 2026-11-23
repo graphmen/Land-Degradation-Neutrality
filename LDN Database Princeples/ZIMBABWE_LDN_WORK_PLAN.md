@@ -10,7 +10,7 @@
 
 ## 1. Purpose
 
-This work plan schedules how EMA will evolve the existing OAU platform into:
+This work plan schedules how EMA will evolve the **national LDN data corpus and platform** (foundation code today → government National LDN Data Platform) into:
 
 1. **Deliverable A** — A governed **national LDN database** (PostgreSQL/PostGIS, audit, metadata, reporting exports).  
 2. **Deliverable B** — **National mobile data collection app (Android + iOS)** — offline sync, GPS/photos, verification workflows.
