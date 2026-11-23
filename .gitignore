@@ -63,3 +63,6 @@ public/soil-organic-carbon.json
 
 
 .vercel
+
+# PRAIS export packages (reporting desk dry-runs)
+exports/

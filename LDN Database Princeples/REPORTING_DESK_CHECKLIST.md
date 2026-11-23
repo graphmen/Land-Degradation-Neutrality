@@ -80,7 +80,7 @@ Run in order; store output under `exports/{reporting_period}/` (gitignored; EMA 
 | Step | Job | Pass criteria | ☐ |
 |------|-----|---------------|---|
 | F1 | `EXP-META` | All corpus rows have custodian + vintage | |
-| F2 | `EXP-SO1-FIELD` | Column list = Annex E §E.5 | |
+| F2 | `EXP-SO1-FIELD` | Column list = Annex E §E.5 | 🔶 `GET /api/export/so1-field?eligibility=all` |
 | F3 | `EXP-SO1-LC` | km² totals reconcile with GIS | |
 | F4 | `EXP-SO1-LPD` | Classes match national LPD legend | |
 | F5 | `EXP-SO1-SOC` | Depth 0–30 cm documented | |
