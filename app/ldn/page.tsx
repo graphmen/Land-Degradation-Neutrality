@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState, useMemo } from "react";
 import { createPortal } from "react-dom";
+import { Trees, ClipboardList, Map as MapIcon, Layers, AlertTriangle } from "lucide-react";
 import { downloadFile, convertToKML, convertToCSV } from "@/lib/export";
 import {
   ResponsiveContainer,
@@ -471,7 +472,7 @@ export default function LdnPage() {
         flexShrink: 0
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <span style={{ fontSize: "20px" }}>🌳</span>
+          <Trees size={18} color="#005a2b" />
           <div>
             <h1 style={{ fontSize: "16px", fontWeight: 800, color: "var(--text-primary)", margin: 0, fontFamily: "var(--font-title)" }}>
               Land Degradation Neutrality (LDN) Framework
@@ -799,48 +800,42 @@ export default function LdnPage() {
       </div>
       ) : (
         <div style={{ flex: 1, overflowY: "auto", background: "#f8fafc", padding: "24px" }}>
-          {/* KPI Dashboard Cards Grid */}
+          {/* Compact KPI Strip */}
           <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "16px",
-            marginBottom: "24px"
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            gap: "10px 20px",
+            background: "#ffffff",
+            border: "1px solid var(--border-color)",
+            borderRadius: "8px",
+            padding: "10px 16px",
+            marginBottom: "18px",
+            fontSize: "12px"
           }}>
-            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)" }}>Total Surveys</span>
-                <span style={{ fontSize: "20px" }}>🌲</span>
-              </div>
-              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)" }}>{dashboardStats?.total}</div>
-              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Active filtered telemetry records</div>
-            </div>
-
-            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)" }}>Active Districts</span>
-                <span style={{ fontSize: "20px" }}>🗺️</span>
-              </div>
-              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)" }}>{dashboardStats?.activeDistricts}</div>
-              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Districts reporting data</div>
-            </div>
-
-            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)" }}>Land Cover Classes</span>
-                <span style={{ fontSize: "20px" }}>🌿</span>
-              </div>
-              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)" }}>{dashboardStats?.uniqueLandcovers}</div>
-              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Unique land cover categories</div>
-            </div>
-
-            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)", borderLeft: "4px solid var(--accent-rose)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--accent-rose)" }}>Degraded Hotspots</span>
-                <span style={{ fontSize: "20px" }}>⚠️</span>
-              </div>
-              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--accent-rose)" }}>{dashboardStats?.hotspots}</div>
-              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Nodes classified as degraded</div>
-            </div>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <ClipboardList size={14} color="#005a2b" />
+              <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>Surveys:</span>
+              <strong style={{ fontSize: 14 }}>{dashboardStats?.total}</strong>
+            </span>
+            <span style={{ color: "#cbd7cf" }}>|</span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <MapIcon size={14} color="#0891b2" />
+              <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>Active Districts:</span>
+              <strong style={{ fontSize: 14 }}>{dashboardStats?.activeDistricts}</strong>
+            </span>
+            <span style={{ color: "#cbd7cf" }}>|</span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <Layers size={14} color="#1d4ed8" />
+              <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>Land Cover Classes:</span>
+              <strong style={{ fontSize: 14 }}>{dashboardStats?.uniqueLandcovers}</strong>
+            </span>
+            <span style={{ color: "#cbd7cf" }}>|</span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <AlertTriangle size={14} color="#dc2626" />
+              <span style={{ color: "var(--accent-rose)", fontWeight: 700 }}>Degraded Hotspots:</span>
+              <strong style={{ fontSize: 14, color: "var(--accent-rose)" }}>{dashboardStats?.hotspots}</strong>
+            </span>
           </div>
 
           {/* Top Row: Degradation Severity Distribution (Left) & Land Cover (LULC) Classification (Right) */}

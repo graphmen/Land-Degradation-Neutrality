@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState, useMemo } from "react";
 import { createPortal } from "react-dom";
+import { ShieldCheck, Briefcase, DollarSign, Globe2, Users } from "lucide-react";
 import { downloadFile } from "@/lib/export";
 import {
   ResponsiveContainer,
@@ -480,7 +481,7 @@ export default function InterventionsPage() {
         flexShrink: 0
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <span style={{ fontSize: "20px" }}>🛠️</span>
+          <ShieldCheck size={18} color="#005a2b" />
           <div>
             <h1 style={{ fontSize: "16px", fontWeight: 800, color: "var(--text-primary)", margin: 0, fontFamily: "var(--font-title)" }}>
               Interventions & Reclamation Hub
@@ -1074,48 +1075,42 @@ export default function InterventionsPage() {
       </div>
       ) : (
         <div style={{ flex: 1, overflowY: "auto", background: "#f8fafc", padding: "24px" }}>
-          {/* KPI Dashboard Cards Grid */}
+          {/* Compact KPI Strip */}
           <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "16px",
-            marginBottom: "24px"
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            gap: "10px 20px",
+            background: "#ffffff",
+            border: "1px solid var(--border-color)",
+            borderRadius: "8px",
+            padding: "10px 16px",
+            marginBottom: "18px",
+            fontSize: "12px"
           }}>
-            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)" }}>Total Projects</span>
-                <span style={{ fontSize: "20px" }}>🛠️</span>
-              </div>
-              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)" }}>{dashboardStats?.total}</div>
-              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Active filtered interventions</div>
-            </div>
-
-            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)" }}>Total Budget</span>
-                <span style={{ fontSize: "20px" }}>💰</span>
-              </div>
-              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)" }}>${totalBudget.toLocaleString()}</div>
-              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Accumulated budget size</div>
-            </div>
-
-            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)" }}>Protected Area</span>
-                <span style={{ fontSize: "20px" }}>🌍</span>
-              </div>
-              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--text-primary)" }}>{totalAreaProtected.toFixed(1)} ha</div>
-              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Total land area protected</div>
-            </div>
-
-            <div style={{ background: "#ffffff", border: "1px solid var(--border-color)", borderRadius: "var(--radius-lg)", padding: "16px", boxShadow: "var(--shadow-sm)", borderLeft: "4px solid var(--accent-green)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--accent-green)" }}>Total Beneficiaries</span>
-                <span style={{ fontSize: "20px" }}>👥</span>
-              </div>
-              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--accent-green)" }}>{totalBeneficiaries.toLocaleString()}</div>
-              <div style={{ fontSize: "10px", color: "var(--text-muted)", marginTop: "4px" }}>Local community stakeholders reached</div>
-            </div>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <Briefcase size={14} color="#005a2b" />
+              <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>Projects:</span>
+              <strong style={{ fontSize: 14 }}>{dashboardStats?.total}</strong>
+            </span>
+            <span style={{ color: "#cbd7cf" }}>|</span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <DollarSign size={14} color="#0891b2" />
+              <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>Total Budget:</span>
+              <strong style={{ fontSize: 14 }}>${totalBudget.toLocaleString()}</strong>
+            </span>
+            <span style={{ color: "#cbd7cf" }}>|</span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <Globe2 size={14} color="#1d4ed8" />
+              <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>Protected Area:</span>
+              <strong style={{ fontSize: 14 }}>{totalAreaProtected.toFixed(1)} ha</strong>
+            </span>
+            <span style={{ color: "#cbd7cf" }}>|</span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <Users size={14} color="#005a2b" />
+              <span style={{ color: "var(--accent-green)", fontWeight: 700 }}>Beneficiaries:</span>
+              <strong style={{ fontSize: 14, color: "var(--accent-green)" }}>{totalBeneficiaries.toLocaleString()}</strong>
+            </span>
           </div>
 
           {/* Recharts Graphs Grid */}

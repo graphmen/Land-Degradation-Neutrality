@@ -226,40 +226,44 @@ export default function ReportingDeskPage() {
         </div>
       )}
 
-      {/* Lock Policy + Dry-run Timestamp */}
-      <div className="gov-grid-3">
-        <div className="gov-card">
-          <div className="gov-metric-label">Locked Field Evidence</div>
-          <div className="gov-metric-value">{dryRun.gates?.locked_field_rows ?? 0}</div>
-          <div className="gov-metric-sub">
-            LDN: <strong>{lockPolicy?.counts?.ldn ?? 0}</strong> · Soil:{" "}
-            <strong>{lockPolicy?.counts?.soil ?? 0}</strong> · Drylands:{" "}
-            <strong>{lockPolicy?.counts?.drylands ?? 0}</strong>
-          </div>
-        </div>
-
-        <div className="gov-card">
-          <div className="gov-metric-label">Verification Lock Policy</div>
-          <div style={{ margin: "8px 0" }}>
-            <span className="gov-badge gov-badge-amber">
+      {/* Compact Lock Policy + Dry-run Status Ribbon */}
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "8px 18px",
+          padding: "9px 14px",
+          background: "#ffffff",
+          border: "1px solid #d9e2dc",
+          borderRadius: 8,
+          fontSize: 12,
+        }}
+      >
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px 16px" }}>
+          <span>
+            <strong>Locked Evidence:</strong>{" "}
+            <strong style={{ color: "#005a2b" }}>{dryRun.gates?.locked_field_rows ?? 0}</strong>{" "}
+            (LDN {lockPolicy?.counts?.ldn ?? 0} · Soil {lockPolicy?.counts?.soil ?? 0} · Drylands{" "}
+            {lockPolicy?.counts?.drylands ?? 0})
+          </span>
+          <span style={{ color: "#cbd7cf" }}>|</span>
+          <span>
+            <strong>Lock Policy:</strong>{" "}
+            <span className="gov-badge gov-badge-amber" style={{ padding: "1px 7px" }}>
               {lockPolicy?.mode ?? "pilot_rehearsal"}
             </span>
-          </div>
-          <div className="gov-metric-sub">
-            Status: <strong>{lockPolicy?.status ?? "draft_pending_ema_sign_off"}</strong>
-          </div>
-        </div>
-
-        <div className="gov-card">
-          <div className="gov-metric-label">Last Dry-Run Rehearsal</div>
-          <div style={{ fontSize: 15, fontWeight: 700, margin: "8px 0 4px" }}>
+          </span>
+          <span style={{ color: "#cbd7cf" }}>|</span>
+          <span>
+            <strong>Last Dry-Run:</strong>{" "}
             {dryRun.dry_run_at ? new Date(dryRun.dry_run_at).toLocaleString() : "—"}
-          </div>
-          <div className="gov-metric-sub">
-            Period: <strong>{dryRun.reporting_period ?? "2020-2023"}</strong> · Refresh via{" "}
-            <span className="gov-mono">npm run reporting:dry-run</span>
-          </div>
+          </span>
         </div>
+        <span className="gov-mono" style={{ fontSize: 11, color: "#556b5e" }}>
+          Period: {dryRun.reporting_period ?? "2020-2023"}
+        </span>
       </div>
 
       {/* §F Gates Table */}

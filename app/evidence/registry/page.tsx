@@ -107,25 +107,37 @@ function EvidenceRegistryInner() {
         </div>
       </div>
 
-      {/* Counts Summary Strip */}
+      {/* Compact Counts Strip */}
       {data && (
-        <div className="gov-grid-4">
-          <div className="gov-card">
-            <div className="gov-metric-label">LDN Validations</div>
-            <div className="gov-metric-value">{data.counts.ldn}</div>
-          </div>
-          <div className="gov-card">
-            <div className="gov-metric-label">Soil Core Surveys</div>
-            <div className="gov-metric-value">{data.counts.soil}</div>
-          </div>
-          <div className="gov-card">
-            <div className="gov-metric-label">Drylands (ILUP)</div>
-            <div className="gov-metric-value">{data.counts.drylands}</div>
-          </div>
-          <div className="gov-card">
-            <div className="gov-metric-label">Matching Current Filter</div>
-            <div className="gov-metric-value">{filteredRows.length}</div>
-          </div>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            gap: "8px 18px",
+            padding: "8px 14px",
+            background: "#ffffff",
+            border: "1px solid #d9e2dc",
+            borderRadius: 8,
+            fontSize: 12,
+          }}
+        >
+          <span>
+            <strong>LDN:</strong> {data.counts.ldn}
+          </span>
+          <span style={{ color: "#cbd7cf" }}>|</span>
+          <span>
+            <strong>Soil Cores:</strong> {data.counts.soil}
+          </span>
+          <span style={{ color: "#cbd7cf" }}>|</span>
+          <span>
+            <strong>Drylands:</strong> {data.counts.drylands}
+          </span>
+          <span style={{ color: "#cbd7cf" }}>|</span>
+          <span>
+            <strong style={{ color: "#005a2b" }}>Matching Filter:</strong>{" "}
+            <strong>{filteredRows.length}</strong>
+          </span>
         </div>
       )}
 

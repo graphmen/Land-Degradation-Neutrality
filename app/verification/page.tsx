@@ -236,29 +236,63 @@ function VerificationWorkspaceInner() {
         </div>
       </div>
 
-      {/* 6 Queue Hub Cards */}
+      {/* Compact Single-Row Queue Switcher */}
       {data && (
-        <div className="gov-queue-grid">
-          {data.queues.map((q) => (
-            <button
-              key={q.queue}
-              type="button"
-              className={`gov-queue-card ${activeQueue === q.queue ? "active" : ""}`}
-              onClick={() => {
-                setActiveQueue(q.queue);
-                setDistrictFilter("");
-              }}
-            >
-              <div className="gov-metric-label" style={{ display: "flex", justifyContent: "space-between" }}>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 6,
+            padding: "8px 10px",
+            background: "#ffffff",
+            border: "1px solid #d9e2dc",
+            borderRadius: 10,
+          }}
+        >
+          {data.queues.map((q) => {
+            const active = activeQueue === q.queue;
+            return (
+              <button
+                key={q.queue}
+                type="button"
+                title={`${q.queue} · ${q.actor}`}
+                onClick={() => {
+                  setActiveQueue(q.queue);
+                  setDistrictFilter("");
+                }}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 7,
+                  padding: "6px 12px",
+                  borderRadius: 7,
+                  border: `1px solid ${active ? "#005a2b" : "#d9e2dc"}`,
+                  background: active ? "#005a2b" : "#f8faf9",
+                  color: active ? "#ffffff" : "#172b1f",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  textTransform: "capitalize",
+                }}
+              >
+                {q.queue === "locked" && <Lock size={12} />}
                 <span>{q.queue}</span>
-                {q.queue === "locked" && <Lock size={12} color="#146c38" />}
-              </div>
-              <div className="gov-metric-value" style={{ fontSize: 24, margin: "2px 0" }}>
-                {q.count}
-              </div>
-              <div style={{ fontSize: 11, color: "#556b5e" }}>{q.actor}</div>
-            </button>
-          ))}
+                <span
+                  style={{
+                    fontFamily: "monospace",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    padding: "1px 6px",
+                    borderRadius: 999,
+                    background: active ? "rgba(255,255,255,0.2)" : "#e5ece8",
+                    color: active ? "#ffffff" : "#0b2615",
+                  }}
+                >
+                  {q.count}
+                </span>
+              </button>
+            );
+          })}
         </div>
       )}
 
