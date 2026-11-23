@@ -4,12 +4,12 @@
 
 ## What we built (since reframe)
 
-- National **corpus** QC (LDN 254k, pressure, SBC, projects)
-- **Governance API** + verification audit log
-- **Export rehearsal** §F (bundle with manifest hashes)
-- **Mobile** Android UAT + CEID national LD hint
-- **Validator API** (`/api/validator/ceid`)
-- **Verification pilot** — 3 LDN rows `locked` (local mod ledger; `npm run pilot:lock`)
+- National **corpus** QC — `npm run qc:refresh` (CEID, rasters, §F dry-run)
+- **Field evidence 798** on `GET /api/national-overview` (LDN/soil/drylands)
+- **CEID Q2 pack** — study, alias register, workshop CSV (`export:ceid-worksheet`)
+- **Governance API** + verification audit log · **3** locked LDN pilot
+- **Config APIs** — s2-preflight, reporting-dry-run, ceid-aliases
+- **Steering Word** — 16 DOCX files (`export:steering-docx`)
 
 ## What we are not shipping yet
 

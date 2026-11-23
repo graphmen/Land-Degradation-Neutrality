@@ -16,12 +16,13 @@
 | Area | Status |
 |------|--------|
 | National platform docs + corpus register | Living ([`STEERING_DECISIONS_QUEUE.md`](./STEERING_DECISIONS_QUEUE.md)) |
-| LDN-NAT-ALL QC | 254k polygons; CEID join 93/147 interim |
+| LDN-NAT-ALL QC | 254k polygons; CEID **93/147**; **54** aliases pending Q2 workshop |
 | Verification API | P1+P2 (`/api/verify/*`, migration `005`) |
 | Export rehearsal §F | META (**13** layers), FIELD, STATUS, LC/LPD/SOC templates; bundle + photos |
 | Reporting dry-run | Gates s10_f3 / s11_f4 / s12_f5 · **3 pilot locked** LDN |
 | Staging spatial | Pressure **2804** · SBC **1364** · projects **47** (API opt-in) |
-| R2 API preview | `/api/national-overview`, `/api/evidence/registry`, `/api/verify/queues` (no chrome) |
+| Field cache | **798** reconciled (150 LDN · 632 soil · 16 drylands) |
+| R2 API preview | national-overview, evidence/registry, verify/queues, config (dry-run, s2, ceid) — no chrome |
 | Mobile | Android UAT; iOS study [`mobile/UAT_IOS.md`](../mobile/UAT_IOS.md) |
 | **Not started** | R2 government shell, PostGIS load, production-scale lock |
 | **S2 ready** | [`SUPABASE_S2_STEERING_RUNBOOK.md`](../backend/SUPABASE_S2_STEERING_RUNBOOK.md) Phase A+B |

@@ -83,7 +83,9 @@ Follow this sequence for **national LDN database + Android/iOS collection**. Upd
 
 **Next automatic block:** Facilitate **R1** (§9 + S1/S2/GIS packs, `npm run export:steering-docx`) · DBA **S2** after S1 · EMA GeoTIFF drop (S10–S12).
 
-**Session summary:** [`PROGRAMME_SESSION_SUMMARY_2026-11-23.md`](./PROGRAMME_SESSION_SUMMARY_2026-11-23.md)
+**Session summary:** [`PROGRAMME_SESSION_SUMMARY_2026-11-23.md`](./PROGRAMME_SESSION_SUMMARY_2026-11-23.md) (afternoon refresh — CEID, qc:refresh, field_evidence API)
+
+**Pre-meeting:** `npm run qc:refresh` · `npm run export:steering-docx` · [`R1_API_DEMO_SCRIPT.md`](./R1_API_DEMO_SCRIPT.md)
 
 **Block reviews:** [Study twinning](./BLOCK_REVIEW_2026-11-23_study-peer-twinning.md) · [Discipline](./BLOCK_DISCIPLINE_60MIN.md)
 
