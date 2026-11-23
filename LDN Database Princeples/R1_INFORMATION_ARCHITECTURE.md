@@ -96,6 +96,8 @@ Single searchable registry — **three form types, one governance model**.
 
 **Actions:** View detail · Open on map · Send to verification · (no inline Kobo sync)
 
+**R2 data (preview):** `GET /api/evidence/registry` — unified rows; `?prais_eligible=true` for locked pilot. See [`design/R1_EVIDENCE_REGISTRY_API.md`](./design/R1_EVIDENCE_REGISTRY_API.md).
+
 ---
 
 ## 6. Verification state machine

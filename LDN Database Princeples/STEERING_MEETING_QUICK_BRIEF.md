@@ -36,7 +36,8 @@
 2. `GET /api/export/meta`  
 3. Mobile CEID blur (APK on tablet)  
 4. `GET /api/status` → `locked_ldn_exports: 3` (pilot)  
-5. `GET /api/national-overview` → R2 landing JSON (rehearsal)
+5. `GET /api/national-overview` → R2 landing JSON (rehearsal)  
+6. `GET /api/evidence/registry?prais_eligible=true` → locked pilot rows
 
 ## Word pack (optional)
 

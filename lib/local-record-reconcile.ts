@@ -2,6 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 import ldnDataStatic from "@/public/ldn-data.json";
 import soilDataStatic from "@/public/soil-data.json";
+import drylandsDataStatic from "@/public/drylands-data.json";
 import { enrichRecords } from "@/lib/compliance-metadata";
 
 type ModFile = {
@@ -58,6 +59,15 @@ export async function loadReconciledSoilRecords(): Promise<Record<string, unknow
   const modPath = path.join(process.cwd(), "public", "soil-modifications.json");
   const mod = await loadMod(modPath);
   const base = (soilDataStatic as { records?: Record<string, unknown>[] }).records ?? [];
+  const reconciled = reconcile(base, mod);
+  return enrichRecords(reconciled) as Record<string, unknown>[];
+}
+
+export async function loadReconciledDrylandsRecords(): Promise<Record<string, unknown>[]> {
+  const modPath = path.join(process.cwd(), "public", "drylands-modifications.json");
+  const mod = await loadMod(modPath);
+  const base =
+    (drylandsDataStatic as { records?: Record<string, unknown>[] }).records ?? [];
   const reconciled = reconcile(base, mod);
   return enrichRecords(reconciled) as Record<string, unknown>[];
 }
