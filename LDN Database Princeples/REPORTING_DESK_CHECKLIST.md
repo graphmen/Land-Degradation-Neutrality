@@ -15,7 +15,8 @@ Use this at **national overview / reporting desk** — not as a dashboard widget
 | A1 | Reporting officer appointed (Work Plan RACI) | Steering minutes | |
 | A2 | `reporting_period` defined for 2026 cycle | Signed config (Annex E §E.4) | |
 | A3 | Code list v1.0 steering sign-off | Annex F + DB `reference_code_lists` | |
-| A4 | Twinning / methodology notes (optional) | [`STEERING_PEER_TWINNING_RECOMMENDATION.md`](./STEERING_PEER_TWINNING_RECOMMENDATION.md) | |
+| A4 | Twinning / methodology notes (optional) | [`STEERING_PEER_TWINNING_RECOMMENDATION.md`](./STEERING_PEER_TWINNING_RECOMMENDATION.md) · **S7** | |
+| A5 | LC raster authority (**S10**) | [`design/REPORTING_DESK_F3_S10_GATE.md`](./design/REPORTING_DESK_F3_S10_GATE.md) | |
 
 ---
 
@@ -23,6 +24,7 @@ Use this at **national overview / reporting desk** — not as a dashboard widget
 
 | # | Layer | Register row | Gate | ☐ |
 |---|-------|--------------|------|---|
+| B0 | National LC stack **t₀/t₁** | LC-NAT-STACK | Steering **S10** (T1–T4); rasters in `important files/` | |
 | B1 | Combined LDN units (254k) | LDN-NAT-ALL | EMA Q1 Area unit + Q2 CEID join answered | |
 | B2 | Field LDN (locked count ≥ policy min) | FIELD-LDN | Verification workspace | |
 | B3 | Soil Tier-2 samples (locked) | FIELD-SOIL | Lab SOC linkage where claimed | |
@@ -79,13 +81,25 @@ Run in order; store output under `exports/{reporting_period}/` (gitignored; EMA 
 
 | Step | Job | Pass criteria | ☐ |
 |------|-----|---------------|---|
-| F1 | `EXP-META` | All corpus rows have custodian + vintage | ✅ `GET /api/export/meta` · 10 layers |
+| F1 | `EXP-META` | All corpus rows have custodian + vintage | ✅ `GET /api/export/meta` · **11** layers (incl. LC-NAT-STACK) |
 | F2 | `EXP-SO1-FIELD` | Column list = Annex E §E.5 | ✅ dry-run [`reporting-desk-dry-run.json`](../public/reporting-desk-dry-run.json) |
-| F3 | `EXP-SO1-LC` | km² totals reconcile with GIS | 🔶 7×7 template only · `GET /api/export/so1-lc` |
+| F3 | `EXP-SO1-LC` | **S10** gates + km² reconcile with GIS (see below) | 🔶 7×7 template · `source_layer_id: LC-NAT-STACK` · `GET /api/export/so1-lc` |
 | F4 | `EXP-SO1-LPD` | Classes match national LPD legend | 🔶 template · `GET /api/export/so1-lpd` |
 | F5 | `EXP-SO1-SOC` | Depth 0–30 cm documented | 🔶 632 Tier-2 rows · `GET /api/export/so1-soc` |
 | F6 | `EXP-SO1-STATUS` | % degraded matches 1OAO logic | 🔶 LD zonal **8.86%** degraded (not 1OAO) · [`EXP_SO1_STATUS.md`](./design/EXP_SO1_STATUS.md) |
-| F7 | Package hash logged | Reporting desk handoff log | ✅ `npx tsx scripts/export_reporting_bundle.ts` · manifest in `exports/` |
+| F7 | Package hash logged | Reporting desk handoff log | ✅ `npm run reporting:bundle` · manifest in `exports/` |
+
+### F3 — S10 sub-checklist (SO1-1)
+
+Use [`REPORTING_DESK_F3_S10_GATE.md`](./design/REPORTING_DESK_F3_S10_GATE.md). Dry-run field: `public/reporting-desk-dry-run.json` → `gates.s10_f3`.
+
+| ID | Item | ☐ |
+|----|------|---|
+| S10a | T1 source signed (Trends.Earth / EMA / hybrid) | |
+| S10b | LC-NAT-STACK in `EXP-META` | ✅ register |
+| S10c | t₀ + t₁ GeoTIFF delivered | |
+| S10d | Legend = code list v1.0 (**S1**) | |
+| S10e | 49 cells have `area_km2` | |
 
 ---
 
@@ -105,6 +119,7 @@ Run in order; store output under `exports/{reporting_period}/` (gitignored; EMA 
 
 | Blocker | Owner | Doc |
 |---------|-------|-----|
+| **SO1-1 LC rasters** | GIS + steering **S10** | [`corpus/metadata/LC-NAT-STACK_IMPORT_PLAN.md`](./corpus/metadata/LC-NAT-STACK_IMPORT_PLAN.md) |
 | LDN polygon load | GIS + steering | [`corpus/metadata/LDN-NAT-ALL_IMPORT_PLAN.md`](./corpus/metadata/LDN-NAT-ALL_IMPORT_PLAN.md) |
 | R1 platform sign-off | Steering | [`R1_INFORMATION_ARCHITECTURE.md`](./R1_INFORMATION_ARCHITECTURE.md) §9 |
 | Export jobs not implemented | ICT | Phase 4.1 in programme steps |

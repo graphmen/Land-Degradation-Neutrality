@@ -1,5 +1,5 @@
 {
-  "dry_run_at": "2026-11-23T09:13:15.275Z",
+  "dry_run_at": "2026-11-23T09:31:04.929Z",
   "reporting_period": "2020-2023",
   "section_F": {
     "F1_EXP_META": {
@@ -12,7 +12,9 @@
       "pass": false,
       "status": "template_only",
       "row_count": 49,
-      "note": "Template only until LC rasters registered",
+      "source_layer_id": "LC-NAT-STACK",
+      "km2_cells_populated": 0,
+      "note": "Template until S10 + zonal stats",
       "hash_csv": "435bf033c187307ecc6eb022d1f92838fed40a59ce9155be73908ca66827bc5f"
     },
     "F4_EXP_SO1_LPD": {
@@ -57,9 +59,9 @@
     },
     "F7_REPORTING_BUNDLE": {
       "pass": true,
-      "bundle_id": "BUNDLE-2026-11-23T09-13-15-211Z",
-      "root_dir": "C:\\Users\\ndebelem.ZINGSERVER1\\Desktop\\2026\\OAU\\exports\\2020-2023\\BUNDLE-2026-11-23T09-13-15-211Z",
-      "manifest_sha256": "52ca1e7a279fcabb7ca317548c6efb1e13f7d6815a0c75d28da1dd5bb9407838",
+      "bundle_id": "BUNDLE-2026-11-23T09-31-04-863Z",
+      "root_dir": "C:\\Users\\ndebelem.ZINGSERVER1\\Desktop\\2026\\OAU\\exports\\2020-2023\\BUNDLE-2026-11-23T09-31-04-863Z",
+      "manifest_sha256": "a5ac949fc8abdf3a40d466c7f54f5894a96c0de632e04d6a784649ce4eb6b9c3",
       "package_count": 7
     }
   },
@@ -69,6 +71,19 @@
       "LDN-NAT-ALL Area unit (Q1)",
       "1OAO national LC+LPD+SOC run pending",
       "Pilot only: 3 locked row(s) — scale lock after R1 + real verifier accounts"
-    ]
+    ],
+    "s10_f3": {
+      "corpus_registered": true,
+      "import_status": "awaiting_delivery",
+      "template_rows": 49,
+      "km2_cells_populated": 0,
+      "pass": false,
+      "required_for_pass": [
+        "S10c: deliver t0/t1 GeoTIFF to important files/",
+        "S10a: steering sign T1 (Trends.Earth vs EMA)",
+        "S10e: populate area_km2 (0/49 cells)"
+      ],
+      "design": "LDN Database Princeples/design/REPORTING_DESK_F3_S10_GATE.md"
+    }
   }
 }

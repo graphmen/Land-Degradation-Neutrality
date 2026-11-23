@@ -28,6 +28,21 @@ async function main() {
   const manifestHash = await sha256(manifestRaw);
   const lockedField = await buildExpSo1FieldPackage({ eligibility: "locked" });
   const lockedCount = lockedField.stats.ldn_exported;
+  const lcLayer = meta.layers.find((l) => l.layer_id === "LC-NAT-STACK");
+  const km2Populated = lc.rows.filter((r) => r.area_km2 != null).length;
+  const s10Required: string[] = [];
+  if (!lcLayer) s10Required.push("LC-NAT-STACK missing from EXP-META");
+  if (lcLayer?.import_status === "awaiting_delivery") {
+    s10Required.push("S10c: deliver t0/t1 GeoTIFF to important files/");
+  }
+  s10Required.push("S10a: steering sign T1 (Trends.Earth vs EMA)");
+  if (km2Populated < lc.rows.length) {
+    s10Required.push(
+      `S10e: populate area_km2 (${km2Populated}/${lc.rows.length} cells)`
+    );
+  }
+  const f3Pass =
+    lc.status !== "template_only" && km2Populated === lc.rows.length;
   const steering_blockers = [
     "LDN-NAT-ALL Area unit (Q1)",
     "1OAO national LC+LPD+SOC run pending",
@@ -51,10 +66,14 @@ async function main() {
         missing: meta.validation.f1_missing,
       },
       F3_EXP_SO1_LC: {
-        pass: false,
+        pass: f3Pass,
         status: lc.status,
         row_count: lc.rows.length,
-        note: "Template only until LC rasters registered",
+        source_layer_id: "LC-NAT-STACK",
+        km2_cells_populated: km2Populated,
+        note: f3Pass
+          ? "National matrix populated"
+          : "Template until S10 + zonal stats",
         hash_csv: await sha256(lc.csv),
       },
       F4_EXP_SO1_LPD: {
@@ -103,6 +122,15 @@ async function main() {
     gates: {
       locked_field_rows: lockedCount,
       steering_blockers,
+      s10_f3: {
+        corpus_registered: lcLayer != null,
+        import_status: lcLayer?.import_status ?? "missing",
+        template_rows: lc.rows.length,
+        km2_cells_populated: km2Populated,
+        pass: f3Pass,
+        required_for_pass: s10Required,
+        design: "LDN Database Princeples/design/REPORTING_DESK_F3_S10_GATE.md",
+      },
     },
   };
 
