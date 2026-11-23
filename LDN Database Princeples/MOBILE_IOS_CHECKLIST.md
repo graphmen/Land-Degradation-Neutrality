@@ -26,7 +26,8 @@ In Xcode: set signing team, bundle id `gov.zw.ema.ldn`, enable Camera + Location
 
 ## Windows / CI lane
 
-- Use **Android** APK for internal UAT on this machine: `npx cap sync android` → Android Studio.
+- **Android UAT (verified):** `cd mobile && npm run build && npx cap sync android` → open `mobile/android` in Android Studio.
+- Sync code lists: `node scripts/sync_mobile_code_lists.mjs`
 - Track iOS in programme step **3.1** until Mac build completes.
 
 ## Test plan

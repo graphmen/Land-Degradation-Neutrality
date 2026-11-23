@@ -13,8 +13,12 @@ type ListEntry = {
 };
 
 function valuesOf(key: string): ListEntry[] {
-  const lists = (codeLists as { lists: Record<string, { values: ListEntry[] }> }).lists;
-  return lists[key]?.values ?? [];
+  const lists = (codeLists as { lists: Record<string, { values: unknown[] }> }).lists;
+  const raw = lists[key]?.values ?? [];
+  return raw.filter(
+    (v): v is ListEntry =>
+      typeof v === "object" && v !== null && "code" in v && "label" in v
+  );
 }
 
 function findInList(key: string, codeOrLabel: string): ListEntry | undefined {
