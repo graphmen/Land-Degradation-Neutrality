@@ -30,3 +30,9 @@
 - EMA steering answer required for **Area units** or **CEID join** before polygon load  
 - R1 unsigned and task would be “new web shell”  
 - Missing secrets for production Supabase apply (documents SQL only)
+
+## R1 facilitation (2026-11-23)
+
+**Default next human step:** live R1 using [`R1_ATTENDEE_PACKET_INDEX.md`](./R1_ATTENDEE_PACKET_INDEX.md).  
+**After minutes:** [`R1_POST_MEETING_PLAYBOOK.md`](./R1_POST_MEETING_PLAYBOOK.md).  
+**Autonomous rotation until §9 Go:** Study · Data (corpus drops) · Build (API/data only) — not more steering PDFs unless gaps found.

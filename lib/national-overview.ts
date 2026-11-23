@@ -46,6 +46,9 @@ export type NationalOverviewPackage = {
   reporting_desk: {
     f1_meta_pass: boolean | null;
     locked_field_rows: number | null;
+    lock_policy_mode: string | null;
+    lock_policy_pass: boolean | null;
+    locked_ldn: number | null;
     steering_blockers: string[];
   };
   steering_actions: Array<{ label: string; href: string }>;
@@ -103,6 +106,11 @@ export async function buildNationalOverview(): Promise<NationalOverviewPackage> 
     gates?: {
       locked_field_rows?: number;
       steering_blockers?: string[];
+      lock_policy?: {
+        mode?: string;
+        pass?: boolean | null;
+        counts?: { ldn?: number };
+      };
     };
     section_F?: { F1_EXP_META?: { pass?: boolean } };
   }>("reporting-desk-dry-run.json");
@@ -153,6 +161,9 @@ export async function buildNationalOverview(): Promise<NationalOverviewPackage> 
     reporting_desk: {
       f1_meta_pass: dryRun?.section_F?.F1_EXP_META?.pass ?? null,
       locked_field_rows: dryRun?.gates?.locked_field_rows ?? null,
+      lock_policy_mode: dryRun?.gates?.lock_policy?.mode ?? null,
+      lock_policy_pass: dryRun?.gates?.lock_policy?.pass ?? null,
+      locked_ldn: dryRun?.gates?.lock_policy?.counts?.ldn ?? null,
       steering_blockers: dryRun?.gates?.steering_blockers ?? [],
     },
     steering_actions: [
