@@ -1,11 +1,11 @@
 {
-  "dry_run_at": "2026-11-23T09:49:15.502Z",
+  "dry_run_at": "2026-11-23T12:25:23.954Z",
   "reporting_period": "2020-2023",
   "section_F": {
     "F1_EXP_META": {
       "pass": true,
       "layer_count": 13,
-      "hash_csv": "65cf0a551114f71b0f4c2b375a0bbc577519ac0ab653ab744a752072c191128d",
+      "hash_csv": "e01744d6d1133782ecae740676aaf1cff758f5034897dfbfaa99adacd5447dd9",
       "missing": []
     },
     "F3_EXP_SO1_LC": {
@@ -66,9 +66,9 @@
     },
     "F7_REPORTING_BUNDLE": {
       "pass": true,
-      "bundle_id": "BUNDLE-2026-11-23T09-49-15-440Z",
-      "root_dir": "C:\\Users\\ndebelem.ZINGSERVER1\\Desktop\\2026\\OAU\\exports\\2020-2023\\BUNDLE-2026-11-23T09-49-15-440Z",
-      "manifest_sha256": "22406b0ebfb32ad4d175691443af6752649ebf0dd71a6526a4ae642edd3cfd3c",
+      "bundle_id": "BUNDLE-2026-11-23T12-25-23-920Z",
+      "root_dir": "C:\\Users\\ndebelem.ZINGSERVER1\\Desktop\\2026\\OAU\\exports\\2020-2023\\BUNDLE-2026-11-23T12-25-23-920Z",
+      "manifest_sha256": "349db13f26475be746357cf68bec728bdbd9c66d0fdda7d64661d215196e9a8a",
       "package_count": 7
     }
   },

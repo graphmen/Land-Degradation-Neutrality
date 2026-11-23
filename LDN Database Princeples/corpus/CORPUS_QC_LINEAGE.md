@@ -24,13 +24,14 @@
 ## 2. Refresh procedure (before steering)
 
 ```powershell
-npm run qc:ceid
-python scripts/pressure_layer_qc.py
-python scripts/intervention_spatial_qc.py
-python scripts/national_raster_qc.py
+npm run qc:refresh
+```
+
+Optional staging re-import before steering (slow):
+
+```powershell
 npm run import:pressure-staging
 npm run import:sbc-staging
-npm run reporting:dry-run
 npm run qc:summary
 ```
 

@@ -27,6 +27,7 @@ def main() -> int:
     sbc_staging = load("intervention-sbc-staging.json") or {}
     ema_projects = load("ema-projects-import.json") or {}
     dry_run = load("reporting-desk-dry-run.json") or {}
+    aliases = load("reference-ceid-aliases.v0.1.json") or {}
 
     pressure_pkgs = {
         p.get("layer_id"): p.get("feature_total")
@@ -45,6 +46,8 @@ def main() -> int:
             "ceid_join_rule": ceid.get("recommended_interim_rule"),
             "ceid_match_count": ceid.get("match_count_recommended"),
             "ceid_match_rate": ceid.get("match_rate_recommended"),
+            "ceid_unmatched_count": ceid.get("unmatched_count"),
+            "ceid_alias_pending": (aliases.get("statistics") or {}).get("pending_ema"),
         },
         "national_polygon": {
             "polygon_count": ceid.get("shapefile_profile", {}).get("polygon_count"),
@@ -75,7 +78,9 @@ def main() -> int:
             "scripts/import_pressure_layers.py",
             "scripts/import_sbc_staging.py",
             "scripts/reporting_desk_dry_run.ts",
+            "scripts/build_ceid_alias_draft.py",
         ],
+        "npm_refresh": "npm run qc:refresh",
         "doc": "LDN Database Princeples/corpus/CORPUS_QC_LINEAGE.md",
     }
 

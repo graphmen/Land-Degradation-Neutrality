@@ -1,11 +1,13 @@
 {
-  "generated_at": "2026-11-23T10:30:42.280613+00:00",
+  "generated_at": "2026-11-23T12:25:24.994746+00:00",
   "field_ldn": {
     "records_with_ceid": 150,
     "unique_ceids": 147,
     "ceid_join_rule": "second_segment",
     "ceid_match_count": 93,
-    "ceid_match_rate": 0.6327
+    "ceid_match_rate": 0.6327,
+    "ceid_unmatched_count": 54,
+    "ceid_alias_pending": 54
   },
   "national_polygon": {
     "polygon_count": 254873,
@@ -87,7 +89,9 @@
     "scripts/national_raster_qc.py",
     "scripts/import_pressure_layers.py",
     "scripts/import_sbc_staging.py",
-    "scripts/reporting_desk_dry_run.ts"
+    "scripts/reporting_desk_dry_run.ts",
+    "scripts/build_ceid_alias_draft.py"
   ],
+  "npm_refresh": "npm run qc:refresh",
   "doc": "LDN Database Princeples/corpus/CORPUS_QC_LINEAGE.md"
 }

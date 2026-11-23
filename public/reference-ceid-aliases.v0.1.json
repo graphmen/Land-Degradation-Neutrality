@@ -3,7 +3,7 @@
   "status": "draft_pending_ema",
   "default_join_rule": "second_segment",
   "generated_from": "public/qc-ceid-join-report.json",
-  "generated_at": "2026-11-23T10:32:15.903267+00:00",
+  "generated_at": "2026-11-23T12:25:10.590660+00:00",
   "steering_gate": "Q2",
   "entries": [
     {
