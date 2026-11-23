@@ -11,7 +11,8 @@
 | 4 | `GET /api/corpus-layers` | 13 layers; `staging_json` pressure/SBC/projects |
 | 5 | `GET /api/validator/ceid?ceid=11268_17236` | Mobile CEID hint (grid match) |
 | 5b | `GET /api/validator/ceid?ceid=ZC2` | Legacy token → `pending_ema` (alias register) |
-| 6 | `GET /api/evidence/registry?prais_eligible=true` | Locked rows only (3) |
+| 6 | `GET /api/evidence/summary` | 798 total; locked by type; status histogram |
+| 6b | `GET /api/evidence/registry?prais_eligible=true` | Locked rows only (3) |
 | 7 | `GET /api/verify/queues?queue=locked` | Verification workspace preview |
 | 8 | `GET /api/pressure-layers?theme=invasive` | `count` only if sensitive (national role) |
 | 9 | `GET /api/interventions?includeEma=true&includeSbc=true` | National programme points (auth) |

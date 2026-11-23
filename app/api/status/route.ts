@@ -53,6 +53,7 @@ export async function GET(): Promise<NextResponse> {
         "/api/qc/summary",
         "/api/national-overview",
         "/api/evidence/registry",
+        "/api/evidence/summary",
         "/api/interventions",
         "/api/verify/transition",
         "/api/verify/queues",

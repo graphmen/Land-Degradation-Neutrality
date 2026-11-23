@@ -1,7 +1,7 @@
 # Design — Evidence registry API (R1 §5)
 
 **Status:** v0.1 preview · **UI:** R2 only — use JSON for steering demos  
-**Route:** `GET /api/evidence/registry`
+**Routes:** `GET /api/evidence/registry` · `GET /api/evidence/summary` (counts only)
 
 ## Query params
 

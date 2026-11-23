@@ -158,6 +158,7 @@ export async function buildNationalOverview(): Promise<NationalOverviewPackage> 
     steering_actions: [
       { label: "Reporting desk §F gates", href: "/api/config/reporting-dry-run" },
       { label: "Export bundle rehearsal", href: "/api/export/bundle" },
+      { label: "Evidence summary", href: "/api/evidence/summary" },
       { label: "Evidence registry", href: "/api/evidence/registry" },
       { label: "Corpus layers", href: "/api/corpus-layers" },
       { label: "QC summary", href: "/api/qc/summary" },
