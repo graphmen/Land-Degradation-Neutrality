@@ -21,6 +21,6 @@
 
 - Export rehearsal: `npm run reporting:bundle`
 - Dry-run JSON: `public/reporting-desk-dry-run.json` (`locked_field_rows: 3` pilot)
-- S2 runbook: `backend/SUPABASE_S2_STEERING_RUNBOOK.md`
+- S2 runbook: `backend/SUPABASE_S2_STEERING_RUNBOOK.md` · `npm run s2:preflight`
 - GIS SO1 pack: `STEERING_GIS_SO1_DECISION_PACK.md` · `npm run qc:rasters:checklist`
 - Block reviews: `BLOCK_REVIEW_2026-11-23_*.md`

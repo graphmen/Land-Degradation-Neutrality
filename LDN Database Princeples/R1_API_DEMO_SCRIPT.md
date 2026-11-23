@@ -14,8 +14,9 @@
 | 7 | `GET /api/verify/queues?queue=locked` | Verification workspace preview |
 | 8 | `GET /api/pressure-layers?theme=invasive` | `count` only if sensitive (national role) |
 | 9 | `GET /api/interventions?includeEma=true&includeSbc=true` | National programme points (auth) |
-| 10 | `GET /api/export/meta` | EXP-META rehearsal |
-| 11 | `npm run reporting:dry-run` (offline) | §F gates: s10_f3, s11_f4, s12_f5 |
+| 10 | `GET /api/config/s2-preflight` | S2 Phase A+B files ready (after `npm run s2:preflight`) |
+| 11 | `GET /api/export/meta` | EXP-META rehearsal |
+| 12 | `npm run reporting:dry-run` (offline) | §F gates: s10_f3, s11_f4, s12_f5 |
 
 **Word attach:** `npm run export:steering-docx`
 

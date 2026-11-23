@@ -1,0 +1,95 @@
+{
+  "preflight_at": "2026-11-23T10:09:32.465255+00:00",
+  "s2_decision": "S2",
+  "phase_ab_ready": true,
+  "phase_ab_files": [
+    {
+      "phase": "A",
+      "file": "001_reference_code_lists.sql",
+      "steering_gate": "S1",
+      "apply_in_s2_ab": true,
+      "exists": true,
+      "path": "backend\\migrations\\001_reference_code_lists.sql",
+      "bytes": 1132,
+      "sha256": "56e831e3bf4575bc37bb9e1a209a6340d5e2a275e204fa2e8bb246d7491f0078",
+      "lines": 24
+    },
+    {
+      "phase": "A",
+      "file": "001_reference_code_lists_seed.sql",
+      "steering_gate": "S1",
+      "apply_in_s2_ab": true,
+      "exists": true,
+      "path": "backend\\migrations\\001_reference_code_lists_seed.sql",
+      "bytes": 3623,
+      "sha256": "ee861731cf04ac48ef98cbf936040ef58b249278dfe48d004c7133ba73a7891b",
+      "lines": 15
+    },
+    {
+      "phase": "B",
+      "file": "004_field_governance.sql",
+      "steering_gate": "S1",
+      "apply_in_s2_ab": true,
+      "exists": true,
+      "path": "backend\\migrations\\004_field_governance.sql",
+      "bytes": 2207,
+      "sha256": "ffaf623ba5232d042823e472b56306acc5ec4e35ccc55fe78713ee1a457744b8",
+      "lines": 66
+    },
+    {
+      "phase": "B",
+      "file": "005_verification_log.sql",
+      "steering_gate": "S1",
+      "apply_in_s2_ab": true,
+      "exists": true,
+      "path": "backend\\migrations\\005_verification_log.sql",
+      "bytes": 1468,
+      "sha256": "bcbac6eeec21b145e62ab3b98f443bcd0d37801161d4eadf909593c1b449a2de",
+      "lines": 30
+    }
+  ],
+  "phase_cd_deferred": [
+    {
+      "phase": "C",
+      "file": "003_pressure_layers.sql",
+      "steering_gate": "S8",
+      "apply_in_s2_ab": false,
+      "exists": true,
+      "path": "backend\\migrations\\003_pressure_layers.sql",
+      "bytes": 1018,
+      "sha256": "54a31ae26479aae67b3f86ef9f57f7e591b54d55c3452118840e3b3f2216b514",
+      "lines": 24
+    },
+    {
+      "phase": "D",
+      "file": "002_national_ldn_units.sql",
+      "steering_gate": "S3-S4",
+      "apply_in_s2_ab": false,
+      "exists": true,
+      "path": "backend\\migrations\\002_national_ldn_units.sql",
+      "bytes": 1140,
+      "sha256": "a50bb9abe36e92687423e8a9015bdb9a118e1733bb24b905072f8233fb666584",
+      "lines": 24
+    }
+  ],
+  "code_list_seed_source": {
+    "exists": true,
+    "path": "public\\reference-code-lists.v0.9.json",
+    "bytes": 4329,
+    "sha256": "31b5c62f78cbee5fc4a7e676f806375fb4ba157cd4d1e4dacbd83e3ed9370d81",
+    "lines": 97
+  },
+  "staging_present": {
+    "pressure_points": true,
+    "sbc_points": true,
+    "note": "Phase C uses pressure staging after 003; not imported to DB in preflight"
+  },
+  "blockers": [],
+  "next_steps": [
+    "Steering sign S1 (code lists v1.0)",
+    "Supabase SQL editor: run Phase A then B files in order",
+    "Run VERIFY_MIGRATIONS.sql sections 001, 004, 005",
+    "node scripts/verify_supabase_schema.mjs (with env)"
+  ],
+  "runbook": "backend/SUPABASE_S2_STEERING_RUNBOOK.md"
+}

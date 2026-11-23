@@ -12,6 +12,7 @@
     "sync:mobile-codes": "node scripts/sync_mobile_code_lists.mjs",
     "verify:supabase": "node scripts/verify_supabase_schema.mjs",
     "verify:supabase:checklist": "node scripts/verify_supabase_schema.mjs --checklist-only",
+    "s2:preflight": "python scripts/s2_migration_preflight.py",
     "qc:rasters": "python scripts/national_raster_qc.py",
     "qc:rasters:checklist": "python scripts/national_raster_qc.py --checklist-only",
     "import:pressure-staging": "python scripts/import_pressure_layers.py",

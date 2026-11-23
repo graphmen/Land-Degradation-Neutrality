@@ -8,6 +8,8 @@
 
 ## Before you start
 
+**Local preflight (no DB):** `npm run s2:preflight` → [`S2_APPLY_PREFLIGHT.md`](./S2_APPLY_PREFLIGHT.md) · `GET /api/config/s2-preflight`
+
 | Gate | Needed for |
 |------|------------|
 | **S1** | `001` seed reflects signed Annex F v1.0 |

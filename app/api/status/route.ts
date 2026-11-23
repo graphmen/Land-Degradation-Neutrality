@@ -56,6 +56,7 @@ export async function GET(): Promise<NextResponse> {
         "/api/interventions",
         "/api/verify/transition",
         "/api/verify/queues",
+        "/api/config/s2-preflight",
       ],
     },
     environment: {

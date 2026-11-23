@@ -1,10 +1,11 @@
 {
-  "generated_at": "2026-11-23T10:01:33.371205+00:00",
+  "generated_at": "2026-11-23T10:01:52.321905+00:00",
   "field_ldn": {
     "records_with_ceid": 150,
     "unique_ceids": 147,
-    "ceid_join_rule": null,
-    "ceid_match_rate": null
+    "ceid_join_rule": "second_segment",
+    "ceid_match_count": 93,
+    "ceid_match_rate": 0.6327
   },
   "national_polygon": {
     "polygon_count": 254873,
