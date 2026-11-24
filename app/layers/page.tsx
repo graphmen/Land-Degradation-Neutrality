@@ -696,78 +696,80 @@ export default function NationalLayersPage() {
 
   return (
     <>
-      {/* Page Header */}
-      <div className="gov-page-header" style={{ paddingBottom: 12 }}>
-        <div>
-          <h1 className="gov-page-title">National Layers</h1>
+      <div className="gov-sticky-top">
+        {/* Page Header */}
+        <div className="gov-page-header" style={{ paddingBottom: 10 }}>
+          <div>
+            <h1 className="gov-page-title">National Layers</h1>
+          </div>
+          <div className="gov-page-actions">
+            <button
+              type="button"
+              className="gov-btn gov-btn-primary"
+              onClick={() => setViewMode((v) => (v === "map" ? "table" : "map"))}
+            >
+              {viewMode === "map" ? (
+                <>
+                  <Table2 size={15} /> Switch to Tabular View
+                </>
+              ) : (
+                <>
+                  <MapIcon size={15} /> Switch to Spatial Map
+                </>
+              )}
+            </button>
+            <button type="button" className="gov-btn" onClick={loadCore} disabled={loading}>
+              <RefreshCw size={14} /> Refresh
+            </button>
+            <button type="button" className="gov-btn" onClick={() => setExportOpen(true)}>
+              <Download size={14} /> Export Data…
+            </button>
+          </div>
         </div>
-        <div className="gov-page-actions">
-          <button
-            type="button"
-            className="gov-btn gov-btn-primary"
-            onClick={() => setViewMode((v) => (v === "map" ? "table" : "map"))}
-          >
-            {viewMode === "map" ? (
-              <>
-                <Table2 size={15} /> Switch to Tabular View
-              </>
-            ) : (
-              <>
-                <MapIcon size={15} /> Switch to Spatial Map
-              </>
-            )}
-          </button>
-          <button type="button" className="gov-btn" onClick={loadCore} disabled={loading}>
-            <RefreshCw size={14} /> Refresh
-          </button>
-          <button type="button" className="gov-btn" onClick={() => setExportOpen(true)}>
-            <Download size={14} /> Export Data…
-          </button>
-        </div>
-      </div>
 
-      {/* Compact Single-Line LDN Posture Ribbon */}
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "8px 16px",
-          padding: "8px 14px",
-          background: "#ffffff",
-          border: "1px solid #d9e2dc",
-          borderRadius: 8,
-          fontSize: 12,
-        }}
-      >
-        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px 18px" }}>
-          <span>
-            <strong style={{ color: "#005a2b" }}>SDG 15.3.1:</strong>{" "}
-            <strong>{degradedPct.toFixed(2)}%</strong> degraded (interim)
-          </span>
-          <span style={{ color: "#cbd7cf" }}>|</span>
-          <span>
-            <strong style={{ color: "#1d4ed8" }}>Bright Spots:</strong> <strong>1,414</strong> (47
-            projects · 1,367 SBC)
-          </span>
-          <span style={{ color: "#cbd7cf" }}>|</span>
-          <span>
-            <strong style={{ color: "#d97706" }}>Pressures:</strong> <strong>2,804</strong> (2,035
-            invasive · 769 mining)
-          </span>
-          <span style={{ color: "#cbd7cf" }}>|</span>
-          <span>
-            <strong style={{ color: "#0891b2" }}>Corpus:</strong>{" "}
-            <strong>
-              {liveReadyCount}/{data?.layer_count ?? 13}
-            </strong>{" "}
-            operational · {awaitingCount} rasters pending
-          </span>
+        {/* Compact Single-Line LDN Posture Ribbon */}
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "8px 16px",
+            padding: "8px 14px",
+            background: "#ffffff",
+            border: "1px solid #d9e2dc",
+            borderRadius: 8,
+            fontSize: 12,
+          }}
+        >
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px 18px" }}>
+            <span>
+              <strong style={{ color: "#005a2b" }}>SDG 15.3.1:</strong>{" "}
+              <strong>{degradedPct.toFixed(2)}%</strong> degraded (interim)
+            </span>
+            <span style={{ color: "#cbd7cf" }}>|</span>
+            <span>
+              <strong style={{ color: "#1d4ed8" }}>Bright Spots:</strong> <strong>1,414</strong> (47
+              projects · 1,367 SBC)
+            </span>
+            <span style={{ color: "#cbd7cf" }}>|</span>
+            <span>
+              <strong style={{ color: "#d97706" }}>Pressures:</strong> <strong>2,804</strong> (2,035
+              invasive · 769 mining)
+            </span>
+            <span style={{ color: "#cbd7cf" }}>|</span>
+            <span>
+              <strong style={{ color: "#0891b2" }}>Corpus:</strong>{" "}
+              <strong>
+                {liveReadyCount}/{data?.layer_count ?? 13}
+              </strong>{" "}
+              operational · {awaitingCount} rasters pending
+            </span>
+          </div>
+          <Link href="/analytics" style={{ color: "#005a2b", fontWeight: 700, textDecoration: "none" }}>
+            SO1 Matrix →
+          </Link>
         </div>
-        <Link href="/analytics" style={{ color: "#005a2b", fontWeight: 700, textDecoration: "none" }}>
-          SO1 Matrix →
-        </Link>
       </div>
 
       {error && <div className="gov-alert gov-alert-red">{error}</div>}

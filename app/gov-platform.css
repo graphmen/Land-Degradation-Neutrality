@@ -494,10 +494,11 @@
   box-shadow: 0 1px 0 #d9e2dc;
 }
 
-/* Tables */
+/* Tables — global sticky column headers & scrollable body */
 .gov-table-wrap {
   width: 100%;
-  overflow-x: auto;
+  overflow: auto;
+  max-height: calc(100vh - 300px);
   border: 1px solid #d9e2dc;
   border-radius: 10px;
   background: #ffffff;
@@ -510,6 +511,9 @@
 }
 
 .gov-table th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
   text-align: left;
   padding: 11px 14px;
   font-size: 11px;
@@ -519,6 +523,7 @@
   color: #465d50;
   background: #f6f9f7;
   border-bottom: 1px solid #d9e2dc;
+  box-shadow: 0 1px 0 #d9e2dc;
   white-space: nowrap;
 }
 

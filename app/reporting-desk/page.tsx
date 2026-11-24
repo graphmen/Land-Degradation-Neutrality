@@ -269,106 +269,108 @@ export default function ReportingDeskPage() {
 
   return (
     <>
-      <div className="gov-page-header" style={{ paddingBottom: 12 }}>
-        <div>
-          <h1 className="gov-page-title">Reporting Desk — UNCCD PRAIS 4 Submission Center</h1>
-          <p className="gov-page-subtitle">
-            Track readiness, download verified PRAIS 4 tables, and record National Reporting
-            Officer sign-off for cycle <strong>{period}</strong>.
-          </p>
-        </div>
-        <div className="gov-page-actions">
-          <button type="button" className="gov-btn" onClick={loadDryRun} disabled={loading}>
-            <RefreshCw size={14} /> Refresh
-          </button>
-          <Link href="/verification?queue=locked" className="gov-btn gov-btn-primary">
-            <Lock size={14} /> Locked Evidence ({dryRun.gates?.locked_field_rows ?? 0})
-          </Link>
-        </div>
-      </div>
-
-      {/* Compact Readiness Progress & Status Strip */}
-      <div
-        className="gov-card"
-        style={{
-          padding: "12px 16px",
-          display: "flex",
-          flexWrap: "wrap",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 14,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 14, flex: "1 1 320px" }}>
-          <div style={{ minWidth: 175 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: "#556b5e" }}>
-              PRAIS 4 Package Readiness
-            </div>
-            <div style={{ fontSize: 16, fontWeight: 800, color: "#0b2615" }}>
-              {readyCount} of {totalCount} Ready ({readyPct}%)
-            </div>
+      <div className="gov-sticky-top">
+        <div className="gov-page-header" style={{ paddingBottom: 10 }}>
+          <div>
+            <h1 className="gov-page-title">Reporting Desk — UNCCD PRAIS 4 Submission Center</h1>
+            <p className="gov-page-subtitle">
+              Track readiness, download verified PRAIS 4 tables, and record National Reporting
+              Officer sign-off for cycle <strong>{period}</strong>.
+            </p>
           </div>
-          <div
-            style={{
-              flex: 1,
-              height: 10,
-              background: "#e6ede9",
-              borderRadius: 999,
-              overflow: "hidden",
-              minWidth: 120,
-            }}
-          >
+          <div className="gov-page-actions">
+            <button type="button" className="gov-btn" onClick={loadDryRun} disabled={loading}>
+              <RefreshCw size={14} /> Refresh
+            </button>
+            <Link href="/verification?queue=locked" className="gov-btn gov-btn-primary">
+              <Lock size={14} /> Locked Evidence ({dryRun.gates?.locked_field_rows ?? 0})
+            </Link>
+          </div>
+        </div>
+
+        {/* Compact Readiness Progress & Status Strip */}
+        <div
+          className="gov-card"
+          style={{
+            padding: "10px 16px",
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 14,
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 14, flex: "1 1 320px" }}>
+            <div style={{ minWidth: 175 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: "#556b5e" }}>
+                PRAIS 4 Package Readiness
+              </div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: "#0b2615" }}>
+                {readyCount} of {totalCount} Ready ({readyPct}%)
+              </div>
+            </div>
             <div
               style={{
-                width: `${readyPct}%`,
-                height: "100%",
-                background: "#005a2b",
+                flex: 1,
+                height: 10,
+                background: "#e6ede9",
                 borderRadius: 999,
+                overflow: "hidden",
+                minWidth: 120,
               }}
-            />
+            >
+              <div
+                style={{
+                  width: `${readyPct}%`,
+                  height: "100%",
+                  background: "#005a2b",
+                  borderRadius: 999,
+                }}
+              />
+            </div>
+          </div>
+
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px 14px", fontSize: 12 }}>
+            <span>
+              <strong>Locked:</strong> {dryRun.gates?.locked_field_rows ?? 0} (LDN{" "}
+              {lockPolicy?.counts?.ldn ?? 0} · Soil {lockPolicy?.counts?.soil ?? 0})
+            </span>
+            <span style={{ color: "#cbd7cf" }}>|</span>
+            <span>
+              <strong>Updated:</strong>{" "}
+              {dryRun.dry_run_at ? new Date(dryRun.dry_run_at).toLocaleDateString() : "—"}
+            </span>
+            <span style={{ color: "#cbd7cf" }}>|</span>
+            <span>
+              <strong>Deadline:</strong> November 2026
+            </span>
           </div>
         </div>
 
-        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px 14px", fontSize: 12 }}>
-          <span>
-            <strong>Locked:</strong> {dryRun.gates?.locked_field_rows ?? 0} (LDN{" "}
-            {lockPolicy?.counts?.ldn ?? 0} · Soil {lockPolicy?.counts?.soil ?? 0})
-          </span>
-          <span style={{ color: "#cbd7cf" }}>|</span>
-          <span>
-            <strong>Updated:</strong>{" "}
-            {dryRun.dry_run_at ? new Date(dryRun.dry_run_at).toLocaleDateString() : "—"}
-          </span>
-          <span style={{ color: "#cbd7cf" }}>|</span>
-          <span>
-            <strong>Deadline:</strong> November 2026
-          </span>
+        {/* Clean Tab Switcher */}
+        <div className="gov-filters" style={{ padding: "9px 14px" }}>
+          <button
+            type="button"
+            className={`gov-btn ${tab === "packages" ? "gov-btn-primary" : ""}`}
+            onClick={() => setTab("packages")}
+          >
+            <FileCheck2 size={14} /> PRAIS 4 Packages ({readyCount}/{totalCount})
+          </button>
+          <button
+            type="button"
+            className={`gov-btn ${tab === "checklist" ? "gov-btn-primary" : ""}`}
+            onClick={() => setTab("checklist")}
+          >
+            <ListChecks size={14} /> UNCCD GPG Checklist (A–G)
+          </button>
+          <button
+            type="button"
+            className={`gov-btn ${tab === "signoff" ? "gov-btn-primary" : ""}`}
+            onClick={() => setTab("signoff")}
+          >
+            <ShieldCheck size={14} /> Officer Sign-Off
+          </button>
         </div>
-      </div>
-
-      {/* Clean Tab Switcher */}
-      <div className="gov-filters">
-        <button
-          type="button"
-          className={`gov-btn ${tab === "packages" ? "gov-btn-primary" : ""}`}
-          onClick={() => setTab("packages")}
-        >
-          <FileCheck2 size={14} /> PRAIS 4 Packages ({readyCount}/{totalCount})
-        </button>
-        <button
-          type="button"
-          className={`gov-btn ${tab === "checklist" ? "gov-btn-primary" : ""}`}
-          onClick={() => setTab("checklist")}
-        >
-          <ListChecks size={14} /> UNCCD GPG Checklist (A–G)
-        </button>
-        <button
-          type="button"
-          className={`gov-btn ${tab === "signoff" ? "gov-btn-primary" : ""}`}
-          onClick={() => setTab("signoff")}
-        >
-          <ShieldCheck size={14} /> Officer Sign-Off
-        </button>
       </div>
 
       {/* TAB 1: PRAIS 4 SUBMISSION PACKAGES */}

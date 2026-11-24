@@ -203,44 +203,46 @@ export default function AnalyticsPage() {
 
   return (
     <>
-      <div className="gov-page-header">
-        <div>
-          <h1 className="gov-page-title">Analytics (UNCCD SO1 — SDG 15.3.1)</h1>
-          <p className="gov-page-subtitle">
-            Sub-indicator inspection for Land Cover transitions (SO1-1), Land Productivity Dynamics
-            (SO1-2), Soil Organic Carbon (SO1-3), and Combined Status (SO1-4).
-          </p>
+      <div className="gov-sticky-top">
+        <div className="gov-page-header" style={{ paddingBottom: 10 }}>
+          <div>
+            <h1 className="gov-page-title">Analytics (UNCCD SO1 — SDG 15.3.1)</h1>
+            <p className="gov-page-subtitle">
+              Sub-indicator inspection for Land Cover transitions (SO1-1), Land Productivity Dynamics
+              (SO1-2), Soil Organic Carbon (SO1-3), and Combined Status (SO1-4).
+            </p>
+          </div>
+          <div className="gov-page-actions">
+            <button type="button" className="gov-btn" onClick={loadAll} disabled={loading}>
+              <RefreshCw size={14} /> Refresh
+            </button>
+            <Link href="/reporting-desk" className="gov-btn gov-btn-primary">
+              <FileCheck2 size={14} /> Reporting Desk Gates
+            </Link>
+          </div>
         </div>
-        <div className="gov-page-actions">
-          <button type="button" className="gov-btn" onClick={loadAll} disabled={loading}>
-            <RefreshCw size={14} /> Refresh
-          </button>
-          <Link href="/reporting-desk" className="gov-btn gov-btn-primary">
-            <FileCheck2 size={14} /> Reporting Desk Gates
-          </Link>
-        </div>
-      </div>
 
-      {/* Sub-indicator Tab Bar */}
-      <div className="gov-filters">
-        {(
-          [
-            { id: "lc", label: "SO1-1 Land Cover (7×7)" },
-            { id: "lpd", label: "SO1-2 Productivity (LPD)" },
-            { id: "soc", label: "SO1-3 Soil Organic Carbon" },
-            { id: "status", label: "SO1-4 Combined Status" },
-          ] as { id: TabId; label: string }[]
-        ).map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            className={`gov-btn ${tab === t.id ? "gov-btn-primary" : ""}`}
-            onClick={() => setTab(t.id)}
-          >
-            <BarChart3 size={14} />
-            {t.label}
-          </button>
-        ))}
+        {/* Sub-indicator Tab Bar */}
+        <div className="gov-filters" style={{ padding: "9px 14px" }}>
+          {(
+            [
+              { id: "lc", label: "SO1-1 Land Cover (7×7)" },
+              { id: "lpd", label: "SO1-2 Productivity (LPD)" },
+              { id: "soc", label: "SO1-3 Soil Organic Carbon" },
+              { id: "status", label: "SO1-4 Combined Status" },
+            ] as { id: TabId; label: string }[]
+          ).map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              className={`gov-btn ${tab === t.id ? "gov-btn-primary" : ""}`}
+              onClick={() => setTab(t.id)}
+            >
+              <BarChart3 size={14} />
+              {t.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {error && <div className="gov-alert gov-alert-red">{error}</div>}

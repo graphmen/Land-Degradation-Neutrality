@@ -175,18 +175,44 @@ export default function AdminPage() {
 
   return (
     <>
-      <div className="gov-page-header" style={{ paddingBottom: 12 }}>
-        <div>
-          <h1 className="gov-page-title">System Administration & Data Governance</h1>
-          <p className="gov-page-subtitle">
-            Database schema governance, Collect Earth ID (CEID) reconciliation, UNCCD Annex F
-            reference code lists, and national platform health checks.
-          </p>
+      <div className="gov-sticky-top">
+        <div className="gov-page-header" style={{ paddingBottom: 10 }}>
+          <div>
+            <h1 className="gov-page-title">System Administration & Data Governance</h1>
+            <p className="gov-page-subtitle">
+              Database schema governance, Collect Earth ID (CEID) reconciliation, UNCCD Annex F
+              reference code lists, and national platform health checks.
+            </p>
+          </div>
+          <div className="gov-page-actions">
+            <button type="button" className="gov-btn" onClick={loadAll} disabled={loading}>
+              <RefreshCw size={14} /> Refresh
+            </button>
+          </div>
         </div>
-        <div className="gov-page-actions">
-          <button type="button" className="gov-btn" onClick={loadAll} disabled={loading}>
-            <RefreshCw size={14} /> Refresh
-          </button>
+
+        <div className="gov-filters" style={{ padding: "9px 14px" }}>
+          {(
+            [
+              { id: "migrations", label: `Database Migrations (${allMigrations.length})`, icon: Database },
+              { id: "ceid", label: `CEID Reconciliation (${ceid?.entries?.length ?? 0})`, icon: FileCode2 },
+              { id: "codes", label: "Code Lists (Annex F)", icon: ListChecks },
+              { id: "readiness", label: "System Readiness", icon: ShieldCheck },
+            ] as const
+          ).map((t) => {
+            const Icon = t.icon;
+            return (
+              <button
+                key={t.id}
+                type="button"
+                className={`gov-btn ${tab === t.id ? "gov-btn-primary" : ""}`}
+                onClick={() => setTab(t.id)}
+              >
+                <Icon size={14} />
+                {t.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -199,30 +225,6 @@ export default function AdminPage() {
           </span>
         </div>
       )}
-
-      <div className="gov-filters">
-        {(
-          [
-            { id: "migrations", label: `Database Migrations (${allMigrations.length})`, icon: Database },
-            { id: "ceid", label: `CEID Reconciliation (${ceid?.entries?.length ?? 0})`, icon: FileCode2 },
-            { id: "codes", label: "Code Lists (Annex F)", icon: ListChecks },
-            { id: "readiness", label: "System Readiness", icon: ShieldCheck },
-          ] as const
-        ).map((t) => {
-          const Icon = t.icon;
-          return (
-            <button
-              key={t.id}
-              type="button"
-              className={`gov-btn ${tab === t.id ? "gov-btn-primary" : ""}`}
-              onClick={() => setTab(t.id)}
-            >
-              <Icon size={14} />
-              {t.label}
-            </button>
-          );
-        })}
-      </div>
 
       {/* TAB 1: DATABASE MIGRATIONS */}
       {tab === "migrations" && s2 && (
