@@ -10,7 +10,21 @@ const modPath = path.join(process.cwd(), "public", "drylands-modifications.json"
 
 export const dynamic = "force-dynamic";
 
+const IS_VERCEL = !!process.env.VERCEL;
+const OFFLINE_MODE = IS_VERCEL ? false : process.env.OFFLINE_MODE !== "false";
+
 async function loadData() {
+  if (OFFLINE_MODE) {
+    try {
+      const raw = await fs.readFile(dataPath, "utf-8");
+      const json = JSON.parse(raw);
+      if (json.records && json.records.length > 0) return json.records;
+    } catch {
+      // fall back to static bundle
+    }
+    return drylandsDataStatic.records || [];
+  }
+
   const SUPABASE_URL = "https://pqfbcvxisrmtmhmuxbjk.supabase.co";
   const SUPABASE_KEY = Buffer.from("c2Jfc2VjcmV0X3pXVmVzZ0JnNU8zVU80WnVkUi1TQndfTXprQ0VuelI=", "base64").toString("utf-8");
 

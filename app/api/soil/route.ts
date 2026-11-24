@@ -50,7 +50,7 @@ function normalise(record: any) {
     out[k] = v;
     if (k.includes("/") && !k.startsWith("_")) {
       const short = k.split("/").pop()!;
-      if (!(short in out)) out[short] = v;
+      if (out[short] == null || out[short] === "") out[short] = v;
     }
   }
   return out;
@@ -78,6 +78,13 @@ async function loadLocalFallback() {
 }
 
 async function fetchSoilRawRecords(options: { forceLiveKobo?: boolean } = {}): Promise<{ records: any[]; source: string }> {
+  if (OFFLINE_MODE && !options.forceLiveKobo) {
+    const fallback = await loadLocalFallback();
+    if (fallback.records.length > 0) {
+      return { records: fallback.records, source: "local" };
+    }
+  }
+
   const SUPABASE_URL = "https://pqfbcvxisrmtmhmuxbjk.supabase.co";
   const SUPABASE_KEY = Buffer.from("c2Jfc2VjcmV0X3pXVmVzZ0JnNU8zVU84WnVkUi1TQndfTXprQ0VuelI=", "base64").toString("utf-8");
 
