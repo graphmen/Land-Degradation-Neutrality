@@ -28,28 +28,28 @@ const HIDDEN = new Set([
 
 const SOIL_TEXTURE_GUIDE: Record<string, { icon: string; physical: string; retention: string; impact: string; erosion: string }> = {
   Clay: {
-    icon: "🧱",
+    icon: "",
     physical: "Fine-grained, sticky when wet, hard when dry. Heavy texture.",
     retention: "Extremely high water and nutrient retention; slow infiltration.",
     impact: "Highly fertile but difficult to cultivate; susceptible to compaction.",
     erosion: "Low wind erosion risk; high water runoff and water erosion risk."
   },
   Loam: {
-    icon: "🌟",
+    icon: "",
     physical: "Balanced mix of sand, silt, and clay. Crumbly, medium texture.",
     retention: "Optimal water-holding capacity and excellent nutrient storage.",
     impact: "Most fertile agricultural soil; easy to till with great aeration.",
     erosion: "Moderate erosion risk; easily manageable with standard conservation."
   },
   Sand: {
-    icon: "🏜️",
+    icon: "",
     physical: "Coarse-grained, loose and gritty particles. Light texture.",
     retention: "Very low retention; rapid drainage and nutrient leaching.",
     impact: "Low natural fertility; requires frequent irrigation and organic matter.",
     erosion: "Extremely high wind erosion risk; low water runoff erosion."
   },
   Silt: {
-    icon: "🌫️",
+    icon: "",
     physical: "Smooth, floury texture when dry, soapy/slippery when wet.",
     retention: "Good water retention and medium-to-high nutrient storage.",
     impact: "Highly fertile, but packs easily and lacks structure.",
@@ -433,7 +433,7 @@ export default function SoilPage() {
           }}
         >
           <h2 style={{ marginTop: 0, display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 24 }}>⚠️</span> API Connection Error
+            API Connection Error
           </h2>
           <p style={{ lineHeight: 1.5 }}>{error}</p>
           <p style={{ fontSize: 12, opacity: 0.8, marginTop: 20 }}>
@@ -467,7 +467,7 @@ export default function SoilPage() {
         onClick={handleExport}
         style={{ background: "var(--accent-amber)" }}
       >
-        <span>📥</span> Download Data ({filteredFeatures.length})
+        Download Data ({filteredFeatures.length})
       </button>
     </div>
   );
@@ -548,7 +548,7 @@ export default function SoilPage() {
       <div className={`buims-list-panel ${leftCollapsed ? "collapsed" : ""}`}>
         <div className="panel-header">
           <div className="panel-title" style={{ color: "var(--accent-amber)" }}>
-            <span>🧪</span> Soil Cores
+            Soil Cores
           </div>
           <div className="search-box">
             <input
@@ -583,8 +583,8 @@ export default function SoilPage() {
               }}
             >
               <option value="all">All Soil Status</option>
-              <option value="hotspot">Hotspots ⚠️</option>
-              <option value="brightspot">Bright Spots 🌟</option>
+              <option value="hotspot">Hotspots</option>
+              <option value="brightspot">Bright Spots</option>
             </select>
             <select
               value={districtFilter}
@@ -608,7 +608,7 @@ export default function SoilPage() {
           <div className="soil-texture-dictionary">
             <details className="dictionary-main">
               <summary className="dictionary-main-summary">
-                <span>📖 Soil Texture Reference Guide</span>
+                <span>Soil Texture Reference Guide</span>
               </summary>
               <div className="dictionary-grid">
                 {Object.entries(SOIL_TEXTURE_GUIDE).map(([name, info]) => (
@@ -667,16 +667,16 @@ export default function SoilPage() {
                   <div className="site-card-title">{district} • Ward {ward}</div>
                   <div className="site-card-subtitle">ID: {ceid}</div>
                   <div className="site-card-meta">
-                    <span>🧪 {sampleName}</span>
+                    <span>{sampleName}</span>
                     <div style={{ display: "flex", gap: 4 }}>
                       {isHotspot && (
                         <span className="site-badge danger-status" style={{ fontSize: 8 }}>
-                          ⚠️ Hotspot
+                          Hotspot
                         </span>
                       )}
                       {isBrightSpot && (
                         <span className="site-badge active-status" style={{ fontSize: 8 }}>
-                          🌟 Bright Spot
+                          Bright Spot
                         </span>
                       )}
                       <span className={`site-badge ${getBadgeClass(texture)}`}>
@@ -793,13 +793,13 @@ export default function SoilPage() {
                   <div className="detail-item-list">
                     <div className="detail-item-row">
                       <span className="detail-item-label">
-                        <span className="detail-item-icon">🗺️</span> District Jurisdiction
+                        District Jurisdiction
                       </span>
                       <span className="detail-item-value">{props._mapped_dist || "—"}</span>
                     </div>
                     <div className="detail-item-row">
                       <span className="detail-item-label">
-                        <span className="detail-item-icon">📐</span> Soil Core Depth
+                        Soil Core Depth
                       </span>
                       <span className="detail-item-value" style={{ color: "var(--accent-amber)", fontWeight: 700 }}>
                         {props._mapped_dep ? `${props._mapped_dep} cm` : "—"}
@@ -807,49 +807,49 @@ export default function SoilPage() {
                     </div>
                     <div className="detail-item-row">
                       <span className="detail-item-label">
-                        <span className="detail-item-icon">🎨</span> Munsell Soil Color
+                        Munsell Soil Color
                       </span>
                       <span className="detail-item-value">{props._mapped_col || "—"}</span>
                     </div>
                     <div className="detail-item-row">
                       <span className="detail-item-label">
-                        <span className="detail-item-icon">💧</span> Moisture Status
+                        Moisture Status
                       </span>
                       <span className="detail-item-value">{props._mapped_moist || "—"}</span>
                     </div>
                     <div className="detail-item-row">
                       <span className="detail-item-label">
-                        <span className="detail-item-icon">📍</span> Ward / Administrative Area
+                        Ward / Administrative Area
                       </span>
                       <span className="detail-item-value">{props.ward ? (String(props.ward).startsWith('Ward') ? props.ward : `Ward ${props.ward}`) : "—"}</span>
                     </div>
                     <div className="detail-item-row">
                       <span className="detail-item-label">
-                        <span className="detail-item-icon">👷</span> Survey Observer / Team
+                        Survey Observer / Team
                       </span>
                       <span className="detail-item-value">{props.team || props.agent || "—"}</span>
                     </div>
                     <div className="detail-item-row">
                       <span className="detail-item-label">
-                        <span className="detail-item-icon">🏷️</span> Sample ID / CEID
+                        Sample ID / CEID
                       </span>
                       <span className="detail-item-value" style={{ fontWeight: 700, color: "#0284c7" }}>{props.ceid || props.samplid || props._id || "—"}</span>
                     </div>
                     <div className="detail-item-row">
                       <span className="detail-item-label">
-                        <span className="detail-item-icon">🌐</span> Latitude (GIS Coordinate)
+                        Latitude (GIS Coordinate)
                       </span>
                       <span className="detail-item-value">{lat.toFixed(6)}</span>
                     </div>
                     <div className="detail-item-row">
                       <span className="detail-item-label">
-                        <span className="detail-item-icon">🌐</span> Longitude (GIS Coordinate)
+                        Longitude (GIS Coordinate)
                       </span>
                       <span className="detail-item-value">{lng.toFixed(6)}</span>
                     </div>
                     <div className="detail-item-row">
                       <span className="detail-item-label">
-                        <span className="detail-item-icon">📅</span> Submission Date
+                        Submission Date
                       </span>
                       <span className="detail-item-value">
                         {props._submission_time ? new Date(props._submission_time).toLocaleDateString() : "—"}
@@ -858,7 +858,7 @@ export default function SoilPage() {
                     {props.lab_number && (
                       <div className="detail-item-row">
                         <span className="detail-item-label">
-                          <span className="detail-item-icon">🧪</span> Lab Ref Number
+                          Lab Ref Number
                         </span>
                         <span className="detail-item-value" style={{ fontWeight: 700 }}>{props.lab_number}</span>
                       </div>
@@ -866,7 +866,7 @@ export default function SoilPage() {
                     {props.organic_carbon !== undefined && props.organic_carbon !== null && (
                       <div className="detail-item-row">
                         <span className="detail-item-label">
-                          <span className="detail-item-icon">💎</span> Measured Organic Carbon
+                          Measured Organic Carbon
                         </span>
                         <span className="detail-item-value" style={{ color: "var(--accent-green)", fontWeight: 800 }}>
                           {props.organic_carbon}%
@@ -879,8 +879,7 @@ export default function SoilPage() {
             })()
           ) : (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, padding: "32px 12px", textAlign: "center" }}>
-              <span style={{ fontSize: 36, lineHeight: 1 }}>📍</span>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)" }}>Click any map point</div>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)" }}>Click any map point</div>
               <div style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.6 }}>Select a soil core node on the map to view its full survey attributes, field photo, and all field metadata here.</div>
             </div>
           )}

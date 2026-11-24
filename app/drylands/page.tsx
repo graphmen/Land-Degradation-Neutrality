@@ -595,7 +595,7 @@ export default function DrylandsPage() {
         onClick={handleExport}
         style={{ background: "var(--accent-gold)", color: "#122218" }}
       >
-        <span>📥</span> Download Data ({filteredRecords.length})
+        Download Data ({filteredRecords.length})
       </button>
     </div>
   );
@@ -677,7 +677,7 @@ export default function DrylandsPage() {
         <div className="panel-header">
           <div className="panel-title" style={{ color: "var(--accent-gold)", justifyContent: "space-between" }}>
             <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span>🏜️</span> Drylands Hub
+              Drylands Hub
             </span>
             <button 
               onClick={handleAddClick} 
@@ -763,7 +763,7 @@ export default function DrylandsPage() {
                   <div className="site-card-title">{r.village_location || "Unknown Village"}</div>
                   <div className="site-card-subtitle">{r.ward_name} • {r.enumerator_name}</div>
                   <div className="site-card-meta">
-                    <span>🌾 Veg: {r.vegetation_condition}</span>
+                    <span>Veg: {r.vegetation_condition}</span>
                     <span className={`site-badge ${priorityBadge}`}>
                       {r.priority_level?.split(" ")[0] || "Low"}
                     </span>
@@ -884,7 +884,7 @@ export default function DrylandsPage() {
                 </div>
               ) : (
                 <div style={{ width: "100%", height: "80px", borderRadius: "10px", background: "rgba(0,0,0,0.04)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, color: "var(--text-muted)", fontSize: 11 }}>
-                  <span>📷</span> No field photo for this point
+                  No field photo for this point
                 </div>
               )}
 
@@ -892,7 +892,7 @@ export default function DrylandsPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                 <div style={{ background: "#f8fafc", border: "1px solid var(--border-color)", borderRadius: 6, padding: "8px 10px" }}>
                   <strong style={{ fontSize: "10px", color: "var(--accent-green)", textTransform: "uppercase", display: "block", marginBottom: 6 }}>
-                    📍 General & Location Info
+                    General & Location Info
                   </strong>
                   <div className="detail-item-list" style={{ gap: "4px" }}>
                     <div className="detail-item-row"><span className="detail-item-label">Date of Observation</span><span className="detail-item-value">{activeRecord.date_of_observation}</span></div>
@@ -907,7 +907,7 @@ export default function DrylandsPage() {
 
                 <div style={{ background: "#f8fafc", border: "1px solid var(--border-color)", borderRadius: 6, padding: "8px 10px" }}>
                   <strong style={{ fontSize: "10px", color: "var(--accent-green)", textTransform: "uppercase", display: "block", marginBottom: 6 }}>
-                    🌿 Vegetation & Land Cover
+                    Vegetation & Land Cover
                   </strong>
                   <div className="detail-item-list" style={{ gap: "4px" }}>
                     <div className="detail-item-row"><span className="detail-item-label">Veg Condition</span><span className="detail-item-value">{activeRecord.vegetation_condition}</span></div>
@@ -924,7 +924,7 @@ export default function DrylandsPage() {
 
                 <div style={{ background: "#f8fafc", border: "1px solid var(--border-color)", borderRadius: 6, padding: "8px 10px" }}>
                   <strong style={{ fontSize: "10px", color: "var(--accent-green)", textTransform: "uppercase", display: "block", marginBottom: 6 }}>
-                    💧 Water Sources & Siltation
+                    Water Sources & Siltation
                   </strong>
                   <div className="detail-item-list" style={{ gap: "4px" }}>
                     <div className="detail-item-row"><span className="detail-item-label">Water Sources</span><span className="detail-item-value">{Array.isArray(activeRecord.water_sources_present) ? activeRecord.water_sources_present.join(", ") : (activeRecord.water_sources_present || "—")}</span></div>
@@ -941,7 +941,7 @@ export default function DrylandsPage() {
 
                 <div style={{ background: "#f8fafc", border: "1px solid var(--border-color)", borderRadius: 6, padding: "8px 10px" }}>
                   <strong style={{ fontSize: "10px", color: "var(--accent-green)", textTransform: "uppercase", display: "block", marginBottom: 6 }}>
-                    ⛰️ Soil Erosion & Hazards
+                    Soil Erosion & Hazards
                   </strong>
                   <div className="detail-item-list" style={{ gap: "4px" }}>
                     <div className="detail-item-row"><span className="detail-item-label">Soil Erosion Present?</span><span className="detail-item-value">{activeRecord.soil_erosion_present}</span></div>
@@ -959,7 +959,7 @@ export default function DrylandsPage() {
 
                 <div style={{ background: "#f8fafc", border: "1px solid var(--border-color)", borderRadius: 6, padding: "8px 10px" }}>
                   <strong style={{ fontSize: "10px", color: "var(--accent-green)", textTransform: "uppercase", display: "block", marginBottom: 6 }}>
-                    🔥 Climate & Livelihoods Stress
+                    Climate & Livelihoods Stress
                   </strong>
                   <div className="detail-item-list" style={{ gap: "4px" }}>
                     <div className="detail-item-row"><span className="detail-item-label">Climate Indicators</span><span className="detail-item-value">{Array.isArray(activeRecord.climate_change_indicators) ? activeRecord.climate_change_indicators.join(", ") : (activeRecord.climate_change_indicators || "—")}</span></div>
@@ -980,7 +980,7 @@ export default function DrylandsPage() {
 
                 <div style={{ background: "rgba(0,102,51,0.03)", border: "1px solid rgba(0,102,51,0.15)", borderRadius: 6, padding: "8px 10px" }}>
                   <strong style={{ fontSize: "10px", color: "var(--accent-green)", textTransform: "uppercase", display: "block", marginBottom: 6 }}>
-                    🛠️ Recommended Interventions
+                    Recommended Interventions
                   </strong>
                   <div style={{ fontSize: "11px", fontWeight: "700", color: "#006633", marginBottom: 4 }}>
                     {Array.isArray(activeRecord.recommended_interventions) ? activeRecord.recommended_interventions.join(", ") : (activeRecord.recommended_interventions || "None")}
@@ -1027,12 +1027,12 @@ export default function DrylandsPage() {
           {(editorMode === "add" || editorMode === "edit") && (
             <form onSubmit={handleFormSubmit} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               <div style={{ fontSize: "12px", fontWeight: "700", color: "var(--text-green)", borderBottom: "1px solid var(--border-color)", paddingBottom: "6px" }}>
-                {editorMode === "add" ? "📝 New Dryland Assessment" : "✏️ Edit Assessment Details"}
+                {editorMode === "add" ? "New Dryland Assessment" : "Edit Assessment Details"}
               </div>
 
               {formError && (
                 <div style={{ padding: "6px 8px", background: "#fef2f2", color: "#b91c1c", fontSize: "10px", borderRadius: "var(--radius-sm)", border: "1px solid #fee2e2" }}>
-                  ⚠️ {formError}
+                  {formError}
                 </div>
               )}
 

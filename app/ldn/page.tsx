@@ -212,7 +212,7 @@ function AllFieldsAccordion({ props }: { props: Record<string, any> }) {
           textTransform: "uppercase"
         }}
       >
-        <span>📋 All Survey Data ({entries.length} fields)</span>
+        <span>All Survey Data ({entries.length} fields)</span>
         <span style={{ fontSize: 10, opacity: 0.6 }}>{open ? "▲ Hide" : "▼ Show"}</span>
       </button>
       {open && (
@@ -390,10 +390,10 @@ export default function LdnPage() {
   const getUnccdStatus = (props: any) => {
     const severity = String(props.sev || "").toLowerCase();
     if (severity.includes("high") || severity.includes("severe") || severity.includes("critical")) {
-      return { label: "Hotspot", icon: "⚠️", className: "danger-status" };
+      return { label: "Hotspot", icon: "", className: "danger-status" };
     }
     if (severity.includes("low") || severity.includes("minimal") || severity.includes("stable") || severity.includes("none")) {
-      return { label: "Bright Spot", icon: "🌟", className: "active-status" };
+      return { label: "Bright Spot", icon: "", className: "active-status" };
     }
     return null;
   };
@@ -454,7 +454,7 @@ export default function LdnPage() {
         onClick={handleExport}
         style={{ background: "var(--accent-blue)" }}
       >
-        <span>📥</span> Download Data ({filteredFeatures.length})
+        Download Data ({filteredFeatures.length})
       </button>
     </div>
   );
@@ -535,7 +535,7 @@ export default function LdnPage() {
       <div className={`buims-list-panel ${leftCollapsed ? "collapsed" : ""}`}>
         <div className="panel-header">
           <div className="panel-title" style={{ color: "var(--accent-blue)" }}>
-            <span>🌳</span> LDN Monitors
+            LDN Monitors
           </div>
           <div className="search-box">
             <input
@@ -568,8 +568,8 @@ export default function LdnPage() {
               }}
             >
               <option value="all">All UNCCD Status</option>
-              <option value="hotspot">Hotspots ⚠️</option>
-              <option value="brightspot">Bright Spots 🌟</option>
+              <option value="hotspot">Hotspots</option>
+              <option value="brightspot">Bright Spots</option>
             </select>
             <select
               value={landuseFilter}
@@ -612,7 +612,7 @@ export default function LdnPage() {
                   <div className="site-card-title">{district} • Ward {ward}</div>
                   <div className="site-card-subtitle">ID: {ceid}</div>
                   <div className="site-card-meta">
-                    <span>🌿 {props.landus || "Unknown"}</span>
+                    <span>{props.landus || "Unknown"}</span>
                     <div style={{ display: "flex", gap: 4 }}>
                       {status && (
                         <span className={`site-badge ${status.className}`} style={{ fontSize: 8 }}>
@@ -734,51 +734,51 @@ export default function LdnPage() {
                   {/* Key attributes */}
                   <div className="detail-item-list">
                     <div className="detail-item-row">
-                      <span className="detail-item-label"><span className="detail-item-icon">🏷️</span> Survey CEID / ID</span>
+                      <span className="detail-item-label">Survey CEID / ID</span>
                       <span className="detail-item-value" style={{ fontWeight: 700, color: "#0284c7" }}>{props.ceid || props.samplid || props._id || "—"}</span>
                     </div>
                     <div className="detail-item-row">
-                      <span className="detail-item-label"><span className="detail-item-icon">🗺️</span> District Jurisdiction</span>
+                      <span className="detail-item-label">District Jurisdiction</span>
                       <span className="detail-item-value">{props.dist || "—"}</span>
                     </div>
                     <div className="detail-item-row">
-                      <span className="detail-item-label"><span className="detail-item-icon">📍</span> Electoral Ward</span>
+                      <span className="detail-item-label">Electoral Ward</span>
                       <span className="detail-item-value">{props.ward ? (String(props.ward).startsWith("Ward") ? props.ward : `Ward ${props.ward}`) : "—"}</span>
                     </div>
                     <div className="detail-item-row">
-                      <span className="detail-item-label"><span className="detail-item-icon">⚠️</span> Degradation Severity</span>
+                      <span className="detail-item-label">Degradation Severity</span>
                       <span className="detail-item-value" style={{ fontWeight: 700, color: String(severity).toLowerCase().includes("high") || String(severity).toLowerCase().includes("severe") ? "#e11d48" : "#10b981" }}>{severity || "—"}</span>
                     </div>
                     <div className="detail-item-row">
-                      <span className="detail-item-label"><span className="detail-item-icon">🌿</span> Land Use / Cover (LULC)</span>
+                      <span className="detail-item-label">Land Use / Cover (LULC)</span>
                       <span className="detail-item-value">{props.landus || "—"}</span>
                     </div>
                     {props.veg_cover && (
                       <div className="detail-item-row">
-                        <span className="detail-item-label"><span className="detail-item-icon">🌱</span> Vegetation Cover (%)</span>
+                        <span className="detail-item-label">Vegetation Cover (%)</span>
                         <span className="detail-item-value">{props.veg_cover}</span>
                       </div>
                     )}
                     {props.erosion_signs && (
                       <div className="detail-item-row">
-                        <span className="detail-item-label"><span className="detail-item-icon">🏜️</span> Erosion Signs / Notes</span>
+                        <span className="detail-item-label">Erosion Signs / Notes</span>
                         <span className="detail-item-value">{props.erosion_signs}</span>
                       </div>
                     )}
                     <div className="detail-item-row">
-                      <span className="detail-item-label"><span className="detail-item-icon">👷</span> Survey Observer / Team</span>
+                      <span className="detail-item-label">Survey Observer / Team</span>
                       <span className="detail-item-value">{props.agent || props.team || "—"}</span>
                     </div>
                     <div className="detail-item-row">
-                      <span className="detail-item-label"><span className="detail-item-icon">🌐</span> Latitude</span>
+                      <span className="detail-item-label">Latitude</span>
                       <span className="detail-item-value">{lat.toFixed(6)}</span>
                     </div>
                     <div className="detail-item-row">
-                      <span className="detail-item-label"><span className="detail-item-icon">🌐</span> Longitude</span>
+                      <span className="detail-item-label">Longitude</span>
                       <span className="detail-item-value">{lng.toFixed(6)}</span>
                     </div>
                     <div className="detail-item-row">
-                      <span className="detail-item-label"><span className="detail-item-icon">📅</span> Survey Date</span>
+                      <span className="detail-item-label">Survey Date</span>
                       <span className="detail-item-value">{props._submission_time ? new Date(props._submission_time).toLocaleDateString() : "—"}</span>
                     </div>
                   </div>
@@ -790,8 +790,7 @@ export default function LdnPage() {
             })()
           ) : (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, padding: "32px 12px", textAlign: "center" }}>
-              <span style={{ fontSize: 36, lineHeight: 1 }}>📍</span>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)" }}>Click any map point</div>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)" }}>Click any map point</div>
               <div style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.6 }}>Select a monitoring node on the map to view its full survey attributes, field photo, and all field metadata here.</div>
             </div>
           )}

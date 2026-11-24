@@ -856,10 +856,10 @@ export default function DatabaseExplorer() {
     if (activeTab === "ldn") {
       const sev = String(r.sev || "").toLowerCase();
       if (sev.includes("high") || sev.includes("severe") || sev.includes("critical")) {
-        return <span className="site-badge danger-status" style={{ padding: "1px 6px", fontSize: "10px" }}>⚠️ Hotspot</span>;
+        return <span className="site-badge danger-status" style={{ padding: "1px 6px", fontSize: "10px" }}>Hotspot</span>;
       }
       if (sev.includes("low") || sev.includes("minimal") || sev.includes("stable") || sev.includes("none")) {
-        return <span className="site-badge active-status" style={{ padding: "1px 6px", fontSize: "10px" }}>🌟 Bright Spot</span>;
+        return <span className="site-badge active-status" style={{ padding: "1px 6px", fontSize: "10px" }}>Bright Spot</span>;
       }
       return <span className="site-badge warning-status" style={{ padding: "1px 6px", fontSize: "10px" }}>Baseline</span>;
     } else if (activeTab === "soil") {
@@ -867,20 +867,20 @@ export default function DatabaseExplorer() {
       const moist = String(r.moisture || r["sampl/moisture"] || r._mapped_moist || "").toLowerCase();
       
       if (tex.includes("sand") && moist.includes("dry")) {
-        return <span className="site-badge danger-status" style={{ padding: "1px 6px", fontSize: "10px" }}>⚠️ Vulnerable</span>;
+        return <span className="site-badge danger-status" style={{ padding: "1px 6px", fontSize: "10px" }}>Vulnerable</span>;
       }
       if (tex.includes("loam") || tex.includes("silt")) {
-        return <span className="site-badge active-status" style={{ padding: "1px 6px", fontSize: "10px" }}>🌟 Fertile</span>;
+        return <span className="site-badge active-status" style={{ padding: "1px 6px", fontSize: "10px" }}>Fertile</span>;
       }
       return <span className="site-badge warning-status" style={{ padding: "1px 6px", fontSize: "10px" }}>Mixed</span>;
     } else {
       const priority = String(r.priority_level || "").toLowerCase();
       const veg = String(r.vegetation_condition || "").toLowerCase();
       if (priority.includes("high") || priority.includes("critical") || veg.includes("severe")) {
-        return <span className="site-badge danger-status" style={{ padding: "1px 6px", fontSize: "10px" }}>⚠️ Hotspot</span>;
+        return <span className="site-badge danger-status" style={{ padding: "1px 6px", fontSize: "10px" }}>Hotspot</span>;
       }
       if (veg.includes("intact") || priority.includes("low")) {
-        return <span className="site-badge active-status" style={{ padding: "1px 6px", fontSize: "10px" }}>🌟 Bright Spot</span>;
+        return <span className="site-badge active-status" style={{ padding: "1px 6px", fontSize: "10px" }}>Bright Spot</span>;
       }
       return <span className="site-badge warning-status" style={{ padding: "1px 6px", fontSize: "10px" }}>Stable</span>;
     }
@@ -1016,7 +1016,7 @@ export default function DatabaseExplorer() {
             transition: "all 0.2s"
           }}
         >
-          🌳 Land Degradation (LDN)
+          Land Degradation (LDN)
         </button>
         <button
           onClick={() => setActiveTab("soil")}
@@ -1035,7 +1035,7 @@ export default function DatabaseExplorer() {
             transition: "all 0.2s"
           }}
         >
-          🧪 Soil Core Samples
+          Soil Core Samples
         </button>
         <button
           onClick={() => setActiveTab("drylands")}
@@ -1054,7 +1054,7 @@ export default function DatabaseExplorer() {
             transition: "all 0.2s"
           }}
         >
-          🏜️ Drylands Observations
+          Drylands Observations
         </button>
       </div>
 
@@ -1066,7 +1066,7 @@ export default function DatabaseExplorer() {
         </div>
       ) : error ? (
         <div style={{ padding: "20px", background: "rgba(239, 68, 68, 0.05)", border: "1px solid #ef4444", borderRadius: "var(--radius-lg)", color: "#ef4444", margin: "10px 0" }}>
-          <h4 style={{ margin: 0, fontSize: "14px", display: "flex", alignItems: "center", gap: "6px" }}>⚠️ Loading Error</h4>
+          <h4 style={{ margin: 0, fontSize: "14px", display: "flex", alignItems: "center", gap: "6px" }}>Loading Error</h4>
           <p style={{ fontSize: "11px", margin: "6px 0 0" }}>{error}</p>
         </div>
       ) : (
@@ -1180,8 +1180,8 @@ export default function DatabaseExplorer() {
               style={{ padding: "4px 6px", fontSize: "11px", border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)", outline: "none", background: "#ffffff" }}
             >
               <option value="all">All Status Classes</option>
-              <option value="hotspot">{activeTab === 'ldn' ? 'Degraded Hotspots ⚠️' : (activeTab === 'soil' ? 'Vulnerable Cores ⚠️' : 'Degraded Hotspots ⚠️')}</option>
-              <option value="brightspot">{activeTab === 'ldn' ? 'Restored Bright Spots 🌟' : (activeTab === 'soil' ? 'Fertile Cores 🌟' : 'Intact Vegetation 🌟')}</option>
+              <option value="hotspot">{activeTab === 'ldn' ? 'Degraded Hotspots' : (activeTab === 'soil' ? 'Vulnerable Cores' : 'Degraded Hotspots')}</option>
+              <option value="brightspot">{activeTab === 'ldn' ? 'Restored Bright Spots' : (activeTab === 'soil' ? 'Fertile Cores' : 'Intact Vegetation')}</option>
             </select>
 
             <button
@@ -1214,7 +1214,7 @@ export default function DatabaseExplorer() {
                   cursor: "pointer", color: "#475569"
                 }}
               >
-                👁️ Columns
+                Columns
               </button>
               {showColumnDropdown && (
                 <div style={{
@@ -1828,7 +1828,7 @@ export default function DatabaseExplorer() {
                         display: "flex", justifyContent: "space-between", alignItems: "center"
                       }}>
                         <div>
-                          <div style={{ fontSize: "9px", fontWeight: 700, color: "#10b981" }}>➕ ADDED RECORD</div>
+                          <div style={{ fontSize: "9px", fontWeight: 700, color: "#10b981" }}>ADDED RECORD</div>
                           <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-primary)" }}>{add.ceid || add["geninfo/ceid"] || `ID: ${add._id}`}</div>
                           <div style={{ fontSize: "9px", color: "var(--text-muted)" }}>
                             District: {add.dist || add["geninfo/dist"]} • Ward {add.ward || add["geninfo/ward"]}
@@ -1859,7 +1859,7 @@ export default function DatabaseExplorer() {
                           display: "flex", justifyContent: "space-between", alignItems: "center"
                         }}>
                           <div>
-                            <div style={{ fontSize: "9px", fontWeight: 700, color: "var(--accent-amber)" }}>✏️ MODIFIED FIELDS</div>
+                            <div style={{ fontSize: "9px", fontWeight: 700, color: "var(--accent-amber)" }}>MODIFIED FIELDS</div>
                             <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-primary)" }}>{name}</div>
                             <div style={{ fontSize: "8px", color: "var(--text-muted)", wordBreak: "break-all" }}>
                               Keys overrides: {Object.keys(val).join(", ")}
@@ -1891,7 +1891,7 @@ export default function DatabaseExplorer() {
                           display: "flex", justifyContent: "space-between", alignItems: "center"
                         }}>
                           <div>
-                            <div style={{ fontSize: "9px", fontWeight: 700, color: "var(--accent-amber)" }}>✏️ MODIFIED SITE LEVEL</div>
+                            <div style={{ fontSize: "9px", fontWeight: 700, color: "var(--accent-amber)" }}>MODIFIED SITE LEVEL</div>
                             <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-primary)" }}>{name}</div>
                             <div style={{ fontSize: "8px", color: "var(--text-muted)" }}>
                               Modified keys: {Object.keys(val).join(", ")}
@@ -1920,7 +1920,7 @@ export default function DatabaseExplorer() {
                         display: "flex", justifyContent: "space-between", alignItems: "center"
                       }}>
                         <div>
-                          <div style={{ fontSize: "9px", fontWeight: 700, color: "var(--accent-rose)" }}>❌ DELETED RECORD</div>
+                          <div style={{ fontSize: "9px", fontWeight: 700, color: "var(--accent-rose)" }}>DELETED RECORD</div>
                           <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-primary)" }}>ID: {delId}</div>
                           <div style={{ fontSize: "9px", color: "var(--text-muted)" }}>Row hidden from table telemetry grids</div>
                         </div>
@@ -1991,7 +1991,7 @@ export default function DatabaseExplorer() {
             }}>
               <div>
                 <h3 style={{ margin: 0, fontFamily: "var(--font-title)", fontWeight: 800, fontSize: "14px", color: "var(--text-primary)" }}>
-                  {isEditModalOpen ? "✏️ Edit Record Override" : "➕ Add Custom Override Record"}
+                  {isEditModalOpen ? "Edit Record Override" : "Add Custom Override Record"}
                 </h3>
                 <span style={{ fontSize: "10px", color: "var(--text-muted)" }}>
                   Targeting dataset: {activeTab === "ldn" ? "Land Cover" : (activeTab === "soil" ? "Soil Core" : "Drylands Observations")}
@@ -2011,7 +2011,7 @@ export default function DatabaseExplorer() {
                 
                 {formError && (
                   <div style={{ padding: "8px", background: "rgba(220,38,38,0.05)", border: "1px solid var(--accent-rose)", borderRadius: "var(--radius-md)", color: "var(--accent-rose)", fontSize: "11px" }}>
-                    ⚠️ {formError}
+                    {formError}
                   </div>
                 )}
 

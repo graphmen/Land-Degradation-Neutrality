@@ -168,12 +168,12 @@ export default function GalleryPage() {
   const getBadgeStyle = (severity: string) => {
     const s = severity.toLowerCase();
     if (s.includes("high") || s.includes("severe") || s.includes("critical")) {
-      return { bg: "rgba(225,29,72,0.12)", color: "#e11d48", label: "Hotspot ⚠️", border: "1px solid rgba(225,29,72,0.3)" };
+      return { bg: "rgba(225,29,72,0.12)", color: "#e11d48", label: "Hotspot", border: "1px solid rgba(225,29,72,0.3)" };
     }
     if (s.includes("low") || s.includes("minimal") || s.includes("stable") || s.includes("none")) {
-      return { bg: "rgba(16,185,129,0.12)", color: "#10b981", label: "Bright Spot 🌟", border: "1px solid rgba(16,185,129,0.3)" };
+      return { bg: "rgba(16,185,129,0.12)", color: "#10b981", label: "Bright Spot", border: "1px solid rgba(16,185,129,0.3)" };
     }
-    return { bg: "rgba(245,158,11,0.12)", color: "#d97706", label: "Moderate 🟡", border: "1px solid rgba(245,158,11,0.3)" };
+    return { bg: "rgba(245,158,11,0.12)", color: "#d97706", label: "Moderate", border: "1px solid rgba(245,158,11,0.3)" };
   };
 
   return (
@@ -200,7 +200,7 @@ export default function GalleryPage() {
             justifyContent: "center",
             fontSize: "22px"
           }}>
-            🖼️
+           
           </div>
           <div>
             <h1 style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", margin: 0, fontFamily: "var(--font-title)" }}>
@@ -302,9 +302,9 @@ export default function GalleryPage() {
           style={{ padding: "6px 10px", fontSize: "12px", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)", outline: "none", background: "#ffffff" }}
         >
           <option value="all">All Degradation Statuses</option>
-          <option value="hotspot">Degraded Hotspots ⚠️</option>
-          <option value="moderate">Moderate Degradation 🟡</option>
-          <option value="brightspot">Restored Bright Spots 🌟</option>
+          <option value="hotspot">Degraded Hotspots</option>
+          <option value="moderate">Moderate Degradation</option>
+          <option value="brightspot">Restored Bright Spots</option>
         </select>
       </div>
 
@@ -317,13 +317,12 @@ export default function GalleryPage() {
           </div>
         ) : error ? (
           <div style={{ padding: "24px", background: "rgba(225,29,72,0.05)", border: "1px solid #e11d48", borderRadius: "12px", color: "#e11d48", textAlign: "center" }}>
-            <h3>⚠️ Error Loading Gallery</h3>
+            <h3>Error Loading Gallery</h3>
             <p>{error}</p>
           </div>
         ) : filteredItems.length === 0 ? (
           <div style={{ textAlign: "center", padding: "60px 20px", color: "var(--text-muted)" }}>
-            <div style={{ fontSize: "40px", marginBottom: "12px" }}>🔍</div>
-            <h3 style={{ fontSize: "15px", fontWeight: 700, margin: 0, color: "#334155" }}>No Field Photos Match Your Filter</h3>
+                        <h3 style={{ fontSize: "15px", fontWeight: 700, margin: 0, color: "#334155" }}>No Field Photos Match Your Filter</h3>
             <p style={{ fontSize: "12px", margin: "6px 0 0" }}>Try adjusting your search criteria or filter dropdowns above.</p>
           </div>
         ) : (
@@ -418,8 +417,7 @@ export default function GalleryPage() {
                     </div>
 
                     <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", color: "var(--text-muted)" }}>
-                      <span>🌳</span>
-                      <span style={{ fontWeight: 600, color: "#334155" }}>{item.landuse}</span>
+                                            <span style={{ fontWeight: 600, color: "#334155" }}>{item.landuse}</span>
                     </div>
 
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "6px", borderTop: "1px dashed #e2e8f0", fontSize: "10px", color: "#94a3b8" }}>

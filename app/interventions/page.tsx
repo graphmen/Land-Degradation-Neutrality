@@ -463,7 +463,7 @@ export default function InterventionsPage() {
         onClick={handleExport}
         style={{ background: "var(--accent-green)" }}
       >
-        <span>📥</span> Download Data ({filteredRecords.length})
+        Download Data ({filteredRecords.length})
       </button>
     </div>
   );
@@ -545,7 +545,7 @@ export default function InterventionsPage() {
         <div className="panel-header">
           <div className="panel-title" style={{ color: "var(--accent-green)", justifyContent: "space-between" }}>
             <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span>🛠️</span> Interventions Hub
+              Interventions Hub
             </span>
             <button 
               onClick={handleAddClick} 
@@ -629,7 +629,7 @@ export default function InterventionsPage() {
                   <div className="site-card-title">{r.name}</div>
                   <div className="site-card-subtitle">{r.org} • {r.admin_area}</div>
                   <div className="site-card-meta">
-                    <span>🚜 {r.category}</span>
+                    <span>{r.category}</span>
                     <span className={`site-badge ${statusBadge}`}>
                       {r.status || "Planned"}
                     </span>
@@ -743,25 +743,25 @@ export default function InterventionsPage() {
               <div className="detail-item-list">
                 <div className="detail-item-row">
                   <span className="detail-item-label">
-                    <span className="detail-item-icon">🗺️</span> Admin Boundary
+                    Admin Boundary
                   </span>
                   <span className="detail-item-value">{activeRecord.admin_level} level</span>
                 </div>
                 <div className="detail-item-row">
                   <span className="detail-item-label">
-                    <span className="detail-item-icon">📍</span> Region/Area Name
+                    Region/Area Name
                   </span>
                   <span className="detail-item-value">{activeRecord.admin_area}</span>
                 </div>
                 <div className="detail-item-row">
                   <span className="detail-item-label">
-                    <span className="detail-item-icon">📏</span> Area Size Scale
+                    Area Size Scale
                   </span>
                   <span className="detail-item-value">{activeRecord.size || "—"}</span>
                 </div>
                 <div className="detail-item-row">
                   <span className="detail-item-label">
-                    <span className="detail-item-icon">💰</span> Budget & Funding
+                    Budget & Funding
                   </span>
                   <span className="detail-item-value" style={{ fontWeight: 700, color: "var(--accent-green)" }}>
                     {activeRecord.budget || "—"}
@@ -769,19 +769,19 @@ export default function InterventionsPage() {
                 </div>
                 <div className="detail-item-row">
                   <span className="detail-item-label">
-                    <span className="detail-item-icon">📅</span> Program Timeline
+                    Program Timeline
                   </span>
                   <span className="detail-item-value">{activeRecord.timeline || "—"}</span>
                 </div>
                 <div className="detail-item-row">
                   <span className="detail-item-label">
-                    <span className="detail-item-icon">🌐</span> Latitude
+                    Latitude
                   </span>
                   <span className="detail-item-value">{activeRecord.lat?.toFixed(5) || "—"}</span>
                 </div>
                 <div className="detail-item-row">
                   <span className="detail-item-label">
-                    <span className="detail-item-icon">🌐</span> Longitude
+                    Longitude
                   </span>
                   <span className="detail-item-value">{activeRecord.lng?.toFixed(5) || "—"}</span>
                 </div>
@@ -823,7 +823,7 @@ export default function InterventionsPage() {
               {/* Evidence Section */}
               <div className="detail-explanation-card" style={{ borderLeftColor: "var(--accent-green)", background: "rgba(255,255,255,0.4)", marginTop: 4 }}>
                 <div className="detail-explanation-title" style={{ color: "var(--accent-green)" }}>
-                  <span>📋</span> Evidence on Achievement
+                  Evidence on Achievement
                 </div>
                 <div style={{ color: "var(--text-primary)", fontSize: 10, lineHeight: 1.4 }}>
                   {activeRecord.evidence || "No evidence recorded yet."}
@@ -860,12 +860,12 @@ export default function InterventionsPage() {
           {(editorMode === "add" || editorMode === "edit") && (
             <form onSubmit={handleFormSubmit} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               <div style={{ fontSize: "12px", fontWeight: "700", color: "var(--text-green)", borderBottom: "1px solid var(--border-color)", paddingBottom: "6px" }}>
-                {editorMode === "add" ? "📝 Register New Intervention" : "✏️ Edit Intervention details"}
+                {editorMode === "add" ? "Register New Intervention" : "Edit Intervention details"}
               </div>
 
               {formError && (
                 <div style={{ padding: "6px 8px", background: "#fef2f2", color: "#b91c1c", fontSize: "10px", borderRadius: "var(--radius-sm)", border: "1px solid #fee2e2" }}>
-                  ⚠️ {formError}
+                  {formError}
                 </div>
               )}
 
