@@ -323,136 +323,130 @@ function VerificationWorkspaceInner() {
 
   return (
     <>
-      <div className="gov-page-header">
-        <div>
-          <h1 className="gov-page-title">Verification Workspace</h1>
-          <p className="gov-page-subtitle">
-            Annex E §E.2 state-machine worklists: submitted → district_review → national_review →
-            approved → locked (PRAIS eligible). Field values cannot be edited here.
-          </p>
+      <div className="gov-sticky-top">
+        <div className="gov-page-header" style={{ paddingBottom: 10 }}>
+          <div>
+            <h1 className="gov-page-title">Verification Workspace</h1>
+            <p className="gov-page-subtitle">
+              District → National → Approved → Locked workflow. Field values are immutable on web.
+            </p>
+          </div>
+          <div className="gov-page-actions">
+            <button
+              type="button"
+              className="gov-btn"
+              onClick={() => loadQueue(activeQueue)}
+              disabled={loading}
+            >
+              <RefreshCw size={14} /> Refresh
+            </button>
+            <Link href="/evidence/registry" className="gov-btn">
+              <FileSpreadsheet size={14} /> Search All Evidence
+            </Link>
+          </div>
         </div>
-        <div className="gov-page-actions">
-          <button
-            type="button"
-            className="gov-btn"
-            onClick={() => loadQueue(activeQueue)}
-            disabled={loading}
-          >
-            <RefreshCw size={14} /> Refresh
-          </button>
-          <Link href="/evidence/registry" className="gov-btn">
-            <FileSpreadsheet size={14} /> Search All Evidence
-          </Link>
-        </div>
-      </div>
 
-      {/* Compact Single-Row Queue Switcher */}
-      {data && (
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 6,
-            padding: "8px 10px",
-            background: "#ffffff",
-            border: "1px solid #d9e2dc",
-            borderRadius: 10,
-          }}
-        >
-          {data.queues.map((q) => {
-            const active = activeQueue === q.queue;
-            return (
-              <button
-                key={q.queue}
-                type="button"
-                title={`${q.queue} · ${q.actor}`}
-                onClick={() => {
-                  setActiveQueue(q.queue);
-                  setDistrictFilter("");
-                }}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 7,
-                  padding: "6px 12px",
-                  borderRadius: 7,
-                  border: `1px solid ${active ? "#005a2b" : "#d9e2dc"}`,
-                  background: active ? "#005a2b" : "#f8faf9",
-                  color: active ? "#ffffff" : "#172b1f",
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  textTransform: "capitalize",
-                }}
-              >
-                {q.queue === "locked" && <Lock size={12} />}
-                <span>{q.queue}</span>
-                <span
+        {/* Compact Single-Row Queue Switcher */}
+        {data && (
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 6,
+              padding: "8px 10px",
+              background: "#ffffff",
+              border: "1px solid #d9e2dc",
+              borderRadius: 10,
+            }}
+          >
+            {data.queues.map((q) => {
+              const active = activeQueue === q.queue;
+              return (
+                <button
+                  key={q.queue}
+                  type="button"
+                  title={`${q.queue} · ${q.actor}`}
+                  onClick={() => {
+                    setActiveQueue(q.queue);
+                    setDistrictFilter("");
+                  }}
                   style={{
-                    fontFamily: "monospace",
-                    fontSize: 11,
-                    fontWeight: 700,
-                    padding: "1px 6px",
-                    borderRadius: 999,
-                    background: active ? "rgba(255,255,255,0.2)" : "#e5ece8",
-                    color: active ? "#ffffff" : "#0b2615",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 7,
+                    padding: "6px 12px",
+                    borderRadius: 7,
+                    border: `1px solid ${active ? "#005a2b" : "#d9e2dc"}`,
+                    background: active ? "#005a2b" : "#f8faf9",
+                    color: active ? "#ffffff" : "#172b1f",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    textTransform: "capitalize",
                   }}
                 >
-                  {q.count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      )}
+                  {q.queue === "locked" && <Lock size={12} />}
+                  <span>{q.queue}</span>
+                  <span
+                    style={{
+                      fontFamily: "monospace",
+                      fontSize: 11,
+                      fontWeight: 700,
+                      padding: "1px 6px",
+                      borderRadius: 999,
+                      background: active ? "rgba(255,255,255,0.2)" : "#e5ece8",
+                      color: active ? "#ffffff" : "#0b2615",
+                    }}
+                  >
+                    {q.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
-      {data?.note && (
-        <div className="gov-alert gov-alert-green">
-          <CheckCircle2 size={16} />
-          <span>{data.note}</span>
-        </div>
-      )}
+        {error && <div className="gov-alert gov-alert-red">{error}</div>}
 
-      {error && <div className="gov-alert gov-alert-red">{error}</div>}
+        {/* Filter & Worklist Header */}
+        <div className="gov-filters" style={{ justifyContent: "space-between", padding: "9px 14px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <strong style={{ fontSize: 14 }}>
+              Queue: <span style={{ textTransform: "capitalize" }}>{activeQueue}</span>
+            </strong>
+            <span className="gov-badge gov-badge-slate">
+              {rows.length === 0
+                ? "0 records"
+                : `Showing ${pageStart + 1}–${Math.min(pageStart + pageSize, rows.length)} of ${rows.length}`}
+            </span>
+          </div>
 
-      {/* Filter & Worklist Header */}
-      <div className="gov-filters" style={{ justifyContent: "space-between" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <strong style={{ fontSize: 14 }}>
-            Queue: <span style={{ textTransform: "capitalize" }}>{activeQueue}</span>
-          </strong>
-          <span className="gov-badge gov-badge-slate">
-            {rows.length === 0
-              ? "0 records"
-              : `Showing ${pageStart + 1}–${Math.min(pageStart + pageSize, rows.length)} of ${rows.length}`}
-          </span>
-        </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <select
+              className="gov-select"
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+              aria-label="Rows per page"
+            >
+              <option value={25}>25 / page</option>
+              <option value={50}>50 / page</option>
+              <option value={100}>100 / page</option>
+            </select>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <select
-            className="gov-select"
-            value={pageSize}
-            onChange={(e) => setPageSize(Number(e.target.value))}
-            aria-label="Rows per page"
-          >
-            <option value={25}>25 / page</option>
-            <option value={50}>50 / page</option>
-            <option value={100}>100 / page</option>
-          </select>
-
-          <select
-            className="gov-select"
-            value={districtFilter}
-            onChange={(e) => setDistrictFilter(e.target.value)}
-            aria-label="Filter queue by district"
-          >
-            <option value="">All districts</option>
-            {districts.map((d) => (
-              <option key={d} value={d}>
-                {d}
-              </option>
-            ))}
-          </select>
+            <select
+              className="gov-select"
+              value={districtFilter}
+              onChange={(e) => setDistrictFilter(e.target.value)}
+              aria-label="Filter queue by district"
+            >
+              <option value="">All districts</option>
+              {districts.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -548,8 +542,8 @@ function VerificationWorkspaceInner() {
         </div>
       )}
 
-      {/* Worklist Table */}
-      <div className="gov-table-wrap">
+      {/* Worklist Table (Scrollable Body + Sticky Header) */}
+      <div className="gov-table-wrap gov-table-scroll">
         <table className="gov-table">
           <thead>
             <tr>

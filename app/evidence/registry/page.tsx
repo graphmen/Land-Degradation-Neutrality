@@ -101,133 +101,134 @@ function EvidenceRegistryInner() {
 
   return (
     <>
-      <div className="gov-page-header">
-        <div>
-          <h1 className="gov-page-title">Evidence Registry</h1>
-          <p className="gov-page-subtitle">
-            Unified search across LDN, Soil Core, and Drylands (ILUP) field submissions under a
-            single Annex E governance model.
-          </p>
+      <div className="gov-sticky-top">
+        <div className="gov-page-header" style={{ paddingBottom: 10 }}>
+          <div>
+            <h1 className="gov-page-title">Evidence Registry</h1>
+            <p className="gov-page-subtitle">
+              Unified search across LDN, Soil Core, and Drylands (ILUP) field submissions.
+            </p>
+          </div>
+          <div className="gov-page-actions">
+            <button type="button" className="gov-btn" onClick={loadRegistry} disabled={loading}>
+              <RefreshCw size={14} />
+              Refresh
+            </button>
+            <Link href="/verification?queue=submitted" className="gov-btn gov-btn-primary">
+              <ClipboardCheck size={14} />
+              Open Verification Queues
+            </Link>
+          </div>
         </div>
-        <div className="gov-page-actions">
-          <button type="button" className="gov-btn" onClick={loadRegistry} disabled={loading}>
-            <RefreshCw size={14} />
-            Refresh
-          </button>
-          <Link href="/verification?queue=submitted" className="gov-btn gov-btn-primary">
-            <ClipboardCheck size={14} />
-            Open Verification Queues
-          </Link>
-        </div>
-      </div>
 
-      {/* Compact Counts Strip */}
-      {data && (
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            alignItems: "center",
-            gap: "8px 18px",
-            padding: "8px 14px",
-            background: "#ffffff",
-            border: "1px solid #d9e2dc",
-            borderRadius: 8,
-            fontSize: 12,
-          }}
-        >
-          <span>
-            <strong>LDN:</strong> {data.counts.ldn}
-          </span>
-          <span style={{ color: "#cbd7cf" }}>|</span>
-          <span>
-            <strong>Soil Cores:</strong> {data.counts.soil}
-          </span>
-          <span style={{ color: "#cbd7cf" }}>|</span>
-          <span>
-            <strong>Drylands:</strong> {data.counts.drylands}
-          </span>
-          <span style={{ color: "#cbd7cf" }}>|</span>
-          <span>
-            <strong style={{ color: "#005a2b" }}>Matching Filter:</strong>{" "}
-            <strong>{filteredRows.length}</strong>
-          </span>
-        </div>
-      )}
-
-      {/* Filter Bar */}
-      <div className="gov-filters">
-        <div style={{ position: "relative", flex: "1 1 240px", minWidth: 200 }}>
-          <Search
-            size={14}
+        {/* Compact Counts Strip */}
+        {data && (
+          <div
             style={{
-              position: "absolute",
-              left: 10,
-              top: "50%",
-              transform: "translateY(-50%)",
-              color: "#5b7063",
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              gap: "8px 18px",
+              padding: "8px 14px",
+              background: "#ffffff",
+              border: "1px solid #d9e2dc",
+              borderRadius: 8,
+              fontSize: 12,
             }}
-          />
-          <input
-            type="text"
-            className="gov-input"
-            style={{ width: "100%", paddingLeft: 32 }}
-            placeholder="Search by record ID, UUID, district, ward, or CEID…"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+          >
+            <span>
+              <strong>LDN:</strong> {data.counts.ldn}
+            </span>
+            <span style={{ color: "#cbd7cf" }}>|</span>
+            <span>
+              <strong>Soil Cores:</strong> {data.counts.soil}
+            </span>
+            <span style={{ color: "#cbd7cf" }}>|</span>
+            <span>
+              <strong>Drylands:</strong> {data.counts.drylands}
+            </span>
+            <span style={{ color: "#cbd7cf" }}>|</span>
+            <span>
+              <strong style={{ color: "#005a2b" }}>Matching Filter:</strong>{" "}
+              <strong>{filteredRows.length}</strong>
+            </span>
+          </div>
+        )}
+
+        {/* Filter Bar */}
+        <div className="gov-filters" style={{ padding: "9px 14px" }}>
+          <div style={{ position: "relative", flex: "1 1 240px", minWidth: 200 }}>
+            <Search
+              size={14}
+              style={{
+                position: "absolute",
+                left: 10,
+                top: "50%",
+                transform: "translateY(-50%)",
+                color: "#5b7063",
+              }}
+            />
+            <input
+              type="text"
+              className="gov-input"
+              style={{ width: "100%", paddingLeft: 32 }}
+              placeholder="Search by record ID, UUID, district, ward, or CEID…"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+
+          <select
+            className="gov-select"
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            aria-label="Filter by evidence type"
+          >
+            <option value="">All types</option>
+            <option value="ldn">LDN</option>
+            <option value="soil">Soil</option>
+            <option value="drylands">Drylands</option>
+          </select>
+
+          <select
+            className="gov-select"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            aria-label="Filter by verification status"
+          >
+            <option value="">All statuses</option>
+            <option value="submitted">submitted</option>
+            <option value="district_review">district_review</option>
+            <option value="national_review">national_review</option>
+            <option value="approved">approved</option>
+            <option value="locked">locked</option>
+            <option value="rejected">rejected</option>
+          </select>
+
+          <label
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={praisOnly}
+              onChange={(e) => setPraisOnly(e.target.checked)}
+            />
+            PRAIS eligible only (locked)
+          </label>
         </div>
-
-        <select
-          className="gov-select"
-          value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value)}
-          aria-label="Filter by evidence type"
-        >
-          <option value="">All types</option>
-          <option value="ldn">LDN</option>
-          <option value="soil">Soil</option>
-          <option value="drylands">Drylands</option>
-        </select>
-
-        <select
-          className="gov-select"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          aria-label="Filter by verification status"
-        >
-          <option value="">All statuses</option>
-          <option value="submitted">submitted</option>
-          <option value="district_review">district_review</option>
-          <option value="national_review">national_review</option>
-          <option value="approved">approved</option>
-          <option value="locked">locked</option>
-          <option value="rejected">rejected</option>
-        </select>
-
-        <label
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 6,
-            fontSize: 13,
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
-        >
-          <input
-            type="checkbox"
-            checked={praisOnly}
-            onChange={(e) => setPraisOnly(e.target.checked)}
-          />
-          PRAIS eligible only (locked)
-        </label>
       </div>
 
       {error && <div className="gov-alert gov-alert-red">{error}</div>}
 
-      {/* Unified Registry Table (R1 §5 columns) */}
-      <div className="gov-table-wrap">
+      {/* Unified Registry Table (Scrollable Body + Sticky Header) */}
+      <div className="gov-table-wrap gov-table-scroll">
         <table className="gov-table">
           <thead>
             <tr>
