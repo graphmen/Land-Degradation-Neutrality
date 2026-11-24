@@ -11,6 +11,7 @@ import {
   getSoilSampleLocationOptions,
   getSoilTextureOptions,
 } from "../lib/code-lists";
+import { loadEnumeratorProfile } from "../lib/enumerator-profile";
 
 interface SoilFormProps {
   onSuccess: (message: string) => void;
@@ -69,6 +70,13 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
           // Go directly to step 1 when editing
           setStep(1);
         }
+      });
+    } else {
+      loadEnumeratorProfile().then((p) => {
+        if (p.province) setProvince((cur) => cur || p.province);
+        if (p.district) setDist((cur) => cur || p.district);
+        if (p.ward) setWard((cur) => cur || p.ward);
+        if (p.team || p.enumeratorName) setTeam((cur) => cur || p.team || p.enumeratorName);
       });
     }
   }, [editingDraftId]);

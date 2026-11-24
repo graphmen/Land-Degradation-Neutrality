@@ -17,6 +17,7 @@ import {
   getLdnSeverityOptions,
 } from "../lib/code-lists";
 import { lookupNationalUnitByCeid } from "../lib/national-unit-lookup";
+import { loadEnumeratorProfile } from "../lib/enumerator-profile";
 
 interface LdnFormProps {
   onSuccess: (message: string) => void;
@@ -48,13 +49,13 @@ const VEG_COVERS = [
 ];
 
 const DEGRADATION_SIGNS = [
-  { val: "gully", label: "⚠️ Gully Erosion" },
-  { val: "wind", label: "💨 Sheet / Wind Erosion" },
-  { val: "trecut", label: "🪓 Tree Cutting / Deforestation" },
-  { val: "overgraz", label: "🐄 Overgrazing" },
-  { val: "salin", label: "🧂 Soil Salinization" },
-  { val: "mining", label: "⛏️ Open-pit Mining Degradation" },
-  { val: "none", label: "✅ No Visible Degradation" }
+  { val: "gully", label: "Gully Erosion" },
+  { val: "wind", label: "Sheet / Wind Erosion" },
+  { val: "trecut", label: "Tree Cutting / Deforestation" },
+  { val: "overgraz", label: "Overgrazing" },
+  { val: "salin", label: "Soil Salinization" },
+  { val: "mining", label: "Open-pit Mining Degradation" },
+  { val: "none", label: "No Visible Degradation" }
 ];
 
 const TREE_LOSS_CAUSES = [
@@ -78,6 +79,18 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
   const [ward, setWard] = useState("");
   const [team, setTeam] = useState("");
   const [gps, setGps] = useState(""); // "lat lng alt acc"
+
+  // Auto-fill from saved Enumerator Profile when creating a new draft
+  useEffect(() => {
+    if (!editingDraftId) {
+      loadEnumeratorProfile().then((p) => {
+        if (p.province) setProvince((cur) => cur || p.province);
+        if (p.district) setDist((cur) => cur || p.district);
+        if (p.ward) setWard((cur) => cur || p.ward);
+        if (p.team || p.enumeratorName) setTeam((cur) => cur || p.team || p.enumeratorName);
+      });
+    }
+  }, [editingDraftId]);
   const [ceid, setCeid] = useState("");
   const [ceidHint, setCeidHint] = useState<string | null>(null);
   const [landcov, setLandcov] = useState("");

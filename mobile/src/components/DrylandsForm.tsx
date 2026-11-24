@@ -9,6 +9,7 @@ import {
   getDrylandsErosionSeverityLabel,
   getDrylandsErosionSeverityOptions,
 } from "../lib/code-lists";
+import { loadEnumeratorProfile } from "../lib/enumerator-profile";
 
 interface DrylandsFormProps {
   onSuccess: (message: string) => void;
@@ -42,6 +43,15 @@ export default function DrylandsForm({ onSuccess, onError, onNavigateToQueue, ed
   const [enumerator, setEnumerator] = useState("");
   const [dateObs, setDateObs] = useState(new Date().toISOString().split("T")[0]);
   const [ward, setWard] = useState("");
+
+  useEffect(() => {
+    if (!editingDraftId) {
+      loadEnumeratorProfile().then((p) => {
+        if (p.enumeratorName) setEnumerator((cur) => cur || p.enumeratorName);
+        if (p.ward) setWard((cur) => cur || p.ward);
+      });
+    }
+  }, [editingDraftId]);
   const [village, setVillage] = useState("");
   const [gps, setGps] = useState("");
   const [areaType, setAreaType] = useState<string[]>([]);
