@@ -252,9 +252,9 @@ export async function GET(req: Request) {
     records: enriched,
     source: source,
     modificationsCount: {
-      additions: mod.additions.length,
-      deletions: mod.deletions.length,
-      edits: Object.keys(mod.edits).length + Object.keys(mod.parentEdits).length
+      additions: (mod.additions || []).length,
+      deletions: (mod.deletions || []).length,
+      edits: Object.keys(mod.edits || {}).length + Object.keys(mod.parentEdits || {}).length
     }
   }, {
     headers: {
@@ -447,7 +447,13 @@ export async function DELETE(req: Request) {
 async function loadSoilModifications() {
   try {
     const data = await fs.readFile(soilModPath, "utf-8");
-    return JSON.parse(data);
+    const parsed = JSON.parse(data);
+    return {
+      additions: Array.isArray(parsed.additions) ? parsed.additions : [],
+      deletions: Array.isArray(parsed.deletions) ? parsed.deletions : [],
+      edits: parsed.edits && typeof parsed.edits === "object" ? parsed.edits : {},
+      parentEdits: parsed.parentEdits && typeof parsed.parentEdits === "object" ? parsed.parentEdits : {},
+    };
   } catch {
     return { additions: [], deletions: [], edits: {}, parentEdits: {} };
   }
