@@ -169,7 +169,7 @@ export default function InterventionForm({
       style={{ maxWidth: 620, margin: "0 auto", padding: 16, display: "flex", flexDirection: "column", gap: 13 }}
     >
       <h2 style={{ fontSize: 16, fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
-        <ShieldCheck size={18} color="#60a5fa" /> Restoration & Bright Spot (SO4 / SO5)
+        <ShieldCheck size={17} color="#0b4f2a" /> Restoration &amp; Bright Spot (SO4 / SO5)
       </h2>
 
       <div className="form-group">

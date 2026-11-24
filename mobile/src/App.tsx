@@ -3,6 +3,7 @@ import {
   AlertCircle,
   AlertTriangle,
   CheckCircle2,
+  ChevronRight,
   ClipboardList,
   FlaskConical,
   Home,
@@ -14,7 +15,7 @@ import {
   Trash2,
   Trees,
   UploadCloud,
-  UserCheck,
+  User,
   Wifi,
   WifiOff,
   X,
@@ -44,11 +45,7 @@ import {
   type EnumeratorProfile,
 } from "./lib/enumerator-profile";
 
-type ActiveTab =
-  | "home"
-  | ModuleId
-  | "queue"
-  | "profile";
+type ActiveTab = "home" | ModuleId | "queue" | "profile";
 
 type ToastState = {
   type: "success" | "error";
@@ -86,7 +83,7 @@ export default function App() {
     setToast({ type, message });
     window.setTimeout(() => {
       setToast((prev) => (prev?.message === message ? null : prev));
-    }, 4000);
+    }, 3800);
   };
 
   const refreshQueueCounts = async () => {
@@ -132,7 +129,7 @@ export default function App() {
   const handleSyncModular = async () => {
     const pending = modularSubs.filter((s) => s.sync_state !== "synced");
     if (pending.length === 0) {
-      showToast("success", "All modular submissions are already synced.");
+      showToast("success", "All field submissions are already synced.");
       return;
     }
     setSyncingModular(true);
@@ -160,9 +157,9 @@ export default function App() {
     await refreshQueueCounts();
     setSyncingModular(false);
     if (fail === 0) {
-      showToast("success", `Synced ${ok} modular field submission(s) to EMA National Platform.`);
+      showToast("success", `Synced ${ok} submission(s) to EMA National Platform.`);
     } else {
-      showToast("error", `Synced ${ok}, failed ${fail}. Check server URL in Profile.`);
+      showToast("error", `Synced ${ok}, failed ${fail}. Check server URL in Settings.`);
     }
   };
 
@@ -181,20 +178,14 @@ export default function App() {
     e.preventDefault();
     await saveEnumeratorProfile(profile);
     setProfileSaved(true);
-    showToast("success", "Enumerator profile saved.");
+    showToast("success", "Officer profile saved.");
     window.setTimeout(() => setProfileSaved(false), 2500);
   };
 
   return (
     <div className="mobile-app-shell">
-      {/* EMA Government Mobile Header */}
-      <header
-        className="mobile-header"
-        style={{
-          background: "#043016",
-          borderBottom: "2px solid #c9a227",
-        }}
-      >
+      {/* Official EMA Top App Bar */}
+      <header className="mobile-header">
         <div
           className="mobile-logo-group"
           style={{ cursor: "pointer" }}
@@ -202,74 +193,68 @@ export default function App() {
         >
           <img src="/ema-logo.png" alt="EMA Zimbabwe" className="mobile-logo-img" />
           <div>
-            <div className="mobile-header-title">EMA Zimbabwe LDN</div>
-            <div className="mobile-header-subtitle" style={{ color: "#fde68a" }}>
-              National Field Reporting Suite · UNCCD SO1–SO5
-            </div>
+            <div className="mobile-header-title">EMA LDN Field</div>
+            <div className="mobile-header-subtitle">Republic of Zimbabwe · UNCCD</div>
           </div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <span
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: 5,
-              padding: "4px 9px",
-              borderRadius: 999,
               fontSize: 11,
-              fontWeight: 700,
-              background: online ? "rgba(74, 222, 128, 0.16)" : "rgba(245, 158, 11, 0.2)",
-              color: online ? "#86efac" : "#fde68a",
-              border: `1px solid ${online ? "rgba(74, 222, 128, 0.4)" : "rgba(245, 158, 11, 0.5)"}`,
+              fontWeight: 600,
+              color: online ? "#a7f3d0" : "#fde68a",
             }}
           >
-            {online ? <Wifi size={12} /> : <WifiOff size={12} />}
+            {online ? <Wifi size={13} /> : <WifiOff size={13} />}
             {online ? "Online" : "Offline"}
           </span>
 
           <button
             type="button"
             onClick={() => setActiveTab("profile")}
-            title="Enumerator Profile"
+            title="Officer Profile & Settings"
             style={{
-              background: "rgba(255,255,255,0.1)",
-              border: "1px solid rgba(255,255,255,0.2)",
+              background: "rgba(255,255,255,0.12)",
+              border: "1px solid rgba(255,255,255,0.22)",
               color: "#ffffff",
-              borderRadius: 8,
-              width: 34,
-              height: 34,
+              borderRadius: 6,
+              width: 32,
+              height: 32,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               cursor: "pointer",
             }}
           >
-            <UserCheck size={16} />
+            <User size={15} />
           </button>
         </div>
       </header>
 
-      {/* Toast */}
+      {/* Toast Notification */}
       {toast && (
         <div
           style={{
             position: "fixed",
-            top: 68,
+            top: 64,
             left: 14,
             right: 14,
             zIndex: 300,
             padding: "10px 14px",
-            borderRadius: 10,
+            borderRadius: 8,
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             gap: 10,
             fontSize: 13,
             fontWeight: 600,
-            background: toast.type === "success" ? "#0f5132" : "#991b1b",
+            background: toast.type === "success" ? "#0b4f2a" : "#b42318",
             color: "#ffffff",
-            boxShadow: "0 8px 24px rgba(0,0,0,0.35)",
+            boxShadow: "0 4px 14px rgba(17, 29, 22, 0.22)",
           }}
         >
           <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
@@ -288,228 +273,204 @@ export default function App() {
 
       {/* Main Scrollable Area */}
       <main className="mobile-content">
-        {/* FIELD HOME HUB */}
+        {/* HOME — CLEAN NATIVE FIELD MODULE LIST */}
         {activeTab === "home" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 680, margin: "0 auto" }}>
-            {/* Enumerator Identity Strip */}
-            <div
-              className="mobile-card"
-              style={{
-                padding: 14,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 12,
-                border: "1px solid rgba(201, 162, 39, 0.35)",
-              }}
-            >
-              <div>
-                <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 0.8, color: "#fde68a", fontWeight: 700 }}>
-                  Active Field Officer
-                </div>
-                <div style={{ fontSize: 15, fontWeight: 700, marginTop: 2 }}>
-                  {profile.enumeratorName || "Profile Not Configured"}
-                </div>
-                <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>
-                  {profile.district
-                    ? `${profile.district}${profile.province ? `, ${profile.province}` : ""}${
-                        profile.team ? ` · Team ${profile.team}` : ""
-                      }`
-                    : "Tap Profile to set default province, district & team"}
-                </div>
-              </div>
+          <div style={{ maxWidth: 640, margin: "0 auto", display: "flex", flexDirection: "column", gap: 14 }}>
+            {/* Compact Status Bar: Officer + Sync Queue */}
+            <div className="field-list">
               <button
                 type="button"
+                className="field-list-row"
                 onClick={() => setActiveTab("profile")}
-                style={{
-                  padding: "7px 12px",
-                  borderRadius: 8,
-                  border: "1px solid rgba(255,255,255,0.22)",
-                  background: "rgba(255,255,255,0.08)",
-                  color: "#ffffff",
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  whiteSpace: "nowrap",
-                }}
               >
-                {profile.enumeratorName ? "Edit Profile" : "Set Profile"}
+                <div className="field-list-icon">
+                  <User size={17} />
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600 }}>
+                    {profile.enumeratorName || "Set Officer Profile"}
+                  </div>
+                  <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 1 }}>
+                    {profile.district
+                      ? `${profile.district}${profile.province ? `, ${profile.province}` : ""}${
+                          profile.team ? ` · ${profile.team}` : ""
+                        }`
+                      : "Configure default province, district & team"}
+                  </div>
+                </div>
+                <ChevronRight size={16} color="#7c8f83" />
+              </button>
+
+              <button
+                type="button"
+                className="field-list-row"
+                onClick={() => setActiveTab("queue")}
+              >
+                <div
+                  className="field-list-icon"
+                  style={{
+                    background: totalPending > 0 ? "#fef3c7" : "#e6f4ea",
+                    color: totalPending > 0 ? "#b45309" : "#0b4f2a",
+                  }}
+                >
+                  <UploadCloud size={17} />
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600 }}>
+                    {totalPending > 0
+                      ? `${totalPending} Pending Sync`
+                      : "All Submissions Synced"}
+                  </div>
+                  <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 1 }}>
+                    Offline queue · Tap to review or upload
+                  </div>
+                </div>
+                <ChevronRight size={16} color="#7c8f83" />
               </button>
             </div>
 
-            {/* Offline Queue Strip */}
-            <div
-              className="mobile-card"
-              onClick={() => setActiveTab("queue")}
-              style={{
-                padding: 13,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                cursor: "pointer",
-                borderLeft: `4px solid ${totalPending > 0 ? "#f59e0b" : "#4ade80"}`,
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <UploadCloud size={22} color={totalPending > 0 ? "#fde68a" : "#86efac"} />
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 700 }}>
-                    {totalPending > 0
-                      ? `${totalPending} Submission${totalPending === 1 ? "" : "s"} Pending Sync`
-                      : "All Field Submissions Synced"}
-                  </div>
-                  <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
-                    Offline-first IndexedDB · Syncs to EMA National Platform
-                  </div>
-                </div>
+            {/* Field Data Collection Modules */}
+            <div>
+              <div className="field-section-label">Data Collection Forms</div>
+              <div className="field-list">
+                {MODULE_REGISTRY.map((mod) => {
+                  const Icon = MODULE_ICONS[mod.id];
+                  return (
+                    <button
+                      key={mod.id}
+                      type="button"
+                      className="field-list-row"
+                      onClick={() => {
+                        setEditingDraft(null);
+                        setActiveTab(mod.id);
+                      }}
+                    >
+                      <div className="field-list-icon">
+                        <Icon size={18} />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 14, fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
+                          <span>{mod.title}</span>
+                          {mod.restricted && <Lock size={12} color="#b42318" />}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 12,
+                            color: "var(--text-muted)",
+                            marginTop: 2,
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {mod.unccdTag} · {mod.description}
+                        </div>
+                      </div>
+                      <ChevronRight size={16} color="#7c8f83" />
+                    </button>
+                  );
+                })}
               </div>
-              <span style={{ fontSize: 12, fontWeight: 700, color: "#fde68a" }}>Queue →</span>
-            </div>
-
-            {/* Modular Capture Grid (Driven by MODULE_REGISTRY) */}
-            <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: "var(--text-muted)", marginTop: 2 }}>
-              LDN Reporting Modules (SO1–SO5)
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(155px, 1fr))", gap: 11 }}>
-              {MODULE_REGISTRY.map((mod) => {
-                const Icon = MODULE_ICONS[mod.id];
-                return (
-                  <button
-                    key={mod.id}
-                    type="button"
-                    className="mobile-card"
-                    onClick={() => {
-                      setEditingDraft(null);
-                      setActiveTab(mod.id);
-                    }}
-                    style={{
-                      textAlign: "left",
-                      padding: 14,
-                      cursor: "pointer",
-                      border: `1px solid ${mod.accentColor}44`,
-                      color: "#ffffff",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 6,
-                    }}
-                  >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <Icon size={22} color={mod.accentColor} />
-                      <span
-                        style={{
-                          fontSize: 9,
-                          fontWeight: 700,
-                          padding: "2px 6px",
-                          borderRadius: 999,
-                          background: "rgba(255,255,255,0.08)",
-                          color: mod.accentColor,
-                        }}
-                      >
-                        {mod.unccdTag}
-                      </span>
-                    </div>
-                    <div style={{ fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", gap: 5 }}>
-                      {mod.title}
-                      {mod.restricted && <Lock size={11} color="#fda4af" />}
-                    </div>
-                    <div style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.35 }}>
-                      {mod.description}
-                    </div>
-                  </button>
-                );
-              })}
             </div>
           </div>
         )}
 
         {/* MODULE 1: LDN LAND COVER & DEGRADATION */}
         {activeTab === "so1_land_cover" && (
-          <LdnForm
-            onSuccess={(m) => {
-              showToast("success", m);
-              refreshQueueCounts();
-            }}
-            onError={(m) => showToast("error", m)}
-            onNavigateToQueue={() => {
-              setEditingDraft(null);
-              setActiveTab("queue");
-            }}
-            editingDraftId={editingDraft?.type === "ldn" ? editingDraft.id : null}
-            onClearEdit={() => setEditingDraft(null)}
-          />
+          <div style={{ maxWidth: 640, margin: "0 auto" }}>
+            <LdnForm
+              onSuccess={(m) => {
+                showToast("success", m);
+                refreshQueueCounts();
+              }}
+              onError={(m) => showToast("error", m)}
+              onNavigateToQueue={() => {
+                setEditingDraft(null);
+                setActiveTab("queue");
+              }}
+              editingDraftId={editingDraft?.type === "ldn" ? editingDraft.id : null}
+              onClearEdit={() => setEditingDraft(null)}
+            />
+          </div>
         )}
 
         {/* MODULE 2: SOIL CORE & LAB SOC */}
         {activeTab === "so1_soil_soc" && (
-          <SoilForm
-            onSuccess={(m) => {
-              showToast("success", m);
-              refreshQueueCounts();
-            }}
-            onError={(m) => showToast("error", m)}
-            onNavigateToQueue={() => {
-              setEditingDraft(null);
-              setActiveTab("queue");
-            }}
-            editingDraftId={editingDraft?.type === "soil" ? editingDraft.id : null}
-            onClearEdit={() => setEditingDraft(null)}
-          />
+          <div style={{ maxWidth: 640, margin: "0 auto" }}>
+            <SoilForm
+              onSuccess={(m) => {
+                showToast("success", m);
+                refreshQueueCounts();
+              }}
+              onError={(m) => showToast("error", m)}
+              onNavigateToQueue={() => {
+                setEditingDraft(null);
+                setActiveTab("queue");
+              }}
+              editingDraftId={editingDraft?.type === "soil" ? editingDraft.id : null}
+              onClearEdit={() => setEditingDraft(null)}
+            />
+          </div>
         )}
 
-        {/* MODULE 3: DEGRADATION PRESSURES (WITH POLYGON WALK) */}
+        {/* MODULE 3: DEGRADATION PRESSURES */}
         {activeTab === "pressures" && (
-          <PressureForm
-            onSuccess={(m) => showToast("success", m)}
-            onError={(m) => showToast("error", m)}
-            onSaved={() => {
-              refreshQueueCounts();
-              setActiveTab("queue");
-            }}
-          />
+          <div style={{ maxWidth: 640, margin: "0 auto" }}>
+            <PressureForm
+              onSuccess={(m) => showToast("success", m)}
+              onError={(m) => showToast("error", m)}
+              onSaved={() => {
+                refreshQueueCounts();
+                setActiveTab("queue");
+              }}
+            />
+          </div>
         )}
 
-        {/* MODULE 4: RESTORATION & BRIGHT SPOTS (WITH POLYGON WALK) */}
+        {/* MODULE 4: RESTORATION & BRIGHT SPOTS */}
         {activeTab === "so4_interventions" && (
-          <InterventionForm
-            onSuccess={(m) => showToast("success", m)}
-            onError={(m) => showToast("error", m)}
-            onSaved={() => {
-              refreshQueueCounts();
-              setActiveTab("queue");
-            }}
-          />
+          <div style={{ maxWidth: 640, margin: "0 auto" }}>
+            <InterventionForm
+              onSuccess={(m) => showToast("success", m)}
+              onError={(m) => showToast("error", m)}
+              onSaved={() => {
+                refreshQueueCounts();
+                setActiveTab("queue");
+              }}
+            />
+          </div>
         )}
 
         {/* MODULE 5: DRYLANDS & ILUP */}
         {activeTab === "drylands_ilup" && (
-          <DrylandsForm
-            onSuccess={(m) => {
-              showToast("success", m);
-              refreshQueueCounts();
-            }}
-            onError={(m) => showToast("error", m)}
-            onNavigateToQueue={() => {
-              setEditingDraft(null);
-              setActiveTab("queue");
-            }}
-            editingDraftId={editingDraft?.type === "drylands" ? editingDraft.id : null}
-            onClearEdit={() => setEditingDraft(null)}
-          />
+          <div style={{ maxWidth: 640, margin: "0 auto" }}>
+            <DrylandsForm
+              onSuccess={(m) => {
+                showToast("success", m);
+                refreshQueueCounts();
+              }}
+              onError={(m) => showToast("error", m)}
+              onNavigateToQueue={() => {
+                setEditingDraft(null);
+                setActiveTab("queue");
+              }}
+              editingDraftId={editingDraft?.type === "drylands" ? editingDraft.id : null}
+              onClearEdit={() => setEditingDraft(null)}
+            />
+          </div>
         )}
 
         {/* UNIFIED OFFLINE QUEUE */}
         {activeTab === "queue" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 16, maxWidth: 680, margin: "0 auto" }}>
-            {/* Modular Submissions Queue (Pressures & Restoration SO4) */}
-            <div className="mobile-card" style={{ padding: 14 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, maxWidth: 640, margin: "0 auto" }}>
+            <div className="mobile-card" style={{ padding: 14, marginBottom: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 10 }}>
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 700 }}>
-                    Modular Field Queue ({modularSubs.length})
+                    Pressures &amp; Restoration Queue ({modularSubs.length})
                   </div>
-                  <div style={{ fontSize: 11, color: "var(--text-muted)" }}>
-                    Pressures & Restoration (SO4) · Point + Walked Polygon
+                  <div style={{ fontSize: 12, color: "var(--text-muted)" }}>
+                    Point GPS and walked polygon submissions
                   </div>
                 </div>
                 <button
@@ -517,7 +478,7 @@ export default function App() {
                   className="btn-primary"
                   disabled={syncingModular || modularPending === 0}
                   onClick={handleSyncModular}
-                  style={{ padding: "7px 12px", fontSize: 12, display: "inline-flex", alignItems: "center", gap: 6 }}
+                  style={{ width: "auto", padding: "8px 12px", fontSize: 12 }}
                 >
                   <RefreshCw size={13} className={syncingModular ? "animate-spin" : ""} />
                   {syncingModular ? "Syncing…" : `Sync (${modularPending})`}
@@ -525,31 +486,19 @@ export default function App() {
               </div>
 
               {modularSubs.length === 0 ? (
-                <div style={{ fontSize: 12, color: "var(--text-muted)" }}>
+                <div style={{ fontSize: 12, color: "var(--text-muted)", padding: "6px 0" }}>
                   No Pressure or Restoration submissions saved yet.
                 </div>
               ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <div className="queue-list">
                   {modularSubs.map((s) => (
-                    <div
-                      key={s.submission_id}
-                      style={{
-                        padding: "10px 12px",
-                        borderRadius: 8,
-                        background: "rgba(255,255,255,0.05)",
-                        border: "1px solid rgba(255,255,255,0.1)",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        gap: 8,
-                      }}
-                    >
-                      <div style={{ fontSize: 12 }}>
-                        <div style={{ fontWeight: 700 }}>
+                    <div key={s.submission_id} className="queue-item">
+                      <div className="queue-item-details">
+                        <div className="queue-item-title">
                           {s.module_id === "pressures" ? "Degradation Pressure" : "Restoration (SO4)"} ·{" "}
                           {s.location.site_name || s.location.district}
                         </div>
-                        <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
+                        <div className="queue-item-meta">
                           {s.location.district}
                           {s.geometry.polygon?.area_ha
                             ? ` · ${s.geometry.polygon.area_ha} ha polygon`
@@ -559,10 +508,10 @@ export default function App() {
                             style={{
                               color:
                                 s.sync_state === "synced"
-                                  ? "#86efac"
+                                  ? "#0b4f2a"
                                   : s.sync_state === "error"
-                                    ? "#fda4af"
-                                    : "#fde68a",
+                                    ? "#b42318"
+                                    : "#b45309",
                             }}
                           >
                             {s.sync_state.toUpperCase()}
@@ -571,20 +520,14 @@ export default function App() {
                       </div>
                       <button
                         type="button"
+                        className="btn-danger"
                         onClick={async () => {
                           await deleteModularSubmission(s.submission_id);
                           refreshQueueCounts();
                         }}
-                        style={{
-                          background: "none",
-                          border: "none",
-                          color: "#fda4af",
-                          cursor: "pointer",
-                          padding: 6,
-                        }}
                         title="Delete submission"
                       >
-                        <Trash2 size={15} />
+                        <Trash2 size={14} />
                       </button>
                     </div>
                   ))}
@@ -592,7 +535,6 @@ export default function App() {
               )}
             </div>
 
-            {/* Existing LDN / Soil / Drylands Draft Queue */}
             <DraftQueue
               onSuccess={(m) => {
                 showToast("success", m);
@@ -604,24 +546,20 @@ export default function App() {
           </div>
         )}
 
-        {/* ENUMERATOR PROFILE */}
+        {/* OFFICER PROFILE & SETTINGS */}
         {activeTab === "profile" && (
           <form
             onSubmit={handleSaveProfile}
             className="mobile-card"
-            style={{ maxWidth: 560, margin: "0 auto", padding: 18, display: "flex", flexDirection: "column", gap: 14 }}
+            style={{ maxWidth: 560, margin: "0 auto", padding: 16 }}
           >
-            <div>
-              <h2 style={{ fontSize: 17, fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
-                <UserCheck size={18} color="#fde68a" /> Enumerator Profile & Settings
-              </h2>
-              <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>
-                Saved on-device and automatically pre-filled across all LDN reporting modules.
-              </p>
-            </div>
+            <h2 style={{ fontSize: 16, marginBottom: 4 }}>Officer Profile &amp; Server</h2>
+            <p className="card-desc">
+              Stored on this device and pre-filled automatically on new forms.
+            </p>
 
             <div className="form-group">
-              <label className="form-label">Officer / Enumerator Full Name</label>
+              <label className="form-label">Officer Full Name</label>
               <input
                 type="text"
                 className="form-input"
@@ -645,7 +583,7 @@ export default function App() {
             <div className="form-group">
               <label className="form-label">Default Province</label>
               <select
-                className="form-input"
+                className="form-input form-select"
                 value={profile.province}
                 onChange={(e) =>
                   setProfile({ ...profile, province: e.target.value, district: "" })
@@ -663,7 +601,7 @@ export default function App() {
             <div className="form-group">
               <label className="form-label">Default District</label>
               <select
-                className="form-input"
+                className="form-input form-select"
                 value={profile.district}
                 disabled={!profile.province}
                 onChange={(e) => setProfile({ ...profile, district: e.target.value })}
@@ -678,7 +616,7 @@ export default function App() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Default Ward (optional)</label>
+              <label className="form-label">Default Ward (Optional)</label>
               <input
                 type="text"
                 className="form-input"
@@ -689,7 +627,7 @@ export default function App() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">EMA National Platform API Server</label>
+              <label className="form-label">EMA Platform API URL</label>
               <input
                 type="url"
                 className="form-input"
@@ -698,34 +636,20 @@ export default function App() {
               />
             </div>
 
-            <button
-              type="submit"
-              className="btn-primary"
-              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "12px 16px" }}
-            >
-              <Save size={16} />
+            <button type="submit" className="btn-primary">
+              <Save size={15} />
               {profileSaved ? "Profile Saved" : "Save Profile"}
             </button>
           </form>
         )}
       </main>
 
-      {/* Bottom 5-Tab Navigation Bar */}
-      <nav
-        style={{
-          height: 62,
-          background: "#042511",
-          borderTop: "1px solid rgba(255,255,255,0.12)",
-          display: "grid",
-          gridTemplateColumns: "repeat(5, 1fr)",
-          flexShrink: 0,
-          zIndex: 100,
-        }}
-      >
+      {/* Native Light Bottom 5-Tab Navigation Bar */}
+      <nav className="mobile-nav-bar">
         {(
           [
-            { id: "home", label: "Modules", icon: Home },
-            { id: "so1_land_cover", label: "LDN", icon: Trees },
+            { id: "home", label: "Forms", icon: Home },
+            { id: "so1_land_cover", label: "Land Cover", icon: Trees },
             { id: "pressures", label: "Pressures", icon: AlertTriangle },
             { id: "so4_interventions", label: "Restore", icon: ShieldCheck },
             { id: "queue", label: "Queue", icon: ClipboardList, badge: totalPending },
@@ -737,22 +661,8 @@ export default function App() {
             <button
               key={item.id}
               type="button"
+              className={`mobile-nav-item ${active ? "active" : ""}`}
               onClick={() => setActiveTab(item.id)}
-              style={{
-                background: "none",
-                border: "none",
-                color: active ? "#fde68a" : "rgba(255,255,255,0.65)",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 3,
-                fontSize: 10,
-                fontWeight: active ? 700 : 500,
-                cursor: "pointer",
-                position: "relative",
-                borderTop: active ? "2px solid #c9a227" : "2px solid transparent",
-              }}
             >
               <Icon size={18} />
               <span>{item.label}</span>
@@ -760,15 +670,15 @@ export default function App() {
                 <span
                   style={{
                     position: "absolute",
-                    top: 6,
-                    right: "20%",
-                    background: "#f59e0b",
-                    color: "#042511",
-                    fontSize: 10,
-                    fontWeight: 800,
+                    top: 5,
+                    right: "18%",
+                    background: "#b45309",
+                    color: "#ffffff",
+                    fontSize: 9,
+                    fontWeight: 700,
                     padding: "1px 5px",
                     borderRadius: 999,
-                    minWidth: 16,
+                    minWidth: 15,
                     textAlign: "center",
                   }}
                 >

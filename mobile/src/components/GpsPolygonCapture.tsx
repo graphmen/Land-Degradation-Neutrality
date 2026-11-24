@@ -186,26 +186,26 @@ export default function GpsPolygonCapture({
         style={{
           width: "100%",
           height: 96,
-          background: "rgba(4, 20, 11, 0.85)",
+          background: "#eff4f0",
           borderRadius: 8,
-          border: "1px solid rgba(76, 175, 80, 0.3)",
-          marginTop: 8,
+          border: "1px solid #cbd7cf",
+          marginTop: 6,
         }}
       >
         {coords.length >= 3 ? (
           <polygon
             points={pts}
-            fill="rgba(74, 222, 128, 0.22)"
-            stroke="#4ade80"
+            fill="rgba(11, 79, 42, 0.18)"
+            stroke="#0b4f2a"
             strokeWidth="2"
           />
         ) : (
-          <polyline points={pts} fill="none" stroke="#4ade80" strokeWidth="2" />
+          <polyline points={pts} fill="none" stroke="#0b4f2a" strokeWidth="2" />
         )}
         {coords.map(([lng, lat], i) => {
           const x = 14 + ((lng - minX) / spanX) * 172;
           const y = 86 - ((lat - minY) / spanY) * 72;
-          return <circle key={i} cx={x} cy={y} r="3" fill="#fde68a" />;
+          return <circle key={i} cx={x} cy={y} r="3" fill="#0b4f2a" stroke="#ffffff" strokeWidth="1" />;
         })}
       </svg>
     );
@@ -214,9 +214,9 @@ export default function GpsPolygonCapture({
   return (
     <div
       style={{
-        background: "rgba(11, 30, 18, 0.72)",
-        border: "1px solid rgba(76, 175, 80, 0.28)",
-        borderRadius: 12,
+        background: "#f7f9f7",
+        border: "1px solid #d7e0da",
+        borderRadius: 8,
         padding: 12,
         display: "flex",
         flexDirection: "column",
@@ -225,13 +225,13 @@ export default function GpsPolygonCapture({
     >
       {/* Mode Switcher */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-        <span style={{ fontSize: 12, fontWeight: 700, color: "#fde68a", display: "inline-flex", alignItems: "center", gap: 6 }}>
-          {value.mode === "polygon" ? <Footprints size={15} /> : <MapPin size={15} />}
-          Spatial Capture
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#111d16", display: "inline-flex", alignItems: "center", gap: 6 }}>
+          {value.mode === "polygon" ? <Footprints size={15} color="#0b4f2a" /> : <MapPin size={15} color="#0b4f2a" />}
+          Location Capture
         </span>
 
         {allowPolygon && (
-          <div style={{ display: "inline-flex", background: "rgba(255,255,255,0.08)", padding: 3, borderRadius: 8, gap: 4 }}>
+          <div style={{ display: "inline-flex", background: "#e6ede8", padding: 2, borderRadius: 6, gap: 2 }}>
             <button
               type="button"
               onClick={() => {
@@ -240,13 +240,14 @@ export default function GpsPolygonCapture({
               }}
               style={{
                 border: "none",
-                borderRadius: 6,
+                borderRadius: 5,
                 padding: "4px 10px",
                 fontSize: 11,
-                fontWeight: 700,
+                fontWeight: 600,
                 cursor: "pointer",
-                background: value.mode === "point" ? "#005a2b" : "transparent",
-                color: "#ffffff",
+                background: value.mode === "point" ? "#ffffff" : "transparent",
+                color: value.mode === "point" ? "#0b4f2a" : "#4f6457",
+                boxShadow: value.mode === "point" ? "0 1px 2px rgba(0,0,0,0.08)" : "none",
               }}
             >
               Point GPS
@@ -256,13 +257,14 @@ export default function GpsPolygonCapture({
               onClick={() => onChange({ ...value, mode: "polygon" })}
               style={{
                 border: "none",
-                borderRadius: 6,
+                borderRadius: 5,
                 padding: "4px 10px",
                 fontSize: 11,
-                fontWeight: 700,
+                fontWeight: 600,
                 cursor: "pointer",
-                background: value.mode === "polygon" ? "#005a2b" : "transparent",
-                color: "#ffffff",
+                background: value.mode === "polygon" ? "#ffffff" : "transparent",
+                color: value.mode === "polygon" ? "#0b4f2a" : "#4f6457",
+                boxShadow: value.mode === "polygon" ? "0 1px 2px rgba(0,0,0,0.08)" : "none",
               }}
             >
               Walk Polygon (ha)
@@ -279,7 +281,6 @@ export default function GpsPolygonCapture({
             className="btn-primary"
             onClick={capturePoint}
             disabled={loading}
-            style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "10px 14px" }}
           >
             {loading ? <RefreshCw size={15} className="animate-spin" /> : <MapPin size={15} />}
             {loading ? "Acquiring GPS…" : pt ? "Re-capture GPS Point" : "Capture GPS Point"}
@@ -287,24 +288,24 @@ export default function GpsPolygonCapture({
 
           {pt && (
             <div style={{ fontSize: 12, display: "flex", flexDirection: "column", gap: 4 }}>
-              <div style={{ fontFamily: "monospace", color: "#86efac" }}>
-                Lat: {pt.lat.toFixed(6)} · Lng: {pt.lng.toFixed(6)}
+              <div style={{ fontFamily: "monospace", color: "#111d16", fontWeight: 600 }}>
+                {pt.lat.toFixed(6)}, {pt.lng.toFixed(6)}
               </div>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
                 {accuracy != null && (
                   <span
                     style={{
                       fontSize: 11,
-                      fontWeight: 700,
+                      fontWeight: 600,
                       padding: "2px 8px",
-                      borderRadius: 999,
+                      borderRadius: 4,
                       background:
                         accuracy <= 10
-                          ? "rgba(74,222,128,0.18)"
+                          ? "#e6f4ea"
                           : accuracy <= 15
-                            ? "rgba(250,204,21,0.2)"
-                            : "rgba(244,63,94,0.22)",
-                      color: accuracy <= 10 ? "#86efac" : accuracy <= 15 ? "#fde68a" : "#fda4af",
+                            ? "#fef3c7"
+                            : "#fef2f2",
+                      color: accuracy <= 10 ? "#0b4f2a" : accuracy <= 15 ? "#92400e" : "#b42318",
                     }}
                   >
                     {accuracy <= 10 ? <CheckCircle2 size={11} style={{ verticalAlign: "middle", marginRight: 4 }} /> : <AlertTriangle size={11} style={{ verticalAlign: "middle", marginRight: 4 }} />}
@@ -312,7 +313,7 @@ export default function GpsPolygonCapture({
                   </span>
                 )}
                 {outsideZim && (
-                  <span style={{ fontSize: 11, color: "#fda4af", fontWeight: 600 }}>
+                  <span style={{ fontSize: 11, color: "#b42318", fontWeight: 600 }}>
                     Outside Zimbabwe bounds
                   </span>
                 )}
@@ -332,12 +333,12 @@ export default function GpsPolygonCapture({
               style={{
                 flex: 1,
                 border: "none",
-                borderRadius: 8,
+                borderRadius: 7,
                 padding: "9px 12px",
                 fontSize: 12,
-                fontWeight: 700,
+                fontWeight: 600,
                 cursor: "pointer",
-                background: walking ? "#b91c1c" : "#005a2b",
+                background: walking ? "#b42318" : "#0b4f2a",
                 color: "#ffffff",
                 display: "inline-flex",
                 alignItems: "center",
@@ -353,19 +354,8 @@ export default function GpsPolygonCapture({
               type="button"
               onClick={addVertex}
               disabled={loading}
-              style={{
-                border: "1px solid rgba(255,255,255,0.22)",
-                borderRadius: 8,
-                padding: "9px 12px",
-                fontSize: 12,
-                fontWeight: 700,
-                cursor: "pointer",
-                background: "rgba(255,255,255,0.1)",
-                color: "#ffffff",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 5,
-              }}
+              className="btn-secondary"
+              style={{ width: "auto", padding: "8px 11px", fontSize: 12 }}
             >
               <Plus size={14} /> Add Vertex
             </button>
@@ -375,15 +365,8 @@ export default function GpsPolygonCapture({
               onClick={undoVertex}
               disabled={coords.length === 0}
               title="Undo last vertex"
-              style={{
-                border: "1px solid rgba(255,255,255,0.2)",
-                borderRadius: 8,
-                padding: "9px 10px",
-                background: "transparent",
-                color: "#ffffff",
-                cursor: "pointer",
-                opacity: coords.length === 0 ? 0.4 : 1,
-              }}
+              className="btn-secondary"
+              style={{ width: "auto", padding: "8px 10px", opacity: coords.length === 0 ? 0.45 : 1 }}
             >
               <Undo2 size={14} />
             </button>
@@ -393,15 +376,8 @@ export default function GpsPolygonCapture({
               onClick={clearPolygon}
               disabled={coords.length === 0}
               title="Clear polygon"
-              style={{
-                border: "1px solid rgba(244,63,94,0.4)",
-                borderRadius: 8,
-                padding: "9px 10px",
-                background: "transparent",
-                color: "#fda4af",
-                cursor: "pointer",
-                opacity: coords.length === 0 ? 0.4 : 1,
-              }}
+              className="btn-danger"
+              style={{ padding: "8px 10px", opacity: coords.length === 0 ? 0.45 : 1 }}
             >
               <Trash2 size={14} />
             </button>
@@ -413,24 +389,25 @@ export default function GpsPolygonCapture({
               gridTemplateColumns: "repeat(3, 1fr)",
               gap: 8,
               fontSize: 11,
-              background: "rgba(255,255,255,0.05)",
+              background: "#ffffff",
+              border: "1px solid #d7e0da",
               padding: "8px 10px",
-              borderRadius: 8,
+              borderRadius: 6,
             }}
           >
             <div>
               <div style={{ color: "var(--text-muted)" }}>Vertices</div>
-              <strong style={{ fontSize: 14, color: "#ffffff" }}>{coords.length}</strong>
+              <strong style={{ fontSize: 14, color: "#111d16" }}>{coords.length}</strong>
             </div>
             <div>
-              <div style={{ color: "var(--text-muted)" }}>Calculated Area</div>
-              <strong style={{ fontSize: 14, color: "#86efac" }}>
+              <div style={{ color: "var(--text-muted)" }}>Area</div>
+              <strong style={{ fontSize: 14, color: "#0b4f2a" }}>
                 {(value.polygon?.area_ha ?? 0).toFixed(3)} ha
               </strong>
             </div>
             <div>
               <div style={{ color: "var(--text-muted)" }}>Perimeter</div>
-              <strong style={{ fontSize: 14, color: "#fde68a" }}>
+              <strong style={{ fontSize: 14, color: "#111d16" }}>
                 {(value.polygon?.perimeter_m ?? 0).toFixed(0)} m
               </strong>
             </div>
@@ -441,7 +418,7 @@ export default function GpsPolygonCapture({
       )}
 
       {error && (
-        <div style={{ fontSize: 12, color: "#fda4af", fontWeight: 600 }}>{error}</div>
+        <div style={{ fontSize: 12, color: "#b42318", fontWeight: 600 }}>{error}</div>
       )}
     </div>
   );

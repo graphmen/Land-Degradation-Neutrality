@@ -149,7 +149,7 @@ export default function PressureForm({ onSuccess, onError, onSaved }: PressureFo
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <h2 style={{ fontSize: 16, fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
-          <AlertTriangle size={18} color="#f59e0b" /> Degradation Pressure Report
+          <AlertTriangle size={17} color="#b45309" /> Degradation Pressure Report
         </h2>
         {theme === "illegal_mining" && (
           <span
@@ -157,12 +157,13 @@ export default function PressureForm({ onSuccess, onError, onSaved }: PressureFo
               display: "inline-flex",
               alignItems: "center",
               gap: 4,
-              fontSize: 10,
-              fontWeight: 700,
-              padding: "3px 8px",
-              borderRadius: 999,
-              background: "rgba(244,63,94,0.2)",
-              color: "#fda4af",
+              fontSize: 11,
+              fontWeight: 600,
+              padding: "2px 8px",
+              borderRadius: 4,
+              background: "#fef2f2",
+              color: "#b42318",
+              border: "1px solid #fecaca",
             }}
           >
             <Lock size={10} /> Restricted
