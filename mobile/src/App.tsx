@@ -1,25 +1,41 @@
 import { useEffect, useState } from "react";
 import {
+  AlertCircle,
+  AlertTriangle,
   CheckCircle2,
   ClipboardList,
-  Compass,
   FlaskConical,
   Home,
+  Lock,
+  RefreshCw,
   Save,
+  ShieldCheck,
   Sprout,
+  Trash2,
   Trees,
   UploadCloud,
   UserCheck,
   Wifi,
   WifiOff,
-  AlertCircle,
   X,
 } from "lucide-react";
 import LdnForm from "./components/LdnForm";
 import SoilForm from "./components/SoilForm";
 import DrylandsForm from "./components/DrylandsForm";
+import PressureForm from "./components/PressureForm";
+import InterventionForm from "./components/InterventionForm";
 import DraftQueue from "./components/DraftQueue";
 import { getDrylandsDrafts, getLdnDrafts, getSoilDrafts } from "./lib/db";
+import {
+  deleteModularSubmission,
+  listModularSubmissions,
+  updateModularSyncState,
+} from "./lib/modular-db";
+import {
+  MODULE_REGISTRY,
+  type ModuleId,
+  type UniversalSubmission,
+} from "./lib/submission-envelope";
 import {
   EMPTY_PROFILE,
   ZIMBABWE_PROVINCE_DISTRICTS,
@@ -28,12 +44,24 @@ import {
   type EnumeratorProfile,
 } from "./lib/enumerator-profile";
 
-type ActiveTab = "home" | "ldn" | "soil" | "drylands" | "queue" | "validator" | "profile";
+type ActiveTab =
+  | "home"
+  | ModuleId
+  | "queue"
+  | "profile";
 
 type ToastState = {
   type: "success" | "error";
   message: string;
 } | null;
+
+const MODULE_ICONS: Record<ModuleId, typeof Trees> = {
+  so1_land_cover: Trees,
+  so1_soil_soc: FlaskConical,
+  pressures: AlertTriangle,
+  so4_interventions: ShieldCheck,
+  drylands_ilup: Sprout,
+};
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>("home");
@@ -42,7 +70,10 @@ export default function App() {
   );
   const [toast, setToast] = useState<ToastState>(null);
 
-  const [pendingCounts, setPendingCounts] = useState({ ldn: 0, soil: 0, drylands: 0 });
+  const [legacyPending, setLegacyPending] = useState(0);
+  const [modularSubs, setModularSubs] = useState<UniversalSubmission[]>([]);
+  const [syncingModular, setSyncingModular] = useState(false);
+
   const [editingDraft, setEditingDraft] = useState<{
     id: string;
     type: "ldn" | "soil" | "drylands";
@@ -60,18 +91,20 @@ export default function App() {
 
   const refreshQueueCounts = async () => {
     try {
-      const [ldn, soil, dry] = await Promise.all([
+      const [ldn, soil, dry, mod] = await Promise.all([
         getLdnDrafts(),
         getSoilDrafts(),
         getDrylandsDrafts(),
+        listModularSubmissions(),
       ]);
-      setPendingCounts({
-        ldn: ldn.filter((d) => !d.synced).length,
-        soil: soil.filter((d) => !d.synced).length,
-        drylands: dry.filter((d) => !d.synced).length,
-      });
+      setLegacyPending(
+        ldn.filter((d) => !d.synced).length +
+          soil.filter((d) => !d.synced).length +
+          dry.filter((d) => !d.synced).length
+      );
+      setModularSubs(mod);
     } catch {
-      // ignore initial IndexedDB errors
+      // ignore IndexedDB startup errors
     }
   };
 
@@ -93,18 +126,62 @@ export default function App() {
     refreshQueueCounts();
   }, [activeTab]);
 
-  const totalPending = pendingCounts.ldn + pendingCounts.soil + pendingCounts.drylands;
+  const modularPending = modularSubs.filter((s) => s.sync_state !== "synced").length;
+  const totalPending = legacyPending + modularPending;
+
+  const handleSyncModular = async () => {
+    const pending = modularSubs.filter((s) => s.sync_state !== "synced");
+    if (pending.length === 0) {
+      showToast("success", "All modular submissions are already synced.");
+      return;
+    }
+    setSyncingModular(true);
+    const baseUrl = (profile.apiBaseUrl || "http://localhost:3001").replace(/\/$/, "");
+    let ok = 0;
+    let fail = 0;
+
+    for (const sub of pending) {
+      try {
+        const res = await fetch(`${baseUrl}/api/submit/modular`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(sub),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        await updateModularSyncState(sub.submission_id, "synced", null);
+        ok++;
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : "Network error";
+        await updateModularSyncState(sub.submission_id, "error", msg);
+        fail++;
+      }
+    }
+
+    await refreshQueueCounts();
+    setSyncingModular(false);
+    if (fail === 0) {
+      showToast("success", `Synced ${ok} modular field submission(s) to EMA National Platform.`);
+    } else {
+      showToast("error", `Synced ${ok}, failed ${fail}. Check server URL in Profile.`);
+    }
+  };
 
   const handleEditDraft = (id: string, type: "ldn" | "soil" | "drylands") => {
     setEditingDraft({ id, type });
-    setActiveTab(type);
+    setActiveTab(
+      type === "ldn"
+        ? "so1_land_cover"
+        : type === "soil"
+          ? "so1_soil_soc"
+          : "drylands_ilup"
+    );
   };
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     await saveEnumeratorProfile(profile);
     setProfileSaved(true);
-    showToast("success", "Enumerator profile saved. New forms will auto-fill automatically.");
+    showToast("success", "Enumerator profile saved.");
     window.setTimeout(() => setProfileSaved(false), 2500);
   };
 
@@ -127,7 +204,7 @@ export default function App() {
           <div>
             <div className="mobile-header-title">EMA Zimbabwe LDN</div>
             <div className="mobile-header-subtitle" style={{ color: "#fde68a" }}>
-              Field Data Collection · SDG 15.3.1
+              National Field Reporting Suite · UNCCD SO1–SO5
             </div>
           </div>
         </div>
@@ -173,7 +250,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* Toast Notification Banner */}
+      {/* Toast */}
       {toast && (
         <div
           style={{
@@ -209,15 +286,8 @@ export default function App() {
         </div>
       )}
 
-      {/* Main Content */}
-      <main
-        className="mobile-content"
-        style={
-          activeTab === "validator"
-            ? { padding: 0, overflow: "hidden", display: "flex", flexDirection: "column" }
-            : undefined
-        }
-      >
+      {/* Main Scrollable Area */}
+      <main className="mobile-content">
         {/* FIELD HOME HUB */}
         {activeTab === "home" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 680, margin: "0 auto" }}>
@@ -267,12 +337,12 @@ export default function App() {
               </button>
             </div>
 
-            {/* Offline Queue Summary Strip */}
+            {/* Offline Queue Strip */}
             <div
               className="mobile-card"
               onClick={() => setActiveTab("queue")}
               style={{
-                padding: 14,
+                padding: 13,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
@@ -285,114 +355,76 @@ export default function App() {
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 700 }}>
                     {totalPending > 0
-                      ? `${totalPending} Submission${totalPending === 1 ? "" : "s"} Waiting to Sync`
+                      ? `${totalPending} Submission${totalPending === 1 ? "" : "s"} Pending Sync`
                       : "All Field Submissions Synced"}
                   </div>
                   <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
-                    LDN: {pendingCounts.ldn} · Soil: {pendingCounts.soil} · Drylands:{" "}
-                    {pendingCounts.drylands}
+                    Offline-first IndexedDB · Syncs to EMA National Platform
                   </div>
                 </div>
               </div>
-              <span style={{ fontSize: 12, fontWeight: 700, color: "#fde68a" }}>Open Queue →</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: "#fde68a" }}>Queue →</span>
             </div>
 
-            {/* Field Data Capture Modules */}
-            <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: "var(--text-muted)", marginTop: 4 }}>
-              Field Data Capture Forms
+            {/* Modular Capture Grid (Driven by MODULE_REGISTRY) */}
+            <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: "var(--text-muted)", marginTop: 2 }}>
+              LDN Reporting Modules (SO1–SO5)
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              <button
-                type="button"
-                className="mobile-card"
-                onClick={() => {
-                  setEditingDraft(null);
-                  setActiveTab("ldn");
-                }}
-                style={{
-                  textAlign: "left",
-                  padding: 16,
-                  cursor: "pointer",
-                  border: "1px solid rgba(76, 175, 80, 0.35)",
-                  color: "#ffffff",
-                }}
-              >
-                <Trees size={24} color="#86efac" style={{ marginBottom: 8 }} />
-                <div style={{ fontSize: 14, fontWeight: 700 }}>LDN Validation</div>
-                <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}>
-                  Land cover, degradation severity, CEID & field photo
-                </div>
-              </button>
-
-              <button
-                type="button"
-                className="mobile-card"
-                onClick={() => {
-                  setEditingDraft(null);
-                  setActiveTab("soil");
-                }}
-                style={{
-                  textAlign: "left",
-                  padding: 16,
-                  cursor: "pointer",
-                  border: "1px solid rgba(56, 189, 248, 0.35)",
-                  color: "#ffffff",
-                }}
-              >
-                <FlaskConical size={24} color="#7dd3fc" style={{ marginBottom: 8 }} />
-                <div style={{ fontSize: 14, fontWeight: 700 }}>Soil Core Survey</div>
-                <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}>
-                  0–30 cm horizon depth, texture, moisture & Munsell color
-                </div>
-              </button>
-
-              <button
-                type="button"
-                className="mobile-card"
-                onClick={() => {
-                  setEditingDraft(null);
-                  setActiveTab("drylands");
-                }}
-                style={{
-                  textAlign: "left",
-                  padding: 16,
-                  cursor: "pointer",
-                  border: "1px solid rgba(251, 191, 36, 0.35)",
-                  color: "#ffffff",
-                }}
-              >
-                <Sprout size={24} color="#fde68a" style={{ marginBottom: 8 }} />
-                <div style={{ fontSize: 14, fontWeight: 700 }}>Drylands (ILUP)</div>
-                <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}>
-                  Erosion, vulnerability, livelihoods & SLM interventions
-                </div>
-              </button>
-
-              <button
-                type="button"
-                className="mobile-card"
-                onClick={() => setActiveTab("validator")}
-                style={{
-                  textAlign: "left",
-                  padding: 16,
-                  cursor: "pointer",
-                  border: "1px solid rgba(167, 139, 250, 0.35)",
-                  color: "#ffffff",
-                }}
-              >
-                <Compass size={24} color="#c4b5fd" style={{ marginBottom: 8 }} />
-                <div style={{ fontSize: 14, fontWeight: 700 }}>CEID Map Navigator</div>
-                <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}>
-                  Locate national Collect Earth validation plots
-                </div>
-              </button>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(155px, 1fr))", gap: 11 }}>
+              {MODULE_REGISTRY.map((mod) => {
+                const Icon = MODULE_ICONS[mod.id];
+                return (
+                  <button
+                    key={mod.id}
+                    type="button"
+                    className="mobile-card"
+                    onClick={() => {
+                      setEditingDraft(null);
+                      setActiveTab(mod.id);
+                    }}
+                    style={{
+                      textAlign: "left",
+                      padding: 14,
+                      cursor: "pointer",
+                      border: `1px solid ${mod.accentColor}44`,
+                      color: "#ffffff",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 6,
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <Icon size={22} color={mod.accentColor} />
+                      <span
+                        style={{
+                          fontSize: 9,
+                          fontWeight: 700,
+                          padding: "2px 6px",
+                          borderRadius: 999,
+                          background: "rgba(255,255,255,0.08)",
+                          color: mod.accentColor,
+                        }}
+                      >
+                        {mod.unccdTag}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", gap: 5 }}>
+                      {mod.title}
+                      {mod.restricted && <Lock size={11} color="#fda4af" />}
+                    </div>
+                    <div style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.35 }}>
+                      {mod.description}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
 
-        {/* LDN FORM */}
-        {activeTab === "ldn" && (
+        {/* MODULE 1: LDN LAND COVER & DEGRADATION */}
+        {activeTab === "so1_land_cover" && (
           <LdnForm
             onSuccess={(m) => {
               showToast("success", m);
@@ -408,8 +440,8 @@ export default function App() {
           />
         )}
 
-        {/* SOIL FORM */}
-        {activeTab === "soil" && (
+        {/* MODULE 2: SOIL CORE & LAB SOC */}
+        {activeTab === "so1_soil_soc" && (
           <SoilForm
             onSuccess={(m) => {
               showToast("success", m);
@@ -425,8 +457,32 @@ export default function App() {
           />
         )}
 
-        {/* DRYLANDS FORM */}
-        {activeTab === "drylands" && (
+        {/* MODULE 3: DEGRADATION PRESSURES (WITH POLYGON WALK) */}
+        {activeTab === "pressures" && (
+          <PressureForm
+            onSuccess={(m) => showToast("success", m)}
+            onError={(m) => showToast("error", m)}
+            onSaved={() => {
+              refreshQueueCounts();
+              setActiveTab("queue");
+            }}
+          />
+        )}
+
+        {/* MODULE 4: RESTORATION & BRIGHT SPOTS (WITH POLYGON WALK) */}
+        {activeTab === "so4_interventions" && (
+          <InterventionForm
+            onSuccess={(m) => showToast("success", m)}
+            onError={(m) => showToast("error", m)}
+            onSaved={() => {
+              refreshQueueCounts();
+              setActiveTab("queue");
+            }}
+          />
+        )}
+
+        {/* MODULE 5: DRYLANDS & ILUP */}
+        {activeTab === "drylands_ilup" && (
           <DrylandsForm
             onSuccess={(m) => {
               showToast("success", m);
@@ -442,28 +498,113 @@ export default function App() {
           />
         )}
 
-        {/* DRAFT QUEUE */}
+        {/* UNIFIED OFFLINE QUEUE */}
         {activeTab === "queue" && (
-          <DraftQueue
-            onSuccess={(m) => {
-              showToast("success", m);
-              refreshQueueCounts();
-            }}
-            onError={(m) => showToast("error", m)}
-            onEditDraft={handleEditDraft}
-          />
+          <div style={{ display: "flex", flexDirection: "column", gap: 16, maxWidth: 680, margin: "0 auto" }}>
+            {/* Modular Submissions Queue (Pressures & Restoration SO4) */}
+            <div className="mobile-card" style={{ padding: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 700 }}>
+                    Modular Field Queue ({modularSubs.length})
+                  </div>
+                  <div style={{ fontSize: 11, color: "var(--text-muted)" }}>
+                    Pressures & Restoration (SO4) · Point + Walked Polygon
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  disabled={syncingModular || modularPending === 0}
+                  onClick={handleSyncModular}
+                  style={{ padding: "7px 12px", fontSize: 12, display: "inline-flex", alignItems: "center", gap: 6 }}
+                >
+                  <RefreshCw size={13} className={syncingModular ? "animate-spin" : ""} />
+                  {syncingModular ? "Syncing…" : `Sync (${modularPending})`}
+                </button>
+              </div>
+
+              {modularSubs.length === 0 ? (
+                <div style={{ fontSize: 12, color: "var(--text-muted)" }}>
+                  No Pressure or Restoration submissions saved yet.
+                </div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {modularSubs.map((s) => (
+                    <div
+                      key={s.submission_id}
+                      style={{
+                        padding: "10px 12px",
+                        borderRadius: 8,
+                        background: "rgba(255,255,255,0.05)",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        gap: 8,
+                      }}
+                    >
+                      <div style={{ fontSize: 12 }}>
+                        <div style={{ fontWeight: 700 }}>
+                          {s.module_id === "pressures" ? "Degradation Pressure" : "Restoration (SO4)"} ·{" "}
+                          {s.location.site_name || s.location.district}
+                        </div>
+                        <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
+                          {s.location.district}
+                          {s.geometry.polygon?.area_ha
+                            ? ` · ${s.geometry.polygon.area_ha} ha polygon`
+                            : " · GPS point"}
+                          {" · "}
+                          <strong
+                            style={{
+                              color:
+                                s.sync_state === "synced"
+                                  ? "#86efac"
+                                  : s.sync_state === "error"
+                                    ? "#fda4af"
+                                    : "#fde68a",
+                            }}
+                          >
+                            {s.sync_state.toUpperCase()}
+                          </strong>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          await deleteModularSubmission(s.submission_id);
+                          refreshQueueCounts();
+                        }}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          color: "#fda4af",
+                          cursor: "pointer",
+                          padding: 6,
+                        }}
+                        title="Delete submission"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Existing LDN / Soil / Drylands Draft Queue */}
+            <DraftQueue
+              onSuccess={(m) => {
+                showToast("success", m);
+                refreshQueueCounts();
+              }}
+              onError={(m) => showToast("error", m)}
+              onEditDraft={handleEditDraft}
+            />
+          </div>
         )}
 
-        {/* CEID VALIDATOR MAP */}
-        {activeTab === "validator" && (
-          <iframe
-            src="/validator/index.html"
-            style={{ width: "100%", flex: 1, border: "none", background: "#04140b" }}
-            title="EMA CEID Validator"
-          />
-        )}
-
-        {/* ENUMERATOR PROFILE & SETTINGS */}
+        {/* ENUMERATOR PROFILE */}
         {activeTab === "profile" && (
           <form
             onSubmit={handleSaveProfile}
@@ -475,7 +616,7 @@ export default function App() {
                 <UserCheck size={18} color="#fde68a" /> Enumerator Profile & Settings
               </h2>
               <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>
-                Saved on-device and automatically pre-filled into LDN, Soil, and Drylands forms.
+                Saved on-device and automatically pre-filled across all LDN reporting modules.
               </p>
             </div>
 
@@ -560,13 +701,7 @@ export default function App() {
             <button
               type="submit"
               className="btn-primary"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 8,
-                padding: "12px 16px",
-              }}
+              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "12px 16px" }}
             >
               <Save size={16} />
               {profileSaved ? "Profile Saved" : "Save Profile"}
@@ -575,7 +710,7 @@ export default function App() {
         )}
       </main>
 
-      {/* Bottom Navigation Bar */}
+      {/* Bottom 5-Tab Navigation Bar */}
       <nav
         style={{
           height: 62,
@@ -589,10 +724,10 @@ export default function App() {
       >
         {(
           [
-            { id: "home", label: "Home", icon: Home },
-            { id: "ldn", label: "LDN", icon: Trees },
-            { id: "soil", label: "Soil", icon: FlaskConical },
-            { id: "drylands", label: "Drylands", icon: Sprout },
+            { id: "home", label: "Modules", icon: Home },
+            { id: "so1_land_cover", label: "LDN", icon: Trees },
+            { id: "pressures", label: "Pressures", icon: AlertTriangle },
+            { id: "so4_interventions", label: "Restore", icon: ShieldCheck },
             { id: "queue", label: "Queue", icon: ClipboardList, badge: totalPending },
           ] as Array<{ id: ActiveTab; label: string; icon: typeof Home; badge?: number }>
         ).map((item) => {
@@ -626,7 +761,7 @@ export default function App() {
                   style={{
                     position: "absolute",
                     top: 6,
-                    right: "22%",
+                    right: "20%",
                     background: "#f59e0b",
                     color: "#042511",
                     fontSize: 10,
