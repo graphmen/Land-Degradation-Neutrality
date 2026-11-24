@@ -71,3 +71,14 @@ export async function loadReconciledDrylandsRecords(): Promise<Record<string, un
   const reconciled = reconcile(base, mod);
   return enrichRecords(reconciled) as Record<string, unknown>[];
 }
+
+export async function loadModularFieldSubmissions(): Promise<Record<string, unknown>[]> {
+  const storePath = path.join(process.cwd(), "public", "modular-field-submissions.json");
+  try {
+    const raw = await fs.readFile(storePath, "utf-8");
+    const parsed = JSON.parse(raw) as { records?: Record<string, unknown>[] };
+    return Array.isArray(parsed.records) ? parsed.records : [];
+  } catch {
+    return [];
+  }
+}

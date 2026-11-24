@@ -23,6 +23,7 @@ import type {
   GovBoundaryOverlay,
   GovMapLegendItem,
   GovMapPoint,
+  GovMapPolygon,
 } from "@/components/GovPointMap";
 import { useGovPlatform } from "@/components/GovPlatformContext";
 
@@ -46,7 +47,13 @@ type So1StatusSummary = {
   };
 };
 
-type OverlayKey = "field_ldn" | "ref_sites" | "int_projects" | "press_invasive" | "press_mining";
+type OverlayKey =
+  | "field_ldn"
+  | "ref_sites"
+  | "int_projects"
+  | "press_invasive"
+  | "press_mining"
+  | "mobile_modular";
 
 type OverlayConfig = {
   key: OverlayKey;
@@ -93,6 +100,13 @@ const OVERLAY_CONFIGS: OverlayConfig[] = [
     ldnRole: "SO2 Driver",
     color: "#b42318",
     restricted: true,
+  },
+  {
+    key: "mobile_modular",
+    layerId: "MOBILE-MODULAR",
+    label: "Mobile Field Sync",
+    ldnRole: "SO4 & Pressures",
+    color: "#059669",
   },
 ];
 
@@ -181,6 +195,7 @@ export default function NationalLayersPage() {
     int_projects: true,
     press_invasive: false,
     press_mining: false,
+    mobile_modular: true,
   });
   const [exporting, setExporting] = useState(false);
 
@@ -191,8 +206,10 @@ export default function NationalLayersPage() {
     int_projects: true,
     press_invasive: false,
     press_mining: false,
+    mobile_modular: true,
   });
   const [overlayCache, setOverlayCache] = useState<Partial<Record<OverlayKey, GovMapPoint[]>>>({});
+  const [modularPolygons, setModularPolygons] = useState<GovMapPolygon[]>([]);
   const [mapLoading, setMapLoading] = useState(false);
 
   // Zimbabwe Admin Boundary Overlays (Provinces / Districts / Wards)
@@ -405,6 +422,87 @@ export default function NationalLayersPage() {
                       ? "PRESS-MINING · SO2 Driver"
                       : "PRESS-INVASIVE · SO1-2 Driver",
                 }));
+            } else if (key === "mobile_modular") {
+              const res = await fetch("/api/submit/modular", { cache: "no-store" });
+              if (!res.ok) return;
+              const json = (await res.json()) as {
+                records?: Array<{
+                  submission_id?: string;
+                  module_id?: string;
+                  location?: { district?: string; ward?: string; site_name?: string };
+                  governance?: { sensitivity?: string; verification_status?: string };
+                  payload?: Record<string, unknown>;
+                  geometry?: {
+                    mode?: "point" | "polygon";
+                    point?: { lat?: number; lng?: number } | null;
+                    polygon?: {
+                      coordinates?: Array<[number, number]>;
+                      area_ha?: number;
+                    } | null;
+                  } | null;
+                }>;
+              };
+              const pts: GovMapPoint[] = [];
+              const polys: GovMapPolygon[] = [];
+              for (const r of json.records ?? []) {
+                if (
+                  r.governance?.sensitivity === "restricted" &&
+                  !permissions.canViewRestrictedLayers
+                ) {
+                  continue;
+                }
+                const isIntervention = r.module_id === "so4_interventions";
+                const color = isIntervention ? "#1d4ed8" : "#d97706";
+                const label = isIntervention
+                  ? "MOBILE · Restoration (SO4)"
+                  : "MOBILE · Degradation Pressure";
+                const title = String(
+                  r.location?.site_name ??
+                    r.payload?.project_name ??
+                    r.payload?.pressure_type ??
+                    r.submission_id ??
+                    "Mobile Submission"
+                );
+                const subtitle = `${r.location?.district ?? "Zimbabwe"}${r.location?.ward ? ` · Ward ${r.location.ward}` : ""} · ${r.governance?.verification_status ?? "submitted"}`;
+
+                if (
+                  r.geometry?.mode === "polygon" &&
+                  Array.isArray(r.geometry.polygon?.coordinates) &&
+                  r.geometry.polygon.coordinates.length >= 3
+                ) {
+                  const coords = [...r.geometry.polygon.coordinates];
+                  const first = coords[0];
+                  const last = coords[coords.length - 1];
+                  if (first[0] !== last[0] || first[1] !== last[1]) {
+                    coords.push(first);
+                  }
+                  polys.push({
+                    id: `mob-poly-${r.submission_id}`,
+                    geometry: { type: "Polygon", coordinates: [coords] },
+                    title,
+                    subtitle,
+                    color,
+                    layerLabel: label,
+                    areaHa: r.geometry.polygon.area_ha ?? null,
+                  });
+                } else if (
+                  r.geometry?.point &&
+                  typeof r.geometry.point.lat === "number" &&
+                  typeof r.geometry.point.lng === "number"
+                ) {
+                  pts.push({
+                    id: `mob-${r.submission_id}`,
+                    lng: r.geometry.point.lng,
+                    lat: r.geometry.point.lat,
+                    title,
+                    subtitle,
+                    color,
+                    layerLabel: label,
+                  });
+                }
+              }
+              updates.mobile_modular = pts;
+              if (!cancelled) setModularPolygons(polys);
             }
           })
         );
@@ -940,6 +1038,7 @@ export default function NationalLayersPage() {
             <div style={{ position: "relative" }}>
               <GovPointMap
                 points={combinedPoints}
+                polygons={activeOverlays.mobile_modular ? modularPolygons : []}
                 boundaries={activeBoundaryOverlays}
                 height={620}
                 legend={activeLegend}

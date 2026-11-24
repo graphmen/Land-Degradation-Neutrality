@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
-import { Camera as CameraIcon, MapPin, Save, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
-import { Geolocation } from "@capacitor/geolocation";
+import {
+  AlertTriangle,
+  Camera as CameraIcon,
+  ChevronLeft,
+  ChevronRight,
+  Layers,
+  Save,
+  Trees,
+} from "lucide-react";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import { saveLdnDraft, getLdnDraft } from "../lib/db";
 import type { LdnDraft } from "../lib/db";
@@ -16,8 +23,9 @@ import {
   getLdnSeverityLabel,
   getLdnSeverityOptions,
 } from "../lib/code-lists";
-import { lookupNationalUnitByCeid } from "../lib/national-unit-lookup";
 import { loadEnumeratorProfile } from "../lib/enumerator-profile";
+import GpsPolygonCapture from "./GpsPolygonCapture";
+import type { SpatialGeometry } from "../lib/submission-envelope";
 
 interface LdnFormProps {
   onSuccess: (message: string) => void;
@@ -71,7 +79,6 @@ const SEVERITIES = getLdnSeverityOptions();
 
 export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editingDraftId, onClearEdit }: LdnFormProps) {
   const [step, setStep] = useState(1);
-  const [loadingGps, setLoadingGps] = useState(false);
 
   // Form Fields State
   const [province, setProvince] = useState("");
@@ -79,6 +86,11 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
   const [ward, setWard] = useState("");
   const [team, setTeam] = useState("");
   const [gps, setGps] = useState(""); // "lat lng alt acc"
+  const [geometry, setGeometry] = useState<SpatialGeometry>({
+    mode: "point",
+    point: null,
+    polygon: null,
+  });
 
   // Auto-fill from saved Enumerator Profile when creating a new draft
   useEffect(() => {
@@ -92,7 +104,6 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
     }
   }, [editingDraftId]);
   const [ceid, setCeid] = useState("");
-  const [ceidHint, setCeidHint] = useState<string | null>(null);
   const [landcov, setLandcov] = useState("");
   const [landus, setLandus] = useState("");
   const [useSpec, setUseSpec] = useState("");
@@ -139,58 +150,19 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
     }
   }, [editingDraftId]);
 
-  // GPS Sensor Handler with Browser Fallback
-  const captureGps = async () => {
-    setLoadingGps(true);
-    try {
-      // 1. Try Capacitor Native GPS
-      const permission = await Geolocation.checkPermissions();
-      if (permission.location !== "granted") {
-        await Geolocation.requestPermissions();
-      }
-
-      const coordinates = await Geolocation.getCurrentPosition({
-        enableHighAccuracy: true,
-        timeout: 10000
-      });
-      
-      const lat = coordinates.coords.latitude;
-      const lng = coordinates.coords.longitude;
-      const accuracy = coordinates.coords.accuracy || 0;
-      const altitude = coordinates.coords.altitude || 0;
-      
-      setGps(`${lat} ${lng} ${altitude} ${accuracy}`);
-      onSuccess("GPS coordinates captured via native sensor!");
-    } catch (e: any) {
-      console.warn("Capacitor GPS failed, falling back to browser API:", e.message);
-      
-      // 2. Try HTML5 Browser Geolocation
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            const lat = pos.coords.latitude;
-            const lng = pos.coords.longitude;
-            const accuracy = pos.coords.accuracy;
-            const altitude = pos.coords.altitude || 0;
-            setGps(`${lat} ${lng} ${altitude} ${accuracy}`);
-            onSuccess("GPS coordinates captured via browser location service.");
-            setLoadingGps(false);
-          },
-          (browserErr) => {
-            console.error(browserErr);
-            onError("Could not capture GPS. Please check permissions or enter coordinates manually.");
-            setLoadingGps(false);
-          },
-          { enableHighAccuracy: true, timeout: 8000 }
-        );
-      } else {
-        onError("Geolocation sensors are not supported on this device.");
-        setLoadingGps(false);
-      }
-    } finally {
-      if (!navigator.geolocation) {
-        setLoadingGps(false);
-      }
+  const handleGeometryChange = (next: SpatialGeometry) => {
+    setGeometry(next);
+    if (next.mode === "point" && next.point) {
+      setGps(
+        `${next.point.lat} ${next.point.lng} ${next.point.altitude ?? 0} ${next.point.accuracy_m ?? 0}`
+      );
+    } else if (next.mode === "polygon" && next.polygon && next.polygon.coordinates.length >= 3) {
+      const pts = next.polygon.coordinates;
+      const cLng = pts.reduce((s, p) => s + p[0], 0) / pts.length;
+      const cLat = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+      setGps(`${cLat.toFixed(6)} ${cLng.toFixed(6)} 0 5`);
+    } else {
+      setGps("");
     }
   };
 
@@ -253,7 +225,7 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
   // Validate current step
   const canGoNext = () => {
     if (step === 1) {
-      return province !== "" && dist !== "" && team !== "" && ceid !== "" && gps !== "";
+      return province !== "" && dist !== "" && team !== "" && gps !== "";
     }
     if (step === 2) {
       return landcov !== "" && landus !== "";
@@ -263,11 +235,13 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
 
   // Save Draft Submission
   const handleSave = async () => {
-    if (!province || !dist || !team || !ceid || !gps) {
-      onError("Please fill in all general info fields (Province, District, Team ID, CE Point ID, and GPS) before saving.");
+    if (!province || !dist || !team || !gps) {
+      onError("Please fill in Province, District, Team ID, and capture GPS or Polygon before saving.");
       setStep(1);
       return;
     }
+
+    const siteRef = ceid.trim() || `SITE_${Date.now().toString().slice(-6)}`;
 
     const draft: LdnDraft = {
       id: editingDraftId || `ldn_${Date.now()}`,
@@ -276,7 +250,7 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
       ward,
       Team: team,
       GPS: gps,
-      ceid,
+      ceid: siteRef,
       landcov: getLdnLandCoverCode(landcov),
       landus: getLdnLandUseCode(landus),
       use_spec: getLdnLandUseCode(landus) === "other" ? useSpec : undefined,
@@ -288,6 +262,9 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
       sev: getLdnSeverityCode(sev),
       oth,
       im: im || undefined,
+      geometry,
+      area_ha: geometry.mode === "polygon" ? geometry.polygon?.area_ha ?? null : null,
+      perimeter_m: geometry.mode === "polygon" ? geometry.polygon?.perimeter_m ?? null : null,
       code_list_version: CODE_LIST_VERSION,
       synced: false,
       createdAt: Date.now()
@@ -295,7 +272,7 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
 
     try {
       await saveLdnDraft(draft);
-      onSuccess(`LDN Draft for Point ID ${ceid} ${editingDraftId ? "updated" : "saved"} locally!`);
+      onSuccess(`Land Cover observation (${siteRef}) ${editingDraftId ? "updated" : "saved"} locally.`);
       onClearEdit?.();
       onNavigateToQueue();
     } catch (e: any) {
@@ -326,8 +303,10 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
       {/* Form Wizard Step Panels */}
       {step === 1 && (
         <div className="mobile-card">
-          <h3>🌳 General Info (Step 1/3)</h3>
-          <p className="card-desc">Identify the Collect Earth point boundary and coordinate baselines.</p>
+          <h3 style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Trees size={18} color="#043016" /> Site &amp; Spatial Boundary (Step 1/3)
+          </h3>
+          <p className="card-desc">Record administrative location and capture a GPS point or walk the site boundary (ha).</p>
           
           <div className="form-group">
             <label className="form-label">Province *</label>
@@ -364,50 +343,33 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
           </div>
 
           <div className="form-group">
-            <label className="form-label">Collect Earth Point ID *</label>
+            <label className="form-label">Site / Plot Reference ID (Optional)</label>
             <input
               type="text"
               className="form-input"
-              placeholder="e.g. 11268_17236"
+              placeholder="e.g. WARD05_PLOT12 (auto-generated if blank)"
               value={ceid}
-              onChange={(e) => {
-                setCeid(e.target.value);
-                setCeidHint(null);
-              }}
-              onBlur={async () => {
-                const hint = await lookupNationalUnitByCeid(ceid);
-                setCeidHint(hint?.message ?? null);
-              }}
+              onChange={(e) => setCeid(e.target.value)}
             />
-            {ceidHint && (
-              <p className="card-desc" style={{ marginTop: 6, fontSize: "0.85rem" }}>
-                {ceidHint}
-              </p>
-            )}
           </div>
 
           <div className="form-group">
-            <label className="form-label">GPS Location *</label>
-            <div style={{ display: "flex", gap: "8px" }}>
-              <input type="text" className="form-input" placeholder="Latitude / Longitude values" value={gps} readOnly />
-              <button 
-                onClick={captureGps}
-                disabled={loadingGps}
-                className="btn-secondary" 
-                style={{ width: "60px", padding: 0 }}
-                title="Get GPS Coordinates"
-              >
-                {loadingGps ? <RefreshCw size={18} className="sync-icon-spin" /> : <MapPin size={18} />}
-              </button>
-            </div>
+            <label className="form-label">GPS Point or Polygon Walk *</label>
+            <GpsPolygonCapture
+              value={geometry}
+              onChange={handleGeometryChange}
+              allowPolygon={true}
+            />
           </div>
         </div>
       )}
 
       {step === 2 && (
         <div className="mobile-card">
-          <h3>🌿 Land Cover Class (Step 2/3)</h3>
-          <p className="card-desc">Determine the current ecosystem canopy type and land use metrics.</p>
+          <h3 style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Layers size={18} color="#043016" /> Land Cover &amp; Use — UNCCD SO1-1 (Step 2/3)
+          </h3>
+          <p className="card-desc">Classify the UNCCD 7-class land cover and primary land use.</p>
 
           <div className="form-group">
             <label className="form-label">Landcover Class *</label>
@@ -455,8 +417,10 @@ export default function LdnForm({ onSuccess, onError, onNavigateToQueue, editing
 
       {step === 3 && (
         <div className="mobile-card">
-          <h3>🏜️ Land Degradation Indicators (Step 3/3)</h3>
-          <p className="card-desc">Flag erosion markers, vegetation status, and deforestation causes.</p>
+          <h3 style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <AlertTriangle size={18} color="#d97706" /> Land Degradation Indicators — SO1-2 (Step 3/3)
+          </h3>
+          <p className="card-desc">Record vegetation cover, erosion markers, tree loss drivers, and site photo.</p>
 
           <div className="form-group">
             <label className="form-label">Qualify vegetation cover</label>

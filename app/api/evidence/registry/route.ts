@@ -19,7 +19,7 @@ export async function GET(req: Request): Promise<NextResponse> {
 
   const { searchParams } = new URL(req.url);
   const type = searchParams.get("type") as EvidenceType | null;
-  if (type && !["ldn", "soil", "drylands"].includes(type)) {
+  if (type && !["ldn", "soil", "drylands", "pressures", "interventions"].includes(type)) {
     return NextResponse.json({ error: "Invalid type" }, { status: 400 });
   }
 

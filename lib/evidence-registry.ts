@@ -4,12 +4,13 @@
  */
 
 import {
+  loadModularFieldSubmissions,
   loadReconciledDrylandsRecords,
   loadReconciledLdnRecords,
   loadReconciledSoilRecords,
 } from "@/lib/local-record-reconcile";
 
-export type EvidenceType = "ldn" | "soil" | "drylands";
+export type EvidenceType = "ldn" | "soil" | "drylands" | "pressures" | "interventions";
 
 export type EvidenceRegistryRow = {
   evidence_type: EvidenceType;
@@ -21,6 +22,8 @@ export type EvidenceRegistryRow = {
   collected_at: string | null;
   lat: number | null;
   lng: number | null;
+  area_ha?: number | null;
+  geometry_type?: "Point" | "Polygon" | null;
   data_tier: string | null;
   verification_status: string;
   code_list_version: string | null;
@@ -132,10 +135,82 @@ export type EvidenceRegistryPackage = {
   module_id: "evidence-registry";
   r2_preview: true;
   generated_at: string;
-  counts: { ldn: number; soil: number; drylands: number; returned: number };
+  counts: {
+    ldn: number;
+    soil: number;
+    drylands: number;
+    pressures: number;
+    interventions: number;
+    returned: number;
+  };
   records: EvidenceRegistryRow[];
   filters_applied: EvidenceRegistryQuery;
 };
+
+function modularToRow(r: Record<string, unknown>): EvidenceRegistryRow | null {
+  const modId = String(r.module_id ?? "");
+  const evidence_type: EvidenceType | null =
+    modId === "pressures"
+      ? "pressures"
+      : modId === "so4_interventions"
+      ? "interventions"
+      : null;
+  if (!evidence_type) return null;
+
+  const loc = (r.location ?? r.admin ?? {}) as Record<string, unknown>;
+  const gov = (r.governance ?? {}) as Record<string, unknown>;
+  const payload = (r.payload ?? {}) as Record<string, unknown>;
+  const geom = (r.geometry ?? null) as {
+    mode?: string;
+    point?: { lat?: number; lng?: number } | null;
+    polygon?: { coordinates?: number[][]; area_ha?: number } | null;
+  } | null;
+
+  let lat: number | null = null;
+  let lng: number | null = null;
+  let area_ha: number | null = pickNum(r.area_ha);
+  let geometry_type: "Point" | "Polygon" | null = null;
+
+  if (geom?.mode === "polygon" && Array.isArray(geom.polygon?.coordinates) && geom.polygon.coordinates.length >= 3) {
+    const pts = geom.polygon.coordinates.filter((p) => Array.isArray(p) && p.length >= 2);
+    if (pts.length > 0) {
+      lng = pts.reduce((s, p) => s + Number(p[0]), 0) / pts.length;
+      lat = pts.reduce((s, p) => s + Number(p[1]), 0) / pts.length;
+    }
+    area_ha = pickNum(geom.polygon.area_ha) ?? area_ha;
+    geometry_type = "Polygon";
+  } else if (geom?.point) {
+    lat = pickNum(geom.point.lat);
+    lng = pickNum(geom.point.lng);
+    geometry_type = "Point";
+  }
+
+  const status = pickStr(gov.verification_status) ?? "submitted";
+  const subId = pickStr(r.submission_id) ?? `mod_${Date.now()}`;
+
+  return {
+    evidence_type,
+    record_id: subId,
+    uuid: subId,
+    district: pickStr(loc.district),
+    ward: pickStr(loc.ward),
+    ceid:
+      pickStr(loc.site_name) ??
+      pickStr(payload.project_name) ??
+      pickStr(payload.pressure_type) ??
+      null,
+    collected_at: pickStr(r.created_at) ?? pickStr(r.received_at),
+    lat,
+    lng,
+    area_ha,
+    geometry_type,
+    data_tier: pickStr(gov.data_tier) ?? "field_verify",
+    verification_status: status,
+    code_list_version: pickStr(gov.code_list_version),
+    reporting_period: pickStr(r.reporting_period) ?? pickStr(gov.reporting_period),
+    prais_eligible: status === "locked",
+  };
+}
 
 export async function buildEvidenceRegistry(
   query: EvidenceRegistryQuery = {}
@@ -143,13 +218,26 @@ export async function buildEvidenceRegistry(
   const limit = Math.min(query.limit ?? 500, 2000);
   const offset = query.offset ?? 0;
 
-  const [ldn, soil, drylands] = await Promise.all([
+  const [ldn, soil, drylands, modularRaw] = await Promise.all([
     loadReconciledLdnRecords(),
     loadReconciledSoilRecords(),
     loadReconciledDrylandsRecords(),
+    loadModularFieldSubmissions(),
   ]);
 
+  const modularRows = modularRaw
+    .map(modularToRow)
+    .filter((row): row is EvidenceRegistryRow => row !== null);
+  const pressureRows = modularRows.filter((r) => r.evidence_type === "pressures");
+  const interventionRows = modularRows.filter((r) => r.evidence_type === "interventions");
+
   let rows: EvidenceRegistryRow[] = [];
+  if (!query.type || query.type === "pressures") {
+    rows = rows.concat(pressureRows);
+  }
+  if (!query.type || query.type === "interventions") {
+    rows = rows.concat(interventionRows);
+  }
   if (!query.type || query.type === "ldn") {
     rows = rows.concat(ldn.map((r) => toRow(r, "ldn")));
   }
@@ -177,6 +265,8 @@ export async function buildEvidenceRegistry(
       ldn: ldn.length,
       soil: soil.length,
       drylands: drylands.length,
+      pressures: pressureRows.length,
+      interventions: interventionRows.length,
       returned: returned.length,
     },
     records: returned,

@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
-import { MapPin, Save, ChevronLeft, ChevronRight, RefreshCw, Plus, Trash } from "lucide-react";
-import { Geolocation } from "@capacitor/geolocation";
+import {
+  ChevronLeft,
+  ChevronRight,
+  FlaskConical,
+  Layers,
+  Plus,
+  Save,
+  Trash,
+} from "lucide-react";
 import { saveSoilDraft, getSoilDraft } from "../lib/db";
 import type { SoilDraft, SoilCoreDraft } from "../lib/db";
 import {
@@ -12,6 +19,8 @@ import {
   getSoilTextureOptions,
 } from "../lib/code-lists";
 import { loadEnumeratorProfile } from "../lib/enumerator-profile";
+import GpsPolygonCapture from "./GpsPolygonCapture";
+import type { SpatialGeometry } from "../lib/submission-envelope";
 
 interface SoilFormProps {
   onSuccess: (message: string) => void;
@@ -39,7 +48,6 @@ const MOISTURE_LEVELS = getSoilMoistureOptions();
 
 export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editingDraftId, onClearEdit }: SoilFormProps) {
   const [step, setStep] = useState(1);
-  const [loadingGps, setLoadingGps] = useState(false);
 
   // Form Fields State
   const [province, setProvince] = useState("");
@@ -81,64 +89,29 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
     }
   }, [editingDraftId]);
 
-  // Core item being edited state (Draft modal/fields)
+  // Core item being edited state
   const [samloc, setSamloc] = useState("");
   const [coreGps, setCoreGps] = useState("");
+  const [coreGeom, setCoreGeom] = useState<SpatialGeometry>({
+    mode: "point",
+    point: null,
+    polygon: null,
+  });
   const [dep, setDep] = useState(30);
   const [moisture, setMoisture] = useState("");
   const [col, setCol] = useState("");
   const [tex, setTex] = useState("");
+  const [sampleRef, setSampleRef] = useState("");
+  const [labNumber, setLabNumber] = useState("");
 
-  // GPS Sensor Handler with Browser Fallback for Cores
-  const captureGps = async () => {
-    setLoadingGps(true);
-    try {
-      const permission = await Geolocation.checkPermissions();
-      if (permission.location !== "granted") {
-        await Geolocation.requestPermissions();
-      }
-
-      const coordinates = await Geolocation.getCurrentPosition({
-        enableHighAccuracy: true,
-        timeout: 10000
-      });
-      
-      const lat = coordinates.coords.latitude;
-      const lng = coordinates.coords.longitude;
-      const accuracy = coordinates.coords.accuracy || 0;
-      const altitude = coordinates.coords.altitude || 0;
-      
-      setCoreGps(`${lat} ${lng} ${altitude} ${accuracy}`);
-      onSuccess("GPS coordinates captured via native sensor!");
-    } catch (e: any) {
-      console.warn("Capacitor GPS failed, falling back to browser API:", e.message);
-      
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            const lat = pos.coords.latitude;
-            const lng = pos.coords.longitude;
-            const accuracy = pos.coords.accuracy;
-            const altitude = pos.coords.altitude || 0;
-            setCoreGps(`${lat} ${lng} ${altitude} ${accuracy}`);
-            onSuccess("GPS coordinates captured via browser location service.");
-            setLoadingGps(false);
-          },
-          (browserErr) => {
-            console.error(browserErr);
-            onError("Could not capture GPS. Please check permissions or enter coordinates manually.");
-            setLoadingGps(false);
-          },
-          { enableHighAccuracy: true, timeout: 8000 }
-        );
-      } else {
-        onError("Geolocation sensors are not supported on this device.");
-        setLoadingGps(false);
-      }
-    } finally {
-      if (!navigator.geolocation) {
-        setLoadingGps(false);
-      }
+  const handleCoreGeomChange = (next: SpatialGeometry) => {
+    setCoreGeom(next);
+    if (next.point) {
+      setCoreGps(
+        `${next.point.lat} ${next.point.lng} ${next.point.altitude ?? 0} ${next.point.accuracy_m ?? 0}`
+      );
+    } else {
+      setCoreGps("");
     }
   };
 
@@ -156,6 +129,8 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
       moisture: moisture ? getSoilMoistureCode(moisture) : "",
       col,
       tex,
+      sample_ref: sampleRef.trim() || undefined,
+      lab_number: labNumber.trim() || undefined,
     };
 
     setCores(prev => [...prev, newCore]);
@@ -164,10 +139,13 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
     // Reset core fields
     setSamloc("");
     setCoreGps("");
+    setCoreGeom({ mode: "point", point: null, polygon: null });
     setDep(30);
     setMoisture("");
     setCol("");
     setTex("");
+    setSampleRef("");
+    setLabNumber("");
   };
 
   // Remove Core from repeatable list
@@ -178,8 +156,8 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
 
   // Save Soil Draft Submission
   const handleSave = async () => {
-    if (!province || !dist || !team || !ceid) {
-      onError("Please fill in all general info fields (Province, District, Team ID, and CE Point ID).");
+    if (!province || !dist || !team) {
+      onError("Please fill in Province, District, and Team ID.");
       setStep(1);
       return;
     }
@@ -189,13 +167,15 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
       return;
     }
 
+    const siteRef = ceid.trim() || `SOIL_${Date.now().toString().slice(-6)}`;
+
     const draft: SoilDraft = {
       id: editingDraftId || `soil_${Date.now()}`,
       measurement_date: new Date().toISOString().split("T")[0],
       dist,
       ward,
       Team: team,
-      ceid,
+      ceid: siteRef,
       cores,
       code_list_version: CODE_LIST_VERSION,
       synced: false,
@@ -204,7 +184,7 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
 
     try {
       await saveSoilDraft(draft);
-      onSuccess(`Soil core survey with ${cores.length} samples ${editingDraftId ? "updated" : "saved"} locally!`);
+      onSuccess(`Soil core survey (${siteRef}, ${cores.length} cores) ${editingDraftId ? "updated" : "saved"} locally.`);
       onClearEdit?.();
       onNavigateToQueue();
     } catch (e: any) {
@@ -224,8 +204,10 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
       {/* Step Panels */}
       {step === 1 && (
         <div className="mobile-card">
-          <h3>🧪 Soil General Info (Step 1/2)</h3>
-          <p className="card-desc">Identify the regional boundary and surveyor team details.</p>
+          <h3 style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <FlaskConical size={18} color="#043016" /> Soil Site Info — SO1-3 (Step 1/2)
+          </h3>
+          <p className="card-desc">Record administrative location and sampling team details.</p>
           
           <div className="form-group">
             <label className="form-label">Province *</label>
@@ -262,8 +244,8 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
           </div>
 
           <div className="form-group">
-            <label className="form-label">Collect Earth Point ID *</label>
-            <input type="text" className="form-input" placeholder="e.g. CE_3408" value={ceid} onChange={(e) => setCeid(e.target.value)} />
+            <label className="form-label">Site / Plot Reference ID (Optional)</label>
+            <input type="text" className="form-input" placeholder="e.g. SOIL_WARD12_01 (auto-generated if blank)" value={ceid} onChange={(e) => setCeid(e.target.value)} />
           </div>
         </div>
       )}
@@ -271,14 +253,16 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
       {step === 2 && (
         <div className="mobile-card" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <div>
-            <h3>🧬 Repeatable Soil Cores (Step 2/2)</h3>
-            <p className="card-desc">Add multiple core samples (Center, North, East, South, West) inside the site boundary.</p>
+            <h3 style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Layers size={18} color="#043016" /> Soil Cores &amp; Lab SOC Tags (Step 2/2)
+            </h3>
+            <p className="card-desc">Add one or more 0–30 cm soil cores and bag tags for EMA Lab SOC linkage.</p>
           </div>
 
           {/* Repeatable Cores List */}
           {cores.length > 0 && (
             <div className="repeatable-list">
-              <label className="form-label">Active Core Samples List ({cores.length})</label>
+              <label className="form-label">Recorded Soil Cores ({cores.length})</label>
               {cores.map((c, index) => {
                 const locObj = LOCATIONS.find(l => l.val === c.samloc);
                 const locLabel = locObj ? locObj.label : c.samloc;
@@ -295,6 +279,8 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
                       <div>Texture: <strong>{c.tex}</strong></div>
                       <div>Moisture: <strong>{c.moisture ? getSoilMoistureLabel(c.moisture) : "—"}</strong></div>
                       <div>Color: <strong>{c.col || "—"}</strong></div>
+                      {c.sample_ref && <div>Bag Tag: <strong>{c.sample_ref}</strong></div>}
+                      {c.lab_number && <div>EMA Lab #: <strong>{c.lab_number}</strong></div>}
                     </div>
                   </div>
                 );
@@ -315,12 +301,34 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
             </div>
 
             <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label" style={{ fontSize: "10px" }}>GPS coordinates *</label>
-              <div style={{ display: "flex", gap: "6px" }}>
-                <input type="text" className="form-input" placeholder="lat, lng coordinate values" value={coreGps} readOnly />
-                <button onClick={captureGps} disabled={loadingGps} className="btn-secondary" style={{ width: "45px", padding: 0 }}>
-                  {loadingGps ? <RefreshCw size={14} className="sync-icon-spin" /> : <MapPin size={14} />}
-                </button>
+              <label className="form-label" style={{ fontSize: "10px" }}>Core GPS Coordinates *</label>
+              <GpsPolygonCapture
+                value={coreGeom}
+                onChange={handleCoreGeomChange}
+                allowPolygon={false}
+              />
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label" style={{ fontSize: "10px" }}>Lab Bag Tag / Sample Ref</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. ZWE-SOC-042"
+                  value={sampleRef}
+                  onChange={(e) => setSampleRef(e.target.value)}
+                />
+              </div>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label" style={{ fontSize: "10px" }}>EMA Lab # (Optional)</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. LAB-2026-108"
+                  value={labNumber}
+                  onChange={(e) => setLabNumber(e.target.value)}
+                />
               </div>
             </div>
 
@@ -374,7 +382,7 @@ export default function SoilForm({ onSuccess, onError, onNavigateToQueue, editin
             className="btn-primary" 
             style={{ flex: 2 }} 
             onClick={() => setStep(s => s + 1)}
-            disabled={!province || !dist || !team || !ceid}
+            disabled={!province || !dist || !team}
           >
             Next <ChevronRight size={16} />
           </button>

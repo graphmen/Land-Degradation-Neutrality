@@ -14,6 +14,16 @@ export type GovMapPoint = {
   layerLabel?: string;
 };
 
+export type GovMapPolygon = {
+  id: string;
+  geometry: GeoJSON.Polygon;
+  title: string;
+  subtitle?: string;
+  color: string;
+  layerLabel?: string;
+  areaHa?: number | null;
+};
+
 export type GovBoundaryOverlay = {
   id: string;
   label: string;
@@ -33,6 +43,7 @@ export type GovMapLegendItem = {
 
 interface GovPointMapProps {
   points: GovMapPoint[];
+  polygons?: GovMapPolygon[];
   boundaries?: GovBoundaryOverlay[];
   height?: number;
   zoom?: number;
@@ -42,6 +53,7 @@ interface GovPointMapProps {
 
 export default function GovPointMap({
   points,
+  polygons,
   boundaries,
   height = 360,
   zoom = 6,
@@ -50,6 +62,7 @@ export default function GovPointMap({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LType.Map | null>(null);
   const boundaryGroupRef = useRef<LType.LayerGroup | null>(null);
+  const polygonGroupRef = useRef<LType.LayerGroup | null>(null);
   const pointGroupRef = useRef<LType.LayerGroup | null>(null);
   const hasFitInitialRef = useRef(false);
 
@@ -74,6 +87,7 @@ export default function GovPointMap({
 
         mapRef.current = map;
         boundaryGroupRef.current = L.layerGroup().addTo(map);
+        polygonGroupRef.current = L.layerGroup().addTo(map);
         pointGroupRef.current = L.layerGroup().addTo(map);
       }
 
@@ -191,12 +205,62 @@ export default function GovPointMap({
     };
   }, [boundaries, points]);
 
+  // Render field-walked polygon submissions (Pressures & Restoration SO4)
+  useEffect(() => {
+    let cancelled = false;
+
+    async function renderFieldPolygons() {
+      const map = mapRef.current;
+      const pGroup = polygonGroupRef.current;
+      if (!map || !pGroup) return;
+
+      const L = (await import("leaflet")).default;
+      if (cancelled || !polygonGroupRef.current) return;
+
+      pGroup.clearLayers();
+
+      for (const poly of polygons ?? []) {
+        const gj = L.geoJSON(poly.geometry, {
+          style: () => ({
+            color: poly.color,
+            weight: 2.5,
+            fillColor: poly.color,
+            fillOpacity: 0.28,
+            opacity: 0.95,
+          }),
+          onEachFeature: (_feature, layer) => {
+            const areaText =
+              poly.areaHa != null && Number.isFinite(poly.areaHa)
+                ? `<div style="font-family:monospace;font-size:11px;color:#005a2b;font-weight:700;margin-top:4px;">Area: ${poly.areaHa.toFixed(2)} ha</div>`
+                : "";
+            layer.bindPopup(
+              `<div style="font-family:Inter,sans-serif;font-size:12px;min-width:180px;">
+                ${poly.layerLabel ? `<div style="font-size:10px;font-weight:700;text-transform:uppercase;color:${poly.color};margin-bottom:2px;">${poly.layerLabel.replace(/</g, "&lt;")}</div>` : ""}
+                <strong>${poly.title.replace(/</g, "&lt;")}</strong>
+                ${poly.subtitle ? `<div style="color:#4f6457;margin-top:2px;">${poly.subtitle.replace(/</g, "&lt;")}</div>` : ""}
+                ${areaText}
+              </div>`
+            );
+          },
+        });
+        gj.addTo(pGroup);
+      }
+    }
+
+    renderFieldPolygons();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [polygons, points]);
+
   useEffect(() => {
     return () => {
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
         boundaryGroupRef.current = null;
+        polygonGroupRef.current = null;
         pointGroupRef.current = null;
         hasFitInitialRef.current = false;
       }

@@ -8,6 +8,7 @@ import {
   type EvidenceRegistryRow,
 } from "@/lib/evidence-registry";
 import {
+  loadModularFieldSubmissions,
   loadReconciledDrylandsRecords,
   loadReconciledLdnRecords,
   loadReconciledSoilRecords,
@@ -47,19 +48,28 @@ async function countByStatus(): Promise<{
   totals: Record<string, number>;
   total: number;
 }> {
-  const blobs = await Promise.all([
+  const [ldn, soil, drylands, modular] = await Promise.all([
     loadReconciledLdnRecords(),
     loadReconciledSoilRecords(),
     loadReconciledDrylandsRecords(),
+    loadModularFieldSubmissions(),
   ]);
   const totals: Record<string, number> = {};
   let total = 0;
-  for (const list of blobs) {
+  for (const list of [ldn, soil, drylands]) {
     for (const r of list) {
       total++;
       const s = String(r.verification_status ?? "submitted");
       totals[s] = (totals[s] ?? 0) + 1;
     }
+  }
+  for (const m of modular) {
+    const modId = String(m.module_id ?? "");
+    if (modId !== "pressures" && modId !== "so4_interventions") continue;
+    total++;
+    const gov = (m.governance ?? {}) as Record<string, unknown>;
+    const s = String(gov.verification_status ?? "submitted");
+    totals[s] = (totals[s] ?? 0) + 1;
   }
   return { totals, total };
 }

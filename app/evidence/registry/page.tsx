@@ -149,6 +149,15 @@ function EvidenceRegistryInner() {
             </span>
             <span style={{ color: "#cbd7cf" }}>|</span>
             <span>
+              <strong style={{ color: "#d97706" }}>Pressures:</strong> {data.counts.pressures ?? 0}
+            </span>
+            <span style={{ color: "#cbd7cf" }}>|</span>
+            <span>
+              <strong style={{ color: "#1d4ed8" }}>Restoration (SO4):</strong>{" "}
+              {data.counts.interventions ?? 0}
+            </span>
+            <span style={{ color: "#cbd7cf" }}>|</span>
+            <span>
               <strong style={{ color: "#005a2b" }}>Matching Filter:</strong>{" "}
               <strong>{filteredRows.length}</strong>
             </span>
@@ -185,9 +194,11 @@ function EvidenceRegistryInner() {
             aria-label="Filter by evidence type"
           >
             <option value="">All types</option>
-            <option value="ldn">LDN</option>
-            <option value="soil">Soil</option>
-            <option value="drylands">Drylands</option>
+            <option value="ldn">LDN (SO1)</option>
+            <option value="soil">Soil Cores (SO1-3)</option>
+            <option value="drylands">Drylands (ILUP)</option>
+            <option value="pressures">Degradation Pressures (Mobile)</option>
+            <option value="interventions">Restoration SO4 (Mobile)</option>
           </select>
 
           <select

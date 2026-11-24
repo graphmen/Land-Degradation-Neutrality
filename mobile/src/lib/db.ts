@@ -20,6 +20,9 @@ export interface LdnDraft {
   sev: string;
   oth?: string;
   im?: string; // base64 photo
+  geometry?: unknown; // SpatialGeometry (Point or Polygon walk)
+  area_ha?: number | null;
+  perimeter_m?: number | null;
   code_list_version?: string;
   synced: boolean;
   createdAt: number;
@@ -32,6 +35,8 @@ export interface SoilCoreDraft {
   moisture: string;
   col: string;
   tex: string;
+  sample_ref?: string;
+  lab_number?: string;
 }
 
 export interface SoilDraft {
