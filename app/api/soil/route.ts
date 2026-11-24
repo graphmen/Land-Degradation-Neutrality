@@ -47,10 +47,16 @@ async function fetchWithTimeout(url: string, options: RequestInit & { timeout?: 
 function normalise(record: any) {
   const out: any = {};
   for (const [k, v] of Object.entries(record)) {
-    out[k] = v;
+    if (v != null && v !== "") {
+      out[k] = v;
+    } else if (!(k in out)) {
+      out[k] = v;
+    }
     if (k.includes("/") && !k.startsWith("_")) {
       const short = k.split("/").pop()!;
-      if (out[short] == null || out[short] === "") out[short] = v;
+      if ((out[short] == null || out[short] === "") && v != null && v !== "") {
+        out[short] = v;
+      }
     }
   }
   return out;
