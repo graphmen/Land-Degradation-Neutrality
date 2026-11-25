@@ -26,7 +26,6 @@ import {
   EMA_ROLE_META,
   GovPlatformProvider,
   useGovPlatform,
-  type EmaRole,
   type ReportingPeriodOption,
 } from "./GovPlatformContext";
 
@@ -59,7 +58,7 @@ const FULLBLEED_ROUTES = ["/ldn", "/soil", "/interventions", "/drylands", "/data
 function GovShellInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
-  const { period, setPeriod, role, setRole } = useGovPlatform();
+  const { period, setPeriod, user, role, logout } = useGovPlatform();
 
   const isActive = (href: string) =>
     pathname === href || pathname?.startsWith(`${href}/`);
@@ -84,21 +83,50 @@ function GovShellInner({ children }: { children: React.ReactNode }) {
             </select>
           </label>
           <span style={{ opacity: 0.35 }}>|</span>
-          <label className="gov-utility-select-wrap" title="Access role">
-            <span>Access:</span>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value as EmaRole)}
-              aria-label="Active EMA RBAC role"
-              className="gov-utility-select"
-            >
-              {(Object.keys(EMA_ROLE_META) as EmaRole[]).map((key) => (
-                <option key={key} value={key}>
-                  {EMA_ROLE_META[key].label}
-                </option>
-              ))}
-            </select>
-          </label>
+          {user ? (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+              <Link
+                href="/settings"
+                style={{ color: "#ffffff", textDecoration: "none", fontWeight: 600 }}
+                title={`${user.email} · ${user.station}`}
+              >
+                {user.full_name} ({EMA_ROLE_META[role].label})
+              </Link>
+              <button
+                type="button"
+                onClick={logout}
+                style={{
+                  background: "transparent",
+                  border: "1px solid rgba(255,255,255,0.28)",
+                  color: "#d6e2db",
+                  fontSize: 10,
+                  fontWeight: 600,
+                  padding: "1px 7px",
+                  borderRadius: 3,
+                  cursor: "pointer",
+                }}
+              >
+                Sign Out
+              </button>
+            </span>
+          ) : (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+              <span>Public View (Read-only)</span>
+              <Link
+                href="/settings"
+                style={{
+                  color: "#ffffff",
+                  textDecoration: "none",
+                  fontWeight: 600,
+                  border: "1px solid rgba(255,255,255,0.32)",
+                  padding: "1px 8px",
+                  borderRadius: 3,
+                }}
+              >
+                Officer Sign In
+              </Link>
+            </span>
+          )}
         </div>
       </div>
 

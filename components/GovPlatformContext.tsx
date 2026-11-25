@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 export type EmaRole =
   | "national_reporting_officer"
@@ -10,6 +10,18 @@ export type EmaRole =
   | "public_donor";
 
 export type ReportingPeriodOption = "2020-2023" | "2000-2015" | "2022-2025";
+
+export type SessionUser = {
+  id: string;
+  email: string;
+  full_name: string;
+  role: EmaRole;
+  station: string;
+  province: string;
+  active: boolean;
+  created_at: string;
+  last_login_at: string | null;
+};
 
 export const EMA_ROLE_META: Record<
   EmaRole,
@@ -48,8 +60,8 @@ export const EMA_ROLE_META: Record<
   },
   ict_dba: {
     label: "ICT / DBA",
-    canVerifyDistrict: false,
-    canApproveOrLock: false,
+    canVerifyDistrict: true,
+    canApproveOrLock: true,
     canViewRestrictedLayers: true,
     canAccessReportingDesk: true,
     canAccessAdmin: true,
@@ -67,37 +79,61 @@ export const EMA_ROLE_META: Record<
 interface GovPlatformContextValue {
   period: ReportingPeriodOption;
   setPeriod: (p: ReportingPeriodOption) => void;
+  user: SessionUser | null;
+  authLoading: boolean;
   role: EmaRole;
   setRole: (r: EmaRole) => void;
   permissions: (typeof EMA_ROLE_META)[EmaRole];
+  refreshSession: () => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const GovPlatformContext = createContext<GovPlatformContextValue>({
   period: "2020-2023",
   setPeriod: () => {},
-  role: "national_reporting_officer",
+  user: null,
+  authLoading: true,
+  role: "public_donor",
   setRole: () => {},
-  permissions: EMA_ROLE_META.national_reporting_officer,
+  permissions: EMA_ROLE_META.public_donor,
+  refreshSession: async () => {},
+  logout: async () => {},
 });
 
 export function GovPlatformProvider({ children }: { children: React.ReactNode }) {
   const [period, setPeriodState] = useState<ReportingPeriodOption>("2020-2023");
-  const [role, setRoleState] = useState<EmaRole>("national_reporting_officer");
+  const [user, setUser] = useState<SessionUser | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [previewRole, setPreviewRole] = useState<EmaRole | null>(null);
+
+  const refreshSession = useCallback(async () => {
+    try {
+      const res = await fetch("/api/auth/session", { cache: "no-store" });
+      if (res.ok) {
+        const json = (await res.json()) as { authenticated?: boolean; user?: SessionUser | null };
+        setUser(json.authenticated && json.user ? json.user : null);
+        if (!json.authenticated) setPreviewRole(null);
+      } else {
+        setUser(null);
+      }
+    } catch {
+      setUser(null);
+    } finally {
+      setAuthLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     try {
       const savedPeriod = window.localStorage.getItem("ema_ldn_period") as ReportingPeriodOption | null;
-      const savedRole = window.localStorage.getItem("ema_ldn_role") as EmaRole | null;
       if (savedPeriod && ["2020-2023", "2000-2015", "2022-2025"].includes(savedPeriod)) {
         setPeriodState(savedPeriod);
-      }
-      if (savedRole && savedRole in EMA_ROLE_META) {
-        setRoleState(savedRole);
       }
     } catch {
       // ignore storage errors
     }
-  }, []);
+    refreshSession();
+  }, [refreshSession]);
 
   const setPeriod = (p: ReportingPeriodOption) => {
     setPeriodState(p);
@@ -108,23 +144,39 @@ export function GovPlatformProvider({ children }: { children: React.ReactNode })
     }
   };
 
+  // Only ICT Administrators may preview another role; otherwise effective role strictly equals authenticated user's role (or public_donor).
   const setRole = (r: EmaRole) => {
-    setRoleState(r);
-    try {
-      window.localStorage.setItem("ema_ldn_role", r);
-    } catch {
-      // ignore
+    if (user?.role === "ict_dba") {
+      setPreviewRole(r === user.role ? null : r);
     }
   };
+
+  const logout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } finally {
+      setUser(null);
+      setPreviewRole(null);
+    }
+  };
+
+  const effectiveRole: EmaRole =
+    user?.role === "ict_dba" && previewRole
+      ? previewRole
+      : user?.role ?? "public_donor";
 
   return (
     <GovPlatformContext.Provider
       value={{
         period,
         setPeriod,
-        role,
+        user,
+        authLoading,
+        role: effectiveRole,
         setRole,
-        permissions: EMA_ROLE_META[role],
+        permissions: EMA_ROLE_META[effectiveRole],
+        refreshSession,
+        logout,
       }}
     >
       {children}

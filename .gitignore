@@ -66,3 +66,7 @@ public/soil-organic-carbon.json
 
 # PRAIS export packages (reporting desk dry-runs)
 exports/
+
+# Local EMA auth & audit runtime stores
+data/ema-users.json
+data/ema-access-log.json
