@@ -211,6 +211,15 @@
   color: #11181c;
 }
 
+.gov-nav-link:focus {
+  outline: none;
+}
+
+.gov-nav-link:focus-visible {
+  outline: 2px solid #005a2b;
+  outline-offset: -2px;
+}
+
 .gov-nav-link.active {
   background: #e9f3ed;
   color: #005a2b;

@@ -19,6 +19,8 @@ import {
   Wrench,
   Image as ImageIcon,
   Database,
+  SlidersHorizontal,
+  HelpCircle,
 } from "lucide-react";
 import {
   EMA_ROLE_META,
@@ -35,7 +37,6 @@ const PRIMARY_NAV = [
   { href: "/layers", label: "Spatial Layers", icon: Layers },
   { href: "/analytics", label: "SDG 15.3.1 Analytics", icon: BarChart3 },
   { href: "/reporting-desk", label: "PRAIS 4 Reporting", icon: FileCheck2 },
-  { href: "/admin", label: "Administration", icon: Settings },
 ];
 
 const EXPLORER_NAV = [
@@ -45,6 +46,12 @@ const EXPLORER_NAV = [
   { href: "/drylands", label: "Drylands (ILUP)", icon: Sprout },
   { href: "/gallery", label: "Field Gallery", icon: ImageIcon },
   { href: "/database", label: "Data Explorer", icon: Database },
+];
+
+const SYSTEM_NAV = [
+  { href: "/admin", label: "System Administration", icon: Settings },
+  { href: "/settings", label: "Access & Settings", icon: SlidersHorizontal },
+  { href: "/support", label: "Help, Q&A & Feedback", icon: HelpCircle },
 ];
 
 const FULLBLEED_ROUTES = ["/ldn", "/soil", "/interventions", "/drylands", "/database"];
@@ -152,6 +159,27 @@ function GovShellInner({ children }: { children: React.ReactNode }) {
           <div className="gov-nav-group">
             <div className="gov-nav-group-label">Field Datasets</div>
             {EXPLORER_NAV.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`gov-nav-link ${active ? "active" : ""}`}
+                  title={item.label}
+                >
+                  <Icon size={15} style={{ flexShrink: 0 }} />
+                  <span className="gov-nav-text">{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+
+          <div className="gov-nav-divider" />
+
+          <div className="gov-nav-group">
+            <div className="gov-nav-group-label">System &amp; Support</div>
+            {SYSTEM_NAV.map((item) => {
               const Icon = item.icon;
               const active = isActive(item.href);
               return (
