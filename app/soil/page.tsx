@@ -295,11 +295,11 @@ export default function SoilPage() {
       const moisture = String(props._mapped_moist || "").toLowerCase();
       const searchLower = search.toLowerCase();
 
-      const matchSearch = 
-        district.includes(searchLower) || 
-        ward.includes(searchLower) || 
-        ceid.includes(searchLower) || 
-        texture.includes(searchLower) || 
+      const matchSearch =
+        district.includes(searchLower) ||
+        ward.includes(searchLower) ||
+        ceid.includes(searchLower) ||
+        texture.includes(searchLower) ||
         loc.includes(searchLower);
 
       const matchTexture = textureFilter === "all" || props._mapped_tex === textureFilter;
@@ -307,9 +307,9 @@ export default function SoilPage() {
 
       const isHotspot = texture.includes("sand") && moisture.includes("dry");
       const isBrightSpot = texture.includes("loam") || texture.includes("silt");
-      const matchSoilStatus = soilStatusFilter === "all" || 
-                              (soilStatusFilter === "hotspot" && isHotspot) || 
-                              (soilStatusFilter === "brightspot" && isBrightSpot);
+      const matchSoilStatus = soilStatusFilter === "all" ||
+        (soilStatusFilter === "hotspot" && isHotspot) ||
+        (soilStatusFilter === "brightspot" && isBrightSpot);
 
       return matchSearch && matchTexture && matchDistrict && matchSoilStatus;
     });
@@ -362,7 +362,7 @@ export default function SoilPage() {
     });
 
     const textureData = Object.entries(textureCnt).map(([name, value]) => ({ name, value }));
-    
+
     const districtData = Object.keys(districtDepthSums).map(dist => ({
       name: dist,
       avgDepth: +(districtDepthSums[dist] / districtDepthCounts[dist]).toFixed(1)
@@ -387,7 +387,7 @@ export default function SoilPage() {
 
   const handleExport = () => {
     const format = (document.getElementById("soil-export-format") as HTMLSelectElement)?.value || "csv";
-    
+
     if (format === "geojson") {
       const geojsonObj = {
         type: "FeatureCollection",
@@ -462,8 +462,8 @@ export default function SoilPage() {
           <option value="kml">KML (Google Earth)</option>
         </select>
       </div>
-      <button 
-        className="sidebar-export-btn" 
+      <button
+        className="sidebar-export-btn"
         onClick={handleExport}
         style={{ background: "var(--accent-amber)" }}
       >
@@ -541,348 +541,348 @@ export default function SoilPage() {
       {/* Main Content Zone */}
       {viewMode === "spatial" ? (
         <div className="buims-container">
-      {/* Panel 2: List Panel */}
-      <div className={`buims-list-panel ${leftCollapsed ? "collapsed" : ""}`}>
-        <div className="panel-header">
-          <div className="panel-title" style={{ color: "var(--accent-amber)" }}>
-            Soil Cores
-          </div>
-          <div className="search-box">
-            <input
-              placeholder="Search location, texture..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setCurrentPage(1);
-              }}
-            />
-          </div>
-          <div className="quick-filters cols-3">
-            <select
-              value={textureFilter}
-              onChange={(e) => {
-                setTextureFilter(e.target.value);
-                setCurrentPage(1);
-              }}
-            >
-              <option value="all">All Textures</option>
-              {textures.map((t: string) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-            <select
-              value={soilStatusFilter}
-              onChange={(e) => {
-                setSoilStatusFilter(e.target.value);
-                setCurrentPage(1);
-              }}
-            >
-              <option value="all">All Soil Status</option>
-              <option value="hotspot">Hotspots</option>
-              <option value="brightspot">Bright Spots</option>
-            </select>
-            <select
-              value={districtFilter}
-              onChange={(e) => {
-                setDistrictFilter(e.target.value);
-                setCurrentPage(1);
-              }}
-            >
-              <option value="all">All Districts</option>
-              {districts.map((d: string) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="list-scroll">
-          {/* Soil Texture Reference Dictionary */}
-          <div className="soil-texture-dictionary">
-            <details className="dictionary-main">
-              <summary className="dictionary-main-summary">
-                <span>Soil Texture Reference Guide</span>
-              </summary>
-              <div className="dictionary-grid">
-                {Object.entries(SOIL_TEXTURE_GUIDE).map(([name, info]) => (
-                  <details key={name} className="dictionary-item">
-                    <summary className="dictionary-item-summary">
-                      <span>{info.icon} {name}</span>
-                    </summary>
-                    <div className="dictionary-item-details">
-                      <p><strong>Physical:</strong> {info.physical}</p>
-                      <p><strong>Water Retention:</strong> {info.retention}</p>
-                      <p><strong>Agricultural Impact:</strong> {info.impact}</p>
-                      <p><strong>Erosion Risks:</strong> {info.erosion}</p>
-                    </div>
-                  </details>
-                ))}
+          {/* Panel 2: List Panel */}
+          <div className={`buims-list-panel ${leftCollapsed ? "collapsed" : ""}`}>
+            <div className="panel-header">
+              <div className="panel-title" style={{ color: "var(--accent-amber)" }}>
+                Soil Cores
               </div>
-            </details>
-          </div>
-          {currentFeatures.length === 0 ? (
-            <div style={{ textAlign: "center", color: "var(--text-muted)", fontSize: 11, padding: 20 }}>
-              No soil core samples.
-            </div>
-          ) : (
-            currentFeatures.map((f: any) => {
-              const props = f.properties;
-              const district = props._mapped_dist || "Unspecified District";
-              const ward = props.ward || "Unspecified Ward";
-              const ceid = props.ceid || "—";
-              const texture = props._mapped_tex || "Unknown";
-              const moisture = String(props._mapped_moist || "").toLowerCase();
-              
-              const formatLoc = (loc: string) => {
-                if (!loc) return "Unknown Sample";
-                const mapped: Record<string, string> = {
-                  cent: "Center Sample",
-                  north: "North Sample",
-                  east: "East Sample",
-                  south: "South Sample",
-                  west: "West Sample",
-                };
-                return mapped[loc.toLowerCase()] || `${loc} Sample`;
-              };
-              
-              const sampleName = formatLoc(props._mapped_loc || props.samloc);
-              const isSelected = String(activeId) === String(props._id);
-
-              const isHotspot = texture.toLowerCase().includes("sand") && moisture.includes("dry");
-              const isBrightSpot = texture.toLowerCase().includes("loam") || texture.toLowerCase().includes("silt");
-
-              return (
-                <div
-                  key={props._id}
-                  className={`site-card ${isSelected ? "active" : ""}`}
-                  onClick={() => setActiveId(props._id)}
+              <div className="search-box">
+                <input
+                  placeholder="Search location, texture..."
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                />
+              </div>
+              <div className="quick-filters cols-3">
+                <select
+                  value={textureFilter}
+                  onChange={(e) => {
+                    setTextureFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
                 >
-                  <div className="site-card-title">{district} • Ward {ward}</div>
-                  <div className="site-card-subtitle">ID: {ceid}</div>
-                  <div className="site-card-meta">
-                    <span>{sampleName}</span>
-                    <div style={{ display: "flex", gap: 4 }}>
-                      {isHotspot && (
-                        <span className="site-badge danger-status" style={{ fontSize: 8 }}>
-                          Hotspot
-                        </span>
-                      )}
-                      {isBrightSpot && (
-                        <span className="site-badge active-status" style={{ fontSize: 8 }}>
-                          Bright Spot
-                        </span>
-                      )}
-                      <span className={`site-badge ${getBadgeClass(texture)}`}>
-                        {texture}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-
-        <div className="list-pagination">
-          <button
-            className="pagination-btn"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage((p) => p - 1)}
-          >
-            Prev
-          </button>
-          <span>
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            className="pagination-btn"
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((p) => p + 1)}
-          >
-            Next
-          </button>
-        </div>
-      </div>
-
-      {/* Left divider collapse toggle */}
-      <button
-        className={`panel-toggle-btn left-toggle ${leftCollapsed ? "collapsed" : ""}`}
-        onClick={() => setLeftCollapsed(!leftCollapsed)}
-        title={leftCollapsed ? "Expand site list" : "Collapse site list"}
-      >
-        {leftCollapsed ? "»" : "«"}
-      </button>
-
-      {/* Panel 3: Center Map Panel */}
-      <div className="buims-map-panel">
-        <MapView geojson={geojson} activeId={activeId} onSelect={(id) => setActiveId(String(id))} />
-      </div>
-
-      {/* Right divider collapse toggle */}
-      <button
-        className={`panel-toggle-btn right-toggle ${rightCollapsed ? "collapsed" : ""}`}
-        onClick={() => setRightCollapsed(!rightCollapsed)}
-        title={rightCollapsed ? "Expand details" : "Collapse details"}
-      >
-        {rightCollapsed ? "«" : "»"}
-      </button>
-
-      {/* Panel 4: Right Detail/Command Panel */}
-      <div className={`buims-detail-panel ${rightCollapsed ? "collapsed" : ""}`}>
-        {/* Network Snapshot Section */}
-        <div className="detail-section">
-          <div className="detail-section-title">Network Snapshot</div>
-          <div className="snapshot-grid">
-            <div className="snapshot-card">
-              <div className="snapshot-lbl">Samples</div>
-              <div className="snapshot-val" style={{ color: "var(--accent-amber)" }}>
-                {kpis.total_samples}
+                  <option value="all">All Textures</option>
+                  {textures.map((t: string) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={soilStatusFilter}
+                  onChange={(e) => {
+                    setSoilStatusFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                >
+                  <option value="all">All Soil Status</option>
+                  <option value="hotspot">Hotspots</option>
+                  <option value="brightspot">Bright Spots</option>
+                </select>
+                <select
+                  value={districtFilter}
+                  onChange={(e) => {
+                    setDistrictFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                >
+                  <option value="all">All Districts</option>
+                  {districts.map((d: string) => (
+                    <option key={d} value={d}>
+                      {d}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
-            <div className="snapshot-card">
-              <div className="snapshot-lbl">Mapped</div>
-              <div className="snapshot-val">{kpis.mapped_points}</div>
+
+            <div className="list-scroll">
+              {/* Soil Texture Reference Dictionary */}
+              <div className="soil-texture-dictionary">
+                <details className="dictionary-main">
+                  <summary className="dictionary-main-summary">
+                    <span>Soil Texture Reference Guide</span>
+                  </summary>
+                  <div className="dictionary-grid">
+                    {Object.entries(SOIL_TEXTURE_GUIDE).map(([name, info]) => (
+                      <details key={name} className="dictionary-item">
+                        <summary className="dictionary-item-summary">
+                          <span>{info.icon} {name}</span>
+                        </summary>
+                        <div className="dictionary-item-details">
+                          <p><strong>Physical:</strong> {info.physical}</p>
+                          <p><strong>Water Retention:</strong> {info.retention}</p>
+                          <p><strong>Agricultural Impact:</strong> {info.impact}</p>
+                          <p><strong>Erosion Risks:</strong> {info.erosion}</p>
+                        </div>
+                      </details>
+                    ))}
+                  </div>
+                </details>
+              </div>
+              {currentFeatures.length === 0 ? (
+                <div style={{ textAlign: "center", color: "var(--text-muted)", fontSize: 11, padding: 20 }}>
+                  No soil core samples.
+                </div>
+              ) : (
+                currentFeatures.map((f: any) => {
+                  const props = f.properties;
+                  const district = props._mapped_dist || "Unspecified District";
+                  const ward = props.ward || "Unspecified Ward";
+                  const ceid = props.ceid || "—";
+                  const texture = props._mapped_tex || "Unknown";
+                  const moisture = String(props._mapped_moist || "").toLowerCase();
+
+                  const formatLoc = (loc: string) => {
+                    if (!loc) return "Unknown Sample";
+                    const mapped: Record<string, string> = {
+                      cent: "Center Sample",
+                      north: "North Sample",
+                      east: "East Sample",
+                      south: "South Sample",
+                      west: "West Sample",
+                    };
+                    return mapped[loc.toLowerCase()] || `${loc} Sample`;
+                  };
+
+                  const sampleName = formatLoc(props._mapped_loc || props.samloc);
+                  const isSelected = String(activeId) === String(props._id);
+
+                  const isHotspot = texture.toLowerCase().includes("sand") && moisture.includes("dry");
+                  const isBrightSpot = texture.toLowerCase().includes("loam") || texture.toLowerCase().includes("silt");
+
+                  return (
+                    <div
+                      key={props._id}
+                      className={`site-card ${isSelected ? "active" : ""}`}
+                      onClick={() => setActiveId(props._id)}
+                    >
+                      <div className="site-card-title">{district} • Ward {ward}</div>
+                      <div className="site-card-subtitle">ID: {ceid}</div>
+                      <div className="site-card-meta">
+                        <span>{sampleName}</span>
+                        <div style={{ display: "flex", gap: 4 }}>
+                          {isHotspot && (
+                            <span className="site-badge danger-status" style={{ fontSize: 8 }}>
+                              Hotspot
+                            </span>
+                          )}
+                          {isBrightSpot && (
+                            <span className="site-badge active-status" style={{ fontSize: 8 }}>
+                              Bright Spot
+                            </span>
+                          )}
+                          <span className={`site-badge ${getBadgeClass(texture)}`}>
+                            {texture}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
-            <div className="snapshot-card">
-              <div className="snapshot-lbl">Avg Depth</div>
-              <div className="snapshot-val">{kpis.avg_depth}cm</div>
+
+            <div className="list-pagination">
+              <button
+                className="pagination-btn"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((p) => p - 1)}
+              >
+                Prev
+              </button>
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                className="pagination-btn"
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((p) => p + 1)}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+
+          {/* Left divider collapse toggle */}
+          <button
+            className={`panel-toggle-btn left-toggle ${leftCollapsed ? "collapsed" : ""}`}
+            onClick={() => setLeftCollapsed(!leftCollapsed)}
+            title={leftCollapsed ? "Expand site list" : "Collapse site list"}
+          >
+            {leftCollapsed ? "»" : "«"}
+          </button>
+
+          {/* Panel 3: Center Map Panel */}
+          <div className="buims-map-panel">
+            <MapView geojson={geojson} activeId={activeId} onSelect={(id) => setActiveId(String(id))} />
+          </div>
+
+          {/* Right divider collapse toggle */}
+          <button
+            className={`panel-toggle-btn right-toggle ${rightCollapsed ? "collapsed" : ""}`}
+            onClick={() => setRightCollapsed(!rightCollapsed)}
+            title={rightCollapsed ? "Expand details" : "Collapse details"}
+          >
+            {rightCollapsed ? "«" : "»"}
+          </button>
+
+          {/* Panel 4: Right Detail/Command Panel */}
+          <div className={`buims-detail-panel ${rightCollapsed ? "collapsed" : ""}`}>
+            {/* Network Snapshot Section */}
+            <div className="detail-section">
+              <div className="detail-section-title">Network Snapshot</div>
+              <div className="snapshot-grid">
+                <div className="snapshot-card">
+                  <div className="snapshot-lbl">Samples</div>
+                  <div className="snapshot-val" style={{ color: "var(--accent-amber)" }}>
+                    {kpis.total_samples}
+                  </div>
+                </div>
+                <div className="snapshot-card">
+                  <div className="snapshot-lbl">Mapped</div>
+                  <div className="snapshot-val">{kpis.mapped_points}</div>
+                </div>
+                <div className="snapshot-card">
+                  <div className="snapshot-lbl">Avg Depth</div>
+                  <div className="snapshot-val">{kpis.avg_depth}cm</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Selected Site Details Section */}
+            <div className="detail-section" style={{ flex: 1, overflowY: "auto" }}>
+              <div className="detail-section-title">Core Command</div>
+              {activeFeature ? (
+                (() => {
+                  const props = activeFeature.properties;
+                  const [lng, lat] = activeFeature.geometry.coordinates;
+                  const name = props._mapped_loc || props.samloc || "Soil Sample";
+
+                  return (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                      {/* Header */}
+                      <div>
+                        <div className="detail-site-name">{name}</div>
+                        <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 6 }}>
+                          {props._mapped_dist || props.dist || "Unknown District"}
+                        </div>
+                        <span className={`site-badge ${getBadgeClass(props._mapped_tex)}`}>
+                          {props._mapped_tex || "Unknown"} Texture
+                        </span>
+                      </div>
+
+                      {/* Field Photo (only rendered if point actually has a photo) */}
+                      {(props.photo_url || props.thumb_url) ? (
+                        <div style={{ width: "100%", height: "160px", borderRadius: "10px", overflow: "hidden", background: "#0f172a", flexShrink: 0 }}>
+                          <img
+                            src={`/api/media?url=${encodeURIComponent(props.photo_url || props.thumb_url)}`}
+                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                            alt="Field Photo"
+                            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                          />
+                        </div>
+                      ) : null}
+                      <div className="detail-item-list">
+                        <div className="detail-item-row">
+                          <span className="detail-item-label">
+                            District Jurisdiction
+                          </span>
+                          <span className="detail-item-value">{props._mapped_dist || "—"}</span>
+                        </div>
+                        <div className="detail-item-row">
+                          <span className="detail-item-label">
+                            Soil Core Depth
+                          </span>
+                          <span className="detail-item-value" style={{ color: "var(--accent-amber)", fontWeight: 700 }}>
+                            {props._mapped_dep ? `${props._mapped_dep} cm` : "—"}
+                          </span>
+                        </div>
+                        <div className="detail-item-row">
+                          <span className="detail-item-label">
+                            Munsell Soil Color
+                          </span>
+                          <span className="detail-item-value">{props._mapped_col || "—"}</span>
+                        </div>
+                        <div className="detail-item-row">
+                          <span className="detail-item-label">
+                            Moisture Status
+                          </span>
+                          <span className="detail-item-value">{props._mapped_moist || "—"}</span>
+                        </div>
+                        <div className="detail-item-row">
+                          <span className="detail-item-label">
+                            Ward / Administrative Area
+                          </span>
+                          <span className="detail-item-value">{props.ward ? (String(props.ward).startsWith('Ward') ? props.ward : `Ward ${props.ward}`) : "—"}</span>
+                        </div>
+                        <div className="detail-item-row">
+                          <span className="detail-item-label">
+                            Survey Observer / Team
+                          </span>
+                          <span className="detail-item-value">{props.team || props.agent || "—"}</span>
+                        </div>
+                        <div className="detail-item-row">
+                          <span className="detail-item-label">
+                            Sample ID / CEID
+                          </span>
+                          <span className="detail-item-value" style={{ fontWeight: 700, color: "#0284c7" }}>{props.ceid || props.samplid || props._id || "—"}</span>
+                        </div>
+                        <div className="detail-item-row">
+                          <span className="detail-item-label">
+                            Latitude (GIS Coordinate)
+                          </span>
+                          <span className="detail-item-value">{lat.toFixed(6)}</span>
+                        </div>
+                        <div className="detail-item-row">
+                          <span className="detail-item-label">
+                            Longitude (GIS Coordinate)
+                          </span>
+                          <span className="detail-item-value">{lng.toFixed(6)}</span>
+                        </div>
+                        <div className="detail-item-row">
+                          <span className="detail-item-label">
+                            Submission Date
+                          </span>
+                          <span className="detail-item-value">
+                            {props._submission_time ? new Date(props._submission_time).toLocaleDateString() : "—"}
+                          </span>
+                        </div>
+                        {props.lab_number && (
+                          <div className="detail-item-row">
+                            <span className="detail-item-label">
+                              Lab Ref Number
+                            </span>
+                            <span className="detail-item-value" style={{ fontWeight: 700 }}>{props.lab_number}</span>
+                          </div>
+                        )}
+                        {props.organic_carbon !== undefined && props.organic_carbon !== null && (
+                          <div className="detail-item-row">
+                            <span className="detail-item-label">
+                              Measured Organic Carbon
+                            </span>
+                            <span className="detail-item-value" style={{ color: "var(--accent-green)", fontWeight: 800 }}>
+                              {props.organic_carbon}%
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, padding: "32px 12px", textAlign: "center" }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)" }}>Click any map point</div>
+                  <div style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.6 }}>Select a soil core node on the map to view its full survey attributes, field photo, and all field metadata here.</div>
+                </div>
+              )}
             </div>
           </div>
         </div>
-
-        {/* Selected Site Details Section */}
-        <div className="detail-section" style={{ flex: 1, overflowY: "auto" }}>
-          <div className="detail-section-title">Core Command</div>
-          {activeFeature ? (
-            (() => {
-              const props = activeFeature.properties;
-              const [lng, lat] = activeFeature.geometry.coordinates;
-              const name = props._mapped_loc || props.samloc || "Soil Sample";
-
-              return (
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  {/* Header */}
-                  <div>
-                    <div className="detail-site-name">{name}</div>
-                    <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 6 }}>
-                      {props._mapped_dist || props.dist || "Unknown District"}
-                    </div>
-                    <span className={`site-badge ${getBadgeClass(props._mapped_tex)}`}>
-                      {props._mapped_tex || "Unknown"} Texture
-                    </span>
-                  </div>
-
-                  {/* Field Photo (only rendered if point actually has a photo) */}
-                  {(props.photo_url || props.thumb_url) ? (
-                    <div style={{ width: "100%", height: "160px", borderRadius: "10px", overflow: "hidden", background: "#0f172a", flexShrink: 0 }}>
-                      <img
-                        src={`/api/media?url=${encodeURIComponent(props.photo_url || props.thumb_url)}`}
-                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                        alt="Field Photo"
-                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                      />
-                    </div>
-                  ) : null}
-                  <div className="detail-item-list">
-                    <div className="detail-item-row">
-                      <span className="detail-item-label">
-                        District Jurisdiction
-                      </span>
-                      <span className="detail-item-value">{props._mapped_dist || "—"}</span>
-                    </div>
-                    <div className="detail-item-row">
-                      <span className="detail-item-label">
-                        Soil Core Depth
-                      </span>
-                      <span className="detail-item-value" style={{ color: "var(--accent-amber)", fontWeight: 700 }}>
-                        {props._mapped_dep ? `${props._mapped_dep} cm` : "—"}
-                      </span>
-                    </div>
-                    <div className="detail-item-row">
-                      <span className="detail-item-label">
-                        Munsell Soil Color
-                      </span>
-                      <span className="detail-item-value">{props._mapped_col || "—"}</span>
-                    </div>
-                    <div className="detail-item-row">
-                      <span className="detail-item-label">
-                        Moisture Status
-                      </span>
-                      <span className="detail-item-value">{props._mapped_moist || "—"}</span>
-                    </div>
-                    <div className="detail-item-row">
-                      <span className="detail-item-label">
-                        Ward / Administrative Area
-                      </span>
-                      <span className="detail-item-value">{props.ward ? (String(props.ward).startsWith('Ward') ? props.ward : `Ward ${props.ward}`) : "—"}</span>
-                    </div>
-                    <div className="detail-item-row">
-                      <span className="detail-item-label">
-                        Survey Observer / Team
-                      </span>
-                      <span className="detail-item-value">{props.team || props.agent || "—"}</span>
-                    </div>
-                    <div className="detail-item-row">
-                      <span className="detail-item-label">
-                        Sample ID / CEID
-                      </span>
-                      <span className="detail-item-value" style={{ fontWeight: 700, color: "#0284c7" }}>{props.ceid || props.samplid || props._id || "—"}</span>
-                    </div>
-                    <div className="detail-item-row">
-                      <span className="detail-item-label">
-                        Latitude (GIS Coordinate)
-                      </span>
-                      <span className="detail-item-value">{lat.toFixed(6)}</span>
-                    </div>
-                    <div className="detail-item-row">
-                      <span className="detail-item-label">
-                        Longitude (GIS Coordinate)
-                      </span>
-                      <span className="detail-item-value">{lng.toFixed(6)}</span>
-                    </div>
-                    <div className="detail-item-row">
-                      <span className="detail-item-label">
-                        Submission Date
-                      </span>
-                      <span className="detail-item-value">
-                        {props._submission_time ? new Date(props._submission_time).toLocaleDateString() : "—"}
-                      </span>
-                    </div>
-                    {props.lab_number && (
-                      <div className="detail-item-row">
-                        <span className="detail-item-label">
-                          Lab Ref Number
-                        </span>
-                        <span className="detail-item-value" style={{ fontWeight: 700 }}>{props.lab_number}</span>
-                      </div>
-                    )}
-                    {props.organic_carbon !== undefined && props.organic_carbon !== null && (
-                      <div className="detail-item-row">
-                        <span className="detail-item-label">
-                          Measured Organic Carbon
-                        </span>
-                        <span className="detail-item-value" style={{ color: "var(--accent-green)", fontWeight: 800 }}>
-                          {props.organic_carbon}%
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })()
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, padding: "32px 12px", textAlign: "center" }}>
-                            <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)" }}>Click any map point</div>
-              <div style={{ fontSize: 11, color: "var(--text-muted)", lineHeight: 1.6 }}>Select a soil core node on the map to view its full survey attributes, field photo, and all field metadata here.</div>
-            </div>
-          )}
-        </div>
-      </div>
-      </div>
       ) : (
         <div style={{ flex: 1, overflowY: "auto", background: "#f8fafc", padding: "24px" }}>
           {/* Compact KPI Strip */}
