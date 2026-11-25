@@ -484,16 +484,13 @@ export default function SoilPage() {
         borderBottom: "1px solid var(--border-color)",
         flexShrink: 0
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <FlaskConical size={18} color="#005a2b" />
-          <div>
-            <h1 style={{ fontSize: "16px", fontWeight: 800, color: "var(--text-primary)", margin: 0, fontFamily: "var(--font-title)" }}>
-              Soil Quality Core Monitoring
-            </h1>
-            <p style={{ fontSize: "10px", color: "var(--text-muted)", margin: 0, fontWeight: 500 }}>
-              Physical & Chemical Analysis of Soil Horizon Cores
-            </p>
-          </div>
+        <div>
+          <h1 style={{ fontSize: "16px", fontWeight: 700, color: "#11181c", margin: 0 }}>
+            Soil Quality Core Monitoring
+          </h1>
+          <p style={{ fontSize: "11px", color: "#52606d", margin: "2px 0 0", fontWeight: 400 }}>
+            Physical &amp; Chemical Analysis of Soil Horizon Cores
+          </p>
         </div>
 
         {/* View Mode Switcher Pill */}

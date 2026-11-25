@@ -955,8 +955,8 @@ export default function DatabaseExplorer() {
       {/* Header section (Compact) */}
       <div className="explorer-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
         <div>
-          <h2 style={{ fontFamily: "var(--font-title)", fontWeight: 800, fontSize: "18px", color: "var(--text-primary)", margin: 0, display: "flex", alignItems: "center", gap: "6px" }}>
-            <Database size={20} style={{ color: "var(--accent-green)" }} /> National Data Explorer
+          <h2 style={{ fontFamily: "var(--font-title)", fontWeight: 700, fontSize: "18px", color: "#11181c", margin: 0 }}>
+            National Data Explorer
           </h2>
         </div>
         

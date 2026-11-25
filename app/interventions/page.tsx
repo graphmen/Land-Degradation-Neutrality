@@ -480,16 +480,13 @@ export default function InterventionsPage() {
         borderBottom: "1px solid var(--border-color)",
         flexShrink: 0
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <ShieldCheck size={18} color="#005a2b" />
-          <div>
-            <h1 style={{ fontSize: "16px", fontWeight: 800, color: "var(--text-primary)", margin: 0, fontFamily: "var(--font-title)" }}>
-              Interventions & Reclamation Hub
-            </h1>
-            <p style={{ fontSize: "10px", color: "var(--text-muted)", margin: 0, fontWeight: 500 }}>
-              Tracking Land Reclamation, Reforestation & Sustainable Practices
-            </p>
-          </div>
+        <div>
+          <h1 style={{ fontSize: "16px", fontWeight: 700, color: "#11181c", margin: 0 }}>
+            Interventions &amp; Reclamation Hub
+          </h1>
+          <p style={{ fontSize: "11px", color: "#52606d", margin: "2px 0 0", fontWeight: 400 }}>
+            Tracking Land Reclamation, Reforestation &amp; Sustainable Practices
+          </p>
         </div>
 
         {/* View Mode Switcher Pill */}
