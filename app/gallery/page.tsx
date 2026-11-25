@@ -189,27 +189,13 @@ export default function GalleryPage() {
         alignItems: "center",
         flexShrink: 0
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <div style={{
-            width: "40px",
-            height: "40px",
-            borderRadius: "10px",
-            background: "rgba(5, 150, 105, 0.1)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "22px"
-          }}>
-           
-          </div>
-          <div>
-            <h1 style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", margin: 0, fontFamily: "var(--font-title)" }}>
-              National Field Evidence Photo Gallery
-            </h1>
-            <p style={{ fontSize: "11px", color: "var(--text-muted)", margin: 0, fontWeight: 500 }}>
-              High-Resolution Ground Observation Imagery Captured Across Zimbabwe Monitored Landscapes
-            </p>
-          </div>
+        <div>
+          <h1 style={{ fontSize: "18px", fontWeight: 700, color: "#11181c", margin: 0 }}>
+            Field Evidence Photo Gallery
+          </h1>
+          <p style={{ fontSize: "12px", color: "#52606d", margin: "2px 0 0", fontWeight: 400 }}>
+            Ground observation imagery across monitored Zimbabwe landscapes
+          </p>
         </div>
 
         {/* Counter Stats Pill */}
