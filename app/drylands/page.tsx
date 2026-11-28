@@ -179,6 +179,13 @@ export default function DrylandsPage() {
   
   const [leftCollapsed, setLeftCollapsed] = useState(false);
   const [rightCollapsed, setRightCollapsed] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 960) {
+      setLeftCollapsed(true);
+      setRightCollapsed(true);
+    }
+  }, []);
   const [mounted, setMounted] = useState(false);
   
   // Editor Form States: "view" | "add" | "edit"
@@ -255,9 +262,6 @@ export default function DrylandsPage() {
         if (urlId) {
           const matched = recs.find((r: any) => String(r._id) === String(urlId) || String(r.id) === String(urlId) || String(r.kobo_id) === String(urlId));
           if (matched) setActiveId(matched._id);
-          else if (recs.length > 0) setActiveId(recs[0]._id);
-        } else if (recs.length > 0) {
-          setActiveId(recs[0]._id);
         }
       }
     } catch (e) {

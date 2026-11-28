@@ -191,9 +191,6 @@ export default function InterventionsPage() {
       if (res.ok) {
         const json = await res.json();
         setRecords(json.records || []);
-        if (json.records?.length > 0) {
-          setActiveId(json.records[0]._id);
-        }
       }
     } catch (e) {
       console.error("Failed to load interventions:", e);

@@ -196,23 +196,31 @@ export default function DrylandsMapView({ records, activeId, onSelect }: Props) 
       }
     });
 
-    boundsRef.current = bounds;
-    if (bounds.isValid()) {
-      map.invalidateSize();
-      map.fitBounds(bounds, { padding: [36, 36], maxZoom: 12, animate: false });
-      window.setTimeout(() => {
-        if (mapRef.current && boundsRef.current?.isValid()) {
-          mapRef.current.invalidateSize();
-          mapRef.current.fitBounds(boundsRef.current, { padding: [36, 36], maxZoom: 12 });
-        }
-      }, 280);
-    }
+    const ZIMBABWE_BOUNDS: [[number, number], [number, number]] = [
+      [-22.42, 25.23],
+      [-15.61, 33.06],
+    ];
+    boundsRef.current = Leaflet.latLngBounds(ZIMBABWE_BOUNDS);
+    map.invalidateSize();
+    map.fitBounds(ZIMBABWE_BOUNDS, { padding: [20, 20], animate: false });
+    window.setTimeout(() => {
+      if (mapRef.current) {
+        mapRef.current.invalidateSize();
+        mapRef.current.fitBounds(ZIMBABWE_BOUNDS, { padding: [20, 20] });
+      }
+    }, 280);
   }, [records, mapReady]);
 
   const handleZoomToLayer = () => {
-    if (mapRef.current && boundsRef.current?.isValid()) {
+    if (mapRef.current) {
       mapRef.current.invalidateSize();
-      mapRef.current.fitBounds(boundsRef.current, { padding: [36, 36], maxZoom: 12 });
+      mapRef.current.fitBounds(
+        [
+          [-22.42, 25.23],
+          [-15.61, 33.06],
+        ],
+        { padding: [20, 20] }
+      );
     }
   };
 
