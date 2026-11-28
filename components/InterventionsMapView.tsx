@@ -80,6 +80,8 @@ export default function InterventionsMapView({ records, activeId, onSelect }: Pr
       const lat = parseFloat(r.lat);
       const lng = parseFloat(r.lng);
       if (isNaN(lat) || isNaN(lng)) return;
+      // Exclude out-of-Zimbabwe coordinates (e.g. missing minus sign placing points in Sudan)
+      if (lat < -22.6 || lat > -15.4 || lng < 25.0 || lng > 33.2) return;
 
       const visual = classifyInterventionRecord(r);
       const badgeClass =

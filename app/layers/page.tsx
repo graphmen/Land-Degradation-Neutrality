@@ -388,7 +388,15 @@ export default function NationalLayersPage() {
                   color: "#1d4ed8",
                   layerLabel: "INT-PROJECTS · SO4 Restoration",
                 }))
-                .filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng) && p.lat !== 0);
+                .filter(
+                  (p) =>
+                    Number.isFinite(p.lat) &&
+                    Number.isFinite(p.lng) &&
+                    p.lat >= -22.6 &&
+                    p.lat <= -15.4 &&
+                    p.lng >= 25.0 &&
+                    p.lng <= 33.2
+                );
             } else if (key === "press_invasive" || key === "press_mining") {
               const theme = key === "press_mining" ? "illegal_mining" : "invasive";
               const res = await fetch(`/api/pressure-layers?theme=${theme}`, { cache: "no-store" });

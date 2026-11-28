@@ -480,9 +480,11 @@ export default function InterventionsPage() {
       {/* Top Header Bar with Switcher */}
       <div style={{
         display: "flex",
+        flexWrap: "wrap",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "12px 24px",
+        gap: "8px 12px",
+        padding: "10px 16px",
         background: "#ffffff",
         borderBottom: "1px solid var(--border-color)",
         flexShrink: 0
@@ -501,42 +503,44 @@ export default function InterventionsPage() {
           display: "inline-flex",
           background: "#f1f5f9",
           padding: "3px",
-          borderRadius: "9999px",
+          borderRadius: "6px",
           border: "1px solid #e2e8f0"
         }}>
           <button
             onClick={() => setViewMode("spatial")}
             style={{
-              padding: "5px 14px",
+              padding: "5px 12px",
               fontSize: "11px",
-              fontWeight: 700,
-              borderRadius: "9999px",
+              fontWeight: 600,
+              borderRadius: "4px",
+              whiteSpace: "nowrap",
               transition: "all 0.2s ease",
               background: viewMode === "spatial" ? "#ffffff" : "transparent",
               color: viewMode === "spatial" ? "#0f172a" : "#64748b",
               border: "none",
-              boxShadow: viewMode === "spatial" ? "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)" : "none",
+              boxShadow: viewMode === "spatial" ? "0 1px 2px rgba(0,0,0,0.08)" : "none",
               cursor: "pointer"
             }}
           >
-            Spatial Map View
+            Spatial Map
           </button>
           <button
             onClick={() => setViewMode("dashboard")}
             style={{
-              padding: "5px 14px",
+              padding: "5px 12px",
               fontSize: "11px",
-              fontWeight: 700,
-              borderRadius: "9999px",
+              fontWeight: 600,
+              borderRadius: "4px",
+              whiteSpace: "nowrap",
               transition: "all 0.2s ease",
               background: viewMode === "dashboard" ? "#ffffff" : "transparent",
               color: viewMode === "dashboard" ? "#0f172a" : "#64748b",
               border: "none",
-              boxShadow: viewMode === "dashboard" ? "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)" : "none",
+              boxShadow: viewMode === "dashboard" ? "0 1px 2px rgba(0,0,0,0.08)" : "none",
               cursor: "pointer"
             }}
           >
-            Project Dashboard
+            Dashboard
           </button>
         </div>
       </div>
