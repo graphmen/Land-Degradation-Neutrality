@@ -952,68 +952,79 @@ export default function DatabaseExplorer() {
         }
       `}} />
 
-      {/* Header section (Compact) */}
-      <div className="explorer-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
+      {/* Header section (Compact & Responsive) */}
+      <div
+        className="explorer-header"
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: "10px",
+          flexShrink: 0,
+        }}
+      >
         <div>
-          <h2 style={{ fontFamily: "var(--font-title)", fontWeight: 700, fontSize: "18px", color: "#11181c", margin: 0 }}>
+          <h2 style={{ fontFamily: "var(--font-title)", fontWeight: 700, fontSize: "18px", color: "#11181c", margin: 0, whiteSpace: "nowrap" }}>
             National Data Explorer
           </h2>
         </div>
-        
+
         {/* Top Actions */}
-        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-          <button 
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center" }}>
+          <button
             onClick={() => setIsHistoryPanelOpen(true)}
-            style={{ 
-              padding: "6px 12px", fontSize: "11px", gap: "4px", display: "flex", alignItems: "center", 
-              background: totalModifications > 0 ? "rgba(217,119,6,0.1)" : "#ffffff", 
-              border: totalModifications > 0 ? "1px solid var(--accent-amber)" : "1px solid var(--border-color)", 
-              color: totalModifications > 0 ? "var(--accent-amber)" : "var(--text-muted)", 
-              cursor: "pointer", borderRadius: "var(--radius-md)", fontWeight: 600
+            style={{
+              padding: "6px 10px", fontSize: "11px", gap: "4px", display: "inline-flex", alignItems: "center", whiteSpace: "nowrap",
+              background: totalModifications > 0 ? "rgba(217,119,6,0.1)" : "#ffffff",
+              border: totalModifications > 0 ? "1px solid var(--accent-amber)" : "1px solid var(--border-color)",
+              color: totalModifications > 0 ? "var(--accent-amber)" : "var(--text-muted)",
+              cursor: "pointer", borderRadius: "4px", fontWeight: 600
             }}
           >
             <History size={12} /> Overrides ({totalModifications})
           </button>
 
-          <button 
+          <button
             onClick={openAddModal}
-            style={{ 
-              padding: "6px 12px", fontSize: "11px", gap: "4px", display: "flex", alignItems: "center", 
-              background: "var(--accent-green)", border: "none", color: "#ffffff",
-              cursor: "pointer", borderRadius: "var(--radius-md)", fontWeight: 600
+            style={{
+              padding: "6px 10px", fontSize: "11px", gap: "4px", display: "inline-flex", alignItems: "center", whiteSpace: "nowrap",
+              background: "#005a2b", border: "none", color: "#ffffff",
+              cursor: "pointer", borderRadius: "4px", fontWeight: 600
             }}
           >
             <Plus size={12} /> Add Record
           </button>
 
-          <button 
+          <button
             onClick={handleSyncDatabase}
             disabled={loading}
             className="sidebar-export-btn"
-            style={{ padding: "6px 12px", fontSize: "11px", gap: "4px", display: "flex", alignItems: "center", background: "#ffffff", border: "1px solid var(--border-color)", color: "var(--text-green)", cursor: "pointer", borderRadius: "var(--radius-md)" }}
+            style={{
+              padding: "6px 10px", fontSize: "11px", gap: "4px", display: "inline-flex", alignItems: "center", whiteSpace: "nowrap",
+              background: "#ffffff", border: "1px solid #c5ccd3", color: "#1a1f24", cursor: "pointer", borderRadius: "4px", fontWeight: 600
+            }}
           >
-            <RefreshCw size={11} className={loading ? "animate-spin" : ""} /> {loading ? "Refreshing..." : "Refresh Records"}
+            <RefreshCw size={11} className={loading ? "animate-spin" : ""} /> {loading ? "Refreshing..." : "Refresh"}
           </button>
         </div>
       </div>
 
-      {/* Primary Tab Switcher */}
-      <div style={{ display: "flex", borderBottom: "2px solid var(--border-color)", gap: "10px", paddingBottom: "2px", flexShrink: 0 }}>
+      {/* Primary Tab Switcher (Single-Line Horizontally Scrollable on Mobile) */}
+      <div className="gov-tabs-bar" style={{ gap: "14px", flexShrink: 0 }}>
         <button
           onClick={() => setActiveTab("ldn")}
           style={{
             background: "none",
             border: "none",
-            borderBottom: activeTab === "ldn" ? "3px solid var(--accent-green)" : "3px solid transparent",
-            color: activeTab === "ldn" ? "var(--text-green)" : "var(--text-muted)",
+            borderBottom: activeTab === "ldn" ? "2px solid #005a2b" : "2px solid transparent",
+            color: activeTab === "ldn" ? "#005a2b" : "#52606d",
             fontWeight: activeTab === "ldn" ? 700 : 500,
             fontSize: "13px",
-            padding: "4px 8px",
+            padding: "8px 2px",
             cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            transition: "all 0.2s"
+            whiteSpace: "nowrap",
+            marginBottom: -1,
           }}
         >
           Land Degradation (LDN)
@@ -1023,16 +1034,14 @@ export default function DatabaseExplorer() {
           style={{
             background: "none",
             border: "none",
-            borderBottom: activeTab === "soil" ? "3px solid var(--accent-amber)" : "3px solid transparent",
-            color: activeTab === "soil" ? "var(--accent-amber)" : "var(--text-muted)",
+            borderBottom: activeTab === "soil" ? "2px solid #b45309" : "2px solid transparent",
+            color: activeTab === "soil" ? "#b45309" : "#52606d",
             fontWeight: activeTab === "soil" ? 700 : 500,
             fontSize: "13px",
-            padding: "4px 8px",
+            padding: "8px 2px",
             cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            transition: "all 0.2s"
+            whiteSpace: "nowrap",
+            marginBottom: -1,
           }}
         >
           Soil Core Samples
@@ -1042,16 +1051,14 @@ export default function DatabaseExplorer() {
           style={{
             background: "none",
             border: "none",
-            borderBottom: activeTab === "drylands" ? "3px solid var(--accent-gold)" : "3px solid transparent",
-            color: activeTab === "drylands" ? "var(--accent-gold)" : "var(--text-muted)",
+            borderBottom: activeTab === "drylands" ? "2px solid #005a2b" : "2px solid transparent",
+            color: activeTab === "drylands" ? "#005a2b" : "#52606d",
             fontWeight: activeTab === "drylands" ? 700 : 500,
             fontSize: "13px",
-            padding: "4px 8px",
+            padding: "8px 2px",
             cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "6px",
-            transition: "all 0.2s"
+            whiteSpace: "nowrap",
+            marginBottom: -1,
           }}
         >
           Drylands Observations

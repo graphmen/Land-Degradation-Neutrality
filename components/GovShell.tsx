@@ -172,7 +172,8 @@ function GovShellInner({ children }: { children: React.ReactNode }) {
           <Link href="/national-overview" className="gov-crest">
             <img src="/ema-logo.png" alt="EMA Zimbabwe" />
             <div className="gov-brand-titles">
-              <span className="gov-brand-main">Zimbabwe Land Degradation Neutrality Portal</span>
+              <span className="gov-brand-main gov-mobile-hide">Zimbabwe Land Degradation Neutrality Portal</span>
+              <span className="gov-brand-main gov-mobile-only">Zimbabwe LDN Portal</span>
               <span className="gov-brand-sub">
                 UNCCD PRAIS 4 National Reporting System (SDG Indicator 15.3.1)
               </span>
