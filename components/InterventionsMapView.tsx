@@ -22,6 +22,7 @@ export default function InterventionsMapView({ records, activeId, onSelect }: Pr
   const leafletRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<Record<string, any>>({});
+  const boundsRef = useRef<any>(null);
   const [mapReady, setMapReady] = useState(false);
   const [isLegendCollapsed, setIsLegendCollapsed] = useState(true);
 
@@ -152,10 +153,25 @@ export default function InterventionsMapView({ records, activeId, onSelect }: Pr
       }
     });
 
+    boundsRef.current = bounds;
     if (bounds.isValid()) {
-      map.fitBounds(bounds, { padding: [48, 48], maxZoom: 11 });
+      map.invalidateSize();
+      map.fitBounds(bounds, { padding: [36, 36], maxZoom: 12, animate: false });
+      window.setTimeout(() => {
+        if (mapRef.current && boundsRef.current?.isValid()) {
+          mapRef.current.invalidateSize();
+          mapRef.current.fitBounds(boundsRef.current, { padding: [36, 36], maxZoom: 12 });
+        }
+      }, 280);
     }
   }, [records, mapReady]);
+
+  const handleZoomToLayer = () => {
+    if (mapRef.current && boundsRef.current?.isValid()) {
+      mapRef.current.invalidateSize();
+      mapRef.current.fitBounds(boundsRef.current, { padding: [36, 36], maxZoom: 12 });
+    }
+  };
 
   useEffect(() => {
     if (!mapReady || !mapRef.current || !clusterRef.current || !activeId) return;
@@ -169,6 +185,28 @@ export default function InterventionsMapView({ records, activeId, onSelect }: Pr
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
       <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
+      <button
+        type="button"
+        onClick={handleZoomToLayer}
+        title="Zoom to Layer"
+        style={{
+          position: "absolute",
+          top: 66,
+          right: 10,
+          zIndex: 500,
+          background: "#ffffff",
+          color: "#11181c",
+          border: "1px solid #c5ccd3",
+          borderRadius: 4,
+          padding: "5px 10px",
+          fontSize: 11,
+          fontWeight: 600,
+          cursor: "pointer",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.16)",
+        }}
+      >
+        Zoom to Layer
+      </button>
       <div
         className="map-legend-overlay"
         style={{
