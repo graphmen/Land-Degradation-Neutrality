@@ -96,7 +96,18 @@ function extractGeo(r: any): [number, number] | null {
       lng = g[1];
     } else {
       const raw = (r.raw_data && typeof r.raw_data === "object") ? r.raw_data : {};
-      const pt = raw["sampl/poin"] || raw["geninfo/GPS"] || raw["GPS"] || raw["location"] || raw["geopoint"] || r.GPS || r.gps || r.location;
+      const pt =
+        r["sampl/poin"] ||
+        r.poin ||
+        raw["sampl/poin"] ||
+        raw["geninfo/GPS"] ||
+        raw["GPS"] ||
+        raw["location"] ||
+        raw["geopoint"] ||
+        r["geninfo/GPS"] ||
+        r.GPS ||
+        r.gps ||
+        r.location;
       if (typeof pt === "string") {
         const p = pt.trim().split(/\s+/);
         if (p.length >= 2) {
