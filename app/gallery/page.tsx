@@ -181,43 +181,47 @@ export default function GalleryPage() {
       
       {/* Top Header Banner */}
       <div style={{
-        padding: "16px 24px",
+        padding: "12px 16px",
         background: "#ffffff",
         borderBottom: "1px solid var(--border-color)",
         display: "flex",
+        flexWrap: "wrap",
         justifyContent: "space-between",
         alignItems: "center",
+        gap: "8px 14px",
         flexShrink: 0
       }}>
         <div>
-          <h1 style={{ fontSize: "18px", fontWeight: 700, color: "#11181c", margin: 0 }}>
+          <h1 style={{ fontSize: "16px", fontWeight: 700, color: "#11181c", margin: 0 }}>
             Field Evidence Photo Gallery
           </h1>
-          <p style={{ fontSize: "12px", color: "#52606d", margin: "2px 0 0", fontWeight: 400 }}>
+          <p style={{ fontSize: "11px", color: "#52606d", margin: "2px 0 0", fontWeight: 400 }}>
             Ground observation imagery across monitored Zimbabwe landscapes
           </p>
         </div>
 
-        {/* Counter Stats Pill */}
+        {/* Counter Stats Strip */}
         <div style={{
-          display: "flex",
-          gap: "16px",
-          background: "#f1f5f9",
-          padding: "8px 16px",
-          borderRadius: "9999px",
-          border: "1px solid #e2e8f0",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "12px",
+          background: "#f8f9fa",
+          padding: "5px 12px",
+          borderRadius: "4px",
+          border: "1px solid #dcdfe2",
           fontSize: "11px",
-          fontWeight: 600
+          fontWeight: 600,
+          whiteSpace: "nowrap"
         }}>
-          <div>
-            <span style={{ color: "var(--text-muted)" }}>Total Photos: </span>
-            <span style={{ color: "var(--text-green)", fontWeight: 800 }}>{items.length}</span>
-          </div>
-          <div style={{ width: "1px", background: "#cbd5e1" }} />
-          <div>
-            <span style={{ color: "var(--text-muted)" }}>Displaying: </span>
-            <span style={{ color: "#0284c7", fontWeight: 800 }}>{filteredItems.length}</span>
-          </div>
+          <span>
+            <span style={{ color: "#52606d" }}>Total Photos: </span>
+            <strong style={{ color: "#005a2b" }}>{items.length}</strong>
+          </span>
+          <span style={{ color: "#cbd2d9" }}>|</span>
+          <span>
+            <span style={{ color: "#52606d" }}>Displaying: </span>
+            <strong style={{ color: "#14539a" }}>{filteredItems.length}</strong>
+          </span>
         </div>
       </div>
 
