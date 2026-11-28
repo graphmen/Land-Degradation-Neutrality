@@ -8,6 +8,11 @@ export const metadata: Metadata = {
   description:
     "Official Environmental Management Agency (EMA) national platform for UNCCD SDG Indicator 15.3.1 Land Degradation Neutrality monitoring, verification, and PRAIS 4 reporting.",
   manifest: "/manifest.json",
+  icons: {
+    icon: [{ url: "/ema-logo.png", type: "image/png" }],
+    shortcut: "/ema-logo.png",
+    apple: "/ema-logo.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
