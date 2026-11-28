@@ -268,14 +268,14 @@ export default function GovPointMap({
   }, []);
 
   return (
-    <div style={{ position: "relative", width: "100%", height }}>
+    <div className="gov-map-frame" style={{ position: "relative", width: "100%", height }}>
       <div
         ref={containerRef}
         style={{
           width: "100%",
           height: "100%",
-          borderRadius: 8,
-          border: "1px solid #d9e2dc",
+          borderRadius: 4,
+          border: "1px solid #dcdfe2",
           overflow: "hidden",
           background: "#1b2a22",
         }}
@@ -283,6 +283,7 @@ export default function GovPointMap({
 
       {legend && legend.length > 0 && (
         <div
+          className="gov-map-legend"
           style={{
             position: "absolute",
             bottom: 14,

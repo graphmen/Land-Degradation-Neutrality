@@ -248,6 +248,13 @@ export default function LdnPage() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [leftCollapsed, setLeftCollapsed] = useState(false);
   const [rightCollapsed, setRightCollapsed] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 960) {
+      setLeftCollapsed(true);
+      setRightCollapsed(true);
+    }
+  }, []);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

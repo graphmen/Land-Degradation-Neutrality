@@ -254,14 +254,7 @@ export default function AccessAndSettingsPage() {
       </div>
 
       {/* Editorial Underlined Tabs */}
-      <div
-        style={{
-          display: "flex",
-          gap: 24,
-          borderBottom: "1px solid #dcdfe2",
-          marginTop: -6,
-        }}
-      >
+      <div className="gov-tabs-bar" style={{ marginTop: -6 }}>
         {(
           [
             { id: "account", label: user ? "My Account" : "Officer Sign In" },
@@ -502,7 +495,8 @@ export default function AccessAndSettingsPage() {
               </div>
               <form
                 onSubmit={handleCreateUser}
-                style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 12 }}
+                className="gov-grid-3"
+                style={{ gap: 12 }}
               >
                 <div>
                   <label className="gov-kv-label" style={{ display: "block", marginBottom: 4 }}>Full Name *</label>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -21,6 +21,8 @@ import {
   Database,
   SlidersHorizontal,
   HelpCircle,
+  Menu,
+  X,
 } from "lucide-react";
 import {
   EMA_ROLE_META,
@@ -58,7 +60,13 @@ const FULLBLEED_ROUTES = ["/ldn", "/soil", "/interventions", "/drylands", "/data
 function GovShellInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { period, setPeriod, user, role, logout } = useGovPlatform();
+
+  // Close mobile navigation drawer automatically on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   const isActive = (href: string) =>
     pathname === href || pathname?.startsWith(`${href}/`);
@@ -67,10 +75,13 @@ function GovShellInner({ children }: { children: React.ReactNode }) {
     <div className="gov-shell">
       {/* Top Institutional Utility Bar (FAO / UNCCD style) */}
       <div className="gov-utility-bar">
-        <span>Republic of Zimbabwe | Environmental Management Agency (EMA)</span>
+        <span className="gov-utility-brand-full">
+          Republic of Zimbabwe | Environmental Management Agency (EMA)
+        </span>
+        <span className="gov-utility-brand-short">EMA Zimbabwe</span>
         <div className="gov-utility-controls">
           <label className="gov-utility-select-wrap" title="Reporting cycle">
-            <span>Cycle:</span>
+            <span className="gov-mobile-hide">Cycle:</span>
             <select
               value={period}
               onChange={(e) => setPeriod(e.target.value as ReportingPeriodOption)}
@@ -84,13 +95,14 @@ function GovShellInner({ children }: { children: React.ReactNode }) {
           </label>
           <span style={{ opacity: 0.35 }}>|</span>
           {user ? (
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
               <Link
                 href="/settings"
-                style={{ color: "#ffffff", textDecoration: "none", fontWeight: 600 }}
+                className="gov-utility-user-link"
                 title={`${user.email} · ${user.station}`}
               >
-                {user.full_name} ({EMA_ROLE_META[role].label})
+                <span className="gov-mobile-hide">{user.full_name} ({EMA_ROLE_META[role].label})</span>
+                <span className="gov-mobile-only">{user.full_name.split(" ")[0]}</span>
               </Link>
               <button
                 type="button"
@@ -104,14 +116,15 @@ function GovShellInner({ children }: { children: React.ReactNode }) {
                   padding: "1px 7px",
                   borderRadius: 3,
                   cursor: "pointer",
+                  whiteSpace: "nowrap",
                 }}
               >
                 Sign Out
               </button>
             </span>
           ) : (
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-              <span>Public View (Read-only)</span>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+              <span className="gov-mobile-hide">Public View (Read-only)</span>
               <Link
                 href="/settings"
                 style={{
@@ -121,9 +134,10 @@ function GovShellInner({ children }: { children: React.ReactNode }) {
                   border: "1px solid rgba(255,255,255,0.32)",
                   padding: "1px 8px",
                   borderRadius: 3,
+                  whiteSpace: "nowrap",
                 }}
               >
-                Officer Sign In
+                Sign In
               </Link>
             </span>
           )}
@@ -133,14 +147,26 @@ function GovShellInner({ children }: { children: React.ReactNode }) {
       {/* Primary Pure-White Header */}
       <header className="gov-header">
         <div className="gov-header-left">
+          {/* Desktop sidebar collapse toggle */}
           <button
             type="button"
-            className="gov-menu-btn"
+            className="gov-menu-btn gov-desktop-only"
             onClick={() => setCollapsed((c) => !c)}
             title={collapsed ? "Expand navigation" : "Collapse navigation"}
             aria-label="Toggle navigation"
           >
             {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+          </button>
+
+          {/* Mobile slide-over drawer toggle */}
+          <button
+            type="button"
+            className="gov-menu-btn gov-mobile-nav-trigger"
+            onClick={() => setMobileMenuOpen((o) => !o)}
+            title="Open navigation menu"
+            aria-label="Open navigation menu"
+          >
+            {mobileMenuOpen ? <X size={17} /> : <Menu size={17} />}
           </button>
 
           <Link href="/national-overview" className="gov-crest">
@@ -162,7 +188,29 @@ function GovShellInner({ children }: { children: React.ReactNode }) {
       </header>
 
       <div className="gov-body">
-        <nav className={`gov-sidebar ${collapsed ? "collapsed" : ""}`} aria-label="Primary">
+        {mobileMenuOpen && (
+          <div
+            className="gov-mobile-backdrop"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+
+        <nav
+          className={`gov-sidebar ${collapsed ? "collapsed" : ""} ${mobileMenuOpen ? "mobile-open" : ""}`}
+          aria-label="Primary"
+        >
+          <div className="gov-mobile-drawer-head">
+            <span style={{ fontWeight: 700, fontSize: 13, color: "#11181c" }}>EMA LDN Navigation</span>
+            <button
+              type="button"
+              className="gov-menu-btn"
+              onClick={() => setMobileMenuOpen(false)}
+              aria-label="Close navigation menu"
+            >
+              <X size={15} />
+            </button>
+          </div>
           <div className="gov-nav-group">
             <div className="gov-nav-group-label">Reporting</div>
             {PRIMARY_NAV.map((item) => {
